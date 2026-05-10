@@ -136,7 +136,9 @@ Run database migrations:
 ```bash
 php artisan migrate
 ```
+
 By default `sqlite` will be in used. However in production `mySql` or `PostgreSQL` will be used. Make sure to run migrations &  seeders.
+
 ---
 
 ## Running the Application

@@ -317,10 +317,38 @@ if (Test-CommandExists npm) {
 }
 
 # ---------------------------------------------------------------------------------
-# Step 10: Run tests (optional)
+# Step 10: Run database migrations
 # ---------------------------------------------------------------------------------
 
-Write-Step "Step 10: Running tests (optional)"
+Write-Step "Step 10: Running database migrations"
+
+php artisan migrate --force
+if ($LASTEXITCODE -ne 0) {
+    Write-Fail "php artisan migrate failed."
+    Write-Fail "Check your database settings in .env, then run 'php artisan migrate' manually."
+    exit 1
+}
+Write-OK "Database migrations completed."
+
+# ---------------------------------------------------------------------------------
+# Step 11: Seed the database
+# ---------------------------------------------------------------------------------
+
+Write-Step "Step 11: Seeding the database"
+
+php artisan db:seed --force
+if ($LASTEXITCODE -ne 0) {
+    Write-Warn "php artisan db:seed reported errors."
+    Write-Warn "The application may still work. Run 'php artisan db:seed' manually to retry."
+} else {
+    Write-OK "Database seeded successfully."
+}
+
+# ---------------------------------------------------------------------------------
+# Step 12: Run tests (optional)
+# ---------------------------------------------------------------------------------
+
+Write-Step "Step 12: Running tests (optional)"
 
 $pestBin = ".\vendor\bin\pest"
 if (Test-Path $pestBin) {
@@ -342,22 +370,13 @@ if (Test-Path $pestBin) {
 
 Write-Host ""
 Write-Host "  $('=' * 50)" -ForegroundColor DarkGray
-Write-Host "  Setup complete." -ForegroundColor White
+Write-Host "  Setup complete. You are ready to go." -ForegroundColor White
 Write-Host ""
-Write-Host "  To start the development server:" -ForegroundColor Gray
+Write-Host "  Start the development server by running these two commands:" -ForegroundColor Gray
+Write-Host ""
 Write-Host "    cd $repoPath" -ForegroundColor White
 Write-Host "    composer run dev" -ForegroundColor White
 Write-Host ""
 Write-Host "  The application will be available at: http://localhost:8000" -ForegroundColor Gray
 Write-Host "  $('=' * 50)" -ForegroundColor DarkGray
 Write-Host ""
-
-$startNow = Read-Host "  Start the development server now? (y/n)"
-if ($startNow -eq 'y' -or $startNow -eq 'Y') {
-    Write-Host ""
-    Write-Info "Starting development server..."
-    composer run dev
-} else {
-    Write-Host ""
-    Write-Info "All done. Run 'composer run dev' in the project folder whenever you are ready."
-}
