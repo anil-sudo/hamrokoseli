@@ -89,10 +89,9 @@ if (-not (Test-Path $devPath)) {
 # ---------------------------------------------------------------------------------
 # Step 2: PHP and Composer via php.new
 #
-# The php.new installer sets up both PHP and Composer together. We run it first.
-# After it completes we refresh PATH and verify both tools are reachable. If
-# Composer is still missing after the installer ran, we fall back to the standalone
-# Composer installer.
+# The php.new installer sets up both PHP and Composer together. After it finishes
+# we refresh PATH and verify both tools are reachable. If Composer is still missing
+# we fall back to the standalone Composer installer.
 # ---------------------------------------------------------------------------------
 
 Write-Step "Step 2: Installing PHP and Composer"
@@ -113,7 +112,6 @@ try {
 
 Refresh-Path
 
-# Verify PHP
 if (Test-CommandExists php) {
     $phpVersion = php --version | Select-Object -First 1
     Write-OK "PHP is available: $phpVersion"
@@ -123,7 +121,6 @@ if (Test-CommandExists php) {
     exit 1
 }
 
-# Verify Composer (php.new usually includes it; install standalone if not)
 if (Test-CommandExists composer) {
     $composerVersion = composer --version
     Write-OK "Composer is available: $composerVersion"
@@ -152,7 +149,7 @@ if (Test-CommandExists composer) {
 }
 
 # ---------------------------------------------------------------------------------
-# Step 3: Node.js (optional but recommended for frontend asset builds)
+# Step 3: Node.js (optional, needed for frontend asset builds)
 # ---------------------------------------------------------------------------------
 
 Write-Step "Step 3: Checking Node.js"
@@ -170,7 +167,7 @@ if (Test-CommandExists node) {
             Write-OK "Node.js is now available: $(node --version)"
         } else {
             Write-Warn "Node.js was installed but is not yet on PATH."
-            Write-Warn "You may need to restart your terminal before running 'npm install' or 'npm run build'."
+            Write-Warn "You may need to restart your terminal before running npm commands."
         }
     } else {
         Write-Warn "Skipping Node.js. You will not be able to run 'npm install' or 'npm run build'."
@@ -179,7 +176,7 @@ if (Test-CommandExists node) {
 }
 
 # ---------------------------------------------------------------------------------
-# Step 4: Git (optional but required to clone the repository automatically)
+# Step 4: Git (optional, needed to clone the repository automatically)
 # ---------------------------------------------------------------------------------
 
 Write-Step "Step 4: Checking Git"
@@ -226,7 +223,7 @@ if (Test-Path $repoPath) {
         Remove-Item $repoPath -Recurse -Force
         Write-Info "Removed existing folder."
     } else {
-        Write-Info "Keeping existing folder. Proceeding with whatever is there."
+        Write-Info "Keeping existing folder. Proceeding with what is there."
     }
 }
 
@@ -246,7 +243,7 @@ Set-Location $repoPath
 # Step 6: Install PHP dependencies
 # ---------------------------------------------------------------------------------
 
-Write-Step "Step 6: Installing PHP dependencies (Composer)"
+Write-Step "Step 6: Installing PHP dependencies"
 
 composer install
 if ($LASTEXITCODE -ne 0) {
@@ -260,7 +257,7 @@ Write-OK "PHP dependencies installed."
 # Step 7: Install Node.js dependencies (skipped if Node is unavailable)
 # ---------------------------------------------------------------------------------
 
-Write-Step "Step 7: Installing Node.js dependencies (npm)"
+Write-Step "Step 7: Installing Node.js dependencies"
 
 if (Test-CommandExists npm) {
     npm install
@@ -332,6 +329,9 @@ Write-OK "Database migrations completed."
 
 # ---------------------------------------------------------------------------------
 # Step 11: Seed the database
+#
+# The default DatabaseSeeder calls all other seeders internally so no additional
+# seeder arguments are needed here.
 # ---------------------------------------------------------------------------------
 
 Write-Step "Step 11: Seeding the database"
@@ -372,7 +372,7 @@ Write-Host ""
 Write-Host "  $('=' * 50)" -ForegroundColor DarkGray
 Write-Host "  Setup complete. You are ready to go." -ForegroundColor White
 Write-Host ""
-Write-Host "  Start the development server by running these two commands:" -ForegroundColor Gray
+Write-Host "  Start the development server by running:" -ForegroundColor Gray
 Write-Host ""
 Write-Host "    cd $repoPath" -ForegroundColor White
 Write-Host "    composer run dev" -ForegroundColor White
