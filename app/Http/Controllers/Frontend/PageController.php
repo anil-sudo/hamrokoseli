@@ -9,6 +9,6 @@ class PageController extends Controller
 {
     public function index(Request $request)
     {
-        return view('pages.home.index');
+        return view('frontend.home');
     }
 }
