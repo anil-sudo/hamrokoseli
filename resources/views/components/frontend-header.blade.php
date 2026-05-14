@@ -274,7 +274,7 @@
               <div class="group/popover flex">
                 <div class="relative flex">
                   <button popovertarget="desktop-menu-women" class="relative flex items-center justify-center text-sm font-medium transition-colors duration-200 ease-out group-not-has-open/popover:text-gray-700 group-has-open/popover:text-indigo-600 group-not-has-open/popover:hover:text-gray-800">
-                    Women
+                    Female
                     <span aria-hidden="true" class="absolute inset-x-0 -bottom-px z-30 h-0.5 bg-transparent duration-200 ease-in group-has-open/popover:bg-indigo-600 group-has-open/popover-group:duration-150 group-has-open/popover-group:ease-out"></span>
                   </button>
                 </div>
@@ -387,7 +387,7 @@
               <div class="group/popover flex">
                 <div class="relative flex">
                   <button popovertarget="desktop-menu-men" class="relative flex items-center justify-center text-sm font-medium transition-colors duration-200 ease-out group-not-has-open/popover:text-gray-700 group-has-open/popover:text-indigo-600 group-not-has-open/popover:hover:text-gray-800">
-                    Men
+                    Male
                     <span aria-hidden="true" class="absolute inset-x-0 -bottom-px z-30 h-0.5 bg-transparent duration-200 ease-in group-has-open/popover:bg-indigo-600 group-has-open/popover-group:duration-150 group-has-open/popover-group:ease-out"></span>
                   </button>
                 </div>
@@ -503,9 +503,9 @@
 
             <div class="hidden lg:ml-8 lg:flex">
               <a href="#" class="flex items-center text-gray-700 hover:text-gray-800">
-                <img 
-                    src="https://flagcdn.com/w80/np.png" 
-                    alt="Nepal Flag" 
+                <img
+                    src="https://flagcdn.com/w80/np.png"
+                    alt="Nepal Flag"
                     class="block h-auto w-3 shrink-0"
                 /><span class="ml-3 block text-sm font-medium">Nep</span>
                 <span class="sr-only">, change currency</span>
