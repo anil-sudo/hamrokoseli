@@ -13,6 +13,7 @@
 </head>
 <body>
     <main>
+        <livewire:discount-banner />
         <livewire:navbar />
         {{ $slot }}
         <livewire:footer />
