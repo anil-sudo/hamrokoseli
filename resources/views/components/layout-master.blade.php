@@ -8,12 +8,18 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:400,500,600&display=swap" rel="stylesheet" />
 
-    @fluxAppearance
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @livewireStyles
 </head>
 <body>
-    {{ $slot }}
+    <main>
+        <livewire:discount-banner />
+        <livewire:navbar />
+        {{ $slot }}
+        <livewire:footer />
+    </main>
 
     @livewireScripts
-    @fluxScripts
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@4.0.1/dist/flowbite.min.js"></script>
 </body>
 </html>
