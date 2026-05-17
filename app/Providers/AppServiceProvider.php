@@ -3,13 +3,13 @@
 namespace App\Providers;
 
 use Carbon\CarbonImmutable;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -57,7 +57,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Force HTTPS for all generated URLs
         URL::forceHttps($enforceHttps);
-        
+
         // Ensure proper server variable is set
         if ($enforceHttps) {
             URL::forceScheme('https');

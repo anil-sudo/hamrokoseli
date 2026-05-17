@@ -12,19 +12,21 @@ new class extends Component
     <div class="mx-auto max-w-screen-xl">
         <div class="md:flex md:justify-between">
             <div class="mb-6 md:mb-0">
-                <a href="{{ route('home') }}" title="{{ config('app.name') }}" class="flex items-center gap-2">
-                    <svg 
-                        viewBox="0 0 32 32" fill="none" 
-                        xmlns="http://www.w3.org/2000/svg"
-                        class="w-8 h-8"
-                    >
-                        <path 
-                            d="M16 2L20.7833 10.058L16 18.1159L11.2167 10.1159L16 2ZM16 18.1159H25.3333L30 26H20.6667L16 18.1159ZM16 18.1159H6.66667L2 26H11.3333L16 18.1159Z" 
-                            fill="currentColor"
-                        />
-                    </svg>
-                    <strong>{{ config('app.name') }}</strong>
-                </a>
+                <a href="{{ route('home') }}" title="{{ config('app.name') }}" class="flex items-center gap-2 text-gray-900 dark:text-white">
+                <svg 
+                    viewBox="0 0 32 32" fill="none" 
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-8 h-8 text-primary-600 dark:text-primary-400"
+                >
+                    <path 
+                        d="M16 2L20.7833 10.058L16 18.1159L11.2167 10.1159L16 2ZM16 18.1159H25.3333L30 26H20.6667L16 18.1159ZM16 18.1159H6.66667L2 26H11.3333L16 18.1159Z" 
+                        fill="currentColor"
+                    />
+                </svg>
+                <strong class="text-gray-900 dark:text-white">
+                    {{ config('app.name') }}
+                </strong>
+            </a>
             </div>
             <div class="grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3">
                 <div>

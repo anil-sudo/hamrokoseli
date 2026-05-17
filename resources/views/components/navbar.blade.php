@@ -14,18 +14,19 @@ new class extends Component
 
       <div class="flex items-center space-x-8">
         <div class="shrink-0">
-          <a href="{{ route('home') }}" title="{{ config('app.name') }}" class="flex items-center gap-2">
+          <a href="{{ route('home') }}" title="{{ config('app.name') }}" class="flex items-center gap-2 text-gray-900 dark:text-white">
             <svg 
                 viewBox="0 0 32 32" fill="none" 
                 xmlns="http://www.w3.org/2000/svg"
-                class="w-8 h-8"
+                class="w-8 h-8 text-primary-600 dark:text-primary-400"
             >
                 <path 
                     d="M16 2L20.7833 10.058L16 18.1159L11.2167 10.1159L16 2ZM16 18.1159H25.3333L30 26H20.6667L16 18.1159ZM16 18.1159H6.66667L2 26H11.3333L16 18.1159Z" 
                     fill="currentColor"
                 />
             </svg>
-            <strong>{{ config('app.name') }}</strong>
+                <strong class="text-gray-900 dark:text-white">
+{{ config('app.name') }}</strong>
           </a>
         </div>
 
@@ -59,7 +60,7 @@ new class extends Component
       </div>
 
       <div class="flex items-center lg:space-x-2">
-
+        <livewire:mode-switcher />
         <button id="myCartDropdownButton1" data-dropdown-toggle="myCartDropdown1" type="button" class="inline-flex items-center rounded-lg justify-center p-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-sm font-medium leading-none text-gray-900 dark:text-white">
           <span class="sr-only">
             Cart
