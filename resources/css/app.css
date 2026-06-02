@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
@@ -7,3 +6,148 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
+
+#site-header {
+        position: sticky;
+        top: 0;
+        z-index: 9999;
+        width: 100%;
+    }
+
+    /* Hide scrollbar on sub-nav */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Mobile drawer */
+    #mobile-drawer {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        width: 80%;
+        max-width: 320px;
+        height: 100vh;
+        background: #1f3d2e;
+        z-index: 99999;
+        transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow-y: auto;
+        box-shadow: 4px 0 24px rgba(0,0,0,0.35);
+    }
+    #mobile-drawer.open { left: 0; }
+
+    /* Overlay */
+    #drawer-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.55);
+        z-index: 99998;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.35s;
+    }
+    #drawer-overlay.open { opacity: 1; pointer-events: all; }
+
+    /* Desktop Nav link hover underline */
+    .subnav-link {
+        position: relative;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 600;
+        font-size: 0.875rem;
+        transition: color 0.2s;
+        text-decoration: none;
+    }
+    .subnav-link::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: #fff;
+        transition: width 0.25s;
+    }
+    .subnav-link:hover::after { width: 100%; }
+    .subnav-link:hover { color: #ffffff; }
+    
+    .subnav-link i {
+        font-size: 14px;
+        opacity: 0.85;
+        display: inline-block;
+    }
+    .subnav-link:hover i {
+        opacity: 1;
+    }
+
+    /* Desktop navigation container - EQUAL SPACING */
+    .desktop-nav-container {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        width: 100%;
+    }
+    
+    .desktop-nav-links {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+    
+    /* Equal spacing between all nav items - same distance between each */
+    .desktop-nav-links li {
+        display: inline-flex;
+    }
+    
+    /* Responsive spacing */
+    @media (min-width: 1024px) {
+        .desktop-nav-links {
+            gap: 2.2rem;
+        }
+    }
+    
+    @media (min-width: 1280px) {
+        .desktop-nav-links {
+            gap: 2.5rem;
+        }
+    }
+
+    /* Mobile nav link style */
+    .mob-nav-link {
+        display: flex;
+        align-items: center;
+        padding: 13px 20px;
+        color: rgba(255,255,255,0.88);
+        font-size: 15px;
+        font-weight: 600;
+        border-bottom: 1px solid rgba(255,255,255,0.08);
+        transition: background 0.2s, color 0.2s;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        text-decoration: none;
+    }
+    .mob-nav-link i {
+        width: 24px;
+        margin-right: 12px;
+        font-size: 16px;
+        opacity: 0.7;
+        display: inline-block;
+    }
+    .mob-nav-link:hover { background: rgba(255,255,255,0.08); color: #fff; }
+    .mob-nav-link:hover i { opacity: 1; }
+
+    /* Search bar focus glow */
+    .search-wrap:focus-within {
+        box-shadow: 0 0 0 2px rgba(31,61,46,0.35);
+    }
+
+
+
+        body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        }
