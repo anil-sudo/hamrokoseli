@@ -1,0 +1,164 @@
+
+<header id="site-header">
+
+    <!-- 1. Top Thin Bar (hidden on very small screens to save space) -->
+    <div class="bg-[#F5E8D6] text-[#2c2523] text-[11px] font-medium py-1.5 px-4 border-b border-[#ebd7be] hidden sm:block">
+        <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
+            <!-- Left -->
+            <a href="become-seller.php" class="flex items-center gap-1.5 hover:text-[#b55b3d] transition-colors">
+                <i class="fas fa-house text-[#b55b3d]"></i>
+                <span>Sell on Hamro Koseli</span>
+            </a>
+            <!-- Right -->
+            <div class="flex items-center gap-3">
+                <a href="become-seller.php" class="hover:text-[#b55b3d] transition-colors">Become a Seller</a>
+                <span class="text-gray-400">|</span>
+                <span>Support local artisans &bull; Free shipping on orders over Rs.999</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Main Navbar -->
+    <div class="bg-[#1f3d2e] text-white px-4 py-3 border-b border-emerald-950/40">
+        <div class="max-w-7xl mx-auto flex items-center justify-between gap-3">
+
+            <!-- LEFT: Hamburger (mobile only) + Logo -->
+            <div class="flex items-center gap-3">
+                <!-- Hamburger button – visible only on mobile -->
+                <button id="hamburger-btn"
+                    class="md:hidden text-white hover:text-emerald-200 transition-colors p-1 shrink-0"
+                    aria-label="Open menu" aria-expanded="false">
+                    <svg id="icon-menu" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+
+                <!-- Logo -->
+                <a href="{{ url('/') }}" class="flex items-center gap-2.5 group shrink-0">
+                    <img src="{{ asset('images/logo.jpeg') }}" alt="Hamro Koseli Logo"
+                        class="w-10 h-10 object-contain rounded-full shadow-md transform group-hover:scale-105 transition duration-300">
+                    <div>
+                        <div class="font-serif text-lg md:text-xl font-black tracking-wide leading-none text-white"
+                            style="font-family:'Playfair Display',serif;">HAMRO KOSELI</div>
+                        <span class="text-[9px] text-emerald-200/90 tracking-wide font-medium hidden sm:block">Special Koseli for Special People</span>
+                    </div>
+                </a>
+            </div>
+
+            <!-- CENTER: Search bar (visible on md+; collapses on mobile) -->
+            <div class="search-wrap hidden md:flex flex-1 max-w-lg mx-4 items-center bg-[#FDFBF7] rounded-full px-4 py-2 border border-emerald-950/10 shadow-inner">
+                <i class="fas fa-search text-slate-400 mr-2"></i>
+                <input type="text" id="desktop-search" placeholder="Search Products....."
+                    class="w-full bg-transparent border-0 focus:outline-none text-sm text-slate-800 placeholder-slate-400 font-medium"
+                    style="font-family:'Plus Jakarta Sans',sans-serif;">
+            </div>
+
+            <!-- RIGHT: Actions -->
+            <div class="flex items-center gap-3 shrink-0">
+                <!-- Sign In – hidden on mobile (available inside drawer) -->
+                <a href="login.php" id="desktop-signin"
+                    class="hidden md:inline-flex rounded-full border border-white/90 text-white font-semibold px-5 py-1.5 text-sm hover:bg-white hover:text-[#1f3d2e] transition-all duration-300 active:scale-95 shadow-sm">
+                    Sign In
+                </a>
+
+                <!-- Icons -->
+                <div class="flex items-center gap-3 text-white text-lg">
+                    <!-- Search icon (mobile only) -->
+                    <button id="mobile-search-btn" class="md:hidden hover:text-emerald-200 transition-colors p-1" aria-label="Search">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    <!-- Wishlist -->
+                    <a href="wishlist.php" class="hover:text-emerald-200 transition-colors p-1" title="Wishlist">
+                        <i class="far fa-heart"></i>
+                    </a>
+                    <!-- Cart -->
+                    <a href="cart.php" class="hover:text-emerald-200 transition-colors p-1 relative" title="Cart">
+                        <i class="fas fa-shopping-cart"></i>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Mobile search bar (slides down when toggled) -->
+        <div id="mobile-search-bar" class="hidden md:hidden mt-2 max-w-full">
+            <div class="search-wrap flex items-center bg-[#FDFBF7] rounded-full px-4 py-2 border border-emerald-950/10 shadow-inner">
+                <i class="fas fa-search text-slate-400 mr-2"></i>
+                <input type="text" id="mobile-search" placeholder="Search Products....."
+                    class="w-full bg-transparent border-0 focus:outline-none text-sm text-slate-800 placeholder-slate-400 font-medium"
+                    style="font-family:'Plus Jakarta Sans',sans-serif;">
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Desktop Sub-Navbar - WITH ICONS FOR ALL ITEMS INCLUDING NEW ARRIVALS -->
+    <div class="bg-[#1f3d2e] px-4 py-2.5 hidden md:block border-t border-emerald-900/30">
+        <div class="max-w-7xl mx-auto">
+            <div class="desktop-nav-container">
+                <ul class="desktop-nav-links">
+                    <li><a href="{{ url('/') }}" class="subnav-link"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="{{ url('categories') }}" class="subnav-link"><i class="fas fa-th-large"></i> Category</a></li>
+                    <li><a href="{{ url('shop') }}" class="subnav-link"><i class="fas fa-store"></i> Shop</a></li>
+                    <li><a href="{{ url('todays-deals') }}" class="subnav-link"><i class="fas fa-tag"></i> Today's Deals</a></li>
+                    <li><a href="{{ url('featured-products') }}" class="subnav-link"><i class="fas fa-star"></i> Featured</a></li>
+                    <li><a href="{{ url('top-sellers') }}" class="subnav-link"><i class="fas fa-trophy"></i> Top Sellers</a></li>
+                    <li><a href="{{ url('new-arrivals') }}" class="subnav-link"><i class="fas fa-sparkles"></i> New Arrivals</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+</header>
+
+<!-- ===== OVERLAY ===== -->
+<div id="drawer-overlay" aria-hidden="true"></div>
+
+<!-- ===== MOBILE DRAWER - WITH ICONS FOR ALL ITEMS INCLUDING NEW ARRIVALS ===== -->
+<aside id="mobile-drawer" aria-label="Mobile Navigation" role="dialog">
+    <!-- Drawer header -->
+    <div class="flex items-center justify-between px-5 py-4 border-b border-white/10">
+        <div class="flex items-center gap-2.5">
+            <img src="{{ asset('images/logo.jpeg') }}" alt="Hamro Koseli" class="w-9 h-9 rounded-full object-contain">
+            <span class="font-serif font-black text-white text-base" style="font-family:'Playfair Display',serif;">HAMRO KOSELI</span>
+        </div>
+        <!-- Close button -->
+        <button id="close-drawer-btn" class="text-white/80 hover:text-white transition-colors p-1" aria-label="Close menu">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor" stroke-width="2.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Login / Signup buttons in drawer -->
+    <div class="flex gap-3 px-5 py-4 border-b border-white/10">
+        <a href="{{ url('/login') }}"
+            class="flex-1 text-center rounded-full border border-white text-white font-semibold py-2 text-sm hover:bg-white hover:text-[#1f3d2e] transition-all duration-300">
+            Login
+        </a>
+        <a href="{{ url('/signup') }}"
+            class="flex-1 text-center rounded-full bg-white text-[#1f3d2e] font-semibold py-2 text-sm hover:bg-emerald-100 transition-all duration-300">
+            Sign Up
+        </a>
+    </div>
+
+    <!-- Navigation links with icons for ALL items (including New Arrivals) -->
+    <nav>
+        <a href="{{ url('/') }}"          class="mob-nav-link"><i class="fas fa-home"></i>Home</a>
+        <a href="{{ url('categories') }}"     class="mob-nav-link"><i class="fas fa-th-large"></i>Category</a>
+        <a href="{{ url('shop') }}"           class="mob-nav-link"><i class="fas fa-store"></i>Shop</a>
+        <a href="{{ url('#todays-deals') }}"      class="mob-nav-link"><i class="fas fa-tag"></i>Today's Deals</a>
+        <a href="{{ url('#featured-products') }}" class="mob-nav-link"><i class="fas fa-star"></i>Featured Products</a>
+        <a href="{{ url('#top-sellers') }}"       class="mob-nav-link"><i class="fas fa-trophy"></i>Top Sellers</a>
+        <a href="{{ url('new-arrivals') }}"   class="mob-nav-link"><i class="fas fa-sparkles"></i>New Arrivals</a>
+        <a href="{{ url('become-seller') }}"  class="mob-nav-link"><i class="fas fa-store"></i>Become a Seller</a>
+    </nav>
+
+    <!-- Support note at bottom -->
+    <div class="px-5 py-4 mt-2 text-emerald-200/70 text-xs text-center">
+        Support local artisans &bull; Free shipping on orders over Rs.999
+    </div>
+</aside>
+
+
