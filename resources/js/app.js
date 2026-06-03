@@ -1,3 +1,5 @@
+//
+import './seller-layout';
 (function () {
     const hamburger     = document.getElementById('hamburger-btn');
     const drawer        = document.getElementById('mobile-drawer');

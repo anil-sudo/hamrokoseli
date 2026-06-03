@@ -1,4 +1,6 @@
 @import 'tailwindcss';
+@import "./seller-layout.css";
+
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
@@ -71,7 +73,7 @@
     }
     .subnav-link:hover::after { width: 100%; }
     .subnav-link:hover { color: #ffffff; }
-    
+
     .subnav-link i {
         font-size: 14px;
         opacity: 0.85;
@@ -88,7 +90,7 @@
         justify-content: flex-start;
         width: 100%;
     }
-    
+
     .desktop-nav-links {
         display: flex;
         align-items: center;
@@ -97,19 +99,19 @@
         padding: 0;
         list-style: none;
     }
-    
+
     /* Equal spacing between all nav items - same distance between each */
     .desktop-nav-links li {
         display: inline-flex;
     }
-    
+
     /* Responsive spacing */
     @media (min-width: 1024px) {
         .desktop-nav-links {
             gap: 2.2rem;
         }
     }
-    
+
     @media (min-width: 1280px) {
         .desktop-nav-links {
             gap: 2.5rem;

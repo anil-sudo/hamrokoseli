@@ -1,0 +1,149 @@
+
+        @import url('https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap');
+
+        :root {
+            /* Brand Colors */
+            --primary-color: #1F3D2E; /* sidebar, navbar, h1 */
+            --secondary-color: #C65A3A; /* buttons, links */
+
+            /* Text Colors */
+            --text-color: #3A2A1F;/* main text */
+            --text-light: #FFF7EF; /* dashboard text / light text */
+            --text-dark: #1F2A24; /* Background Colors */
+            --bg-color: #F5E8D6; /* page background */
+            --card-bg: #FFF7EF; /* normal card background */
+
+            /* Special */
+            --card-dark: rgba(31, 61, 46, 0.15); /* big card background */
+            --hover-color: #D4A017;/* button hover */
+        }
+
+        /* Fonts */
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: "Inter", sans-serif;
+        }
+
+        /* Headings + Sidebar text */
+        h1,
+        .sidebar,
+        .navbar {
+            font-family: "Cormorant Garamond", serif;
+        }
+
+        /* Utility Classes */
+        .bg-primary {
+            background-color: var(--primary-color);
+        }
+
+        .bg-secondary {
+            background-color: var(--secondary-color);
+        }
+
+        .bg-card {
+            background-color: var(--card-bg);
+        }
+
+        .bg-card-dark {
+            background-color: var(--card-dark);
+        }
+
+        .text-primary {
+            color: var(--primary-color);
+        }
+
+        .text-secondary {
+            color: var(--secondary-color);
+        }
+
+        .text-light {
+            color: var(--text-light);
+        }
+
+        .text-main {
+            color: var(--text-color);
+        }
+
+        /* Border */
+        .border-primary {
+            border-color: var(--primary-color);
+        }
+
+        /* Buttons */
+        .btn {
+            background-color: var(--secondary-color);
+            color: var(--text-light);
+            padding: 10px 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: var(--hover-color);
+            color: var(--text-color);
+        }
+
+        /* Links */
+        a {
+            text-decoration: none;
+        }
+
+
+
+        .navbar a {
+            color: var(--text-light);
+            text-decoration: none;
+        }
+
+        .navbar a:hover {
+            color: var(--text-color);
+        }
+
+        /* Hover utilities */
+        .hover\:bg-primary:hover {
+            background-color: var(--primary-color);
+        }
+
+        .hover\:text-primary:hover {
+            color: var(--primary-color);
+        }
+
+        /* Focus */
+        .focus\:ring-primary:focus {
+            box-shadow: 0 0 0 3px rgba(31, 61, 46, 0.25);
+            outline: none;
+        }
+
+        /* Cards */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .card-dark {
+            background-color: var(--card-dark);
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        /* Smooth animations */
+        .product-card {
+            transition: all 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 20px 25px -12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Optional subtle gradient */
+        .hero-gradient {
+            background: linear-gradient(135deg,
+                    rgba(31, 61, 46, 0.05) 0%,
+                    rgba(198, 90, 58, 0.08) 100%);
+        }
+
