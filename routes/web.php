@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('seller-dashboard', [SellerController::class, 'dashboard'])->name('dashboard');
 
-
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/categories', [PageController::class, 'categories'])->name('categories');
 Route::get('/shop', [PageController::class, 'shop'])->name('shop');
