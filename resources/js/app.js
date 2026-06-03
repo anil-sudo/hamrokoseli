@@ -1,1 +1,2 @@
 //
+import './seller-layout';

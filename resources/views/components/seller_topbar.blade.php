@@ -1,10 +1,11 @@
             <header
                 class="sticky top-0 z-30 w-full bg-(--primary-color) border-b border-(--primary-color)/15% shadow-sm">
                 <div class="flex items-center gap-3 w-full px-4 md:px-8 py-3 justify-between">
-                    <button id="menu-btn" class="md:hidden text-white mr-2">
 
+                    <button id="menu-btn" class="md:hidden text-white mr-2">
                         <i class="fas fa-bars text-xl"></i>
                     </button>
+
                     {{-- Search Bar --}}
                     <div class="flex-1 min-w-0 md:max-w-md">
                         <div class="relative bg-(--text-light) rounded-full">

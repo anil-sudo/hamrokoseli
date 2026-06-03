@@ -4,13 +4,7 @@
     }
 </style>
 <aside id="sidebar"
-    class="fixed top-0 left-0 z-50
-       h-dvh
-       w-72
-       bg-[#1A3D2E]
-       -translate-x-full md:translate-x-0
-       transition-transform duration-300
-       flex flex-col">
+    class="fixed top-0 left-0 z-50 h-dvh w-72 bg-[#1A3D2E] -translate-x-full md:translate-x-0 transition-transform duration-300 flex flex-col">
     <!-- Brand / Logo Section -->
     <div class="px-6 pt-8 pb-6 border-b border-white/10">
         <div class="flex items-center gap-3">
@@ -27,7 +21,7 @@
     <!-- Navigation Menu -->
     <nav class="navbar flex-1 px-4 py-2 space-y-1.5 overflow-y-auto">
         <!-- Dashboard -->
-        <a href="{{ route('seller.dashboard') }}"
+        <a href="{{ route('dashboard') }}"
             class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl  hover:bg-[#D4A017] group transition nav-active">
             <i class="fas fa-tachometer-alt w-5 text-lg"></i>
             <span class="font-medium">Dashboard</span>

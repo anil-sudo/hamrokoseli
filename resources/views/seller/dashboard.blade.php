@@ -226,7 +226,8 @@
                                 <i class="fas fa-rupee-sign text-(--text-dark) text-xs"></i> 12,450
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 py-1 text-xs rounded-full bg-(--hover-color)/55 text-(--text-dark) font-semi-bold">
+                                <span
+                                    class="px-2 py-1 text-xs rounded-full bg-(--hover-color)/55 text-(--text-dark) font-semi-bold">
                                     <i class="fas fa-hourglass-half mr-1"></i> Pending
                                 </span>
                             </td>
@@ -256,7 +257,8 @@
                                 <i class="fas fa-rupee-sign text-(--text-dark) text-xs"></i> 8,200
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <span class="px-2 py-1 text-xs  rounded-full bg-(--secondary-color)/70 text-(--text-dark) font-medium">
+                                <span
+                                    class="px-2 py-1 text-xs  rounded-full bg-(--secondary-color)/70 text-(--text-dark) font-medium">
                                     <i class="fas fa-hourglass-half mr-1"></i> Shipped
                                 </span>
                             </td>
