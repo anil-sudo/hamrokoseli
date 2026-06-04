@@ -13,7 +13,8 @@
                 </p>
             </div>
 
-            <button class="bg-(--secondary-color) text-(--text-light) px-6 py-3 rounded-lg text-sm font-semibold flex items-center gap-2">
+            <button
+                class="bg-(--secondary-color) text-(--text-light) px-6 py-3 rounded-lg text-sm font-semibold flex items-center gap-2">
                 +Add New Product
             </button>
 
@@ -23,6 +24,7 @@
         <div class="grid grid-cols-4 gap-5 mb-6">
 
             <div class="bg-(--card-bg) rounded-xl p-5 shadow-sm">
+
                 <p class="text-sm font-medium text-(--text-dark)">
                     Total Products
                 </p>
@@ -39,6 +41,7 @@
             </div>
 
             <div class="bg-(--card-bg) rounded-xl p-5 shadow-sm">
+
                 <p class="text-sm font-medium text-(--text-dark)">
                     Active Listings
                 </p>
@@ -136,7 +139,7 @@
 
                         <td class="p-4">
                             <div class="flex items-center justify-center">
-                                <img src="https://picsum.photos/60" class="w-14 h-14 rounded"/>
+                                <img src="https://picsum.photos/60" class="w-14 h-14 rounded" />
                             </div>
                         </td>
 
@@ -159,8 +162,9 @@
                         </td>
 
                         <td class="text-3xl font-bold text-(--text-color)">
-                            <div class="flex items-center justify-center">Rs. 12,500</div>
-
+                            <div class="flex items-center justify-center">
+                                Rs. 12,500
+                            </div>
                         </td>
 
                         <td>
@@ -173,7 +177,8 @@
 
                         <td class="space-x-3">
                             <div class="flex items-center justify-center gap-4">
-                                <i class="fa-solid fa-pen text-(--secondary-color)"></i> <i class="fa-solid fa-trash text-(--secondary-color)"></i>
+                                <i class="fa-solid fa-pen text-(--secondary-color)"></i> <i
+                                    class="fa-solid fa-trash text-(--secondary-color)"></i>
                             </div>
                         </td>
 
