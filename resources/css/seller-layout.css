@@ -1,7 +1,4 @@
-
-        @import url('https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap');
-
-        :root {
+      :root {
             /* Brand Colors */
             --primary-color: #1F3D2E; /* sidebar, navbar, h1 */
             --secondary-color: #C65A3A; /* buttons, links */
@@ -9,8 +6,8 @@
             /* Text Colors */
             --text-color: #3A2A1F;/* main text */
             --text-light: #FFF7EF; /* dashboard text / light text */
-            --text-dark: #1F2A24; /* Background Colors */
-            --bg-color: #F5E8D6; /* page background */
+            --text-dark: #1F2A24; /* dark text */
+            --bg-color: #F5E8D6; /* background Colors*/
             --card-bg: #FFF7EF; /* normal card background */
 
             /* Special */
@@ -22,14 +19,14 @@
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: "Inter", sans-serif;
+            font-family: sans-serif;
         }
 
         /* Headings + Sidebar text */
         h1,
         .sidebar,
         .navbar {
-            font-family: "Cormorant Garamond", serif;
+            font-family: serif;
         }
 
         /* Utility Classes */
@@ -91,8 +88,6 @@
             text-decoration: none;
         }
 
-
-
         .navbar a {
             color: var(--text-light);
             text-decoration: none;
@@ -111,13 +106,6 @@
             color: var(--primary-color);
         }
 
-        /* Focus */
-        .focus\:ring-primary:focus {
-            box-shadow: 0 0 0 3px rgba(31, 61, 46, 0.25);
-            outline: none;
-        }
-
-        /* Cards */
         .card {
             background-color: var(--card-bg);
             border-radius: 12px;
@@ -130,20 +118,11 @@
             padding: 16px;
         }
 
-        /* Smooth animations */
-        .product-card {
-            transition: all 0.3s ease;
-        }
-
-        .product-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 20px 25px -12px rgba(0, 0, 0, 0.15);
-        }
-
         /* Optional subtle gradient */
         .hero-gradient {
             background: linear-gradient(135deg,
                     rgba(31, 61, 46, 0.05) 0%,
                     rgba(198, 90, 58, 0.08) 100%);
         }
+
 
