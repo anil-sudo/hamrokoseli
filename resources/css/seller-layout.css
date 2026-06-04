@@ -1,9 +1,4 @@
-
-@theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
-}
-        :root {
+      :root {
             /* Brand Colors */
             --primary-color: #1F3D2E; /* sidebar, navbar, h1 */
             --secondary-color: #C65A3A; /* buttons, links */
