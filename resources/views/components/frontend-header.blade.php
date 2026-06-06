@@ -103,7 +103,7 @@
                     <li><a href="{{ url('todays-deals') }}" class="subnav-link"><i class="fas fa-tag"></i> Today's Deals</a></li>
                     <li><a href="{{ url('featured-products') }}" class="subnav-link"><i class="fas fa-star"></i> Featured</a></li>
                     <li><a href="{{ url('top-sellers') }}" class="subnav-link"><i class="fas fa-trophy"></i> Top Sellers</a></li>
-                    <li><a href="{{ url('new-arrivals') }}" class="subnav-link"><i class="fas fa-sparkles"></i> New Arrivals</a></li>
+                    <li><a href="{{ url('new-arrivals') }}" class="subnav-link"><i class="fa-solid fa-mobile-screen-button"></i> New Arrivals</a></li>
                 </ul>
             </div>
         </div>
