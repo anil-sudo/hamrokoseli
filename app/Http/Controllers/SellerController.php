@@ -8,4 +8,9 @@ class SellerController extends Controller
     {
         return view('seller.dashboard');
     }
+
+    public function product_management()
+    {
+        return view('seller.product-management');
+    }
 }

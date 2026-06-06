@@ -11,7 +11,7 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
-<body class="bg-[#F5E8D6] overflow-x-hidden">
+<body class="bg-[#F5E8D6] overflow-hidden h-screen">
     <!-- SIDEBAR -->
     <x-seller_sidebar />
 
@@ -23,13 +23,13 @@
     <div class="flex min-h-screen overflow-x-hidden">
 
         <!-- CONTENT AREA -->
-        <div class="flex-1 md:ml-72 flex flex-col min-w-0">
+        <div class="flex-1 md:ml-72 flex flex-col min-w-0 h-screen">
 
             <!-- TOPBAR (ONLY ONE HEADER) -->
             <x-seller_topbar :searchPlaceholder="$searchPlaceholder ?? null" />
 
             <!-- MOBILE SAFE SPACE -->
-            <main class="p-4 pt-6 md:px-8">
+            <main class="p-4 pt-6 md:px-8 overflow-y-auto flex-1">
                 {{ $slot }}
             </main>
 
