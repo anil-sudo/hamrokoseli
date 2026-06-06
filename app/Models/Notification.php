@@ -1,49 +1,83 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+namespace App\Models;
 
-return new class extends Migration
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class Notification extends Model
 {
+    public $timestamps = false; // only has created_at, no updated_at
+
+    const CREATED_AT = 'created_at';
+    const UPDATED_AT = null;
+
+    protected $fillable = [
+        'user_id',
+        'type',
+        'title',
+        'message',
+        'is_read',
+        'read_at',
+    ];
+
+    protected $casts = [
+        'user_id'    => 'integer',
+        'is_read'    => 'boolean',
+        'read_at'    => 'datetime',
+        'created_at' => 'datetime',
+    ];
+
+    // ─── Notification type constants ──────────────────────────────────────────
+
+    const TYPE_ORDER_PLACED        = 'order_placed';
+    const TYPE_PAYMENT_RECEIVED    = 'payment_received';
+    const TYPE_ORDER_CONFIRMED     = 'order_confirmed';
+    const TYPE_ORDER_SHIPPED       = 'order_shipped';
+    const TYPE_ORDER_DELIVERED     = 'order_delivered';
+    const TYPE_ORDER_CANCELLED     = 'order_cancelled';
+    const TYPE_RETURN_REQUESTED    = 'return_requested';
+    const TYPE_RETURN_APPROVED     = 'return_approved';
+    const TYPE_PAYOUT_PROCESSED    = 'payout_processed';
+
+    // ─── Relationships ────────────────────────────────────────────────────────
+
     /**
-     * Run the migrations.
+     * The user who receives this notification.
      */
-    public function up(): void
+    public function user(): BelongsTo
     {
-        Schema::create('coupons', function (Blueprint $table) {
-            // Primary key
-            $table->id();                                           // BIGINT UNSIGNED, PK, AUTO_INCREMENT
+        return $this->belongsTo(User::class);
+    }
 
-            // Foreign key — nullable: NULL = platform-wide coupon
-            $table->foreignId('vendor_id')
-                ->nullable()
-                ->constrained('vendors')
-                ->nullOnDelete();                                // FK → vendors.id, NULLABLE
+    // ─── Helpers ──────────────────────────────────────────────────────────────
 
-            // Coupon identity
-            $table->string('code', 50)->unique();                  // UNIQUE, NOT NULL
-
-            // Discount configuration
-            $table->enum('discount_type', ['percentage', 'fixed_amount']); // NOT NULL
-            $table->decimal('discount_value', 10, 2);              // NOT NULL
-            $table->decimal('min_order', 10, 2)->default(0.00);    // Minimum order value
-            $table->unsignedInteger('max_uses')->nullable();        // NULL = unlimited
-            $table->unsignedInteger('used_count')->default(0);      // Times used counter
-
-            // Validity
-            $table->timestamp('expires_at')->nullable();            // NULL = no expiry
-            $table->enum('status', ['active', 'inactive', 'expired'])->default('active');
-
-            $table->timestamps();
-        });
+    /**
+     * Mark the notification as read.
+     */
+    public function markAsRead(): void
+    {
+        if (!$this->is_read) {
+            $this->update([
+                'is_read' => true,
+                'read_at' => now(),
+            ]);
+        }
     }
 
     /**
-     * Reverse the migrations.
+     * Scope — only unread notifications.
      */
-    public function down(): void
+    public function scopeUnread($query)
     {
-        Schema::dropIfExists('coupons');
+        return $query->where('is_read', false);
     }
-};
+
+    /**
+     * Scope — only read notifications.
+     */
+    public function scopeRead($query)
+    {
+        return $query->where('is_read', true);
+    }
+}
