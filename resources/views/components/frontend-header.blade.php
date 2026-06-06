@@ -5,13 +5,13 @@
     <div class="bg-[#F5E8D6] text-[#2c2523] text-[11px] font-medium py-1.5 px-4 border-b border-[#ebd7be] hidden sm:block">
         <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
             <!-- Left -->
-            <a href="become-seller.php" class="flex items-center gap-1.5 hover:text-[#b55b3d] transition-colors">
+            <a href="{{ route('dashboard') }}" class="flex items-center gap-1.5 hover:text-[#b55b3d] transition-colors">
                 <i class="fas fa-house text-[#b55b3d]"></i>
                 <span>Sell on Hamro Koseli</span>
             </a>
             <!-- Right -->
             <div class="flex items-center gap-3">
-                <a href="become-seller.php" class="hover:text-[#b55b3d] transition-colors">Become a Seller</a>
+                <a href="{{ route('dashboard') }}" class="hover:text-[#b55b3d] transition-colors">Become a Seller</a>
                 <span class="text-gray-400">|</span>
                 <span>Support local artisans &bull; Free shipping on orders over Rs.999</span>
             </div>
@@ -151,8 +151,8 @@
         <a href="{{ url('#todays-deals') }}"      class="mob-nav-link"><i class="fas fa-tag"></i>Today's Deals</a>
         <a href="{{ url('#featured-products') }}" class="mob-nav-link"><i class="fas fa-star"></i>Featured Products</a>
         <a href="{{ url('#top-sellers') }}"       class="mob-nav-link"><i class="fas fa-trophy"></i>Top Sellers</a>
-        <a href="{{ url('new-arrivals') }}"   class="mob-nav-link"><i class="fas fa-sparkles"></i>New Arrivals</a>
-        <a href="{{ url('become-seller') }}"  class="mob-nav-link"><i class="fas fa-store"></i>Become a Seller</a>
+        <a href="{{ url('new-arrivals') }}"   class="mob-nav-link"><i class="fa-solid fa-mobile-screen-button"></i>New Arrivals</a>
+        <a href="{{ route('dashboard') }}"  class="mob-nav-link"><i class="fas fa-store"></i>Become a Seller</a>
     </nav>
 
     <!-- Support note at bottom -->
