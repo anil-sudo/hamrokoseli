@@ -51,7 +51,7 @@
                     </button>
                 </div>
                 <div class="pt-1">
-                    <a href="{{ url('become-seller') }}" class="text-[#b55b3d] hover:text-[#a04e33] text-sm font-semibold underline underline-offset-4 transition-colors">Become a Seller</a>
+                    <a href="{{ route('dashboard') }}" class="text-[#b55b3d] hover:text-[#a04e33] text-sm font-semibold underline underline-offset-4 transition-colors">Become a Seller</a>
                 </div>
             </div>
             

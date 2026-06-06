@@ -26,11 +26,11 @@ class PaymentForm
                     ->numeric(),
                 Select::make('status')
                     ->options([
-            'pending' => 'Pending',
-            'completed' => 'Completed',
-            'failed' => 'Failed',
-            'refunded' => 'Refunded',
-        ])
+                        'pending' => 'Pending',
+                        'completed' => 'Completed',
+                        'failed' => 'Failed',
+                        'refunded' => 'Refunded',
+                    ])
                     ->default('pending')
                     ->required(),
                 TextInput::make('transaction_id')
