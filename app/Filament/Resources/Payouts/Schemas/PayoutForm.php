@@ -25,11 +25,11 @@ class PayoutForm
                     ->default(null),
                 Select::make('status')
                     ->options([
-            'pending' => 'Pending',
-            'processing' => 'Processing',
-            'completed' => 'Completed',
-            'failed' => 'Failed',
-        ])
+                        'pending' => 'Pending',
+                        'processing' => 'Processing',
+                        'completed' => 'Completed',
+                        'failed' => 'Failed',
+                    ])
                     ->default('pending')
                     ->required(),
                 DateTimePicker::make('paid_at'),
