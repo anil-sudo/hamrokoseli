@@ -94,10 +94,10 @@ class VendorReview extends Model
     public static function ratingBreakdownFor(int $vendorId): array
     {
         $counts = static::where('vendor_id', $vendorId)
-                        ->selectRaw('rating, COUNT(*) as count')
-                        ->groupBy('rating')
-                        ->pluck('count', 'rating')
-                        ->toArray();
+            ->selectRaw('rating, COUNT(*) as count')
+            ->groupBy('rating')
+            ->pluck('count', 'rating')
+            ->toArray();
 
         // Ensure all stars 1–5 are present even if count is 0
         return array_replace(array_fill(1, 5, 0), $counts);
@@ -109,8 +109,8 @@ class VendorReview extends Model
     public static function hasReviewed(int $userId, int $vendorId): bool
     {
         return static::where('user_id', $userId)
-                     ->where('vendor_id', $vendorId)
-                     ->exists();
+            ->where('vendor_id', $vendorId)
+            ->exists();
     }
 
     /**

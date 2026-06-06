@@ -16,7 +16,7 @@ class Review extends Model
     ];
 
     protected $casts = [
-        'rating'            => 'integer',
+        'rating' => 'integer',
         'verified_purchase' => 'boolean',
     ];
 
@@ -104,10 +104,10 @@ class Review extends Model
     public static function ratingBreakdownFor(int $productId): array
     {
         $counts = static::where('product_id', $productId)
-                        ->selectRaw('rating, COUNT(*) as count')
-                        ->groupBy('rating')
-                        ->pluck('count', 'rating')
-                        ->toArray();
+            ->selectRaw('rating, COUNT(*) as count')
+            ->groupBy('rating')
+            ->pluck('count', 'rating')
+            ->toArray();
 
         // Ensure all stars 1–5 are present even if count is 0
         return array_replace(array_fill(1, 5, 0), $counts);
@@ -119,7 +119,7 @@ class Review extends Model
     public static function hasReviewed(int $userId, int $productId): bool
     {
         return static::where('user_id', $userId)
-                     ->where('product_id', $productId)
-                     ->exists();
+            ->where('product_id', $productId)
+            ->exists();
     }
 }

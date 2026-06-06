@@ -31,7 +31,7 @@ class Payment extends Model
      */
     protected $casts = [
         'total_amount' => 'decimal:2',
-        'paid_at'      => 'datetime',
+        'paid_at' => 'datetime',
     ];
 
     // -------------------------------------------------------------------------
@@ -80,9 +80,9 @@ class Payment extends Model
     public function markAsCompleted(string $transactionId): bool
     {
         return $this->update([
-            'status'         => 'completed',
+            'status' => 'completed',
             'transaction_id' => $transactionId,
-            'paid_at'        => now(),
+            'paid_at' => now(),
         ]);
     }
 

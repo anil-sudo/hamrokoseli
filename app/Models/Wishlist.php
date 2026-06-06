@@ -62,8 +62,8 @@ class Wishlist extends Model
     public static function hasProduct(int $userId, int $productId): bool
     {
         return static::where('user_id', $userId)
-                     ->where('product_id', $productId)
-                     ->exists();
+            ->where('product_id', $productId)
+            ->exists();
     }
 
     /**
@@ -74,16 +74,17 @@ class Wishlist extends Model
     public static function toggle(int $userId, int $productId): bool
     {
         $existing = static::where('user_id', $userId)
-                          ->where('product_id', $productId)
-                          ->first();
+            ->where('product_id', $productId)
+            ->first();
 
         if ($existing) {
             $existing->delete();
+
             return false;
         }
 
         static::create([
-            'user_id'    => $userId,
+            'user_id' => $userId,
             'product_id' => $productId,
         ]);
 

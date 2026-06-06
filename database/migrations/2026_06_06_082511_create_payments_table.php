@@ -14,12 +14,12 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_id')
-                  ->unique()
-                  ->constrained('orders')
-                  ->cascadeOnDelete();
+                ->unique()
+                ->constrained('orders')
+                ->cascadeOnDelete();
             $table->foreignId('user_id')
-                  ->constrained('users')
-                  ->restrictOnDelete();
+                ->constrained('users')
+                ->restrictOnDelete();
             $table->string('gateway', 50)->comment('esewa, khalti, stripe, cod');
             $table->decimal('total_amount', 12, 2);
             $table->enum('status', [

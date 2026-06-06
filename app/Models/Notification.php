@@ -17,9 +17,9 @@ return new class extends Migration
 
             // Foreign key — nullable: NULL = platform-wide coupon
             $table->foreignId('vendor_id')
-                  ->nullable()
-                  ->constrained('vendors')
-                  ->nullOnDelete();                                // FK → vendors.id, NULLABLE
+                ->nullable()
+                ->constrained('vendors')
+                ->nullOnDelete();                                // FK → vendors.id, NULLABLE
 
             // Coupon identity
             $table->string('code', 50)->unique();                  // UNIQUE, NOT NULL
