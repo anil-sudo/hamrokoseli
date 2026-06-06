@@ -17,8 +17,8 @@ return new class extends Migration
 
             // Foreign key
             $table->foreignId('user_id')
-                  ->constrained('users')
-                  ->cascadeOnDelete();                             // FK → users.id, NOT NULL
+                ->constrained('users')
+                ->cascadeOnDelete();                             // FK → users.id, NOT NULL
 
             // Notification content
             $table->string('type', 80);                            // order_placed | payment_received | etc.

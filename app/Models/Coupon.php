@@ -21,22 +21,25 @@ class Coupon extends Model
     ];
 
     protected $casts = [
-        'vendor_id'      => 'integer',
+        'vendor_id' => 'integer',
         'discount_value' => 'decimal:2',
-        'min_order'      => 'decimal:2',
-        'max_uses'       => 'integer',
-        'used_count'     => 'integer',
-        'expires_at'     => 'datetime',
+        'min_order' => 'decimal:2',
+        'max_uses' => 'integer',
+        'used_count' => 'integer',
+        'expires_at' => 'datetime',
     ];
 
     // ─── Enum constants ───────────────────────────────────────────────────────
 
-    const DISCOUNT_TYPE_PERCENTAGE   = 'percentage';
+    const DISCOUNT_TYPE_PERCENTAGE = 'percentage';
+
     const DISCOUNT_TYPE_FIXED_AMOUNT = 'fixed_amount';
 
-    const STATUS_ACTIVE   = 'active';
+    const STATUS_ACTIVE = 'active';
+
     const STATUS_INACTIVE = 'inactive';
-    const STATUS_EXPIRED  = 'expired';
+
+    const STATUS_EXPIRED = 'expired';
 
     // ─── Relationships ────────────────────────────────────────────────────────
 
@@ -71,7 +74,7 @@ class Coupon extends Model
             return false;
         }
 
-        if (!is_null($this->max_uses) && $this->used_count >= $this->max_uses) {
+        if (! is_null($this->max_uses) && $this->used_count >= $this->max_uses) {
             return false;
         }
 

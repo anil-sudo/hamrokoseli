@@ -10,6 +10,7 @@ class VendorCategory extends Model
     public $timestamps = false; // only has created_at, no updated_at
 
     const CREATED_AT = 'created_at';
+
     const UPDATED_AT = null;
 
     protected $fillable = [
@@ -18,9 +19,9 @@ class VendorCategory extends Model
     ];
 
     protected $casts = [
-        'vendor_id'   => 'integer',
+        'vendor_id' => 'integer',
         'category_id' => 'integer',
-        'created_at'  => 'datetime',
+        'created_at' => 'datetime',
     ];
 
     // ─── Relationships ────────────────────────────────────────────────────────

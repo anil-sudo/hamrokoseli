@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('vendor_id')
-                  ->constrained('vendors')
-                  ->onDelete('cascade');
+                ->constrained('vendors')
+                ->onDelete('cascade');
 
             $table->decimal('amount', 12, 2)->comment('Total disbursed amount');
             $table->string('method', 50)->comment('Bank transfer | eSewa | Khalti');

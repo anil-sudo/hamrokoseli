@@ -16,9 +16,9 @@ return new class extends Migration
             $table->string('cat_name', 100);
             $table->string('slug', 120)->unique();
             $table->foreignId('parent_cat_id')
-                  ->nullable()
-                  ->constrained('categories')
-                  ->nullOnDelete();
+                ->nullable()
+                ->constrained('categories')
+                ->nullOnDelete();
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
         });

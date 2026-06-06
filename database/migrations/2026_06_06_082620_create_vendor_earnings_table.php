@@ -15,13 +15,13 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('vendor_id')
-                  ->constrained('vendors')
-                  ->onDelete('cascade');
+                ->constrained('vendors')
+                ->onDelete('cascade');
 
             $table->foreignId('order_item_id')
-                  ->unique()
-                  ->constrained('order_items')
-                  ->onDelete('cascade');
+                ->unique()
+                ->constrained('order_items')
+                ->onDelete('cascade');
 
             $table->decimal('gross_amount', 10, 2)->comment('Full item subtotal');
             $table->decimal('commission', 10, 2)->comment('Platform commission deducted');

@@ -18,7 +18,7 @@ class Payout extends Model
     ];
 
     protected $casts = [
-        'amount'  => 'decimal:2',
+        'amount' => 'decimal:2',
         'paid_at' => 'datetime',
     ];
 
@@ -28,10 +28,13 @@ class Payout extends Model
     |--------------------------------------------------------------------------
     */
 
-    const STATUS_PENDING    = 'pending';
+    const STATUS_PENDING = 'pending';
+
     const STATUS_PROCESSING = 'processing';
-    const STATUS_COMPLETED  = 'completed';
-    const STATUS_FAILED     = 'failed';
+
+    const STATUS_COMPLETED = 'completed';
+
+    const STATUS_FAILED = 'failed';
 
     /*
     |--------------------------------------------------------------------------
@@ -110,12 +113,12 @@ class Payout extends Model
     /**
      * Mark payout as completed and record the disbursement time.
      */
-    public function markAsCompleted(string $transactionId = null): bool
+    public function markAsCompleted(?string $transactionId = null): bool
     {
         return $this->update([
-            'status'         => self::STATUS_COMPLETED,
+            'status' => self::STATUS_COMPLETED,
             'transaction_id' => $transactionId ?? $this->transaction_id,
-            'paid_at'        => now(),
+            'paid_at' => now(),
         ]);
     }
 

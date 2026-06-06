@@ -17,16 +17,16 @@ return new class extends Migration
 
             // Foreign keys
             $table->foreignId('vendor_id')
-                  ->constrained('vendors')
-                  ->cascadeOnDelete();                             // FK → vendors.id, NOT NULL
+                ->constrained('vendors')
+                ->cascadeOnDelete();                             // FK → vendors.id, NOT NULL
 
             $table->foreignId('category_id')
-                  ->constrained('categories')
-                  ->cascadeOnDelete();                             // FK → categories.id, NOT NULL
+                ->constrained('categories')
+                ->cascadeOnDelete();                             // FK → categories.id, NOT NULL
 
             // Timestamps — only created_at per schema
             $table->timestamp('created_at')
-                  ->useCurrent();
+                ->useCurrent();
 
             // Prevent duplicate vendor–category pairs
             $table->unique(['vendor_id', 'category_id']);

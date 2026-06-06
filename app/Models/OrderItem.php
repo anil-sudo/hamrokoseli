@@ -4,8 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class OrderItem extends Model
 {
@@ -33,7 +33,7 @@ class OrderItem extends Model
      */
     protected $casts = [
         'quantity' => 'integer',
-        'price'    => 'decimal:2',
+        'price' => 'decimal:2',
         'subtotal' => 'decimal:2',
     ];
 
@@ -86,7 +86,7 @@ class OrderItem extends Model
      */
     public function returns(): HasMany
     {
-        return $this->hasMany(\App\Models\OrderReturn::class);
+        return $this->hasMany(OrderReturn::class);
     }
 
     // -------------------------------------------------------------------------

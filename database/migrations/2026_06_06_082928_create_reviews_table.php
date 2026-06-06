@@ -15,12 +15,12 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('user_id')
-                  ->constrained('users')
-                  ->onDelete('cascade');
+                ->constrained('users')
+                ->onDelete('cascade');
 
             $table->foreignId('product_id')
-                  ->constrained('products')
-                  ->onDelete('cascade');
+                ->constrained('products')
+                ->onDelete('cascade');
 
             $table->tinyInteger('rating')->unsigned()->comment('Star rating 1 to 5');
             $table->text('comment')->nullable();

@@ -3,15 +3,6 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
-use App\Models\Cart;
-use App\Models\Order;
-use App\Models\Payment;
-use App\Models\ReturnRequest;
-use App\Models\Review;
-use App\Models\ShippingAddress;
-use App\Models\Vendor;
-use App\Models\VendorReview;
-use App\Models\Wishlist;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
@@ -37,8 +28,8 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password'          => 'hashed',
-            'is_active'         => 'boolean',
+            'password' => 'hashed',
+            'is_active' => 'boolean',
         ];
     }
 
