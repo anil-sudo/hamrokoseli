@@ -1,11 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&display=swap');
 @import 'tailwindcss';
 @import "./seller-layout.css";
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    --font-sans: 'Plus Jakarta Sans', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-serif: 'Playfair Display', Georgia, Cambria, serif;
+
+    --color-brand-primary: #b55b3d;
+    --color-brand-secondary: #1f3d2e;
+    --color-brand-cream: #F5E8D6;
+    --color-brand-dark: #2c2523;
+}
+
+:root {
+    /* Brand Colors */
+    --primary-color: #1F3D2E;
+    /* header, h1 */
+    --secondary-color: #C65A3A;
+    /* buttons, links, footer-heading text */
+
+    /* Text Colors */
+    --text-color: #3A2A1F;
+    /* main text */
+    --text-light: #FFF7EF;
+    /* header and footer text / light text */
+    --text-dark: #1F2A24;
+    /*  dark text */
+    --bg-color: #F5E8D6;
+    /* background color */
+    --card-bg: #FFF7EF;
+    /* normal card background */
+
+    /* Special */
+    --card-dark: rgba(31, 61, 46, 0.15);
+    /* big card background */
+    --hover-color: #D4A017;
+    /* button hover */
 }
 
 :root {
@@ -206,4 +239,54 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+}
+
+/* Custom Double Range Slider Styles */
+.range-slider-input {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    background: transparent;
+    pointer-events: none;
+    position: absolute;
+    height: 6px;
+    margin: 0;
+    padding: 0;
+    outline: none;
+    top: 0;
+    left: 0;
+}
+
+.range-slider-input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #1F3D2E;
+    border: 2px solid #FFF7EF;
+    cursor: pointer;
+    pointer-events: auto;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    transition: transform 0.15s ease-in-out;
+}
+
+.range-slider-input::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+}
+
+.range-slider-input::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #1F3D2E;
+    border: 2px solid #FFF7EF;
+    cursor: pointer;
+    pointer-events: auto;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    transition: transform 0.15s ease-in-out;
+}
+
+.range-slider-input::-moz-range-thumb:hover {
+    transform: scale(1.15);
 }
