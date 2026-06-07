@@ -26,7 +26,7 @@
         h1,
         .sidebar,
         .navbar {
-            font-family: serif;
+            font-family: "Plus Jakarta Sans", sans-serif;
         }
 
         /* Utility Classes */

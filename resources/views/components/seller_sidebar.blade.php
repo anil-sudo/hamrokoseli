@@ -10,8 +10,8 @@
 <aside id="sidebar"
     class="fixed top-0 left-0 z-50 h-dvh w-72 bg-[#1A3D2E] -translate-x-full md:translate-x-0 transition-transform duration-300 flex flex-col ">
     <!-- Brand / Logo Section -->
-    <div class="px-6 pt-8 pb-6 border-b border-white/10">
-        <div class="flex items-center gap-3">
+    <div class="px-6 pb-2 border-b border-white/10">
+        <div class="flex items-center gap-3 mt-3.5">
             <img src="{{ asset('images/logo.jpeg') }}" alt="HamroKoseli Logo" class="w-10 h-10 rounded-full object-cover">
 
             <div class="transition-all duration-300 hover:translate-x-1">
@@ -23,7 +23,7 @@
     </div>
 
     <!-- Navigation Menu -->
-    <nav class="navbar flex-1 px-4 py-2 space-y-1.5 overflow-y-auto scroll-smooth">
+    <nav class="navbar flex-1 px-4 py-4 space-y-1.5 overflow-y-auto scroll-smooth">
         <!-- Dashboard -->
         <a href="{{ route('dashboard') }}"
             class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl  hover:bg-[#D4A017] group transition-all duration-300 ease-out active:scale-[0.98]
