@@ -16,7 +16,7 @@ Before you begin, make sure your system has the following installed:
 
 ---
 
-## 🚀 Installation & Setup
+## 🚀 Installation and Setup
 
 ### 1. Clone the Repository
 
