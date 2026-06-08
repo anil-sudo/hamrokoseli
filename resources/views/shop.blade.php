@@ -1,5 +1,5 @@
 <x-frontend-layout>
-    <div class="bg-[#F4EAE1] text-[#3A2A1F] font-sans min-h-screen py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+    <div class="bg-[#F4EAE1] text-[#3A2A1F] min-h-screen py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
         <div class="max-w-7xl mx-auto">
 
             {{-- ==================== MAIN LAYOUT ==================== --}}
@@ -11,7 +11,7 @@
 
                         {{-- Header --}}
                         <div class="flex items-center justify-between pb-4 border-b border-[#ebd7be]/60 mb-5">
-                            <h2 class="text-xl font-bold text-[#C65A3A] font-serif">Filters</h2>
+                            <h2 class="text-xl font-bold text-[#C65A3A]">Filters</h2>
                             <button id="reset-filters" type="button"
                                 class="text-xs font-bold text-[#C65A3A] hover:text-[#b04a2c] flex items-center gap-1.5 transition-colors">
                                 <i class="fas fa-rotate-right text-[10px]"></i> Reset
@@ -180,7 +180,7 @@
                     {{-- ==================== PAGE HEADER ==================== --}}
                     <div class="mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                         <div>
-                            <h1 class="text-3xl md:text-4xl font-bold text-[#1F3D2E] font-serif tracking-tight">Shop
+                            <h1 class="text-3xl md:text-4xl font-bold text-[#1F3D2E] tracking-tight">Shop
                                 Authentic Crafts</h1>
                             <p class="text-[#3A2A1F]/70 text-sm mt-1">Discover hand-crafted pieces from Nepal's finest
                                 master craftspeople.</p>
@@ -224,7 +224,7 @@
                                     <span
                                         class="text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-1">Metalwork</span>
                                     <h3
-                                        class="font-serif text-lg font-bold text-[#1F3D2E] mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1">
+                                        class="text-lg font-bold text-[#1F3D2E] mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1">
                                         Copper Singing Bowl</h3>
                                     <span class="text-[#C65A3A] font-bold text-base block mb-4">Rs 4,500</span>
                                 </div>
@@ -250,7 +250,7 @@
                                     <span
                                         class="text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-1">Ceramics</span>
                                     <h3
-                                        class="font-serif text-lg font-bold text-[#1F3D2E] mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1">
+                                        class="text-lg font-bold text-[#1F3D2E] mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1">
                                         Thimi Crackle Bowl</h3>
                                     <span class="text-[#C65A3A] font-bold text-base block mb-4">Rs 3,500</span>
                                 </div>
@@ -276,7 +276,7 @@
                                     <span
                                         class="text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-1">Woodwork</span>
                                     <h3
-                                        class="font-serif text-lg font-bold text-[#1F3D2E] mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1">
+                                        class="text-lg font-bold text-[#1F3D2E] mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1">
                                         Patan Floral Lattice</h3>
                                     <span class="text-[#C65A3A] font-bold text-base block mb-4">Rs 2,500</span>
                                 </div>
@@ -302,7 +302,7 @@
                                     <span
                                         class="text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-1">Textiles</span>
                                     <h3
-                                        class="font-serif text-lg font-bold text-[#1F3D2E] mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1">
+                                        class="text-lg font-bold text-[#1F3D2E] mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1">
                                         Hand-Woven Dhankuta Dhaka</h3>
                                     <span class="text-[#C65A3A] font-bold text-base block mb-4">Rs 2,500</span>
                                 </div>
@@ -331,7 +331,7 @@
                                     <span
                                         class="text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-1">Paper</span>
                                     <h3
-                                        class="font-serif text-lg font-bold text-[#1F3D2E] mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1">
+                                        class="text-lg font-bold text-[#1F3D2E] mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1">
                                         Himalayan Lokta Journal</h3>
                                     <span class="text-[#C65A3A] font-bold text-base block mb-4">Rs 1,500</span>
                                 </div>
@@ -360,7 +360,7 @@
                                     <span
                                         class="text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-1">Jewelry</span>
                                     <h3
-                                        class="font-serif text-lg font-bold text-[#1F3D2E] mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1">
+                                        class="text-lg font-bold text-[#1F3D2E] mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1">
                                         Silver Filigree Pendant</h3>
                                     <span class="text-[#C65A3A] font-bold text-base block mb-4">Rs 4,500</span>
                                 </div>

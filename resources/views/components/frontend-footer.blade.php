@@ -1,10 +1,10 @@
-<footer class="bg-[#1E2A44] text-slate-300 py-8 md:py-16 mt-auto font-sans">
+<footer class="bg-[#1E2A44] text-slate-300 py-8 md:py-16 mt-auto">
     <div class="container mx-auto px-6 max-w-5xl">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-12">
             
             <!-- Column 1: Brand Info -->
             <div class="space-y-4">
-                <h3 class="text-3xl font-bold text-[#b55b3d] font-serif tracking-tight">HamroKoseli</h3>
+                <h3 class="text-3xl font-bold text-[#b55b3d] tracking-tight">HamroKoseli</h3>
                 <p class="text-slate-300 text-sm leading-relaxed">
                     Preserving Nepal's rich artistic heritage by connecting local master craftspeople with global connoisseurs of authenticity.
                 </p>

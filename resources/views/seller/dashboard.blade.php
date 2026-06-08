@@ -29,7 +29,7 @@
                 <!-- Label & Value -->
                 <div class="mt-6">
                     <p class="text-sm font-medium text-(--text-color) uppercase tracking-widest">Total Sales</p>
-                    <h2 class="text-3xl font-bold text-(--text-dark) mt-1">Rs. 4,52,300</h2>
+                    <h2 class="text-3xl font-extrabold text-(--text-dark) mt-1 font-sans!">Rs. 4,52,300</h2>
                 </div>
             </div>
 
@@ -50,7 +50,7 @@
                 </div>
                 <div class="mt-6">
                     <p class="text-sm font-medium text-(--text-color) uppercase tracking-widest">Total Orders</p>
-                    <h2 class="text-3xl font-bold text-(--text-dark) mt-1">1,284</h2>
+                    <h2 class="text-3xl font-extrabold text-(--text-dark) mt-1 font-sans!">1,284</h2>
                 </div>
             </div>
 
@@ -69,7 +69,7 @@
                 </div>
                 <div class="mt-6">
                     <p class="text-sm font-medium text-(--text-color) uppercase tracking-widest">Active Products</p>
-                    <h2 class="text-3xl font-bold text-(--text-dark) mt-1">86</h2>
+                    <h2 class="text-3xl font-extrabold text-(--text-dark) mt-1 font-sans!">86</h2>
                 </div>
 
             </div>
@@ -92,8 +92,8 @@
                 </div>
                 <div class="mt-6">
                     <p class="text-sm font-medium text-(--text-color) uppercase tracking-widest">Avg Rating</p>
-                    <h2 class="text-3xl font-bold text-(--text-dark) mt-1">4.82 <span
-                            class="text-xl text-(--text-color)/70">/ 5.0</span></h2>
+                    <h2 class="text-3xl font-extrabold text-(--text-dark) mt-1 font-sans!">4.82 <span
+                            class="text-xl text-(--text-color)/70 font-sans!">/ 5.0</span></h2>
                 </div>
 
             </div>
