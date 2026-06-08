@@ -30,7 +30,7 @@
                 </p>
 
                 <div class="flex justify-between items-center mt-2">
-                    <h2 class="text-4xl font-bold text-(--text-color)">
+                    <h2 class="text-4xl font-extrabold text-(--text-color) font-sans!">
                         1,248
                     </h2>
 
@@ -47,7 +47,7 @@
                 </p>
 
                 <div class="flex justify-between items-center mt-2">
-                    <h2 class="text-4xl font-bold text-(--text-color)">
+                    <h2 class="text-4xl font-extrabold text-(--text-color) font-sans!">
                         1,102
                     </h2>
 
@@ -63,7 +63,7 @@
                 </p>
 
                 <div class="flex justify-between items-center mt-2">
-                    <h2 class="text-4xl font-bold text-(--text-color)">
+                    <h2 class="text-4xl font-extrabold text-(--text-color) font-sans!">
                         14
                     </h2>
 
@@ -79,7 +79,7 @@
                 </p>
 
                 <div class="flex justify-between items-center mt-2">
-                    <h2 class="text-4xl font-bold text-(--text-color)">
+                    <h2 class="text-4xl font-extrabold text-(--text-color) font-sans!">
                         4.8
                     </h2>
 

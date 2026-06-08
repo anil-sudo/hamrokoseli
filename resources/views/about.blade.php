@@ -1,6 +1,6 @@
 <x-frontend-layout>
 
-<section class="bg-[#F4EAE1] text-brand-dark font-sans leading-relaxed">
+<section class="bg-[#F4EAE1] text-brand-dark leading-relaxed">
 
     <!-- Hero Section -->
     <section
@@ -14,7 +14,7 @@
                 The Heritage of Nepal
             </span>
 
-            <h1 class="text-4xl md:text-6xl font-serif font-bold leading-[1.15] max-w-3xl mb-6">
+            <h1 class="text-4xl md:text-6xl font-bold leading-[1.15] max-w-3xl mb-6">
                 Crafting a bridge between tradition and the modern world.
             </h1>
 
@@ -31,7 +31,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
 
             <div class="space-y-6">
-                <h2 class="text-3xl md:text-4xl font-serif font-bold text-brand-dark">
+                <h2 class="text-3xl md:text-4xl font-bold text-brand-dark">
                     Our Heritage
                 </h2>
 
@@ -66,7 +66,7 @@
             </div>
 
             <div class="bg-[#E0D5C5] rounded-2xl p-8 md:p-10 shadow-md space-y-6">
-                <h2 class="text-2xl md:text-3xl font-serif font-bold text-brand-dark">
+                <h2 class="text-2xl md:text-3xl font-bold text-brand-dark">
                     The Artisan's Spirit
                 </h2>
 
@@ -103,7 +103,7 @@
             <!-- Content -->
             <div class="lg:col-span-7 space-y-6">
 
-                <h2 class="text-3xl font-serif font-bold text-brand-primary">
+                <h2 class="text-3xl font-bold text-brand-primary">
                     Empowering Artisans
                 </h2>
 

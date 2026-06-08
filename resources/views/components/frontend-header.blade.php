@@ -39,8 +39,7 @@
                     <img src="{{ asset('images/logo.jpeg') }}" alt="Hamro Koseli Logo"
                         class="w-10 h-10 object-contain rounded-full shadow-md transform group-hover:scale-105 transition duration-300">
                     <div>
-                        <div class="font-serif text-lg md:text-xl font-black tracking-wide leading-none text-white"
-                            style="font-family:'Playfair Display',serif;">HAMRO KOSELI</div>
+                        <div class="text-lg md:text-xl font-extrabold tracking-wide leading-none text-white">HAMRO KOSELI</div>
                         <span class="text-[9px] text-emerald-200/90 tracking-wide font-medium hidden sm:block">Special Koseli for Special People</span>
                     </div>
                 </a>
@@ -50,8 +49,7 @@
             <div class="search-wrap hidden md:flex flex-1 max-w-lg mx-4 items-center bg-[#FDFBF7] rounded-full px-4 py-2 border border-emerald-950/10 shadow-inner">
                 <i class="fas fa-search text-slate-400 mr-2"></i>
                 <input type="text" id="desktop-search" placeholder="Search Products....."
-                    class="w-full bg-transparent border-0 focus:outline-none text-sm text-slate-800 placeholder-slate-400 font-medium"
-                    style="font-family:'Plus Jakarta Sans',sans-serif;">
+                    class="w-full bg-transparent border-0 focus:outline-none text-sm text-slate-800 placeholder-slate-400 font-medium">
             </div>
 
             <!-- RIGHT: Actions -->
@@ -86,8 +84,7 @@
             <div class="search-wrap flex items-center bg-[#FDFBF7] rounded-full px-4 py-2 border border-emerald-950/10 shadow-inner">
                 <i class="fas fa-search text-slate-400 mr-2"></i>
                 <input type="text" id="mobile-search" placeholder="Search Products....."
-                    class="w-full bg-transparent border-0 focus:outline-none text-sm text-slate-800 placeholder-slate-400 font-medium"
-                    style="font-family:'Plus Jakarta Sans',sans-serif;">
+                    class="w-full bg-transparent border-0 focus:outline-none text-sm text-slate-800 placeholder-slate-400 font-medium">
             </div>
         </div>
     </div>
@@ -120,7 +117,7 @@
     <div class="flex items-center justify-between px-5 py-4 border-b border-white/10">
         <div class="flex items-center gap-2.5">
             <img src="{{ asset('images/logo.jpeg') }}" alt="Hamro Koseli" class="w-9 h-9 rounded-full object-contain">
-            <span class="font-serif font-black text-white text-base" style="font-family:'Playfair Display',serif;">HAMRO KOSELI</span>
+            <span class="font-extrabold text-white text-base">HAMRO KOSELI</span>
         </div>
         <!-- Close button -->
         <button id="close-drawer-btn" class="text-white/80 hover:text-white transition-colors p-1" aria-label="Close menu">

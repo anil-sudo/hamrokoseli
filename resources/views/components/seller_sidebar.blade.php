@@ -15,7 +15,7 @@
             <img src="{{ asset('images/logo.jpeg') }}" alt="HamroKoseli Logo" class="w-10 h-10 rounded-full object-cover">
 
             <div class="transition-all duration-300 hover:translate-x-1">
-                <h1 class="text-2xl font-bold tracking-tight text-[#FFF7EF] ">
+                <h1 class="text-2xl font-bold tracking-tight text-[#FFF7EF] font-sans">
                     HamroKoseli</h1>
                 <p class="text-xs text-[#FFF7EF] font-medium mt-0.5">Seller Portal</p>
             </div>
