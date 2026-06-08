@@ -3,7 +3,7 @@
 
         <!-- Header -->
         <div>
-            <h1 class="text-3xl font-bold text-(--primary-color)">Dashboard</h1>
+            <h1 class="text-3xl font-bold text-(--primary-color) font-serif">Dashboard</h1>
             <p class="text-sm text-(--text-color) mt-1">Welcome back! Here's what's happening with your store today.</p>
         </div>
 

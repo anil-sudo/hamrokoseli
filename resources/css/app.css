@@ -41,6 +41,32 @@
     /* button hover */
 }
 
+:root {
+    /* Brand Colors */
+    --primary-color: #1F3D2E;
+    /* header, h1 */
+    --secondary-color: #C65A3A;
+    /* buttons, links, footer-heading text */
+
+    /* Text Colors */
+    --text-color: #3A2A1F;
+    /* main text */
+    --text-light: #FFF7EF;
+    /* header and footer text / light text */
+    --text-dark: #1F2A24;
+    /*  dark text */
+    --bg-color: #F5E8D6;
+    /* background color */
+    --card-bg: #FFF7EF;
+    /* normal card background */
+
+    /* Special */
+    --card-dark: rgba(31, 61, 46, 0.15);
+    /* big card background */
+    --hover-color: #D4A017;
+    /* button hover */
+}
+
 #site-header {
     position: sticky;
     top: 0;
