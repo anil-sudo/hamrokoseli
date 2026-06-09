@@ -8,13 +8,15 @@
     <title>HamroKoseli</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap"
+        rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
         crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 
-<body class="bg-[#F5E8D6] overflow-hidden h-screen">
+<body class="overflow-hidden h-screen">
     <!-- SIDEBAR -->
     <x-seller_sidebar />
 
@@ -39,7 +41,11 @@
         </div>
 
     </div>
+    <script src="https://unpkg.com/lucide@latest"></script>
 
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 
 </html>
