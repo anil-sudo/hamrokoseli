@@ -15,7 +15,7 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email'    => 'required|email',
+            'email' => 'required|email',
             'password' => 'required',
         ]);
 
@@ -33,6 +33,7 @@ class AuthController extends Controller
             }
 
             Auth::logout();
+
             return back()->withErrors([
                 'email' => 'You are not authorized to access this area.',
             ]);

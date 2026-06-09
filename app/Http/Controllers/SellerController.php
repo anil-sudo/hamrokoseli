@@ -14,6 +14,7 @@ class SellerController extends Controller
     public function product_management()
     {
         abort_if(auth()->user()->cannot('view products'), 403, 'You do not have permission to view products.');
+
         return view('seller.product-management');
     }
 

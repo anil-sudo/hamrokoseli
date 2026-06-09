@@ -4,12 +4,12 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Filament\Models\Contracts\FilamentUser; 
-use Filament\Panel;            
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -17,10 +17,11 @@ use Spatie\Permission\Traits\HasRoles;
 
 #[Fillable(['name', 'email', 'password', 'phone', 'role', 'is_active'])]
 #[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable implements FilamentUser 
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable, HasRoles; 
+    use HasFactory, HasRoles, Notifiable;
+
     use HasFactory, Notifiable;
 
     /**
@@ -117,10 +118,11 @@ class User extends Authenticatable implements FilamentUser
     // Helper Methods
     // -------------------------------------------------------------------------
 
-    public function canAccessPanel(Panel $panel): bool 
+    public function canAccessPanel(Panel $panel): bool
     {
         return $this->role === 'admin' && $this->is_active;
     }
+
     public function isVendor(): bool
     {
         return $this->hasRole('vendor');

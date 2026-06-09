@@ -16,18 +16,18 @@ class VendorRegisterController extends Controller
     public function register(Request $request)
     {
         $data = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users,email',
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8|confirmed',
-            'phone'    => 'nullable|string',
+            'phone' => 'nullable|string',
         ]);
 
         $user = User::create([
-            'name'     => $data['name'],
-            'email'    => $data['email'],
+            'name' => $data['name'],
+            'email' => $data['email'],
             'password' => bcrypt($data['password']),
-            'phone'    => $data['phone'] ?? null,
-            'role'     => 'vendor',
+            'phone' => $data['phone'] ?? null,
+            'role' => 'vendor',
             'is_active' => true,
         ]);
 

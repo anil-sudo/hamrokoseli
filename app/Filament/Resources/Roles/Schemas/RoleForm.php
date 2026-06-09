@@ -2,10 +2,10 @@
 
 namespace App\Filament\Resources\Roles\Schemas;
 
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 use Spatie\Permission\Models\Permission;
-use Filament\Forms\Components\Select;
 
 class RoleForm
 {
