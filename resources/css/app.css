@@ -330,17 +330,13 @@ h6 {
 }
 
 /* Links */
-a {
-    text-decoration: none;
-}
-
 .navbar a {
     color: var(--text-light);
     text-decoration: none;
 }
 
 .navbar a:hover {
-    color: var(--text-color);
+    color: var(--text-light);
 }
 
 /* Hover utilities */
@@ -359,7 +355,7 @@ a {
 }
 
 .card-dark {
-    background-color: var(--card-dark);
+    background-color: var(--card-bg);
     border-radius: 12px;
     padding: 16px;
 }
