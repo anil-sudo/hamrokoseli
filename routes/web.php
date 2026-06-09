@@ -1,7 +1,11 @@
 <?php
 
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\SellerController;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/seller-dashboard', [SellerController::class, 'dashboard'])->name('dashboard');
+Route::get('/product-management', [SellerController::class, 'product_management'])->name('product-management');
 
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/categories', [PageController::class, 'categories'])->name('categories');

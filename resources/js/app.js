@@ -1,3 +1,5 @@
+//
+import './seller-layout';
 (function () {
     const hamburger     = document.getElementById('hamburger-btn');
     const drawer        = document.getElementById('mobile-drawer');
@@ -48,69 +50,3 @@
         });
     }
 })();
-
-
-
-//welcome
-    tailwind = window.tailwind || {};
-    tailwind.config = {
-        theme: {
-            extend: {
-                fontFamily: {
-                    sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-                    serif: ['"Playfair Display"', 'serif'],
-                },
-                colors: {
-                    brand: {
-                        primary: '#b55b3d',    /* Handcrafted Clay / Terracotta */
-                        secondary: '#1f3d2e',  /* Deep Forest Green */
-                        cream: '#F5E8D6',      /* Brand Peach/Pink Background */
-                        dark: '#2c2523',       /* Charcoal Brown for Typography */
-                    }
-                }
-            }
-        }
-    }
-
-
-
-
-
-
-
-//footer
-    tailwind = window.tailwind || {};
-    tailwind.config = {
-        theme: {
-            extend: {
-                colors: {
-                    brand: {
-                        primary: '#b55b3d',    /* Handcrafted Clay / Terracotta */
-                        secondary: '#2a5c43',  /* Deep Forest Green */
-                        cream: '#fdfbf7',      /* Soft Warm Ivory Background */
-                        dark: '#2c2523',       /* Charcoal Brown for Typography */
-                    }
-                }
-            }
-        }
-    }
-
-    //about us
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-                        serif: ['"Playfair Display"', 'serif'],
-                    },
-                    colors: {
-                        brand: {
-                            primary: '#b55b3d',    /* Handcrafted Clay / Terracotta */
-                            secondary: '#2a5c43',  /* Deep Forest Green */
-                            cream: '#F5E8D6',      /* Brand Peach/Pink Background */
-                            dark: '#2c2523',       /* Charcoal Brown for Typography */
-                        }
-                    }
-                }
-            }
-        }

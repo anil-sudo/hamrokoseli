@@ -5,13 +5,13 @@
     <div class="bg-[#F5E8D6] text-[#2c2523] text-[11px] font-medium py-1.5 px-4 border-b border-[#ebd7be] hidden sm:block">
         <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
             <!-- Left -->
-            <a href="become-seller.php" class="flex items-center gap-1.5 hover:text-[#b55b3d] transition-colors">
+            <a href="{{ route('dashboard') }}" class="flex items-center gap-1.5 hover:text-[#b55b3d] transition-colors">
                 <i class="fas fa-house text-[#b55b3d]"></i>
                 <span>Sell on Hamro Koseli</span>
             </a>
             <!-- Right -->
             <div class="flex items-center gap-3">
-                <a href="become-seller.php" class="hover:text-[#b55b3d] transition-colors">Become a Seller</a>
+                <a href="{{ route('dashboard') }}" class="hover:text-[#b55b3d] transition-colors">Become a Seller</a>
                 <span class="text-gray-400">|</span>
                 <span>Support local artisans &bull; Free shipping on orders over Rs.999</span>
             </div>
@@ -39,8 +39,7 @@
                     <img src="{{ asset('images/logo.jpeg') }}" alt="Hamro Koseli Logo"
                         class="w-10 h-10 object-contain rounded-full shadow-md transform group-hover:scale-105 transition duration-300">
                     <div>
-                        <div class="font-serif text-lg md:text-xl font-black tracking-wide leading-none text-white"
-                            style="font-family:'Playfair Display',serif;">HAMRO KOSELI</div>
+                        <div class="text-lg md:text-xl font-extrabold tracking-wide leading-none text-white">HAMRO KOSELI</div>
                         <span class="text-[9px] text-emerald-200/90 tracking-wide font-medium hidden sm:block">Special Koseli for Special People</span>
                     </div>
                 </a>
@@ -50,8 +49,7 @@
             <div class="search-wrap hidden md:flex flex-1 max-w-lg mx-4 items-center bg-[#FDFBF7] rounded-full px-4 py-2 border border-emerald-950/10 shadow-inner">
                 <i class="fas fa-search text-slate-400 mr-2"></i>
                 <input type="text" id="desktop-search" placeholder="Search Products....."
-                    class="w-full bg-transparent border-0 focus:outline-none text-sm text-slate-800 placeholder-slate-400 font-medium"
-                    style="font-family:'Plus Jakarta Sans',sans-serif;">
+                    class="w-full bg-transparent border-0 focus:outline-none text-sm text-slate-800 placeholder-slate-400 font-medium">
             </div>
 
             <!-- RIGHT: Actions -->
@@ -86,8 +84,7 @@
             <div class="search-wrap flex items-center bg-[#FDFBF7] rounded-full px-4 py-2 border border-emerald-950/10 shadow-inner">
                 <i class="fas fa-search text-slate-400 mr-2"></i>
                 <input type="text" id="mobile-search" placeholder="Search Products....."
-                    class="w-full bg-transparent border-0 focus:outline-none text-sm text-slate-800 placeholder-slate-400 font-medium"
-                    style="font-family:'Plus Jakarta Sans',sans-serif;">
+                    class="w-full bg-transparent border-0 focus:outline-none text-sm text-slate-800 placeholder-slate-400 font-medium">
             </div>
         </div>
     </div>
@@ -103,7 +100,7 @@
                     <li><a href="{{ url('todays-deals') }}" class="subnav-link"><i class="fas fa-tag"></i> Today's Deals</a></li>
                     <li><a href="{{ url('featured-products') }}" class="subnav-link"><i class="fas fa-star"></i> Featured</a></li>
                     <li><a href="{{ url('top-sellers') }}" class="subnav-link"><i class="fas fa-trophy"></i> Top Sellers</a></li>
-                    <li><a href="{{ url('new-arrivals') }}" class="subnav-link"><i class="fas fa-sparkles"></i> New Arrivals</a></li>
+                    <li><a href="{{ url('new-arrivals') }}" class="subnav-link"><i class="fa-solid fa-mobile-screen-button"></i> New Arrivals</a></li>
                 </ul>
             </div>
         </div>
@@ -120,7 +117,7 @@
     <div class="flex items-center justify-between px-5 py-4 border-b border-white/10">
         <div class="flex items-center gap-2.5">
             <img src="{{ asset('images/logo.jpeg') }}" alt="Hamro Koseli" class="w-9 h-9 rounded-full object-contain">
-            <span class="font-serif font-black text-white text-base" style="font-family:'Playfair Display',serif;">HAMRO KOSELI</span>
+            <span class="font-extrabold text-white text-base">HAMRO KOSELI</span>
         </div>
         <!-- Close button -->
         <button id="close-drawer-btn" class="text-white/80 hover:text-white transition-colors p-1" aria-label="Close menu">
@@ -151,8 +148,8 @@
         <a href="{{ url('#todays-deals') }}"      class="mob-nav-link"><i class="fas fa-tag"></i>Today's Deals</a>
         <a href="{{ url('#featured-products') }}" class="mob-nav-link"><i class="fas fa-star"></i>Featured Products</a>
         <a href="{{ url('#top-sellers') }}"       class="mob-nav-link"><i class="fas fa-trophy"></i>Top Sellers</a>
-        <a href="{{ url('new-arrivals') }}"   class="mob-nav-link"><i class="fas fa-sparkles"></i>New Arrivals</a>
-        <a href="{{ url('become-seller') }}"  class="mob-nav-link"><i class="fas fa-store"></i>Become a Seller</a>
+        <a href="{{ url('new-arrivals') }}"   class="mob-nav-link"><i class="fa-solid fa-mobile-screen-button"></i>New Arrivals</a>
+        <a href="{{ route('dashboard') }}"  class="mob-nav-link"><i class="fas fa-store"></i>Become a Seller</a>
     </nav>
 
     <!-- Support note at bottom -->
