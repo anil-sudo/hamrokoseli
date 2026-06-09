@@ -21,9 +21,7 @@ class PermissionResource extends Resource
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedLockClosed;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Access Control';
-
-    protected static ?int $navigationSort = 1;
+    protected static string|UnitEnum|null $navigationGroup = 'Roles and Permissions';
 
     protected static ?string $recordTitleAttribute = 'name';
 

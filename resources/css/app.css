@@ -55,112 +55,98 @@ textarea {
     width: 100%;
 }
 
-/* Mobile drawer */
-#mobile-drawer {
-    position: fixed;
-    top: 0;
-    left: -100%;
-    width: 80%;
-    max-width: 320px;
-    height: 100vh;
-    background: #1f3d2e;
-    z-index: 99999;
-    transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow-y: auto;
-    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.35);
-}
-
-#mobile-drawer.open {
-    left: 0;
-}
-
-/* Overlay */
-#drawer-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.55);
-    z-index: 99998;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.35s;
-}
-
-#drawer-overlay.open {
-    opacity: 1;
-    pointer-events: all;
-}
-
-/* Desktop Nav link hover underline */
-.subnav-link {
-    position: relative;
-    white-space: nowrap;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: rgba(255, 255, 255, 0.9);
-    font-weight: 600;
-    font-size: 0.875rem;
-    transition: color 0.2s;
-    text-decoration: none;
-}
-
-.subnav-link::after {
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: #fff;
-    transition: width 0.25s;
-}
-
-.subnav-link:hover::after {
-    width: 100%;
-}
-
-.subnav-link:hover {
-    color: #ffffff;
-}
-
-.subnav-link i {
-    font-size: 14px;
-    opacity: 0.85;
-    display: inline-block;
-}
-
-.subnav-link:hover i {
-    opacity: 1;
-}
-
-/* Desktop navigation container - EQUAL SPACING */
-.desktop-nav-container {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    width: 100%;
-}
-
-.desktop-nav-links {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-/* Equal spacing between all nav items - same distance between each */
-.desktop-nav-links li {
-    display: inline-flex;
-}
-
-/* Responsive spacing */
-@media (min-width: 1024px) {
-    .desktop-nav-links {
-        gap: 2.2rem;
+    /* Mobile drawer */
+    #mobile-drawer {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        width: 80%;
+        max-width: 320px;
+        height: 100vh;
+        background: #1f3d2e;
+        z-index: 99999;
+        transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow-y: auto;
+        box-shadow: 4px 0 24px rgba(0,0,0,0.35);
     }
-}
+    #mobile-drawer.open { left: 0; }
+
+    /* Overlay */
+    #drawer-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.55);
+        z-index: 99998;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.35s;
+    }
+    #drawer-overlay.open { opacity: 1; pointer-events: all; }
+
+    /* Desktop Nav link hover underline */
+    .subnav-link {
+        position: relative;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 600;
+        font-size: 0.875rem;
+        transition: color 0.2s;
+        text-decoration: none;
+    }
+    .subnav-link::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: #fff;
+        transition: width 0.25s;
+    }
+    .subnav-link:hover::after { width: 100%; }
+    .subnav-link:hover { color: #ffffff; }
+
+    .subnav-link i {
+        font-size: 14px;
+        opacity: 0.85;
+        display: inline-block;
+    }
+    .subnav-link:hover i {
+        opacity: 1;
+    }
+
+    /* Desktop navigation container - EQUAL SPACING */
+    .desktop-nav-container {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        width: 100%;
+    }
+
+    .desktop-nav-links {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    /* Equal spacing between all nav items - same distance between each */
+    .desktop-nav-links li {
+        display: inline-flex;
+    }
+
+    /* Responsive spacing */
+    @media (min-width: 1024px) {
+        .desktop-nav-links {
+            gap: 2.2rem;
+        }
+    }
+
 
 @media (min-width: 1280px) {
     .desktop-nav-links {
@@ -199,170 +185,61 @@ textarea {
     opacity: 1;
 }
 
-/* Search bar focus glow */
-.search-wrap:focus-within {
-    box-shadow: 0 0 0 2px rgba(31, 61, 46, 0.35);
-}
+        body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        }
 
+    /* Today's Deals */
+    .today-deals-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        padding: 20px;
+        width: 100%;
+        align-items: start;
+    }
+    .today-deal {
+        width: 100%;
+        height: 290px;
+        background: #e5e7eb;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 8px;
+        padding: 12px;
+        color: #374151;
+        font-size: 1.25rem;
+        font-weight: 500;
+    }
 
+    .today-deal .deal-image {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 6px;
+        display: block;
+    }
 
-body {
-    font-family: var(--font-sans);
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-}
+    .today-deal .deal-info {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        align-items: flex-start;
+        justify-content: flex-start;
+    }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-    font-family: var(--font-serif);
-}
-
-/* Custom Double Range Slider Styles */
-.range-slider-input {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 100%;
-    background: transparent;
-    pointer-events: none;
-    position: absolute;
-    height: 6px;
-    margin: 0;
-    padding: 0;
-    outline: none;
-    top: 0;
-    left: 0;
-}
-
-.range-slider-input::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: #1F3D2E;
-    border: 2px solid #FFF7EF;
-    cursor: pointer;
-    pointer-events: auto;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-    transition: transform 0.15s ease-in-out;
-}
-
-.range-slider-input::-webkit-slider-thumb:hover {
-    transform: scale(1.15);
-}
-
-.range-slider-input::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: #1F3D2E;
-    border: 2px solid #FFF7EF;
-    cursor: pointer;
-    pointer-events: auto;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-    transition: transform 0.15s ease-in-out;
-}
-
-.range-slider-input::-moz-range-thumb:hover {
-    transform: scale(1.15);
-}
-
-/* --- Seller Layout Styles --- */
-/* Utility Classes */
-.bg-primary {
-    background-color: var(--primary-color);
-}
-
-.bg-secondary {
-    background-color: var(--secondary-color);
-}
-
-.bg-card {
-    background-color: var(--card-bg);
-}
-
-.bg-card-dark {
-    background-color: var(--card-dark);
-}
-
-.text-primary {
-    color: var(--primary-color);
-}
-
-.text-secondary {
-    color: var(--secondary-color);
-}
-
-.text-light {
-    color: var(--text-light);
-}
-
-.text-main {
-    color: var(--text-color);
-}
-
-/* Border */
-.border-primary {
-    border-color: var(--primary-color);
-}
-
-/* Buttons */
-.btn {
-    background-color: var(--secondary-color);
-    color: var(--text-light);
-    padding: 10px 16px;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    border: none;
-    cursor: pointer;
-}
-
-.btn:hover {
-    background-color: var(--hover-color);
-    color: var(--text-color);
-}
-
-/* Links */
-.navbar a {
-    color: var(--text-light);
-    text-decoration: none;
-}
-
-.navbar a:hover {
-    color: var(--text-light);
-}
-
-/* Hover utilities */
-.hover\:bg-primary:hover {
-    background-color: var(--primary-color);
-}
-
-.hover\:text-primary:hover {
-    color: var(--primary-color);
-}
-
-.card {
-    background-color: var(--card-bg);
-    border-radius: 12px;
-    padding: 16px;
-}
-
-.card-dark {
-    background-color: var(--card-bg);
-    border-radius: 12px;
-    padding: 16px;
-}
-
-/* Optional subtle gradient */
-.hero-gradient {
-    background: linear-gradient(135deg,
-            rgba(31, 61, 46, 0.05) 0%,
-            rgba(198, 90, 58, 0.08) 100%);
-}
+    /* Responsive: 3 cols <= 1280px, 2 cols <= 768px, 1 col on small screens */
+    @media (max-width: 1280px) {
+        .today-deals-container { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 768px) {
+        .today-deals-container { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 480px) {
+        .today-deals-container { grid-template-columns: 1fr; }
+    }
