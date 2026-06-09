@@ -3,26 +3,20 @@
 
         <!-- Header -->
         <div>
-            <h1 class="text-3xl font-bold text-(--primary-color)">Dashboard</h1>
-            <p class="text-sm text-(--text-color) mt-1">Welcome back! Here's what's happening with your store today.</p>
+            <h1 class="text-3xl font-bold text-(--text-color)">Welcome back,Vendor!</h1>
+            <p class="text-sm text-(--text-color) mt-1">Here's what's happening with your store today.</p>
         </div>
 
         <!-- Stats Cards Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <!-- Total Sales Card -->
             <div
-                class="card group border-b-4 border-b-(--primary-color) p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                class="card group border-b-2 border-b-(--primary-color) p-6 shadow-sm hover:shadow-lg transition-all duration-300">
                 <div class="flex justify-between items-start">
                     <!-- Icon -->
                     <div
-                        class="w-11 h-11 bg-(--primary-color)/10 rounded-2xl flex items-center justify-center text-(--primary-color) text-3xl group-hover:scale-110 transition-transform duration-300">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-
-                    <!-- Growth -->
-                    <div class="text-emerald-600 text-sm font-medium flex items-center gap-1 mt-2">
-                        +12.5%
-                        <i class="fas fa-arrow-up text-xs"></i>
+                        class="w-10 h-10 bg-(--primary-color)/10 rounded-2xl flex items-center justify-center text-(--primary-color) text-2xl group-hover:scale-105 transition-transform duration-300">
+                        <i data-lucide="chart-no-axes-combined"></i>
                     </div>
                 </div>
 
@@ -35,18 +29,14 @@
 
             <!-- Total Orders -->
             <div
-                class="card group border-b-4 border-b-(--primary-color) p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                class="card group border-b-2 border-b-(--primary-color) p-6 shadow-sm hover:shadow-lg transition-all duration-300">
                 <div class="flex justify-between items-start">
                     <div
-                        class="w-11 h-11 bg-(--primary-color)/10 rounded-2xl flex items-center justify-center text-(--text-color) text-3xl
-                        group-hover:scale-110 transition-transform duration-300">
-                        <i class="fas fa-shopping-bag"></i>
+                        class="w-10 h-10 bg-(--primary-color)/10 rounded-2xl flex items-center justify-center text-(--text-color) text-2xl
+                        group-hover:scale-105 transition-transform duration-300">
+                        <i data-lucide="shopping-cart"></i>
                     </div>
 
-                    <div class="text-emerald-600 text-sm font-medium flex items-center gap-1 mt-2">
-                        +8.2%
-                        <i class="fas fa-arrow-up text-xs"></i>
-                    </div>
                 </div>
                 <div class="mt-6">
                     <p class="text-sm font-medium text-(--text-color) uppercase tracking-widest">Total Orders</p>
@@ -57,14 +47,11 @@
 
             <!-- Active Products -->
             <div
-                class="card group border-b-4 border-b-(--primary-color) p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                class="card group border-b-2 border-b-(--primary-color) p-6 shadow-sm hover:shadow-lg transition-all duration-300">
                 <div class="flex justify-between items-start ">
                     <div
-                        class="w-11 h-11 rounded-2xl bg-(--card-dark) flex items-center justify-center text-(--secondary-color) text-3xl group-hover:scale-110 transition-transform duration-300">
-                        <i class="fas fa-boxes"></i>
-                    </div>
-                    <div class="text-sm text-(--text-color) font-medium mt-2">
-                        +12
+                        class="w-10 h-10 rounded-2xl bg-(--card-dark) flex items-center justify-center text-(--secondary-color) text-2xl group-hover:scale-105 transition-transform duration-300">
+                        <i data-lucide="package"></i>
                     </div>
                 </div>
                 <div class="mt-6">
@@ -76,18 +63,18 @@
 
             <!-- Avg Rating -->
             <div
-                class="card group border-b-4 border-b-(--primary-color) p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                class="card group border-b-2 border-b-(--primary-color) p-6 shadow-sm hover:shadow-lg transition-all duration-300">
                 <div class="flex items-start justify-between">
                     <div
-                        class="w-11 h-11 rounded-2xl bg-(--card-dark) flex items-center justify-center text-(--hover-color) text-3xl group-hover:scale-110 transition-transform duration-300">
-                        <i class="fas fa-star"></i>
+                        class="w-11 h-11 rounded-2xl bg-(--card-dark) flex items-center justify-center text-(--hover-color) text-2xl group-hover:scale-105 transition-transform duration-300">
+                        <i data-lucide="star" class="fill-current text-(--hover-color)"></i>
                     </div>
                     <div class="text-xs flex flex-row items-center gap-1 mt-4 text-(--hover-color)">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fa-solid fa-star-half-stroke"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current text-(--hover-color)"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current text-(--hover-color)"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current text-(--hover-color)"></i>
+                        <i data-lucide="star" class="w-4 h-4 fill-current text-(--hover-color)"></i>
+                        <i data-lucide="star-half" class="w-4 h-4 fill-current text-(--hover-color)"></i>
                     </div>
                 </div>
                 <div class="mt-6">
@@ -116,43 +103,43 @@
 
                 <div class="flex items-end justify-between gap-4 h-52">
                     <div class="flex-1 flex flex-col items-center gap-2 group cursor-pointer">
-                        <div class="chart-bar w-full bg-(--text-light) rounded-t-xl hover:bg-(--primary-color) transition-all duration-300 group-hover:scale-y-110 origin-bottom"
+                        <div class="chart-bar w-full bg-(--card-dark) rounded-t-xl hover:bg-(--primary-color) transition-all duration-300 group-hover:scale-y-110 origin-bottom"
                             style="height: 72px;"></div>
                         <span
                             class="text-sm font-medium text-(--text-color)/70 group-hover:text-(--text-dark)">Mon</span>
                     </div>
                     <div class="flex-1 flex flex-col items-center gap-2 group cursor-pointer">
-                        <div class="chart-bar w-full bg-(--text-light) rounded-t-xl hover:bg-(--secondary-color) transition-all duration-300 group-hover:scale-y-110 origin-bottom"
+                        <div class="chart-bar w-full bg-(--card-dark) rounded-t-xl hover:bg-(--secondary-color) transition-all duration-300 group-hover:scale-y-110 origin-bottom"
                             style="height: 96px;"></div>
                         <span
                             class="text-sm font-medium text-(--text-color)/70 group-hover:text-(--text-dark)">Tue</span>
                     </div>
                     <div class="flex-1 flex flex-col items-center gap-2 group cursor-pointer">
-                        <div class="chart-bar w-full bg-(--text-light) rounded-t-xl hover:bg-(--primary-color) transition-all duration-300 group-hover:scale-y-110 origin-bottom"
+                        <div class="chart-bar w-full bg-(--card-dark) rounded-t-xl hover:bg-(--primary-color) transition-all duration-300 group-hover:scale-y-110 origin-bottom"
                             style="height: 64px;"></div>
                         <span
                             class="text-sm font-medium text-(--text-color)/70 group-hover:text-(--text-dark)">Wed</span>
                     </div>
                     <div class="flex-1 flex flex-col items-center gap-2 group cursor-pointer">
-                        <div class="chart-bar w-full bg-(--text-light) rounded-t-xl hover:bg-(--secondary-color) transition-all duration-300 group-hover:scale-y-110 origin-bottom"
+                        <div class="chart-bar w-full bg-(--card-dark) rounded-t-xl hover:bg-(--secondary-color) transition-all duration-300 group-hover:scale-y-110 origin-bottom"
                             style="height: 112px;"></div>
                         <span
                             class="text-sm font-medium text-(--text-color)/70 group-hover:text-(--text-dark)">Thu</span>
                     </div>
                     <div class="flex-1 flex flex-col items-center gap-2 group cursor-pointer">
-                        <div class="chart-bar w-full bg-(--text-light) rounded-t-xl hover:bg-(--primary-color) transition-all duration-300 group-hover:scale-y-110 origin-bottom"
+                        <div class="chart-bar w-full bg-(--card-dark) rounded-t-xl hover:bg-(--primary-color) transition-all duration-300 group-hover:scale-y-110 origin-bottom"
                             style="height: 88px;"></div>
                         <span
                             class="text-sm font-medium text-(--text-color)/70 group-hover:text-(--text-dark)">Fri</span>
                     </div>
                     <div class="flex-1 flex flex-col items-center gap-2 group cursor-pointer">
-                        <div class="chart-bar w-full bg-(--text-light) rounded-t-xl hover:bg-(--secondary-color) transition-all duration-300 group-hover:scale-y-110 origin-bottom"
+                        <div class="chart-bar w-full bg-(--card-dark) rounded-t-xl hover:bg-(--secondary-color) transition-all duration-300 group-hover:scale-y-110 origin-bottom"
                             style="height: 104px;"></div>
                         <span
                             class="text-sm font-medium text-(--text-color)/70 group-hover:text-(--text-dark)">Sat</span>
                     </div>
                     <div class="flex-1 flex flex-col items-center gap-2 group cursor-pointer">
-                        <div class="chart-bar w-full bg-(--text-light) rounded-t-xl hover:bg-(--primary-color) transition-all duration-300 group-hover:scale-y-110 origin-bottom"
+                        <div class="chart-bar w-full bg-(--card-dark) rounded-t-xl hover:bg-(--primary-color) transition-all duration-300 group-hover:scale-y-110 origin-bottom"
                             style="height: 128px;"></div>
                         <span
                             class="text-sm font-medium text-(--text-color)/70 group-hover:text-(--text-dark)">Sun</span>
@@ -160,7 +147,7 @@
                 </div>
 
                 <div class="mt-5 text-center text-xs text-(--text-color)/50 flex items-center justify-center gap-2">
-                    <i class="fas fa-chart-simple"></i> Last 7 days performance
+                    <i data-lucide="chart-no-axes-column-increasing" class="w-4 h-4"></i> Last 7 days performance
                 </div>
             </div>
 
@@ -172,7 +159,7 @@
                         class="flex items-center gap-4 p-4 rounded-2xl bg-(--card-dark)/40 hover:bg-(--card-dark)/70 transition-all duration-300 group">
                         <div
                             class="w-11 h-11 rounded-2xl bg-(--card-dark) flex items-center justify-center text-(--secondary-color) text-2xl group-hover:scale-110 transition-transform">
-                            <i class="fas fa-plus-circle"></i>
+                            <i data-lucide="circle-plus"></i>
                         </div>
                         <div>
                             <p class="font-semibold text-(--text-dark) group-hover:translate-x-1 transition">Add New
@@ -185,7 +172,7 @@
                         class="flex items-center gap-4 p-4 rounded-2xl bg-(--card-dark)/40 hover:bg-(--card-dark)/70 transition-all duration-300 group">
                         <div
                             class="w-11 h-11 rounded-2xl bg-(--card-dark) flex items-center justify-center text-(--secondary-color) text-2xl group-hover:scale-110 transition-transform">
-                            <i class="fas fa-headset"></i>
+                            <i data-lucide="headset"></i>
                         </div>
                         <div>
                             <p class="font-semibold text-(--text-dark) group-hover:translate-x-1 transition">Contact
@@ -201,13 +188,12 @@
         <div class="card bg-(--card-bg) rounded-2xl shadow-sm border border-(--card-dark) overflow-hidden">
             <div class="px-6 py-5 border-b border-(--card-dark) flex justify-between items-center">
                 <h3 class="font-semibold text-(--text-color) flex items-center gap-2">
-                    <i class="fas fa-history"></i>
+                    <i data-lucide="history" class="w-5 h-5"></i>
                     Recent Orders
                 </h3>
-                <a href="#"
-                    class="text-sm text-(--secondary-color) hover:text-(--hover-color) flex items-center gap-1.5 transition">
-                    View All
-                    <i class="fas fa-arrow-right"></i>
+                <a href="#" class="text-sm text-(--secondary-color) flex items-center gap-1.5 transition">
+                    <span class="hover:underline">View All</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </a>
             </div>
 
@@ -232,7 +218,7 @@
                                 <div class="flex items-center gap-3">
                                     <div
                                         class="w-8 h-8 rounded-full bg-(--card-dark) flex items-center justify-center text-xs font-bold">
-                                        <i class="fas fa-user text-(--text-color)"></i>
+                                        <i data-lucide="user" class="w-5 h-5 text-(--text-color)"></i>
                                     </div>
                                     Sujit Nepal
                                 </div>
@@ -246,7 +232,7 @@
                             <td class="px-6 py-5">
                                 <button
                                     class="text-(--secondary-color) hover:text-(--hover-color) transition flex items-center gap-1">
-                                    <i class="fas fa-edit"></i> Update
+                                    <i data-lucide="square-pen" class="w-4 h-4"></i> Update
                                 </button>
                             </td>
                         </tr>
@@ -258,7 +244,7 @@
                                 <div class="flex items-center gap-3">
                                     <div
                                         class="w-8 h-8 rounded-full bg-(--card-dark) flex items-center justify-center text-xs font-bold">
-                                        <i class="fas fa-user text-(--text-color)"></i>
+                                        <i data-lucide="user" class="w-5 h-5 text-(--text-color)"></i>
                                     </div>
                                     Anita Dahal
                                 </div>
@@ -272,7 +258,7 @@
                             <td class="px-6 py-5">
                                 <button
                                     class="text-(--secondary-color) hover:text-(--hover-color) transition flex items-center gap-1">
-                                    <i class="fas fa-edit"></i> Update
+                                    <i data-lucide="square-pen" class="w-4 h-4"></i> Update
                                 </button>
                             </td>
                         </tr>
@@ -284,7 +270,7 @@
                                 <div class="flex items-center gap-3">
                                     <div
                                         class="w-8 h-8 rounded-full bg-(--card-dark) flex items-center justify-center text-xs font-bold">
-                                        <i class="fas fa-user text-(--text-color)"></i>
+                                        <i data-lucide="user" class="w-5 h-5 text-(--text-color)"></i>
                                     </div>
                                     Bishal Thapa
                                 </div>
@@ -298,7 +284,7 @@
                             <td class="px-6 py-5">
                                 <button
                                     class="text-(--secondary-color) hover:text-(--hover-color) transition flex items-center gap-1">
-                                    <i class="fas fa-eye"></i> View
+                                    <i data-lucide="eye" class="w-4 h-4"></i> View
                                 </button>
                             </td>
                         </tr>
@@ -310,7 +296,7 @@
                                 <div class="flex items-center gap-3">
                                     <div
                                         class="w-8 h-8 rounded-full bg-(--card-dark) flex items-center justify-center text-xs font-bold">
-                                        <i class="fas fa-user text-(--text-color)"></i>
+                                        <i data-lucide="user" class="w-5 h-5 text-(--text-color)"></i>
                                     </div>
                                     Rita Poudel
                                 </div>
@@ -324,7 +310,7 @@
                             <td class="px-6 py-5">
                                 <button
                                     class="text-(--secondary-color) hover:text-(--hover-color) transition flex items-center gap-1">
-                                    <i class="fas fa-eye"></i> View
+                                    <i data-lucide="eye" class="w-4 h-4"></i> View
                                 </button>
                             </td>
                         </tr>
