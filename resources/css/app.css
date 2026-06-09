@@ -167,11 +167,31 @@
         background: #e5e7eb;
         border-radius: 8px;
         display: flex;
+        flex-direction: column;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
+        gap: 8px;
+        padding: 12px;
         color: #374151;
         font-size: 1.25rem;
         font-weight: 500;
+    }
+
+    .today-deal .deal-image {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 6px;
+        display: block;
+    }
+
+    .today-deal .deal-info {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        align-items: flex-start;
+        justify-content: flex-start;
     }
 
     /* Responsive: 3 cols <= 1280px, 2 cols <= 768px, 1 col on small screens */
