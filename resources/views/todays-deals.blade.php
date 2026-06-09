@@ -5,6 +5,10 @@
         <div class = "today-deal"> card</div>
         <div class = "today-deal"> card</div>
         <div class = "today-deal"> card</div>
+        <div class = "today-deal"> card</div>
+        <div class = "today-deal"> card</div>
+        <div class = "today-deal"> card</div>
+        <div class = "today-deal"> card</div>
 
     </div>
 </x-frontend-layout>

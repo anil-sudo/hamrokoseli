@@ -153,9 +153,17 @@
         }
 
     /* Today's Deals */
+    .today-deals-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        padding: 20px;
+        width: 100%;
+        align-items: start;
+    }
     .today-deal {
-        width: 10%;
-        height: 400px;
+        width: 100%;
+        height: 290px;
         background: #e5e7eb;
         border-radius: 8px;
         display: flex;
@@ -164,4 +172,15 @@
         color: #374151;
         font-size: 1.25rem;
         font-weight: 500;
+    }
+
+    /* Responsive: 3 cols <= 1280px, 2 cols <= 768px, 1 col on small screens */
+    @media (max-width: 1280px) {
+        .today-deals-container { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 768px) {
+        .today-deals-container { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 480px) {
+        .today-deals-container { grid-template-columns: 1fr; }
     }
