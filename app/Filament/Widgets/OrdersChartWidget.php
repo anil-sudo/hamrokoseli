@@ -9,6 +9,7 @@ use Illuminate\Support\Carbon;
 class OrdersChartWidget extends ChartWidget
 {
     protected ?string $heading = 'Orders Over Last 7 Days';
+
     protected static ?int $sort = 2;
 
     protected function getData(): array

@@ -14,20 +14,21 @@ use Illuminate\Support\Carbon;
 class StatsOverviewWidget extends BaseWidget
 {
     protected static ?int $sort = 1;
+
     protected ?string $pollingInterval = '30s'; // ← non-static
 
     protected function getStats(): array
     {
         $ordersPerDay = collect(range(6, 0))->map(
-            fn($i) => Order::whereDate('created_at', Carbon::now()->subDays($i))->count()
+            fn ($i) => Order::whereDate('created_at', Carbon::now()->subDays($i))->count()
         )->toArray();
 
         $revenuePerDay = collect(range(6, 0))->map(
-            fn($i) => Payment::completed()->whereDate('paid_at', Carbon::now()->subDays($i))->sum('total_amount')
+            fn ($i) => Payment::completed()->whereDate('paid_at', Carbon::now()->subDays($i))->sum('total_amount')
         )->toArray();
 
         $usersPerDay = collect(range(6, 0))->map(
-            fn($i) => User::whereDate('created_at', Carbon::now()->subDays($i))->count()
+            fn ($i) => User::whereDate('created_at', Carbon::now()->subDays($i))->count()
         )->toArray();
 
         return [
@@ -38,23 +39,23 @@ class StatsOverviewWidget extends BaseWidget
                 ->color('primary'),
 
             Stat::make('Total Vendors', Vendor::count())
-                ->description('Active: ' . Vendor::where('status', 'active')->count())
+                ->description('Active: '.Vendor::where('status', 'active')->count())
                 ->descriptionIcon('heroicon-m-building-storefront')
                 ->color('warning'),
 
             Stat::make('Total Products', Product::count())
-                ->description('Active: ' . Product::where('status', 'active')->count())
+                ->description('Active: '.Product::where('status', 'active')->count())
                 ->descriptionIcon('heroicon-m-shopping-bag')
                 ->color('success'),
 
             Stat::make('Total Orders', Order::count())
-                ->description('Pending: ' . Order::pending()->count())
+                ->description('Pending: '.Order::pending()->count())
                 ->descriptionIcon('heroicon-m-shopping-cart')
                 ->chart($ordersPerDay)
                 ->color('info'),
 
-            Stat::make('Total Revenue', 'Rs. ' . number_format(Payment::completed()->sum('total_amount'), 2))
-                ->description('This month: Rs. ' . number_format(
+            Stat::make('Total Revenue', 'Rs. '.number_format(Payment::completed()->sum('total_amount'), 2))
+                ->description('This month: Rs. '.number_format(
                     Payment::completed()->whereMonth('paid_at', Carbon::now()->month)->sum('total_amount'), 2
                 ))
                 ->descriptionIcon('heroicon-m-banknotes')
@@ -62,7 +63,7 @@ class StatsOverviewWidget extends BaseWidget
                 ->color('success'),
 
             Stat::make('Pending Orders', Order::pending()->count())
-                ->description('Delivered: ' . Order::delivered()->count())
+                ->description('Delivered: '.Order::delivered()->count())
                 ->descriptionIcon('heroicon-m-clock')
                 ->color('danger'),
         ];

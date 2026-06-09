@@ -9,6 +9,7 @@ use Illuminate\Support\Carbon;
 class RevenueChartWidget extends ChartWidget
 {
     protected ?string $heading = 'Revenue Over Last 7 Days';
+
     protected static ?int $sort = 3;
 
     protected function getData(): array
