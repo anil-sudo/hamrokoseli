@@ -7,7 +7,7 @@ use App\Http\Controllers\VendorRegisterController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/seller', [SellerController::class, 'seller'])->name('seller');
-Route::view('/login.php', 'login');
+Route::redirect('/login.php', '/login');
 
 // Public routes
 Route::get('/', [PageController::class, 'home'])->name('home');
