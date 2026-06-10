@@ -51,7 +51,15 @@
                     </button>
                 </div>
                 <div class="pt-1">
-                    <a href="{{ route('dashboard') }}" class="text-[#b55b3d] hover:text-[#a04e33] text-sm font-semibold underline underline-offset-4 transition-colors">Become a Seller</a>
+                    @auth
+                        @if(auth()->user()->hasRole('vendor'))
+                            <a href="{{ route('dashboard') }}" class="text-[#b55b3d] hover:text-[#a04e33] text-sm font-semibold underline underline-offset-4 transition-colors">Seller Dashboard</a>
+                        @else
+                            <a href="{{ route('seller') }}" class="text-[#b55b3d] hover:text-[#a04e33] text-sm font-semibold underline underline-offset-4 transition-colors">Become a Seller</a>
+                        @endif
+                    @else
+                        <a href="{{ route('seller') }}" class="text-[#b55b3d] hover:text-[#a04e33] text-sm font-semibold underline underline-offset-4 transition-colors">Become a Seller</a>
+                    @endauth
                 </div>
             </div>
             

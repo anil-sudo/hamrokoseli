@@ -49,4 +49,89 @@ import './seller-layout';
             }
         });
     }
+
+    // Login Modal Logic
+    const loginModal = document.getElementById('login-modal');
+    const loginModalContainer = document.getElementById('login-modal-container');
+    const desktopSigninBtn = document.getElementById('desktop-signin');
+    const mobileSigninBtn = document.getElementById('mobile-signin');
+    const closeLoginModalBtn = document.getElementById('close-login-modal');
+
+    function openLoginModal(e) {
+        if (e) e.preventDefault();
+        closeDrawer(); // Close mobile drawer if open
+
+        if (loginModal && loginModalContainer) {
+            loginModal.classList.remove('hidden');
+            loginModal.classList.add('flex');
+            
+            // Trigger animation frame
+            setTimeout(() => {
+                loginModal.classList.remove('opacity-0');
+                loginModal.classList.add('opacity-100');
+                loginModalContainer.classList.remove('scale-95', 'opacity-0');
+                loginModalContainer.classList.add('scale-100', 'opacity-100');
+            }, 10);
+
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closeLoginModal() {
+        if (loginModal && loginModalContainer) {
+            loginModal.classList.remove('opacity-100');
+            loginModal.classList.add('opacity-0');
+            loginModalContainer.classList.remove('scale-100', 'opacity-100');
+            loginModalContainer.classList.add('scale-95', 'opacity-0');
+
+            // Wait for transition to finish
+            setTimeout(() => {
+                loginModal.classList.remove('flex');
+                loginModal.classList.add('hidden');
+            }, 300);
+
+            document.body.style.overflow = '';
+        }
+    }
+
+    if (desktopSigninBtn) desktopSigninBtn.addEventListener('click', openLoginModal);
+    if (mobileSigninBtn) mobileSigninBtn.addEventListener('click', openLoginModal);
+    if (closeLoginModalBtn) closeLoginModalBtn.addEventListener('click', closeLoginModal);
+
+    // Close on clicking outside the modal container
+    if (loginModal) {
+        loginModal.addEventListener('click', function(e) {
+            if (e.target === loginModal) {
+                closeLoginModal();
+            }
+        });
+    }
+
+    // Escape key closes modal too
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeLoginModal();
+        }
+    });
+
+    // Password visibility toggle for modal
+    const modalTogglePassword = document.getElementById('modal-toggle-password');
+    const modalPasswordInput = document.getElementById('modal-password');
+    if (modalTogglePassword && modalPasswordInput) {
+        modalTogglePassword.addEventListener('click', function() {
+            const type = modalPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            modalPasswordInput.setAttribute('type', type);
+            const icon = modalTogglePassword.querySelector('i');
+            if (icon) {
+                if (type === 'text') {
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                } else {
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                }
+            }
+        });
+    }
 })();
+
