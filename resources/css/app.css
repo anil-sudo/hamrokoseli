@@ -224,6 +224,10 @@ textarea {
 .mob-nav-link:hover i {
     opacity: 1;
 }
+/* Search bar focus glow */
+.search-wrap:focus-within {
+    box-shadow: 0 0 0 2px rgba(31, 61, 46, 0.35);
+}
 
 body {
     display: flex;
