@@ -22,8 +22,6 @@ class User extends Authenticatable implements FilamentUser
     /** @use HasFactory<UserFactory> */
     use HasFactory, HasRoles, Notifiable;
 
-    use HasFactory, Notifiable;
-
     /**
      * Get the attributes that should be cast.
      *
