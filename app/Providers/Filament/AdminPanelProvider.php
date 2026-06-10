@@ -22,7 +22,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
- // ← add this back
+// ← add this back
 
 class AdminPanelProvider extends PanelProvider
 {
