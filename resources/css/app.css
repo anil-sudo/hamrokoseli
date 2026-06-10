@@ -290,6 +290,18 @@ h6 {
         display: block;
     }
 
+.card-dark {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+/* Optional subtle gradient */
+.hero-gradient {
+    background: linear-gradient(135deg,
+            rgba(31, 61, 46, 0.05) 0%,
+            rgba(198, 90, 58, 0.08) 100%);
+}
     .today-deal .deal-info {
         width: 100%;
         display: flex;

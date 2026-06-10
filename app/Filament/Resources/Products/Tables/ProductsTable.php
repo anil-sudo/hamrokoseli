@@ -15,17 +15,18 @@ class ProductsTable
     {
         return $table
             ->columns([
-                TextColumn::make('vendor.id')
+                TextColumn::make('vendor.vendor_name')
                     ->searchable(),
-                TextColumn::make('category.id')
+                TextColumn::make('category.cat_name')
                     ->searchable(),
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('price')
-                    ->money()
+                    ->money('NPR')
                     ->sortable(),
+
                 TextColumn::make('discount_price')
-                    ->money()
+                    ->money('NPR')
                     ->sortable(),
                 TextColumn::make('stock')
                     ->numeric()

@@ -15,10 +15,12 @@ class ProductForm
         return $schema
             ->components([
                 Select::make('vendor_id')
-                    ->relationship('vendor', 'id')
+                    ->relationship('vendor', 'vendor_name')
+                    ->searchable()
+                    ->preload()
                     ->required(),
                 Select::make('category_id')
-                    ->relationship('category', 'id')
+                    ->relationship('category', 'cat_name')
                     ->required(),
                 TextInput::make('name')
                     ->required(),
@@ -28,11 +30,11 @@ class ProductForm
                 TextInput::make('price')
                     ->required()
                     ->numeric()
-                    ->prefix('$'),
+                    ->prefix(' NPR'),
                 TextInput::make('discount_price')
                     ->numeric()
                     ->default(null)
-                    ->prefix('$'),
+                    ->prefix(' NPR'),
                 TextInput::make('stock')
                     ->required()
                     ->numeric()
