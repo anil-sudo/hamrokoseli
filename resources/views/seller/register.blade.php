@@ -42,14 +42,14 @@
                             <label class="block text-sm font-medium text-brand-dark mb-2">Email Address</label>
                             <input type="email" id="email"
                                 class="w-full px-6 py-4 bg-(--card-bg) border border-(--bg-color)/30 rounded-xl focus:outline-none focus:border-(--secondary-color) transition duration-200"
-                                placeholder="Enter your email address" required>
+                                placeholder="e.g. example22@gmail.com" required>
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-brand-dark mb-2">Phome Number</label>
+                            <label class="block text-sm font-medium text-brand-dark mb-2">Phone Number</label>
                             <input type="tel" id="phone"
                                 class="w-full px-6 py-4 bg-(--text-light) border border-(--bg-color)/30 rounded-xl focus:outline-none focus:border-(--secondary-color) transition duration-200"
-                                placeholder="Enter phone number" required>
+                                placeholder="e.g. 1234567890" required>
                         </div>
 
                         <div>

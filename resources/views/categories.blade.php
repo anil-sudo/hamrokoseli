@@ -23,7 +23,7 @@
                     <img src="{{ asset('images/pot.png') }}" alt="Bhaktapur Pottery" class="w-full h-full object-cover opacity-80 group-hover:scale-[1.02] transition duration-700">
                     <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent"></div>
                 </div>
-                
+
                 <!-- Content Container -->
                 <div class="relative z-10 max-w-2xl py-12 px-6 sm:px-12 md:py-20 md:px-16 flex flex-col items-start justify-center min-h-[360px]">
                     <span class="bg-[#C65A3A] text-white text-[10px] font-bold tracking-widest uppercase px-3.5 py-1.5 rounded-full shadow-sm mb-4">Spotlight Craft</span>
@@ -118,7 +118,7 @@
                         </p>
                     </div>
                     <div class="flex-shrink-0">
-                        <a href="{{ route('dashboard') }}" class="inline-block bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-sm font-semibold py-3.5 px-8 rounded-xl shadow hover:shadow-md transition duration-300">
+                        <a href="{{ route('seller') }}" class="inline-block bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-sm font-semibold py-3.5 px-8 rounded-xl shadow hover:shadow-md transition duration-300">
                             Become a Seller
                         </a>
                     </div>
