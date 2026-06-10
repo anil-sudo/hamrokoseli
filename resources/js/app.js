@@ -50,12 +50,17 @@ import './seller-layout';
         });
     }
 
-    // Login Modal Logic
+    // Login / Register Modal Logic
     const loginModal = document.getElementById('login-modal');
     const loginModalContainer = document.getElementById('login-modal-container');
     const desktopSigninBtn = document.getElementById('desktop-signin');
     const mobileSigninBtn = document.getElementById('mobile-signin');
     const closeLoginModalBtn = document.getElementById('close-login-modal');
+
+    const loginView = document.getElementById('login-view');
+    const registerView = document.getElementById('register-view');
+    const modalShowRegisterBtn = document.getElementById('modal-show-register');
+    const modalShowLoginBtn = document.getElementById('modal-show-login');
 
     function openLoginModal(e) {
         if (e) e.preventDefault();
@@ -88,6 +93,11 @@ import './seller-layout';
             setTimeout(() => {
                 loginModal.classList.remove('flex');
                 loginModal.classList.add('hidden');
+                // Reset to login view on close
+                if (loginView && registerView) {
+                    loginView.classList.remove('hidden');
+                    registerView.classList.add('hidden');
+                }
             }, 300);
 
             document.body.style.overflow = '';
@@ -97,6 +107,24 @@ import './seller-layout';
     if (desktopSigninBtn) desktopSigninBtn.addEventListener('click', openLoginModal);
     if (mobileSigninBtn) mobileSigninBtn.addEventListener('click', openLoginModal);
     if (closeLoginModalBtn) closeLoginModalBtn.addEventListener('click', closeLoginModal);
+
+    // Switch to Register View
+    if (modalShowRegisterBtn && loginView && registerView) {
+        modalShowRegisterBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            loginView.classList.add('hidden');
+            registerView.classList.remove('hidden');
+        });
+    }
+
+    // Switch to Login View
+    if (modalShowLoginBtn && loginView && registerView) {
+        modalShowLoginBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            registerView.classList.add('hidden');
+            loginView.classList.remove('hidden');
+        });
+    }
 
     // Close on clicking outside the modal container
     if (loginModal) {
@@ -114,7 +142,7 @@ import './seller-layout';
         }
     });
 
-    // Password visibility toggle for modal
+    // Password visibility toggle for login modal
     const modalTogglePassword = document.getElementById('modal-toggle-password');
     const modalPasswordInput = document.getElementById('modal-password');
     if (modalTogglePassword && modalPasswordInput) {
@@ -131,6 +159,56 @@ import './seller-layout';
                     icon.classList.add('fa-eye-slash');
                 }
             }
+        });
+    }
+
+    // Password visibility toggle for register modal
+    const modalRegisterTogglePassword = document.getElementById('modal-register-toggle-password');
+    const modalRegisterPasswordInput = document.getElementById('modal-register-password');
+    if (modalRegisterTogglePassword && modalRegisterPasswordInput) {
+        modalRegisterTogglePassword.addEventListener('click', function() {
+            const type = modalRegisterPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            modalRegisterPasswordInput.setAttribute('type', type);
+            const icon = modalRegisterTogglePassword.querySelector('i');
+            if (icon) {
+                if (type === 'text') {
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                } else {
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                }
+            }
+        });
+    }
+
+    // Confirm password visibility toggle for register modal
+    const modalRegisterTogglePasswordConfirm = document.getElementById('modal-register-toggle-password-confirm');
+    const modalRegisterPasswordConfirmInput = document.getElementById('modal-register-password_confirmation');
+    if (modalRegisterTogglePasswordConfirm && modalRegisterPasswordConfirmInput) {
+        modalRegisterTogglePasswordConfirm.addEventListener('click', function() {
+            const type = modalRegisterPasswordConfirmInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            modalRegisterPasswordConfirmInput.setAttribute('type', type);
+            const icon = modalRegisterTogglePasswordConfirm.querySelector('i');
+            if (icon) {
+                if (type === 'text') {
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                } else {
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                }
+            }
+        });
+    }
+
+    // Phone format filter for register modal
+    const modalRegisterPhoneInput = document.getElementById('modal-register-phone');
+    if (modalRegisterPhoneInput) {
+        modalRegisterPhoneInput.addEventListener('input', function() {
+            let value = this.value.replace(/\D/g, '');
+            if (value.length > 10) value = value.substring(0, 10);
+            this.value = value;
         });
     }
 })();
