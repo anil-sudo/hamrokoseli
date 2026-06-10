@@ -184,13 +184,10 @@ textarea {
 .mob-nav-link:hover i {
     opacity: 1;
 }
-
 /* Search bar focus glow */
 .search-wrap:focus-within {
     box-shadow: 0 0 0 2px rgba(31, 61, 46, 0.35);
 }
-
-
 
 body {
     font-family: var(--font-sans);
@@ -260,85 +257,6 @@ h6 {
     transform: scale(1.15);
 }
 
-/* --- Seller Layout Styles --- */
-/* Utility Classes */
-.bg-primary {
-    background-color: var(--primary-color);
-}
-
-.bg-secondary {
-    background-color: var(--secondary-color);
-}
-
-.bg-card {
-    background-color: var(--card-bg);
-}
-
-.bg-card-dark {
-    background-color: var(--card-dark);
-}
-
-.text-primary {
-    color: var(--primary-color);
-}
-
-.text-secondary {
-    color: var(--secondary-color);
-}
-
-.text-light {
-    color: var(--text-light);
-}
-
-.text-main {
-    color: var(--text-color);
-}
-
-/* Border */
-.border-primary {
-    border-color: var(--primary-color);
-}
-
-/* Buttons */
-.btn {
-    background-color: var(--secondary-color);
-    color: var(--text-light);
-    padding: 10px 16px;
-    border-radius: 8px;
-    transition: all 0.3s ease;
-    border: none;
-    cursor: pointer;
-}
-
-.btn:hover {
-    background-color: var(--hover-color);
-    color: var(--text-color);
-}
-
-/* Links */
-.navbar a {
-    color: var(--text-light);
-    text-decoration: none;
-}
-
-.navbar a:hover {
-    color: var(--text-light);
-}
-
-/* Hover utilities */
-.hover\:bg-primary:hover {
-    background-color: var(--primary-color);
-}
-
-.hover\:text-primary:hover {
-    color: var(--primary-color);
-}
-        body {
-        display: flex;
-        flex-direction: column;
-        min-height: 100vh;
-        }
-
     /* Today's Deals */
     .today-deals-container {
         display: grid;
@@ -403,3 +321,100 @@ h6 {
     @media (max-width: 480px) {
         .today-deals-container { grid-template-columns: 1fr; }
     }
+
+/* --- Seller Layout Styles --- */
+/* Utility Classes */
+.bg-primary {
+    background-color: var(--primary-color);
+}
+
+.bg-secondary {
+    background-color: var(--secondary-color);
+}
+
+.bg-card {
+    background-color: var(--card-bg);
+}
+
+.bg-card-dark {
+    background-color: var(--card-dark);
+}
+
+.text-primary {
+    color: var(--primary-color);
+}
+
+.text-secondary {
+    color: var(--secondary-color);
+}
+
+.text-light {
+    color: var(--text-light);
+}
+
+.text-main {
+    color: var(--text-color);
+}
+
+/* Border */
+.border-primary {
+    border-color: var(--primary-color);
+}
+
+/* Buttons */
+.btn {
+    background-color: var(--secondary-color);
+    color: var(--text-light);
+    padding: 10px 16px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: var(--hover-color);
+    color: var(--text-color);
+}
+
+/* Links */
+a {
+    text-decoration: none;
+}
+
+.navbar a {
+    color: var(--text-light);
+    text-decoration: none;
+}
+
+.navbar a:hover {
+    color: var(--text-color);
+}
+
+/* Hover utilities */
+.hover\:bg-primary:hover {
+    background-color: var(--primary-color);
+}
+
+.hover\:text-primary:hover {
+    color: var(--primary-color);
+}
+
+.card {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.card-dark {
+    background-color: var(--card-dark);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+/* Optional subtle gradient */
+.hero-gradient {
+    background: linear-gradient(135deg,
+            rgba(31, 61, 46, 0.05) 0%,
+            rgba(198, 90, 58, 0.08) 100%);
+}

@@ -55,7 +55,7 @@
             <!-- RIGHT: Actions -->
             <div class="flex items-center gap-3 shrink-0">
                 <!-- Sign In – hidden on mobile (available inside drawer) -->
-                <a href="login.php" id="desktop-signin"
+                <a href="{{ route('login') }}" id="desktop-signin"
                     class="hidden md:inline-flex rounded-full border border-white/90 text-white font-semibold px-5 py-1.5 text-sm hover:bg-white hover:text-[#1f3d2e] transition-all duration-300 active:scale-95 shadow-sm">
                     Sign In
                 </a>
@@ -130,11 +130,11 @@
 
     <!-- Login / Signup buttons in drawer -->
     <div class="flex gap-3 px-5 py-4 border-b border-white/10">
-        <a href="{{ url('/login') }}"
+        <a href="{{ route('login') }}" id="mobile-signin"
             class="flex-1 text-center rounded-full border border-white text-white font-semibold py-2 text-sm hover:bg-white hover:text-[#1f3d2e] transition-all duration-300">
             Login
         </a>
-        <a href="{{ url('/signup') }}"
+        <a href="{{ route('vendor.register') }}"
             class="flex-1 text-center rounded-full bg-white text-[#1f3d2e] font-semibold py-2 text-sm hover:bg-emerald-100 transition-all duration-300">
             Sign Up
         </a>
@@ -149,7 +149,15 @@
         <a href="{{ url('#featured-products') }}" class="mob-nav-link"><i class="fas fa-star"></i>Featured Products</a>
         <a href="{{ url('#top-sellers') }}"       class="mob-nav-link"><i class="fas fa-trophy"></i>Top Sellers</a>
         <a href="{{ url('new-arrivals') }}"   class="mob-nav-link"><i class="fa-solid fa-mobile-screen-button"></i>New Arrivals</a>
-        <a href="{{ route('dashboard') }}"  class="mob-nav-link"><i class="fas fa-store"></i>Become a Seller</a>
+        @auth
+            @if(auth()->user()->hasRole('vendor'))
+                <a href="{{ route('dashboard') }}" class="mob-nav-link"><i class="fas fa-store"></i>Seller Dashboard</a>
+            @else
+                <a href="{{ route('seller') }}" class="mob-nav-link"><i class="fas fa-store"></i>Become a Seller</a>
+            @endif
+        @else
+            <a href="{{ route('seller') }}" class="mob-nav-link"><i class="fas fa-store"></i>Become a Seller</a>
+        @endauth
     </nav>
 
     <!-- Support note at bottom -->
