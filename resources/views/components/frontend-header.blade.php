@@ -5,13 +5,13 @@
     <div class="bg-[#F5E8D6] text-[#2c2523] text-[11px] font-medium py-1.5 px-4 border-b border-[#ebd7be] hidden sm:block">
         <div class="max-w-7xl mx-auto flex items-center justify-between gap-2">
             <!-- Left -->
-            <a href="{{ route('dashboard') }}" class="flex items-center gap-1.5 hover:text-[#b55b3d] transition-colors">
+            <a href="{{ route('seller') }}" class="flex items-center gap-1.5 hover:text-[#b55b3d] transition-colors">
                 <i class="fas fa-house text-[#b55b3d]"></i>
                 <span>Sell on Hamro Koseli</span>
             </a>
             <!-- Right -->
             <div class="flex items-center gap-3">
-                <a href="{{ route('dashboard') }}" class="hover:text-[#b55b3d] transition-colors">Become a Seller</a>
+                <a href="{{ route('seller') }}" class="hover:text-[#b55b3d] transition-colors">Become a Seller</a>
                 <span class="text-gray-400">|</span>
                 <span>Support local artisans &bull; Free shipping on orders over Rs.999</span>
             </div>

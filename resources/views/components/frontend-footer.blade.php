@@ -1,7 +1,7 @@
 <footer class="bg-[#1E2A44] text-slate-300 py-8 md:py-16 mt-auto">
     <div class="container mx-auto px-6 max-w-5xl">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-6 md:gap-12">
-            
+
             <!-- Column 1: Brand Info -->
             <div class="space-y-4">
                 <h3 class="text-3xl font-bold text-[#b55b3d] tracking-tight">HamroKoseli</h3>
@@ -9,7 +9,7 @@
                     Preserving Nepal's rich artistic heritage by connecting local master craftspeople with global connoisseurs of authenticity.
                 </p>
             </div>
-            
+
             <!-- Columns 2 & 3: Quick Link + Support (side-by-side on mobile, separate on md+) -->
             <div class="grid grid-cols-2 md:contents gap-10">
 
@@ -37,7 +37,7 @@
                 </div>
 
             </div>
-            
+
             <!-- Column 4: Newsletter -->
             <div class="space-y-4">
                 <h4 class="text-xs font-bold uppercase tracking-widest text-[#b55b3d]">NEWSLETTER</h4>
@@ -51,12 +51,12 @@
                     </button>
                 </div>
                 <div class="pt-1">
-                    <a href="{{ route('dashboard') }}" class="text-[#b55b3d] hover:text-[#a04e33] text-sm font-semibold underline underline-offset-4 transition-colors">Become a Seller</a>
+                    <a href="{{ route('seller') }}" class="text-[#b55b3d] hover:text-[#a04e33] text-sm font-semibold underline underline-offset-4 transition-colors">Become a Seller</a>
                 </div>
             </div>
-            
+
         </div>
-        
+
         <!-- Bottom Bar -->
         <div class="flex flex-col md:flex-row items-center justify-between gap-3 md:gap-6 mt-8 md:mt-16 pt-6 md:pt-8 border-t border-slate-700/30">
             <p class="text-xs text-slate-400 text-center md:text-left">
