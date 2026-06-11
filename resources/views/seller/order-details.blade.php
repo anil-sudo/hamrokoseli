@@ -136,7 +136,7 @@
             </div>
 
             <!-- Shipping Address -->
-            <div class="bg-(--card-dark) rounded-3xl shadow-sm hover:shadoew-md border border-(--text-color)/20 p-6 lg:p-8 transition-all duration-200">
+            <div class="bg-(--card-dark) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6 lg:p-8 transition-all duration-200">
                 <h2 class="text-xl font-semibold mb-6">Shipping Address</h2>
                 <div class="space-y-2 text-lg leading-relaxed">
                     <p>New Baneshwor, Ward No. 31</p>
@@ -187,7 +187,7 @@
 
         <!-- Totals -->
         <div class="xl:col-span-5">
-            <div class="bg-(--card-dark) rounded-3xl shadow-sm border border-(--text-color)/20 p-6 lg:p-8">
+            <div class="bg-(--card-dark) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6 lg:p-8">
                 <h2 class="text-xl font-semibold mb-6">Order Totals</h2>
                 <div class="space-y-4 text-[15px]">
                     <div class="flex justify-between">
