@@ -29,11 +29,10 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/vendor/register', [VendorRegisterController::class, 'show'])->name('vendor.register');
     Route::post('/vendor/register', [VendorRegisterController::class, 'register']);
+    Route::get('/seller-dashboard', [SellerController::class, 'dashboard'])->name('dashboard');
+    Route::get('/product-management', [SellerController::class, 'product_management'])->name('product-management');
 });
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Vendor routes — must be logged in AND have vendor role
-Route::middleware(['auth', 'role:vendor'])->group(function () {
-    Route::get('/seller-dashboard', [SellerController::class, 'dashboard'])->name('dashboard');
-    Route::get('/product-management', [SellerController::class, 'product_management'])->name('product-management');
-});
+Route::middleware(['auth', 'role:vendor'])->group(function () {});
