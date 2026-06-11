@@ -11,6 +11,7 @@ Route::get('/seller-dashboard', [SellerController::class, 'dashboard'])->name('d
 Route::get('/product-management', [SellerController::class, 'product_management'])->name('product-management');
 Route::get('/orders', [SellerController::class, 'order'])->name('order');
 Route::get('/order-details', [SellerController::class, 'orderDetails'])->name('order-details');
+Route::redirect('/login.php', '/login');
 
 // Public routes
 Route::get('/', [PageController::class, 'home'])->name('home');

@@ -176,7 +176,7 @@
                 <div class="text-center mt-6">
                     <p class="text-sm text-(--text-color)/70">
                         Already have an account?
-                        <a href="#" class="text-(--text-dark) font-medium hover:underline">Login</a>
+                        <a href="{{ route('login') }}" class="text-(--text-dark) font-medium hover:underline">Login</a>
                     </p>
                 </div>
             </form>
