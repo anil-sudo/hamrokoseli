@@ -191,7 +191,7 @@
                     <i data-lucide="history" class="w-5 h-5"></i>
                     Recent Orders
                 </h3>
-                <a href="#" class="text-sm text-(--secondary-color) flex items-center gap-1.5 transition">
+                <a href="{{ route('order') }}" class="text-sm text-(--secondary-color) flex items-center gap-1.5 transition">
                     <span class="hover:underline">View All</span>
                     <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </a>

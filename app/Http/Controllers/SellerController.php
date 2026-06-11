@@ -40,4 +40,14 @@ class SellerController extends Controller
         abort_if(auth()->user()->cannot('delete products'), 403, 'You do not have permission to delete products.');
         // your delete logic here
     }
+
+    public function order()
+    {
+        return view('seller.order');
+    }
+
+    public function orderDetails()
+    {
+        return view('seller.order-details');
+    }
 }

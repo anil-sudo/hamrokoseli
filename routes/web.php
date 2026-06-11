@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/seller', [SellerController::class, 'seller'])->name('seller');
 Route::get('/seller-dashboard', [SellerController::class, 'dashboard'])->name('dashboard');
 Route::get('/product-management', [SellerController::class, 'product_management'])->name('product-management');
+Route::get('/orders', [SellerController::class, 'order'])->name('order');
+Route::get('/order-details', [SellerController::class, 'orderDetails'])->name('order-details');
 
 // Public routes
 Route::get('/', [PageController::class, 'home'])->name('home');

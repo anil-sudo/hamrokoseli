@@ -28,12 +28,13 @@
         <a href="{{ route('dashboard') }}"
             class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl  hover:bg-[#D4A017] group transition-all duration-300 ease-out active:scale-[0.98]
             {{ Request::routeIs('dashboard') ? 'bg-(--hover-color)' : '' }}">
-            <i data-lucide="layout-dashboard" class="w-5 text-lg transition-transform duration-300 group-hover:scale-110"></i>
+            <i data-lucide="layout-dashboard"
+                class="w-5 text-lg transition-transform duration-300 group-hover:scale-110"></i>
             <span class="font-medium transition-all duration-300 group-hover:translate-x-1">Dashboard</span>
         </a>
 
         <!-- Products -->
-        <a href="{{ route('product-management')}}"
+        <a href="{{ route('product-management') }}"
             class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl  hover:bg-[#D4A017]  group transition-all duration-300 ease-out active:scale-[0.98]
             {{ Request::routeIs('product-management') ? 'bg-(--hover-color)' : '' }}">
             <i data-lucide="package" class="w-5 text-lg transition-transform duration-300 group-hover:scale-110"></i>
@@ -41,23 +42,27 @@
         </a>
 
         <!-- Orders -->
-        <a href=""
-            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl  hover:bg-[#D4A017]  group transition-all duration-300 ease-out active:scale-[0.98]">
-            <i data-lucide="shopping-cart" class="w-5 text-lg transition-transform duration-300 group-hover:scale-110"></i>
+        <a href="{{ route('order') }}"
+            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl  hover:bg-[#D4A017]  group transition-all duration-300 ease-out active:scale-[0.98]
+            {{ Request::routeIs('product-management') ? 'bg-(--hover-color)' : '' }}">
+            <i data-lucide="shopping-cart"
+                class="w-5 text-lg transition-transform duration-300 group-hover:scale-110"></i>
             <span class="font-medium transition-all duration-300 group-hover:translate-x-1">Orders</span>
         </a>
 
         <!-- Payments -->
         <a href=""
             class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl  hover:bg-[#D4A017]  group transition-all duration-300 ease-out active:scale-[0.98]">
-            <i data-lucide="wallet" class="fas fa-wallet w-5 text-lg transition-transform duration-300 group-hover:scale-110"></i>
+            <i data-lucide="wallet"
+                class="fas fa-wallet w-5 text-lg transition-transform duration-300 group-hover:scale-110"></i>
             <span class="font-medium transition-all duration-300 group-hover:translate-x-1">Payments</span>
         </a>
 
         <!-- Reviews -->
         <a href=""
             class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017] group transition-all duration-300 ease-out active:scale-[0.98]">
-            <i data-lucide="star" class="w-5 text-lg fill-current text-(--text-light) transition-transform duration-300 group-hover:scale-110"></i>
+            <i data-lucide="star"
+                class="w-5 text-lg fill-current text-(--text-light) transition-transform duration-300 group-hover:scale-110"></i>
             <span class="font-medium transition-all duration-300 group-hover:translate-x-1">Reviews</span>
         </a>
 
@@ -71,7 +76,8 @@
         <!-- notification -->
         <a href=""
             class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017] group transition-all duration-300 ease-out active:scale-[0.98]">
-            <i data-lucide="bell" class="w-5 fill-current text-(--text-light) transition-transform duration-300 group-hover:scale-110"></i>
+            <i data-lucide="bell"
+                class="w-5 fill-current text-(--text-light) transition-transform duration-300 group-hover:scale-110"></i>
             <span class="font-medium transition-all duration-300 group-hover:translate-x-1">Notification</span>
         </a>
     </nav>
@@ -80,7 +86,8 @@
         <!-- Add New Product (shown as prominent call to action) -->
         <a href="#"
             class="flex items-center gap-4 px-4 py-3 rounded-xl bg-[#C65A3A]  hover:bg-[#B14E32] text-[#FFF7EF]  transition-all duration-300 active:scale-[0.98] group">
-            <i data-lucide="circle-plus" class="w-5 text-[#FFF7EF] text-lg transition-transform duration-300 group-hover:rotate-90"></i>
+            <i data-lucide="circle-plus"
+                class="w-5 text-[#FFF7EF] text-lg transition-transform duration-300 group-hover:rotate-90"></i>
             <span class="font-semibold group-hover:translate-x-1 transition">Add New Product</span>
         </a>
 
@@ -88,7 +95,8 @@
         <div class="navbar">
             <a href=""
                 class="nav-link w-full flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017]  transition-all duration-300 active:scale-[0.98]">
-                <i data-lucide="log-out" class="w-5 text-lg transition-transform duration-300 group-hover:scale-110"></i>
+                <i data-lucide="log-out"
+                    class="w-5 text-lg transition-transform duration-300 group-hover:scale-110"></i>
                 <span class="font-medium group-hover:translate-x-1 transition">Logout</span>
             </a>
         </div>
