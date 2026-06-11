@@ -186,7 +186,7 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16">
             <div class="text-center">
                 <div
-                    class="w-12 h-12 mx-auto bg-[#E5DCD0]/60 rounded-2xl shadow flex items-center justify-center text-4xl mb-4">
+                    class="w-14 h-14 mx-auto bg-[#E5DCD0]/60 rounded-2xl shadow flex items-center justify-center text-4xl mb-4">
                     <i class="fa-solid fa-truck"></i>
                 </div>
                 <p class="font-semibold text-(--text-dark)">Easy Shipping</p>
@@ -194,7 +194,7 @@
             </div>
             <div class="text-center">
                 <div
-                    class="w-12 h-12 mx-auto bg-[#E5DCD0]/60 rounded-2xl shadow flex items-center justify-center text-4xl mb-4">
+                    class="w-14 h-14 mx-auto bg-[#E5DCD0]/60 rounded-2xl shadow flex items-center justify-center text-4xl mb-4">
                     <i class="fa-solid fa-lock"></i>
                 </div>
                 <p class="font-semibold text-(--text-dark)">Secure Payments</p>
@@ -202,7 +202,7 @@
             </div>
             <div class="text-center">
                 <div
-                    class="w-12 h-12 mx-auto bg-[#E5DCD0]/60 rounded-2xl shadow flex items-center justify-center text-4xl mb-4">
+                    class="w-14 h-14 mx-auto bg-[#E5DCD0]/60 rounded-2xl shadow flex items-center justify-center text-4xl mb-4">
                     <i class="fa-solid fa-users"></i>
                 </div>
                 <p class="font-semibold text-(--text-dark)">Seller Community</p>
