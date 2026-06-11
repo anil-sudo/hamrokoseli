@@ -44,7 +44,7 @@
         <!-- Orders -->
         <a href="{{ route('order') }}"
             class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl  hover:bg-[#D4A017]  group transition-all duration-300 ease-out active:scale-[0.98]
-            {{ Request::routeIs('product-management') ? 'bg-(--hover-color)' : '' }}">
+            {{ Request::routeIs('order') ? 'bg-(--hover-color)' : '' }}">
             <i data-lucide="shopping-cart"
                 class="w-5 text-lg transition-transform duration-300 group-hover:scale-110"></i>
             <span class="font-medium transition-all duration-300 group-hover:translate-x-1">Orders</span>

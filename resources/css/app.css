@@ -224,6 +224,7 @@ textarea {
 .mob-nav-link:hover i {
     opacity: 1;
 }
+
 /* Search bar focus glow */
 .search-wrap:focus-within {
     box-shadow: 0 0 0 2px rgba(31, 61, 46, 0.35);
@@ -290,6 +291,7 @@ body {
 .add-to-cart:hover {
     background: #c4510e;
 }
+
 .view-details:hover {
     background: #b38a0a;
 }
@@ -313,6 +315,7 @@ body {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+
 .today-deal:hover {
     transform: translateY(-6px);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
@@ -358,6 +361,7 @@ body {
     font-weight: 600;
     color: #111827;
 }
+
 .deal-price {
     font-size: 1.1rem;
     font-weight: 700;
@@ -374,11 +378,13 @@ body {
     border-radius: 12px;
     margin-top: 4px;
 }
+
 /* card star */
 .deal-rating .stars {
     color: #ffc107;
     margin-right: 8px;
 }
+
 .deal-rating .stars i {
     margin-right: 2px;
 }
@@ -410,4 +416,25 @@ body {
     .today-deals-container {
         grid-template-columns: 1fr;
     }
+}
+/*seller */
+.card {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.card-dark {
+    background-color: var(--card-bg);
+    border-radius: 12px;
+    padding: 16px;
+}
+
+.navbar a {
+    color: var(--text-light);
+    text-decoration: none;
+}
+
+.navbar a:hover {
+    color: var(--text-light);
 }

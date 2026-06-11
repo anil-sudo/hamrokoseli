@@ -14,7 +14,7 @@
 
 </head>
 
-<body class="overflow-hidden h-screen">
+<body class="bg-brand-cream overflow-hidden h-screen">
     <!-- SIDEBAR -->
     <x-seller_sidebar />
 
