@@ -30,7 +30,6 @@ class SellerController extends Controller
         return view('seller.product-create');
     }
 
-
     public function productEdit()
     {
         // abort_if(auth()->user()->cannot('view products'), 403, 'You do not have permission to view products.');
