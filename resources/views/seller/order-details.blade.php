@@ -30,7 +30,7 @@
                     <div>
                         <label class="block text-sm font-medium text-(--text-color) mb-2">Order Status</label>
                         <div class="relative">
-                            <select id="orderStatus"
+                            <select
                                 class="w-full bg-(--text-light) border border-(--bg-color)/30 focus:outline-none focus:border-(--secondary-color) rounded-2xl px-5 py-4 text-base appearance-none transition-all">
                                 <option value="new">New</option>
                                 <option value="processing">Processing</option>
