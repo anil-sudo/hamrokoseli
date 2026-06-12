@@ -18,9 +18,23 @@ class SellerController extends Controller
 
     public function product_management()
     {
-        abort_if(auth()->user()->cannot('view products'), 403, 'You do not have permission to view products.');
+        // abort_if(auth()->user()->cannot('view products'), 403, 'You do not have permission to view products.');
 
         return view('seller.product-management');
+    }
+
+    public function productCreate()
+    {
+        // abort_if(auth()->user()->cannot('view products'), 403, 'You do not have permission to view products.');
+
+        return view('seller.product-create');
+    }
+
+    public function productEdit()
+    {
+        // abort_if(auth()->user()->cannot('view products'), 403, 'You do not have permission to view products.');
+
+        return view('seller.product-edit');
     }
 
     public function store(Request $request)
@@ -39,5 +53,15 @@ class SellerController extends Controller
     {
         abort_if(auth()->user()->cannot('delete products'), 403, 'You do not have permission to delete products.');
         // your delete logic here
+    }
+
+    public function order()
+    {
+        return view('seller.order');
+    }
+
+    public function orderDetails()
+    {
+        return view('seller.order-details');
     }
 }
