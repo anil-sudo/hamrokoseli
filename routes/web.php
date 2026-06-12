@@ -6,6 +6,7 @@ use App\Http\Controllers\SellerController;
 use App\Http\Controllers\VendorRegisterController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/seller-login', [SellerController::class, 'login'])->name('login');
 // ─── Seller routes (auth to be added later) ───────────────────────────────────
 Route::get('/seller', [SellerController::class, 'seller'])->name('seller');
 Route::get('/seller-dashboard', [SellerController::class, 'dashboard'])->name('dashboard');
