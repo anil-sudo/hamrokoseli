@@ -16,7 +16,11 @@ return new class extends Migration
             $table->foreignId('vendor_id')->constrained('vendors')->cascadeOnDelete();
             $table->foreignId('category_id')->constrained('categories')->restrictOnDelete();
             $table->string('name', 200);
+            $table->string('slug')->unique()->nullable();
+            $table->string('product_type', 100)->nullable();
+            $table->string('sku', 100)->unique();
             $table->text('description')->nullable();
+            $table->json('specifications')->nullable();
             $table->decimal('price', 10, 2);
             $table->decimal('discount_price', 10, 2)->nullable();
             $table->unsignedInteger('stock')->default(0);
