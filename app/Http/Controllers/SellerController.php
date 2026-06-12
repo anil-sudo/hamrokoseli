@@ -6,6 +6,11 @@ use Illuminate\Http\Request;
 
 class SellerController extends Controller
 {
+    public function login()
+    {
+        return view('seller.login');
+    }
+
     public function seller()
     {
         return view('seller.register');
