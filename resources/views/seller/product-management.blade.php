@@ -1,227 +1,212 @@
-<x-seller_layout>
-    <main>
-        <!-- Page Header -->
-        <div class="flex justify-between items-start mb-6">
+<x-seller_layout title="Dashboard" searchPlaceholder="Search orders, products...">
+    <div class="space-y-10">
 
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between items-start gap-4 mb-8">
             <div>
-                <h1 class="text-4xl font-bold text-(--primary-color)">
-                    Product Management
-                </h1>
-
-                <p class="text-base text-(--primary-color) mt-1">
-                    Manage your catalog, stock levels, and pricing from one place.
-                </p>
+                <h1 class="text-3xl font-bold text-(--text-color)">Product Management</h1>
+                <p class="text-sm text-(--text-color) mt-1">Manage your catalog, stock levels, and pricing from one
+                    place.</p>
             </div>
 
-            <button
-                class="bg-(--secondary-color) text-(--text-light) px-6 py-3 rounded-lg text-sm font-semibold flex items-center gap-2">
-                +Add New Product
-            </button>
-
+            <a href="{{ route('product-create') }}"
+                class="inline-flex items-center justify-center gap-2 px-4 py-3 sm:px-5 sm:py-2.5 bg-(--secondary-color)/95 text-(--text-light)/95 rounded-2xl text-sm font-medium hover:bg-(--secondary-color) hover:shadow-lg active:scale-95 transition-all duration-200 shadow-md">
+                <i data-lucide="plus" class="w-5 h-5"></i>
+                Add New Product
+            </a>
         </div>
 
         <!-- Stats Cards -->
-        <div class="grid grid-cols-4 gap-5 mb-6">
-
-            <div class="bg-(--card-bg) rounded-xl p-5 shadow-sm">
-
-                <p class="text-sm font-medium text-(--text-dark)">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div
+                class=" bg-(--card-bg) border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300">
+                <p class="text-sm font-medium text-(--text-color) uppercase tracking-widest mt-3">
                     Total Products
                 </p>
-
-                <div class="flex justify-between items-center mt-2">
-                    <h2 class="text-4xl font-extrabold text-(--text-color) font-sans!">
-                        1,248
-                    </h2>
-
-                    <span class="bg-blue-100 text-blue-600 text-xs px-3 py-1 rounded-full">
-                        +12%
-                    </span>
-                </div>
+                <p class="text-3xl font-extrabold text-(--text-dark) mt-2.5 font-sans"> 1,248 </p>
             </div>
-
-            <div class="bg-(--card-bg) rounded-xl p-5 shadow-sm">
-
-                <p class="text-sm font-medium text-(--text-dark)">
+            <div
+                class=" bg-(--card-bg) border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300">
+                <p class="text-sm font-medium text-(--text-color) uppercase tracking-widest mt-3">
                     Active Listings
                 </p>
-
-                <div class="flex justify-between items-center mt-2">
-                    <h2 class="text-4xl font-extrabold text-(--text-color) font-sans!">
-                        1,102
-                    </h2>
-
-                    <span class="bg-orange-100 text-orange-600 text-xs px-3 py-1 rounded-full">
-                        Stable
-                    </span>
-                </div>
+                <p class="text-3xl font-extrabold text-(--text-dark) mt-2.5 font-sans">1,102</p>
             </div>
 
-            <div class="bg-(--card-bg) rounded-xl p-5 shadow-sm">
-                <p class="text-sm font-medium text-(--text-dark)">
+            <div
+                class=" bg-(--card-bg) border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300">
+                <p class="text-sm font-medium text-(--text-color) uppercase tracking-widest mt-3">
                     Out of Stock
                 </p>
-
-                <div class="flex justify-between items-center mt-2">
-                    <h2 class="text-4xl font-extrabold text-(--text-color) font-sans!">
-                        14
-                    </h2>
-
-                    <span class="bg-red-100 text-red-500 text-xs px-3 py-1 rounded-full">
-                        -3
-                    </span>
-                </div>
+                <p class="text-3xl font-extrabold text-(--text-dark) mt-2.5 font-sans">14</p>
             </div>
 
-            <div class="bg-(--card-bg) rounded-xl p-5 shadow-sm">
-                <p class="text-sm font-medium text-(--text-dark)">
+            <div
+                class=" bg-(--card-bg) border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300">
+                <p class="text-sm font-medium text-(--text-color) uppercase tracking-widest mt-3">
                     Avg. Rating
                 </p>
-
-                <div class="flex justify-between items-center mt-2">
-                    <h2 class="text-4xl font-extrabold text-(--text-color) font-sans!">
-                        4.8
-                    </h2>
-
-                    <span class="text-yellow-500">
-                        ★★★★★
-                    </span>
+                <p class="text-3xl font-extrabold text-(--text-dark) mt-2.5 font-sans">4.8</p>
+                <div class="text-xs flex flex-row items-center gap-1 mt-4 text-(--hover-color)">
+                    <i data-lucide="star" class="w-4 h-4 fill-current text-(--hover-color)"></i>
+                    <i data-lucide="star" class="w-4 h-4 fill-current text-(--hover-color)"></i>
+                    <i data-lucide="star" class="w-4 h-4 fill-current text-(--hover-color)"></i>
+                    <i data-lucide="star" class="w-4 h-4 fill-current text-(--hover-color)"></i>
+                    <i data-lucide="star" class="w-4 h-4"></i>
                 </div>
             </div>
-
         </div>
 
-        <!-- Product Table Card -->
-        <div class="bg-(--card-bg) rounded-xl overflow-hidden shadow-sm">
-
-            <!-- Filters -->
-            <div class="p-5 flex justify-between border-b">
-
-                <div class="flex gap-3">
-
-                    <select class="border border-(--text-color) rounded-lg px-4 py-2 text-sm">
+        <!-- Filters -->
+        <div
+            class="bg-(--card-bg)/60 rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-4 md:p-6  transition-all duration-300">
+            <div class="flex flex-col md:flex-row gap-4 items-center">
+                <div class="flex-1 flex flex-col md:flex-row gap-4">
+                    <select
+                        class="bg-(--card-bg) border border-(--text-color)/20 rounded-2xl px-5 py-3 focus:outline-none focus:border-(--secondary-color) w-full md:w-56 text-base transition-all">
                         <option>All Categories</option>
+                        <option>Textiles</option>
+                        <option>Spices</option>
+                        <option>Handicrafts</option>
+                        <option>Fashion</option>
                     </select>
 
-                    <select class="border  border-(--text-color) rounded-lg px-4 py-2 text-sm">
+                    <select
+                        class="bg-(--card-bg) border border-(--text-color)/20 rounded-2xl px-5 py-3 focus:outline-none focus:border-(--secondary-color) w-full md:w-56 text-base transition-all">
                         <option>Stock Status</option>
+                        <option>In Stock</option>
+                        <option>Low Stock</option>
+                        <option>Out of Stock</option>
                     </select>
-
                 </div>
 
-                <button class="border px-4 py-2 rounded-lg text-sm font-medium">
-                    More Filters
-                </button>
-
             </div>
+        </div>
 
-            <!-- Table -->
-            <table class="w-full">
+        <!-- Products Table -->
+        <div
+            class="bg-(--card-bg) rounded-2xl shadow-sm border border-(--text-color)/20 overflow-hidden transition-all duration-300 hover:shadow-md">
 
-                <thead class="bg-(--bg-color)">
-
-                    <tr class="text-xs font-semibold text-(--text-color) uppercase">
-
-                        <th class="p-4">Image</th>
-                        <th class="p-4 text-left">Product Name</th>
-                        <th class="p-4">Category</th>
-                        <th class="p-4">Price</th>
-                        <th class="p-4">Stock Status</th>
-                        <th class="p-4">Actions</th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    <tr class="border-b">
-
-                        <td class="p-4">
-                            <div class="flex items-center justify-center">
-                                <img src="https://picsum.photos/60" class="w-14 h-14 rounded" />
-                            </div>
-                        </td>
-
-                        <td class="p-4">
-                            <h3 class="text-lg font-semibold">
-                                Hand-woven Pashmina Shawl
-                            </h3>
-
-                            <p class="text-sm text-gray-500">
-                                SKU: HK-PS-001
-                            </p>
-                        </td>
-
-                        <td>
-                            <div class="flex items-center justify-center">
-                                <span class=" bg-gray-100 px-3 py-1 rounded-full text-sm ">
-                                    Textiles
-                                </span>
-                            </div>
-                        </td>
-
-                        <td class="text-3xl font-bold text-(--text-color)">
-                            <div class="flex items-center justify-center">
-                                Rs. 12,500
-                            </div>
-                        </td>
-
-                        <td>
-                            <div class="flex items-center justify-center">
-                                <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs">
+            <div class="responsive-table-wrapper overflow-x-auto">
+                <table class="w-full min-w-full">
+                    <thead>
+                        <tr class="bg-(--card-dark) border-b">
+                            <th
+                                class="text-left py-4 px-4 md:px-6 lg:px-8 text-sm font-semibold text-(--text-color) uppercase tracking-wider">
+                                IMAGE</th>
+                            <th
+                                class="text-left py-4 px-4 md:px-6 lg:px-8 text-sm font-semibold text-(--text-color) uppercase tracking-wider">
+                                PRODUCT NAME</th>
+                            <th
+                                class="text-left py-4 px-4 md:px-6 lg:px-8 text-sm font-semibold text-(--text-color) uppercase tracking-wider">
+                                CATEGORY</th>
+                            <th
+                                class="text-left py-4 px-4 md:px-6 lg:px-8 text-sm font-semibold text-(--text-color) uppercase tracking-wider">
+                                PRICE</th>
+                            <th
+                                class="text-left py-4 px-4 md:px-6 lg:px-8 text-sm font-semibold text-(--text-color) uppercase tracking-wider">
+                                STOCK STATUS</th>
+                            <th
+                                class="text-left py-4 px-4 md:px-6 lg:px-8 text-sm font-semibold text-(--text-color) uppercase tracking-wider">
+                                ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-(--text-color)/10 text-sm">
+                        <!-- Product Row 1 -->
+                        <tr class="hover:bg-(--card-dark)/10 transition-all duration-200 cursor-pointer">
+                            <td class="px-4 py-4 lg:p-8">
+                                <img src="https://picsum.photos/id/1015/80/80"
+                                    class="w-14 h-14 object-cover rounded-2xl" alt="">
+                            </td>
+                            <td class="px-6 py-4">
+                                <p class="font-semibold">Hand-woven Pashmina Shawl</p>
+                                <p class="text-xs (--text-dark)/70">SKU: HK-PS-001</p>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span
+                                    class="px-4 py-1 bg-(--text-dark)/20 text-(--text-dark) text-xs rounded-full">Textiles</span>
+                            </td>
+                            <td class="px-6 py-4 text-right font-semibold">Rs.12,500</td>
+                            <td class="px-6 py-4 text-center">
+                                <span
+                                    class="inline-flex items-center gap-1.5 px-4 py-1 bg-(--card-dark) text-(--primary-color)/85 text-xs font-medium rounded-2xl">
+                                    <i data-lucide="circle" class="w-3 h-3 fill-current"></i>
                                     In Stock (42)
                                 </span>
-                            </div>
-                        </td>
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                <div class="flex items-center justify-center gap-4">
+                                    <a href="{{ route('product-edit') }}"
+                                        class="text-(--text-color)/70 hover:text-(--hover-color) transition">
+                                        <i data-lucide="edit" class="w-5 h-5"></i>
+                                    </a>
+                                    <a href=""
+                                        class="text-(--text-color)/70 hover:text-(--secondary-color) transition">
+                                        <i data-lucide="trash-2" class="w-5 h-5"></i>
+                                </a>
+                                </div>
+                            </td>
+                        </tr>
 
-                        <td class="space-x-3">
-                            <div class="flex items-center justify-center gap-4">
-                                <i class="fa-solid fa-pen text-(--secondary-color)"></i> <i
-                                    class="fa-solid fa-trash text-(--secondary-color)"></i>
-                            </div>
-                        </td>
+                        <!-- Product Row 2 -->
+                        <tr class="hover:bg-(--card-dark)/10 transition-all duration-200 cursor-pointer">
+                            <td class="px-4 py-4 lg:p-8">
+                                <img src="https://picsum.photos/id/201/80/80" class="w-14 h-14 object-cover rounded-2xl"
+                                    alt="">
+                            </td>
+                            <td class="px-6 py-4">
+                                <p class="font-semibold">Himalayan Organic Turmeric</p>
+                                <p class="text-xs (--text-dark)/70">SKU: HK-SP-024</p>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span
+                                    class="px-4 py-1 bg-(--text-dark)/20 text-(--text-dark) text-xs rounded-full">Spices</span>
+                            </td>
+                            <td class="px-6 py-4 text-right font-semibold">Rs.850</td>
+                            <td class="px-6 py-4 text-center">
+                                <span
+                                    class="inline-flex items-center gap-1.5 px-4 py-1 bg-(--hover-color)/50 text-(--secondary-color) text-xs font-medium rounded-2xl">
+                                    Low Stock (5)
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                <div class="flex items-center justify-center gap-4">
+                                    <a href="{{ route('product-edit') }}"
+                                        class="text-(--text-color)/70 hover:text-(--hover-color) transition">
+                                        <i data-lucide="edit" class="w-5 h-5"></i>
+                                    </a>
+                                    <a href=""
+                                        class="text-(--text-color)/70 hover:text-(--secondary-color) transition">
+                                        <i data-lucide="trash-2" class="w-5 h-5"></i>
+                                </a>
+                                </div>
+                            </td>
+                        </tr>
 
-                    </tr>
-
-                </tbody>
-
-            </table>
-
-            <!-- Pagination -->
-            <div class="p-5 flex justify-between items-center">
-
-                <p class="text-sm text-gray-500">
-                    Showing 1 to 4 of 1,248 products
-                </p>
-
-                <div class="flex gap-2">
-
-                    <button class="w-10 h-10 border rounded">
-                        ‹
-                    </button>
-
-                    <button class="w-10 h-10 bg-(--secondary-color) text-(--text-light) rounded">
-                        1
-                    </button>
-
-                    <button class="w-10 h-10 border rounded">
-                        2
-                    </button>
-
-                    <button class="w-10 h-10 border rounded">
-                        3
-                    </button>
-
-                    <button class="w-10 h-10 border rounded">
-                        ›
-                    </button>
-
-                </div>
-
+                        <!-- Add more rows as needed -->
+                    </tbody>
+                </table>
             </div>
 
+            <!-- Pagination -->
+            <div class="px-6 py-5 bg-(--card-dark) border-t flex items-center justify-between text-sm">
+                <p class="text-(text-color)">Showing 1 to 4 of 1,248 products</p>
+                <div class="flex items-center gap-1">
+                    <button
+                        class="px-4 py-2 border border-(text-color) hover:bg-(--primary-color) hover:text-(--text-light) rounded-xl transition">‹</button>
+                    <button
+                        class="px-4 py-2 border border-(text-color) hover:bg-(--primary-color) hover:text-(--text-light) rounded-xl transition">1</button>
+                    <button
+                        class="px-4 py-2 border border-(text-color) hover:bg-(--primary-color) hover:text-(--text-light) rounded-xl transition">2</button>
+                    <button
+                        class="px-4 py-2 border border-(text-color) hover:bg-(--primary-color) hover:text-(--text-light) rounded-xl transition">3</button>
+                    <span class="px-3">...</span>
+                    <button
+                        class="px-4 py-2 border border-(text-color) hover:bg-(--primary-color) hover:text-(--text-light) rounded-xl transition">312</button>
+                    <button
+                        class="px-4 py-2 border border-(text-color) hover:bg-(--primary-color) hover:text-(--text-light) rounded-xl transition">›</button>
+                </div>
+            </div>
         </div>
-
-    </main>
+    </div>
 </x-seller_layout>

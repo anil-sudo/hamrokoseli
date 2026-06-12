@@ -1,8 +1,8 @@
             <header
-                class="sticky top-0 z-30 w-full bg-(--card-dark) border-b border-(--primary-color)/15 shadow-sm backdrop-blur-md">
+                class="sticky top-0 z-30 w-full bg-[#1E2A44] border-b border-(--primary-color)/15 shadow-sm backdrop-blur-md">
                 <div class="flex items-center gap-3 w-full px-4 md:px-8 py-3 justify-between">
 
-                    <button id="menu-btn" class="md:hidden text-(--text-color) mr-2">
+                    <button id="menu-btn" class="md:hidden text-(--text-light) mr-2">
                         <i data-lucide="menu" class="text-xl"></i>
                     </button>
 
@@ -20,7 +20,7 @@
                         {{-- Notification Bell --}}
                         <a href="#"
                             class="relative p-3 text-(--text-color) cursor-pointer hover:scale-110 transition-transform">
-                            <i data-lucide="bell" class="w-5 fill-current text-(--text-color)"></i>
+                            <i data-lucide="bell" class="w-5 fill-current text-(--text-light)"></i>
                         </a>
 
                         {{-- Profile --}}

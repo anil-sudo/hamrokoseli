@@ -1,5 +1,8 @@
 //
 import './seller-layout';
+import './product-create';
+import './product-edit';
+
 (function () {
     const hamburger     = document.getElementById('hamburger-btn');
     const drawer        = document.getElementById('mobile-drawer');
@@ -69,7 +72,7 @@ import './seller-layout';
         if (loginModal && loginModalContainer) {
             loginModal.classList.remove('hidden');
             loginModal.classList.add('flex');
-            
+
             // Trigger animation frame
             setTimeout(() => {
                 loginModal.classList.remove('opacity-0');
