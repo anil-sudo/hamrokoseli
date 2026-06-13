@@ -6,6 +6,7 @@ use App\Filament\Widgets\OrdersChartWidget;
 use App\Filament\Widgets\OrderStatusChartWidget;
 use App\Filament\Widgets\RevenueChartWidget;
 use App\Filament\Widgets\StatsOverviewWidget;
+use App\Http\Middleware\RedirectNonAdminToAdminLogin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -21,8 +22,6 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
-// ← add this back
-
 class AdminPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -33,7 +32,6 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->profile()
             ->login()
-            ->registration()
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -66,6 +64,7 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                RedirectNonAdminToAdminLogin::class, // ← redirects non-admins to /admin/login
             ])
             ->authMiddleware([
                 Authenticate::class,

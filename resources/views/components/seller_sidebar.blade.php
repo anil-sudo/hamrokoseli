@@ -93,12 +93,15 @@
 
         <!-- Logout button section with proper spacing and hover effect (original design improved) -->
         <div class="navbar">
-            <a href=""
-                class="nav-link w-full flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017]  transition-all duration-300 active:scale-[0.98]">
-                <i data-lucide="log-out"
-                    class="w-5 text-lg transition-transform duration-300 group-hover:scale-110"></i>
-                <span class="font-medium group-hover:translate-x-1 transition">Logout</span>
-            </a>
+           <form method="POST" action="{{ route('logout') }}">
+    @csrf
+    <button type="submit"
+        class="nav-link w-full flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017] transition-all duration-300 active:scale-[0.98]">
+        <i data-lucide="log-out"
+            class="w-5 text-lg transition-transform duration-300 group-hover:scale-110"></i>
+        <span class="font-medium group-hover:translate-x-1 transition">Logout</span>
+    </button>
+</form>
         </div>
     </div>
 </aside>

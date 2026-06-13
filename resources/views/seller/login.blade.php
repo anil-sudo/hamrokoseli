@@ -100,7 +100,7 @@
                     </div>
                 @endif
 
-                <form action="" method="POST" class="space-y-5">
+                <form action="{{ route('seller.login.submit') }}" method="POST" class="space-y-5">
                     @csrf
                     <!-- Email Field -->
                     <div>

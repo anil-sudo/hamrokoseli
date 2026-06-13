@@ -15,7 +15,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->redirectGuestsTo('/login');
+        $middleware->redirectGuestsTo(function ($request) {
+            if ($request->is('seller-dashboard', 'product-management', 'create-product', 'edit-product*', 'orders', 'order-details')) {
+                return '/seller-login';
+            }
+
+            return '/login';
+        });
 
         $middleware->alias([
             'role' => RoleMiddleware::class,
