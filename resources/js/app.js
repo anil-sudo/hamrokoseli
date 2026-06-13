@@ -1,8 +1,5 @@
 //
 import './seller-layout';
-import './product-create';
-import './product-edit';
-
 (function () {
     const hamburger     = document.getElementById('hamburger-btn');
     const drawer        = document.getElementById('mobile-drawer');
@@ -58,6 +55,7 @@ import './product-edit';
     const loginModalContainer = document.getElementById('login-modal-container');
     const desktopSigninBtn = document.getElementById('desktop-signin');
     const mobileSigninBtn = document.getElementById('mobile-signin');
+    const mobileSignupBtn = document.getElementById('mobile-signup');
     const closeLoginModalBtn = document.getElementById('close-login-modal');
 
     const loginView = document.getElementById('login-view');
@@ -65,14 +63,26 @@ import './product-edit';
     const modalShowRegisterBtn = document.getElementById('modal-show-register');
     const modalShowLoginBtn = document.getElementById('modal-show-login');
 
-    function openLoginModal(e) {
+    function openLoginModal(e, view = 'login') {
         if (e) e.preventDefault();
         closeDrawer(); // Close mobile drawer if open
 
         if (loginModal && loginModalContainer) {
+            if (view === 'register') {
+                if (loginView && registerView) {
+                    loginView.classList.add('hidden');
+                    registerView.classList.remove('hidden');
+                }
+            } else {
+                if (loginView && registerView) {
+                    loginView.classList.remove('hidden');
+                    registerView.classList.add('hidden');
+                }
+            }
+
             loginModal.classList.remove('hidden');
             loginModal.classList.add('flex');
-
+            
             // Trigger animation frame
             setTimeout(() => {
                 loginModal.classList.remove('opacity-0');
@@ -107,8 +117,9 @@ import './product-edit';
         }
     }
 
-    if (desktopSigninBtn) desktopSigninBtn.addEventListener('click', openLoginModal);
-    if (mobileSigninBtn) mobileSigninBtn.addEventListener('click', openLoginModal);
+    if (desktopSigninBtn) desktopSigninBtn.addEventListener('click', (e) => openLoginModal(e, 'login'));
+    if (mobileSigninBtn) mobileSigninBtn.addEventListener('click', (e) => openLoginModal(e, 'login'));
+    if (mobileSignupBtn) mobileSignupBtn.addEventListener('click', (e) => openLoginModal(e, 'register'));
     if (closeLoginModalBtn) closeLoginModalBtn.addEventListener('click', closeLoginModal);
 
     // Switch to Register View
