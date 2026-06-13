@@ -19,7 +19,9 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($credentials)) {
+        $remember = $request->boolean('remember');
+
+        if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
 
             $user = Auth::user();
@@ -35,13 +37,13 @@ class AuthController extends Controller
             Auth::logout();
 
             return back()->withErrors([
-                'email' => 'You are not authorized to access this area.',
-            ]);
+                'email' => 'You do not have a seller account.',
+            ])->onlyInput('email');
         }
 
         return back()->withErrors([
-            'email' => 'Invalid credentials.',
-        ]);
+            'email' => 'Invalid email or password.',
+        ])->onlyInput('email');
     }
 
     public function logout(Request $request)
