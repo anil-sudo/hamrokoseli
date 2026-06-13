@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Spatie\Permission\Middleware\PermissionMiddleware;
 use Spatie\Permission\Middleware\RoleMiddleware;
 use Spatie\Permission\Middleware\RoleOrPermissionMiddleware;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -33,4 +34,15 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->shouldRenderJsonWhen(
             fn (Request $request) => $request->is('api/*'),
         );
+
+        // Redirect 403 (wrong role) to the appropriate login page instead of showing forbidden error
+        $exceptions->render(function (AccessDeniedHttpException $e, Request $request) {
+            if ($request->is('seller-dashboard', 'product-management', 'create-product', 'edit-product*', 'orders', 'order-details')) {
+                return redirect('/seller-login')
+                    ->withErrors(['email' => 'You do not have vendor access.']);
+            }
+
+            return redirect('/login')
+                ->withErrors(['email' => 'You do not have access to this page.']);
+        });
     })->create();
