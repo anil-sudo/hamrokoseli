@@ -134,7 +134,7 @@
             class="flex-1 text-center rounded-full border border-white text-white font-semibold py-2 text-sm hover:bg-white hover:text-[#1f3d2e] transition-all duration-300">
             Login
         </a>
-        <a href="{{ route('vendor.register') }}"
+        <a href="{{ route('vendor.register') }}" id="mobile-signup"
             class="flex-1 text-center rounded-full bg-white text-[#1f3d2e] font-semibold py-2 text-sm hover:bg-emerald-100 transition-all duration-300">
             Sign Up
         </a>
