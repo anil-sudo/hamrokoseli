@@ -14,6 +14,29 @@ function clearError(input) {
     input.classList.remove('border-red-500');
 }
 
+function showToast(message, type = 'error') {
+    const container = document.getElementById('toastContainer');
+
+    const toast = document.createElement('div');
+
+    const bgColor = type === 'success'
+        ? 'bg-(--primary-color)'
+        : 'bg-(--secondary-color)';
+
+    toast.className =
+        `${bgColor} text-white px-5 py-4 rounded-xl shadow-lg flex items-center gap-3 min-w-[300px] animate-toast`;
+
+    toast.innerHTML = `
+        <span>${message}</span>
+    `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+    }, 4000);
+}
+
 function validateForm() {
     let isValid = true;
 
@@ -69,21 +92,20 @@ function validateForm() {
     // At least one specification
     const specs = document.querySelectorAll('#specifications .grid');
     if (specs.length === 0) {
-        alert("Please add at least one specification.");
-        isValid = false;
+        showToast("Please add at least one specification.", 'error'); isValid = false;
     }
 
     // At least one variant
     const variants = document.querySelectorAll('#variants .border');
     if (variants.length === 0) {
-        alert("Please add at least one variant.");
-        isValid = false;
+        showToast("Please add at least one variant.", 'error'); isValid = false;
     }
 
     return isValid;
 }
 
 // ==================== SPECIFICATIONS ====================
+let specIndex = 0;
 function addSpecification() {
     const container = document.getElementById('specifications');
     const row = document.createElement('div');
@@ -109,32 +131,41 @@ function addSpecification() {
         </div>
        `;
     container.appendChild(row);
+    specIndex++;
     lucide.createIcons();
 }
 
 // ==================== VARIANTS ====================
+let variantIndex = 0;
 function addVariant() {
     const container = document.getElementById('variants');
     const row = document.createElement('div');
-    row.className = 'border border-(--text-color)/20 rounded-2xl p-5 bg-(--card-dark)/50';
+    row.className = 'variant-row border border-(--text-color)/20 rounded-2xl p-5 bg-(--card-dark)/50';
     row.innerHTML = `
-                <div class="grid grid-cols-12 gap-4">
-                    <div class="col-span-5">
-                        <label class="block text-xs font-medium text-(--text-color)/70 mb-1">Variant Name</label>
-                        <input type="text" name="variant_name" placeholder="e.g.Size, Color" class="w-full px-4 py-4 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-base focus:outline-none focus:border-(--secondary-color)">
-                    </div>
-                    <div class="col-span-6">
-                        <label class="block text-xs font-medium text-(--text-color)/70 mb-1">Values</label>
-                        <input type="text" name="variant_value" placeholder="e.g.S, M, L" class="w-full px-5 py-4 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-base focus:outline-none focus:border-(--secondary-color)">
-                    </div>
-                    <div class="col-span-1 flex items-end">
-                        <button type="button" onclick="this.closest('.border').remove()" class="w-11 h-11 flex items-center justify-center text-(--secondary-color) hover:text-red-500 rounded-2xl transition">
-                            <i data-lucide="trash-2" class="w-5 h-5"></i>
-                        </button>
-                    </div>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
+                    <input type="text" name="variants[${variantIndex}][sku]"
+                        placeholder="SKU *"
+                        class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
+                    <input type="text" name="variants[${variantIndex}][size]"
+                        placeholder="Size (e.g. M, L, XL)"
+                        class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
+                    <input type="text" name="variants[${variantIndex}][color]"
+                        placeholder="Color"
+                        class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
+                    <input type="number" name="variants[${variantIndex}][price]"
+                        placeholder="Price override (Rs.)" min="0" step="1"
+                        class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
+                    <input type="number" name="variants[${variantIndex}][stock]"
+                        placeholder="Stock" min="0" value="0"
+                        class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
                 </div>
+                <button type="button" onclick="this.closest('.variant-row').remove()"
+                    class="text-sm text-red-400 hover:text-red-600 flex items-center gap-1">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i> Remove variant
+                </button>
             `;
     container.appendChild(row);
+    variantIndex++;
     lucide.createIcons();
 }
 
@@ -164,18 +195,16 @@ uploadArea.addEventListener('drop', (e) => {
 function handleFiles(files) {
     Array.from(files).forEach(file => {
         if (!file.type.startsWith('image/')) {
-            alert("Only image files (PNG, JPG, etc.) are allowed.");
-            return;
+            showToast("Only image files are allowed.", 'error'); return;
         }
 
-        if (file.size > 10 * 1024 * 1024) {
-            alert(`"${file.name}" is too large.\nImage size must be less than 10MB.`);
+        if (file.size > 100 * 1024) {
+            showToast(`"${file.name}" is too large. Maximum size is 100KB.`, 'error');
             return;
         }
 
         if (uploadedFiles.length >= 4) {
-            alert("Maximum 4 images allowed.");
-            return;
+            showToast("Maximum 4 images allowed.", 'error'); return;
         }
 
         uploadedFiles.push(file);
@@ -209,13 +238,15 @@ function removeImage(btn) {
 }
 
 // ==================== DESCRIPTION COUNTER ====================
-const description = document.getElementById('description');
-const charCount = document.getElementById('charCount');
+const descriptionEl = document.getElementById('description');
+const charCountEl = document.getElementById('charCount');
 
-description.addEventListener('input', () => {
-    let count = description.value.length;
-    charCount.textContent = `${count}/2000`;
-});
+function updateCharCount() {
+    charCountEl.textContent = descriptionEl.value.length + '/2000';
+}
+descriptionEl.addEventListener('input', updateCharCount);
+updateCharCount(); // run on load (for old() repopulation)
+
 
 // ==================== FORM SUBMISSION ====================
 document.getElementById('productForm').addEventListener('submit', function (e) {
