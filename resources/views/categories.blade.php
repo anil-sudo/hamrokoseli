@@ -148,7 +148,7 @@
                         </p>
                     </div>
                     <div class="flex-shrink-0">
-                        <a href="{{ route('seller') }}"
+                        <a href="{{ route('seller.login') }}"
                             class="inline-block bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-sm font-semibold py-3.5 px-8 rounded-xl shadow hover:shadow-md transition duration-300">
                             Become a Seller
                         </a>
