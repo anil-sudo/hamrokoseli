@@ -20,6 +20,9 @@
         </div>
     @endif
 
+<div id="toastContainer"
+     class="fixed top-5 right-5 z-50 space-y-3"></div>
+
     <form id="productForm"
           method="POST"
           action="{{ route('product.store') }}"
@@ -97,7 +100,7 @@
             <div class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6 lg:p-8">
                 <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
                     <i data-lucide="settings" class="w-6 h-6 text-(--primary-color)"></i>
-                    Product Specifications
+                    Product Specifications <span class="text-(--secondary-color)">*</span>
                 </h2>
                 <p class="text-sm text-(--text-color)/70 mb-4">Add specifications like Material, Weight, Size, etc.</p>
 
@@ -134,7 +137,7 @@
             <div class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6 lg:p-8">
                 <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
                     <i data-lucide="layers" class="w-6 h-6 text-(--primary-color)"></i>
-                    Variants
+                    Variants <span class="text-(--secondary-color)">*</span>
                 </h2>
                 <p class="text-sm text-(--text-color)/70 mb-4">Add variants like Size, Color, etc.</p>
 
@@ -190,7 +193,7 @@
             <div class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6 lg:p-8">
                 <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
                     <i data-lucide="image" class="w-6 h-6 text-(--primary-color)"></i>
-                    Product Media
+                    Product Media <span class="text-(--secondary-color)">*</span>
                 </h2>
 
                 <div id="uploadArea"
@@ -215,7 +218,7 @@
             <div class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6 lg:p-8">
                 <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
                     <i data-lucide="dollar-sign" class="w-6 h-6 text-(--primary-color)"></i>
-                    Pricing & Inventory
+                    Pricing & Inventory <span class="text-(--secondary-color)">*</span>
                 </h2>
 
                 <div class="space-y-5">
@@ -284,115 +287,6 @@
         </div>
     </form>
 
-    <script>
-        // ── Character counter ──────────────────────────────────────────────────
-        const descriptionEl = document.getElementById('description');
-        const charCountEl   = document.getElementById('charCount');
 
-        function updateCharCount() {
-            charCountEl.textContent = descriptionEl.value.length + '/2000';
-        }
-        descriptionEl.addEventListener('input', updateCharCount);
-        updateCharCount(); // run on load (for old() repopulation)
-
-        // ── Specifications ─────────────────────────────────────────────────────
-        let specIndex = {{ old('specifications') ? count(old('specifications')) : 0 }};
-
-        function addSpecification() {
-            const container = document.getElementById('specifications');
-            const row = document.createElement('div');
-            row.className = 'flex gap-3 items-center spec-row';
-            row.innerHTML = `
-                <input type="text" name="specifications[${specIndex}][key]"
-                    placeholder="e.g. Material"
-                    class="flex-1 px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-                <input type="text" name="specifications[${specIndex}][value]"
-                    placeholder="e.g. 100% Wool"
-                    class="flex-1 px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-                <button type="button" onclick="this.closest('.spec-row').remove()"
-                    class="p-2 text-red-400 hover:text-red-600 transition">
-                    <i data-lucide="trash-2" class="w-5 h-5"></i>
-                </button>
-            `;
-            container.appendChild(row);
-            specIndex++;
-            lucide.createIcons(); // re-render lucide icons in new row
-        }
-
-        // ── Variants ───────────────────────────────────────────────────────────
-        let variantIndex = {{ old('variants') ? count(old('variants')) : 0 }};
-
-        function addVariant() {
-            const container = document.getElementById('variants');
-            const row = document.createElement('div');
-            row.className = 'variant-row border border-(--text-color)/10 rounded-2xl p-4 bg-(--card-dark)/40';
-            row.innerHTML = `
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
-                    <input type="text" name="variants[${variantIndex}][sku]"
-                        placeholder="SKU *"
-                        class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-                    <input type="text" name="variants[${variantIndex}][size]"
-                        placeholder="Size (e.g. M, L, XL)"
-                        class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-                    <input type="text" name="variants[${variantIndex}][color]"
-                        placeholder="Color"
-                        class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-                    <input type="number" name="variants[${variantIndex}][price]"
-                        placeholder="Price override (Rs.)" min="0" step="1"
-                        class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-                    <input type="number" name="variants[${variantIndex}][stock]"
-                        placeholder="Stock" min="0" value="0"
-                        class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-                </div>
-                <button type="button" onclick="this.closest('.variant-row').remove()"
-                    class="text-sm text-red-400 hover:text-red-600 flex items-center gap-1">
-                    <i data-lucide="trash-2" class="w-4 h-4"></i> Remove variant
-                </button>
-            `;
-            container.appendChild(row);
-            variantIndex++;
-            lucide.createIcons();
-        }
-
-        // ── Image preview ──────────────────────────────────────────────────────
-        function previewImages(event) {
-            const files   = Array.from(event.target.files).slice(0, 4);
-            const grid    = document.getElementById('previewGrid');
-            grid.innerHTML = '';
-
-            files.forEach((file, index) => {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const wrapper = document.createElement('div');
-                    wrapper.className = 'relative';
-                    wrapper.innerHTML = `
-                        <img src="${e.target.result}"
-                             class="w-full aspect-square object-cover rounded-xl border border-(--text-color)/20"
-                             alt="Preview ${index + 1}">
-                        ${index === 0 ? '<span class="absolute bottom-1 left-1 text-xs bg-black/60 text-white px-1.5 py-0.5 rounded">Main</span>' : ''}
-                    `;
-                    grid.appendChild(wrapper);
-                };
-                reader.readAsDataURL(file);
-            });
-        }
-
-        // Drag-and-drop support on the upload area
-        const uploadArea = document.getElementById('uploadArea');
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('border-(--secondary-color)');
-        });
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('border-(--secondary-color)');
-        });
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('border-(--secondary-color)');
-            const input = document.getElementById('mediaInput');
-            input.files = e.dataTransfer.files;
-            previewImages({ target: input });
-        });
-    </script>
-
+@vite('resources/js/product-create.js')
 </x-seller_layout>
