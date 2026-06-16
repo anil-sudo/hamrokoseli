@@ -59,16 +59,19 @@
         </a>
 
         <!-- Reviews -->
-        <a href=""
-            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017] group transition-all duration-300 ease-out active:scale-[0.98]">
+        <a href="{{ route('seller.review') }}"
+            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017] group transition-all duration-300 ease-out active:scale-[0.98]
+            {{ Request::routeIs('seller.review') ? 'bg-(--hover-color)' : '' }}">
+
             <i data-lucide="star"
-                class="w-5 text-lg fill-current text-(--text-light) transition-transform duration-300 group-hover:scale-110"></i>
+                class="w-5 text-lg transition-transform duration-300 group-hover:scale-110"></i>
             <span class="font-medium transition-all duration-300 group-hover:translate-x-1">Reviews</span>
         </a>
 
         <!-- profile -->
-        <a href=""
-            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017] group transition-all duration-300 ease-out active:scale-[0.98]">
+        <a href="{{ route('seller.profile') }}"
+            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017] group transition-all duration-300 ease-out active:scale-[0.98]
+            {{ Request::routeIs('seller.profile') ? 'bg-(--hover-color)' : '' }}">
             <i data-lucide="user-round" class="w-5 transition-transform duration-300 group-hover:scale-110"></i>
             <span class="font-medium transition-all duration-300 group-hover:translate-x-1">Profile</span>
         </a>
@@ -77,7 +80,7 @@
         <a href=""
             class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017] group transition-all duration-300 ease-out active:scale-[0.98]">
             <i data-lucide="bell"
-                class="w-5 fill-current text-(--text-light) transition-transform duration-300 group-hover:scale-110"></i>
+                class="w-5 transition-transform duration-300 group-hover:scale-110"></i>
             <span class="font-medium transition-all duration-300 group-hover:translate-x-1">Notification</span>
         </a>
     </nav>
@@ -93,15 +96,15 @@
 
         <!-- Logout button section with proper spacing and hover effect (original design improved) -->
         <div class="navbar">
-           <form method="POST" action="{{ route('logout') }}">
-    @csrf
-    <button type="submit"
-        class="nav-link w-full flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017] transition-all duration-300 active:scale-[0.98]">
-        <i data-lucide="log-out"
-            class="w-5 text-lg transition-transform duration-300 group-hover:scale-110"></i>
-        <span class="font-medium group-hover:translate-x-1 transition">Logout</span>
-    </button>
-</form>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit"
+                    class="nav-link w-full flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017] hover:text-[#3A2A1F] transition-all duration-300 active:scale-[0.98]">
+                    <i data-lucide="log-out"
+                        class="w-5 text-lg transition-transform duration-300 group-hover:scale-110"></i>
+                    <span class="font-medium group-hover:translate-x-1 transition">Logout</span>
+                </button>
+            </form>
         </div>
     </div>
 </aside>

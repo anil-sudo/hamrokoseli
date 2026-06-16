@@ -158,4 +158,7 @@
             </button>
         </div>
     </form>
+
+@vite('resources/js/product-edit.js')
+
 </x-seller_layout>

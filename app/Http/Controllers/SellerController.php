@@ -256,6 +256,15 @@ class SellerController extends Controller
         return view('seller.order-details');
     }
 
+    public function sellerProfile()
+    {
+        return view('seller.profile');
+    }
+
+    public function sellerReview()
+    {
+        return view('seller.review');
+    }
     // ─── Helpers ──────────────────────────────────────────────────────────────
 
     private function filterSpecs(array $specs): array

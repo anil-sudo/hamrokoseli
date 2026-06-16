@@ -280,7 +280,7 @@
                 Cancel
             </a>
             <button type="submit"
-                class="inline-flex items-center gap-2 px-8 py-3.5 bg-(--secondary-color)/95 hover:bg-(--secondary-color) text-(--text-light) rounded-2xl font-semibold transition w-fit sm:w-auto">
+                class="inline-flex items-center gap-2 px-8 py-3.5 bg-(--secondary-color)/95 hover:bg-[#B94E31] text-(--text-light) rounded-2xl font-semibold transition w-fit sm:w-auto">
                 Save & Continue
                 <i data-lucide="arrow-right" class="w-5 h-5"></i>
             </button>
