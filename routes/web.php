@@ -6,8 +6,8 @@ use App\Http\Controllers\SellerController;
 use App\Http\Controllers\VendorRegisterController;
 use Illuminate\Support\Facades\Route;
 
-// ─── Seller Auth (guest only) ─────────────────────────────────────────────────
-Route::middleware('guest')->group(function () {
+// ─── Seller Auth (guest on vendor guard only) ─────────────────────────────────
+Route::middleware('guest:vendor')->group(function () {
     Route::get('/seller-login', [SellerController::class, 'login'])->name('seller.login');
     Route::post('/seller-login', [SellerController::class, 'loginSubmit'])->name('seller.login.submit');
 });
@@ -16,8 +16,8 @@ Route::post('/seller-logout', [SellerController::class, 'logout'])->name('seller
 Route::get('/seller-profile', [SellerController::class, 'sellerProfile'])->name('seller.profile');
 Route::get('/seller-review', [SellerController::class, 'sellerReview'])->name('seller.review');
 
-// ─── Seller routes (protected) ────────────────────────────────────────────────
-Route::middleware(['auth', 'role:vendor'])->group(function () {
+// ─── Seller routes (protected by vendor guard) ────────────────────────────────
+Route::middleware(['auth:vendor', 'role:vendor'])->group(function () {
     Route::get('/seller-dashboard', [SellerController::class, 'dashboard'])->name('dashboard');
     Route::get('/product-management', [SellerController::class, 'product_management'])->name('product-management');
     Route::get('/create-product', [SellerController::class, 'productCreate'])->name('product-create');
@@ -41,8 +41,8 @@ Route::get('/featured-products', [PageController::class, 'featured_products'])->
 Route::get('/top-sellers', [PageController::class, 'top_sellers'])->name('top-sellers');
 Route::get('/about-us', [PageController::class, 'about_us'])->name('about-us');
 
-// ─── User Auth routes ─────────────────────────────────────────────────────────
-Route::middleware('guest')->group(function () {
+// ─── User Auth routes (guest on web guard) ────────────────────────────────────
+Route::middleware('guest:web')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/vendor/register', [VendorRegisterController::class, 'show'])->name('vendor.register');

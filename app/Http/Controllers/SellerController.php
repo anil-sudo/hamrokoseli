@@ -23,26 +23,21 @@ class SellerController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
-            $user = Auth::user();
+        // Use 'vendor' guard instead of default
+        if (Auth::guard('vendor')->attempt($credentials, $request->boolean('remember'))) {
+            $user = Auth::guard('vendor')->user();
 
-            // Block if not vendor or not active
             if ($user->role !== 'vendor' || ! $user->is_active) {
-                Auth::logout();
+                Auth::guard('vendor')->logout();
 
-                return back()
-                    ->withInput($request->only('email'))
-                    ->withErrors([
-                        'email' => 'You do not have a seller account.',
-                    ]);
+                return back()->withInput($request->only('email'))
+                    ->withErrors(['email' => 'You do not have a seller account.']);
             }
 
-            // Sync Spatie role if missing
             if (! $user->hasRole('vendor')) {
                 $user->assignRole('vendor');
             }
 
-            // Auto-create vendor record if missing
             if (! $user->vendor) {
                 $user->vendor()->create([
                     'vendor_name' => $user->name,
@@ -58,16 +53,13 @@ class SellerController extends Controller
             return redirect()->route('dashboard');
         }
 
-        return back()
-            ->withInput($request->only('email'))
-            ->withErrors([
-                'email' => 'These credentials do not match our records.',
-            ]);
+        return back()->withInput($request->only('email'))
+            ->withErrors(['email' => 'These credentials do not match our records.']);
     }
 
     public function logout(Request $request)
     {
-        Auth::logout();
+        Auth::guard('vendor')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
