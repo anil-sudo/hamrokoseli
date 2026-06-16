@@ -64,7 +64,7 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-                RedirectNonAdminToAdminLogin::class, // ← redirects non-admins to /admin/login
+                RedirectNonAdminToAdminLogin::class,
             ])
             ->authMiddleware([
                 Authenticate::class,
