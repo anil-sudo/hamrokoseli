@@ -14,6 +14,29 @@ function clearError(input) {
     input.classList.remove('border-red-500');
 }
 
+function showToast(message, type = 'error') {
+    const container = document.getElementById('toastContainer');
+
+    const toast = document.createElement('div');
+
+    const bgColor = type === 'success'
+        ? 'bg-(--primary-color)'
+        : 'bg-(--secondary-color)';
+
+    toast.className =
+        `${bgColor} text-white px-5 py-4 rounded-xl shadow-lg flex items-center gap-3 min-w-[300px] animate-toast`;
+
+    toast.innerHTML = `
+        <span>${message}</span>
+    `;
+
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+    }, 4000);
+}
+
 function validateForm() {
     let isValid = true;
 
@@ -69,14 +92,14 @@ function validateForm() {
     // At least one specification
     const specs = document.querySelectorAll('#specifications .grid');
     if (specs.length === 0) {
-        alert("Please add at least one specification.");
+        showToast("Please add at least one specification.");
         isValid = false;
     }
 
     // At least one variant
     const variants = document.querySelectorAll('#variants .border');
     if (variants.length === 0) {
-        alert("Please add at least one variant.");
+        showToast("Please add at least one variant.");
         isValid = false;
     }
 

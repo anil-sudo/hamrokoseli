@@ -13,6 +13,8 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::post('/seller-logout', [SellerController::class, 'logout'])->name('seller.logout');
+Route::get('/seller-profile', [SellerController::class, 'sellerProfile'])->name('seller.profile');
+Route::get('/seller-review', [SellerController::class, 'sellerReview'])->name('seller.review');
 
 // ─── Seller routes (protected) ────────────────────────────────────────────────
 Route::middleware(['auth', 'role:vendor'])->group(function () {

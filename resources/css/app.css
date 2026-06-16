@@ -382,7 +382,7 @@ a {
     text-decoration: none;
 }
 
-.navbar a {
+.navbar button,a {
     color: var(--text-light);
     text-decoration: none;
 }
