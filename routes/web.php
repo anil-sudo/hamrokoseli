@@ -16,7 +16,6 @@ Route::post('/seller-logout', [SellerController::class, 'logout'])->name('seller
 Route::get('/seller-profile', [SellerController::class, 'sellerProfile'])->name('seller.profile');
 Route::get('/seller-review', [SellerController::class, 'sellerReview'])->name('seller.review');
 
-
 // ─── Seller routes (protected) ────────────────────────────────────────────────
 Route::middleware(['auth', 'role:vendor'])->group(function () {
     Route::get('/seller-dashboard', [SellerController::class, 'dashboard'])->name('dashboard');
