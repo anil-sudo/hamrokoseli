@@ -6,7 +6,6 @@ use App\Filament\Widgets\OrdersChartWidget;
 use App\Filament\Widgets\OrderStatusChartWidget;
 use App\Filament\Widgets\RevenueChartWidget;
 use App\Filament\Widgets\StatsOverviewWidget;
-use App\Http\Middleware\RedirectNonAdminToAdminLogin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -64,7 +63,6 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
-                RedirectNonAdminToAdminLogin::class,
             ])
             ->authMiddleware([
                 Authenticate::class,

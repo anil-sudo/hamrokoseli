@@ -56,7 +56,7 @@ class VendorRegisterController extends Controller
             'status' => 'pending', // admin must approve
         ]);
 
-        Auth::login($user);
+        Auth::guard('vendor')->login($user);
 
         return redirect()->route('dashboard');
     }
