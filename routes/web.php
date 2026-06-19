@@ -15,7 +15,6 @@ Route::middleware('guest:vendor')->group(function () {
 Route::post('/seller-logout', [SellerController::class, 'logout'])->name('seller.logout');
 Route::get('/seller-profile', [SellerController::class, 'sellerProfile'])->name('seller.profile');
 
-
 // ─── Seller routes (protected by vendor guard) ────────────────────────────────
 Route::middleware(['auth:vendor', 'role:vendor'])->group(function () {
     Route::get('/seller-dashboard', [SellerController::class, 'dashboard'])->name('dashboard');
@@ -33,7 +32,6 @@ Route::middleware(['auth:vendor', 'role:vendor'])->group(function () {
     Route::get('/create-ticket', [SellerController::class, 'createTicket'])->name('create-ticket');
     Route::get('/tickets', [SellerController::class, 'sellerTicket'])->name('seller-ticket');
     Route::get('/seller-notification', [SellerController::class, 'sellerNotification'])->name('seller-notification');
-
 
 });
 
