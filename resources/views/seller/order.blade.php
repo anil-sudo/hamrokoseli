@@ -18,7 +18,7 @@
                         <span>Export CSV</span>
                     </button>
                     <button onclick="bulkPrint()"
-                        class="group flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 bg-(--secondary-color)/95 text-(--text-light)/95 rounded-2xl text-sm font-medium hover:bg-(--secondary-color) hover:shadow-lg active:scale-95 transition-all duration-200 shadow-md">
+                        class="group flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 bg-(--secondary-color) text-(--text-light)/95 rounded-2xl text-sm font-medium hover:bg-[#B94E31] hover:shadow-lg active:scale-95 transition-all duration-200 shadow-md">
                         <i data-lucide="printer" class=" w-5 h-5 group-hover:-rotate-3 transition-transform duration-200"></i>
                         <span>Bulk Print</span>
                     </button>
