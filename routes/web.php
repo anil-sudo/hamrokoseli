@@ -14,7 +14,6 @@ Route::middleware('guest:vendor')->group(function () {
 
 Route::post('/seller-logout', [SellerController::class, 'logout'])->name('seller.logout');
 Route::get('/seller-profile', [SellerController::class, 'sellerProfile'])->name('seller.profile');
-Route::get('/seller-review', [SellerController::class, 'sellerReview'])->name('seller.review');
 
 // ─── Seller routes (protected by vendor guard) ────────────────────────────────
 Route::middleware(['auth:vendor', 'role:vendor'])->group(function () {
@@ -26,6 +25,14 @@ Route::middleware(['auth:vendor', 'role:vendor'])->group(function () {
     Route::delete('/product/{id}', [SellerController::class, 'destroy'])->name('product.destroy');
     Route::get('/orders', [SellerController::class, 'order'])->name('order');
     Route::get('/order-details', [SellerController::class, 'orderDetails'])->name('order-details');
+    Route::get('/seller-review', [SellerController::class, 'sellerReview'])->name('seller.review');
+    Route::get('/seller-payments', [SellerController::class, 'sellerPayment'])->name('seller.payment');
+    Route::get('/seller-payments-details', [SellerController::class, 'paymentDetails'])->name('payment-details');
+    Route::get('/seller-support', [SellerController::class, 'sellerSupport'])->name('seller-support');
+    Route::get('/create-ticket', [SellerController::class, 'createTicket'])->name('create-ticket');
+    Route::get('/tickets', [SellerController::class, 'sellerTicket'])->name('seller-ticket');
+    Route::get('/seller-notification', [SellerController::class, 'sellerNotification'])->name('seller-notification');
+
 });
 
 // ─── Seller registration (public) ─────────────────────────────────────────────

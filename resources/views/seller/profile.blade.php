@@ -1,4 +1,4 @@
-<x-seller_layout title="Edit Product">
+<x-seller_layout title="Seller Profile">
     <div class="space-y-10">
         <!-- Header -->
         <div>
@@ -8,7 +8,7 @@
 
         <div class="space-y-6">
             <!-- Profile Information -->
-            <div class="bg-(--card-bg) rounded-2xl shadow-sm p-6">
+            <div class="bg-(--card-bg) rounded-2xl shadow-sm p-6 hover:shadow-md transition-all duration-300">
                 <div class="flex items-start gap-6">
                     <!-- Profile Picture -->
                     <div id="profileContainer" class="relative group cursor-pointer">
@@ -71,7 +71,7 @@
                 <!-- Buttons -->
                 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mt-8">
 
-                    <button type="submit"
+                    <button type="submit" id="saveProfileBtn"
                         class="order-1 sm:order-2 inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-(--secondary-color) hover:bg-[#B94E31] text-(--text-light) rounded-2xl font-medium transition">
                         Save &nbsp; Profile
                     </button>
@@ -84,9 +84,9 @@
             </div>
 
             <!-- Security & Privacy -->
-            <div class="bg-(--card-bg) rounded-2xl shadow-sm p-6">
+            <div class="bg-(--card-bg) rounded-2xl shadow-sm p-6 hover:shadow-md transition-all duration-300">
                 <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
-                    <i data-lucide="lock-keyhole" class="w-5 h-5"></i>
+                    <i data-lucide="lock-keyhole"></i>
                     Security & Privacy
                 </h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -118,119 +118,87 @@
                 </div>
 
                 <div class="flex justify-end mt-8">
-                    <button type="submit"
+                    <button type="submit" id="savePasswordBtn"
                         class="inline-flex items-center gap-2 px-8 py-3.5 bg-(--secondary-color) hover:bg-[#B94E31] text-(--text-light) rounded-2xl font-semibold transition">
                         Save &nbsp; Password
                     </button>
                 </div>
             </div>
+            <!-- Bank Information -->
+
+            <div class="bg-(--card-bg) rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-6">
+                <h3 class="text-xl font-semibold mb-6 flex items-center gap-2">
+                    <i data-lucide="landmark"></i>
+                    Bank Information
+                </h3>
+
+                <form class="space-y-5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                        <!-- Account Holder Name -->
+                        <div>
+                            <label class="block text-sm font-medium text-brand-dark mb-1">
+                                Account Holder Name <span class="text-(--secondary-color)">*</span>
+                            </label>
+                            <input type="text" id="accName" placeholder="Enter your name"
+                                class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
+                        </div>
+
+                        <!-- Bank Name -->
+                        <div>
+                            <label class="block text-sm font-medium text-brand-dark mb-1">
+                                Bank Name <span class="text-(--secondary-color)">*</span>
+                            </label>
+                            <input type="text" id="bankName" placeholder="e.g. Nabil Bank Limited"
+                                class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
+                        </div>
+
+                        <!-- Account Number -->
+                        <div>
+                            <label class="block text-sm font-medium text-brand-dark mb-1">
+                                Account Number <span class="text-(--secondary-color)">*</span>
+                            </label>
+                            <input type="text" id="accNumber" placeholder="e.g. 1234567890"
+                                class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
+                        </div>
+
+                        <!-- Account Type -->
+                        <div>
+                            <label class="block text-sm font-medium text-brand-dark mb-1">
+                                Account Type <span class="text-(--secondary-color)">*</span>
+                            </label>
+                            <select id="accType" name="accType"
+                                class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
+                                <option value="" selected>Select Account Type</option>
+                                <option value="Savings">Savings</option>
+                                <option value="Current">Current</option>
+                                <option value="Fixed Deposit">Fixed Deposit</option>
+                            </select>
+                        </div>
+
+                        <!-- Branch Name-->
+                        <div>
+                            <label class="block text-sm font-medium text-brand-dark mb-1">
+                                Branch Name <span class="text-gray-500 text-xs">(optional)</span>
+                            </label>
+                            <input type="text" id="branchName" placeholder="e.g. New Road Branch, Kathmandu"
+                                class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
+                        </div>
+
+                    </div>
+
+                    <!-- Buttons -->
+                    <div class="flex justify-end mt-8">
+                        <button type="submit" id="saveBankBtn"
+                            class="inline-flex items-center gap-2 px-8 py-3.5 bg-(--secondary-color) hover:bg-[#B94E31] text-(--text-light) rounded-2xl font-semibold transition">
+                            Save
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
-    <script>
-        function showToast(message) {
-            const toast = document.createElement('div');
+    @vite('resources/js/seller-profile.js')
 
-            toast.className = `
-        fixed right-5 top-5 text-(--secondary-color) bg-white
-        px-5 py-3 rounded-lg shadow-lg z-50
-        transition-all duration-300`;
-
-            toast.innerText = message;
-
-            document.body.appendChild(toast);
-
-            setTimeout(() => {
-                toast.remove();
-            }, 3000);
-        }
-        document.addEventListener('DOMContentLoaded', () => {
-
-            // Initialize Lucide
-            lucide.createIcons();
-
-            const profilePreview = document.getElementById('profilePreview');
-            const deleteBtn = document.getElementById('deleteBtn');
-            const fileInput = document.getElementById('profileImage');
-            const profileContainer = document.getElementById('profileContainer');
-
-            const defaultAvatar =
-                "https://api.iconify.design/lucide/user.svg?color=%236b7280";
-
-            // ==========================
-            // Upload Profile Picture
-            // ==========================
-            if (profileContainer) {
-                profileContainer.addEventListener('click', (e) => {
-
-                    if (e.target.closest('#deleteBtn')) {
-                        return;
-                    }
-
-                    fileInput.click();
-                });
-            }
-
-            fileInput.addEventListener('change', (e) => {
-
-                const file = e.target.files[0];
-
-                if (!file) return;
-
-                // Image Validation
-                if (!file.type.startsWith('image/')) {
-                    showToast('Please select a valid image.');
-                    return;
-                }
-                // Image Size Validation (500KB)
-                if (file.size > 100 * 1024) {
-                    showToast('Profile picture must be less than 100KB.');
-                    fileInput.value = '';
-                    return;
-                }
-                const reader = new FileReader();
-
-                reader.onload = (event) => {
-                    profilePreview.src = event.target.result;
-                    deleteBtn.classList.remove('hidden');
-                };
-
-                reader.readAsDataURL(file);
-            });
-
-            // ==========================
-            // Delete Profile Picture
-            // ==========================
-            deleteBtn.addEventListener('click', () => {
-                profilePreview.src = defaultAvatar;
-                fileInput.value = '';
-                deleteBtn.classList.add('hidden');
-            });
-
-            // ==========================
-            // Password Toggle Function
-            // ==========================
-            function setupPasswordToggle(inputId, buttonId) {
-
-                const input = document.getElementById(inputId);
-                const button = document.getElementById(buttonId);
-
-                button.addEventListener('click', () => {
-
-                    const isHidden = input.type === 'password';
-
-                    input.type = isHidden ? 'text' : 'password';
-
-                    button.innerHTML = isHidden ?
-                        '<i data-lucide="eye-off" class="w-5 h-5"></i>' :
-                        '<i data-lucide="eye" class="w-5 h-5"></i>';
-
-                    lucide.createIcons();
-                });
-            }
-
-            setupPasswordToggle('currentPassword', 'toggleCurrent');
-            setupPasswordToggle('newPassword', 'toggleNew');
-        });
-    </script>
 </x-seller_layout>

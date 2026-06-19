@@ -1,10 +1,24 @@
 <style>
     .nav-link {
+        color: var(--text-light);
+        text-decoration: none;
         transition: all 0.2s ease;
     }
 
     .nav-link:hover {
+        color: var(--text-color);
         transform: translateX(2px);
+    }
+
+    .overflow-y-auto::-webkit-scrollbar,
+    .overflow-auto::-webkit-scrollbar {
+        display: none;
+    }
+
+    .overflow-y-auto,
+    .overflow-auto {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
     }
 </style>
 <aside id="sidebar"
@@ -23,7 +37,8 @@
     </div>
 
     <!-- Navigation Menu -->
-    <nav class="navbar flex-1 px-4 py-4 space-y-1.5 overflow-y-auto scroll-smooth">
+    <nav
+        class="navbar flex-1 px-4 py-4 space-y-1.5 overflow-y-auto scroll-smooth">
         <!-- Dashboard -->
         <a href="{{ route('dashboard') }}"
             class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl  hover:bg-[#D4A017] group transition-all duration-300 ease-out active:scale-[0.98]
@@ -51,8 +66,9 @@
         </a>
 
         <!-- Payments -->
-        <a href=""
-            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl  hover:bg-[#D4A017]  group transition-all duration-300 ease-out active:scale-[0.98]">
+        <a href="{{ route('seller.payment') }}"
+            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl  hover:bg-[#D4A017]  group transition-all duration-300 ease-out active:scale-[0.98]
+            {{ Request::routeIs('seller.payment') ? 'bg-(--hover-color)' : '' }}">
             <i data-lucide="wallet"
                 class="fas fa-wallet w-5 text-lg transition-transform duration-300 group-hover:scale-110"></i>
             <span class="font-medium transition-all duration-300 group-hover:translate-x-1">Payments</span>
@@ -63,9 +79,16 @@
             class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017] group transition-all duration-300 ease-out active:scale-[0.98]
             {{ Request::routeIs('seller.review') ? 'bg-(--hover-color)' : '' }}">
 
-            <i data-lucide="star"
-                class="w-5 text-lg transition-transform duration-300 group-hover:scale-110"></i>
+            <i data-lucide="star" class="w-5 text-lg transition-transform duration-300 group-hover:scale-110"></i>
             <span class="font-medium transition-all duration-300 group-hover:translate-x-1">Reviews</span>
+        </a>
+
+        <!-- support -->
+        <a href="{{ route('seller-support') }}"
+            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017] group transition-all duration-300 ease-out active:scale-[0.98]
+            {{ Request::routeIs('seller-support') ? 'bg-(--hover-color)' : '' }}">
+            <i data-lucide="headset" class="w-5 transition-transform duration-300 group-hover:scale-110"></i>
+            <span class="font-medium transition-all duration-300 group-hover:translate-x-1">Support</span>
         </a>
 
         <!-- profile -->
@@ -77,17 +100,17 @@
         </a>
 
         <!-- notification -->
-        <a href=""
-            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017] group transition-all duration-300 ease-out active:scale-[0.98]">
-            <i data-lucide="bell"
-                class="w-5 transition-transform duration-300 group-hover:scale-110"></i>
+        <a href="{{ route('seller-notification') }}"
+            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017] group transition-all duration-300 ease-out active:scale-[0.98]
+            {{ Request::routeIs('seller-notification') ? 'bg-(--hover-color)' : '' }}">
+            <i data-lucide="bell" class="w-5 transition-transform duration-300 group-hover:scale-110"></i>
             <span class="font-medium transition-all duration-300 group-hover:translate-x-1">Notification</span>
         </a>
     </nav>
 
     <div class=" px-4 pb-8 mt-auto border-t border-white/10 pt-4 space-y-4">
         <!-- Add New Product (shown as prominent call to action) -->
-        <a href="#"
+        <a href="{{ route('product-create') }}"
             class="flex items-center gap-4 px-4 py-3 rounded-xl bg-[#C65A3A]  hover:bg-[#B14E32] text-[#FFF7EF]  transition-all duration-300 active:scale-[0.98] group">
             <i data-lucide="circle-plus"
                 class="w-5 text-[#FFF7EF] text-lg transition-transform duration-300 group-hover:rotate-90"></i>
