@@ -43,4 +43,9 @@ class PageController extends Controller
     {
         return view('about');
     }
+
+    public function wishlist()
+    {
+        return view('wishlist');
+    }
 }

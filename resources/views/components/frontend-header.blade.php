@@ -67,8 +67,9 @@
                         <i class="fas fa-search"></i>
                     </button>
                     <!-- Wishlist -->
-                    <a href="wishlist.php" class="hover:text-emerald-200 transition-colors p-1" title="Wishlist">
-                        <i class="far fa-heart"></i>
+                    <a href="{{ route('wishlist') }}" class="hover:text-emerald-200 transition-colors p-1 relative flex items-center justify-center" title="Wishlist" id="wishlist-header-btn">
+                        <i class="far fa-heart" id="wishlist-header-icon"></i>
+                        <span id="wishlist-badge" class="absolute -top-1.5 -right-1.5 bg-[#b55b3d] text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold border border-[#1f3d2e] hidden">0</span>
                     </a>
                     <!-- Cart -->
                     <a href="cart.php" class="hover:text-emerald-200 transition-colors p-1 relative" title="Cart">
