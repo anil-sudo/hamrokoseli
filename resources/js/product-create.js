@@ -90,7 +90,7 @@ function validateForm() {
     } else clearError(stock);
 
     // At least one specification
-    const specs = document.querySelectorAll('#specifications .grid');
+    const specs = document.querySelectorAll('#specifications > div');
     if (specs.length === 0) {
         showToast("Please add at least one specification.", 'error'); isValid = false;
     }
@@ -99,6 +99,11 @@ function validateForm() {
     const variants = document.querySelectorAll('#variants .border');
     if (variants.length === 0) {
         showToast("Please add at least one variant.", 'error'); isValid = false;
+    }
+
+    if (uploadedFiles.length === 0) {
+        showToast("Please upload at least one image.");
+        isValid = false;
     }
 
     return isValid;
@@ -114,12 +119,12 @@ function addSpecification() {
         <div class="grid grid-cols-1 sm:grid-cols-12 gap-4">
             <div class="sm:col-span-5 col-span-12">
                 <label class="block text-xs font-medium text-(--text-color)/70 mb-1">Specification Name</label>
-                <input type="text" name="spec_name" placeholder="e.g. Material, Weight"
+                <input type="text" name="specifications[${specIndex}][key]" placeholder="e.g. Material, Weight"
                     class="w-full px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-base focus:outline-none focus:border-(--secondary-color)">
             </div>
             <div class="sm:col-span-6 col-span-12">
                 <label class="block text-xs font-medium text-(--text-color)/70 mb-1">Value</label>
-                <input type="text" name="spec_value" placeholder="e.g. Himalayan Wool, 500g"
+                <input type="text" name="specifications[${specIndex}][value]" placeholder="e.g. Himalayan Wool, 500g"
                     class="w-full px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-base focus:outline-none focus:border-(--secondary-color)">
             </div>
             <div class="sm:col-span-1 col-span-12 flex sm:items-end">
@@ -206,10 +211,19 @@ function handleFiles(files) {
         if (uploadedFiles.length >= 4) {
             showToast("Maximum 4 images allowed.", 'error'); return;
         }
+        const exists = uploadedFiles.some(
+            f => f.name === file.name &&
+                f.size === file.size
+        );
 
+        if (exists) {
+            showToast("This image is already added.");
+            return;
+        }
         uploadedFiles.push(file);
         renderImagePreview(file);
     });
+    mediaInput.value = '';
 }
 
 function renderImagePreview(file) {
@@ -233,8 +247,11 @@ function renderImagePreview(file) {
 
 function removeImage(btn) {
     const index = Array.from(previewGrid.children).indexOf(btn.parentElement);
+
     uploadedFiles.splice(index, 1);
     btn.parentElement.remove();
+
+    mediaInput.value = '';
 }
 
 // ==================== DESCRIPTION COUNTER ====================
@@ -261,7 +278,11 @@ document.getElementById('productForm').addEventListener('submit', function (e) {
 
 // ==================== INITIAL LOAD ====================
 document.addEventListener('DOMContentLoaded', () => {
-    addSpecification();
+    const specs = document.getElementById('specifications');
+
+    if (specs.children.length === 0) {
+        addSpecification();
+    }
 });
 
 window.addSpecification = addSpecification;

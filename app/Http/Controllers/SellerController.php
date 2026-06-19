@@ -257,6 +257,36 @@ class SellerController extends Controller
     {
         return view('seller.review');
     }
+
+    public function sellerPayment()
+    {
+        return view('seller.payment');
+    }
+
+    public function paymentDetails()
+    {
+        return view('seller.payment-details');
+    }
+
+    public function sellerNotification()
+    {
+        return view('seller.notification');
+    }
+
+    public function sellerSupport()
+    {
+        return view('seller.support');
+    }
+
+    public function createTicket()
+    {
+        return view('seller.create-ticket');
+    }
+
+    public function sellerTicket()
+    {
+        return view('seller.tickets');
+    }
     // ─── Helpers ──────────────────────────────────────────────────────────────
 
     private function filterSpecs(array $specs): array
