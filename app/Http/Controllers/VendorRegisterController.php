@@ -57,7 +57,7 @@ class VendorRegisterController extends Controller
             'status' => 'pending',
         ]);
 
-        Auth::guard('vendor')->login($user);
+        $adminEmails = User::where('role', 'admin')->pluck('email');
 
         foreach ($adminEmails as $adminEmail) {
             Mail::to($adminEmail)->queue(new NewVendorRegistered($vendor));
