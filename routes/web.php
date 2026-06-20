@@ -3,7 +3,6 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\SellerController;
-use App\Http\Controllers\TestEmailControlelr;
 use App\Http\Controllers\VendorRegisterController;
 use Illuminate\Support\Facades\Route;
 
@@ -57,6 +56,5 @@ Route::middleware('web')->group(function () {
     Route::post('/vendor/register', [VendorRegisterController::class, 'register'])->name('vendor.register.post');
 });
 
-Route::get('test-email', [TestEmailControlelr::class, 'index'])->name('test.email');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::redirect('/login.php', '/login');
