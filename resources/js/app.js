@@ -1,6 +1,6 @@
 //
 import './seller-layout';
-(function () {
+document.addEventListener('DOMContentLoaded', () => {
     const hamburger     = document.getElementById('hamburger-btn');
     const drawer        = document.getElementById('mobile-drawer');
     const overlay       = document.getElementById('drawer-overlay');
@@ -436,5 +436,5 @@ import './seller-layout';
     updateWishlistBadge();
     syncWishlistIcons();
     renderWishlistPage();
-})();
+});
 
