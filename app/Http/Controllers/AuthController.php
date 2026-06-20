@@ -2,56 +2,68 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    /**
+     * Show the login page for regular (buyer) users.
+     */
     public function showLogin()
     {
-        return view('auth.login');
+        return view('welcome');
     }
 
-    public function login(Request $request)
+    /**
+     * Handle a login attempt on the default "web" guard.
+     */
+    public function login(Request $request): RedirectResponse
     {
         $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
+            'email' => ['required', 'email'],
+            'password' => ['required'],
         ]);
 
         $remember = $request->boolean('remember');
 
-        $user = User::where('email', $credentials['email'])->first();
-
-        if (! $user || ! Hash::check($credentials['password'], $user->password)) {
-            return back()->withErrors(['email' => 'Invalid email or password.'])->onlyInput('email');
+        if (! Auth::attempt($credentials, $remember)) {
+            return back()
+                ->withInput($request->only('email'))
+                ->withErrors(['email' => 'These credentials do not match our records.']);
         }
 
-        if ($user->hasRole('admin')) {
-            Auth::guard('web')->login($user, $remember);
-            $request->session()->regenerate();
+        $user = Auth::user();
 
-            return redirect('/admin');
+        if (! $user->is_active) {
+            Auth::logout();
+
+            return back()
+                ->withInput($request->only('email'))
+                ->withErrors(['email' => 'Your account is inactive. Please contact support.']);
         }
 
-        if ($user->hasRole('vendor')) {
-            Auth::guard('vendor')->login($user, $remember);
-            $request->session()->regenerate();
+        $request->session()->regenerate();
 
+        // Send vendors/admins to their own dashboards if they log in from here.
+        if ($user->isVendor()) {
             return redirect()->route('dashboard');
         }
 
-        return back()->withErrors(['email' => 'You do not have a seller account.'])->onlyInput('email');
+        return redirect()->route('home');
     }
 
-    public function logout(Request $request)
+    /**
+     * Log the user out of the "web" guard.
+     */
+    public function logout(Request $request): RedirectResponse
     {
-        Auth::guard('web')->logout();   // was: Auth::logout();
+        Auth::logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect()->route('home');
     }
 }
