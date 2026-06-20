@@ -197,15 +197,13 @@
                 </h2>
 
                 <div id="uploadArea"
-                    class="border-2 border-dashed border-(--text-color)/40 rounded-3xl p-8 text-center mb-6 hover:border-(--secondary-color) transition cursor-pointer"
-                    onclick="document.getElementById('mediaInput').click()">
+                    class="border-2 border-dashed border-(--text-color)/40 rounded-3xl p-8 text-center mb-6 hover:border-(--secondary-color) transition cursor-pointer">
                     <div class="w-12 h-12 mx-auto mb-3 flex items-center justify-center bg-(--card-dark) rounded-full">
                         <i data-lucide="upload-cloud" class="w-6 h-6 text-(--text-color)"></i>
                     </div>
                     <p class="font-medium">Click to upload or drag and drop</p>
-                    <p class="text-sm text-(--text-color)/70 mt-1">PNG, JPG up to 10MB (Max 4 images)</p>
-                    <input type="file" id="mediaInput" name="images[]" multiple accept="image/*" class="hidden"
-                        onchange="previewImages(event)">
+                    <p class="text-sm text-(--text-color)/70 mt-1">PNG, JPG up to 100kB (Max 4 images)</p>
+                    <input type="file" id="mediaInput" name="images[]" multiple accept="image/*" class="hidden">
                 </div>
 
                 <div id="previewGrid" class="grid grid-cols-4 gap-2"></div>
@@ -280,7 +278,7 @@
                 Cancel
             </a>
             <button type="submit"
-                class="inline-flex items-center gap-2 px-8 py-3.5 bg-(--secondary-color)/95 hover:bg-(--secondary-color) text-(--text-light) rounded-2xl font-semibold transition w-fit sm:w-auto">
+                class="inline-flex items-center gap-2 px-8 py-3.5 bg-(--secondary-color)/95 hover:bg-[#B94E31] text-(--text-light) rounded-2xl font-semibold transition w-fit sm:w-auto">
                 Save & Continue
                 <i data-lucide="arrow-right" class="w-5 h-5"></i>
             </button>

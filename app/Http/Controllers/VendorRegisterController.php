@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\NewVendorRegistered;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class VendorRegisterController extends Controller
 {
@@ -44,7 +45,7 @@ class VendorRegisterController extends Controller
         $user->assignRole('vendor');
 
         // Auto-create vendor record
-        $user->vendor()->create([
+        $vendor = $user->vendor()->create([
             'vendor_name' => $data['vendor_name'],
             'owner_name' => $data['owner_name'],
             'email' => $data['vendor_email'],
@@ -53,11 +54,16 @@ class VendorRegisterController extends Controller
             'city' => $data['city'] ?? null,
             'province' => $data['province'] ?? null,
             'pan_number' => $data['pan_number'] ?? null,
-            'status' => 'pending', // admin must approve
+            'status' => 'pending',
         ]);
 
-        Auth::login($user);
+        $adminEmails = User::where('role', 'admin')->pluck('email');
 
-        return redirect()->route('dashboard');
+        foreach ($adminEmails as $adminEmail) {
+            Mail::to($adminEmail)->queue(new NewVendorRegistered($vendor));
+        }
+
+        return redirect()->route('seller.login')
+            ->with('success', 'Registration successful! Wait for admin approval. You will receive an email after approval.');
     }
 }

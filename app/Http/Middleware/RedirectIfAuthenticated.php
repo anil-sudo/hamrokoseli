@@ -17,17 +17,14 @@ class RedirectIfAuthenticated
             if (Auth::guard($guard)->check()) {
                 $user = Auth::guard($guard)->user();
 
-                // Admin → Filament panel
+                if ($guard === 'vendor') {
+                    return redirect()->route('dashboard');
+                }
+
                 if ($user->role === 'admin') {
                     return redirect('/admin');
                 }
 
-                // Vendor → seller dashboard
-                if ($user->role === 'vendor') {
-                    return redirect()->route('dashboard');
-                }
-
-                // Regular user → home
                 return redirect()->route('home');
             }
         }

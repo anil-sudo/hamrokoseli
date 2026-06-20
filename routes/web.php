@@ -3,18 +3,21 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\SellerController;
+use App\Http\Controllers\TestEmailControlelr;
+use App\Http\Controllers\UserRegisterController;
 use App\Http\Controllers\VendorRegisterController;
 use Illuminate\Support\Facades\Route;
 
-// ─── Seller Auth (guest only) ─────────────────────────────────────────────────
-Route::middleware('guest')->group(function () {
+// ─── Seller Auth (guest on vendor guard only) ─────────────────────────────────
+Route::middleware('guest:vendor')->group(function () {
     Route::get('/seller-login', [SellerController::class, 'login'])->name('seller.login');
     Route::post('/seller-login', [SellerController::class, 'loginSubmit'])->name('seller.login.submit');
 });
 
 Route::post('/seller-logout', [SellerController::class, 'logout'])->name('seller.logout');
+Route::get('/seller-profile', [SellerController::class, 'sellerProfile'])->name('seller.profile');
 
-// ─── Seller routes (protected) ────────────────────────────────────────────────
+// ─── Seller routes (protected by vendor guard) ────────────────────────────────
 Route::middleware(['auth', 'role:vendor'])->group(function () {
     Route::get('/seller-dashboard', [SellerController::class, 'dashboard'])->name('dashboard');
     Route::get('/product-management', [SellerController::class, 'product_management'])->name('product-management');
@@ -24,6 +27,14 @@ Route::middleware(['auth', 'role:vendor'])->group(function () {
     Route::delete('/product/{id}', [SellerController::class, 'destroy'])->name('product.destroy');
     Route::get('/orders', [SellerController::class, 'order'])->name('order');
     Route::get('/order-details', [SellerController::class, 'orderDetails'])->name('order-details');
+    Route::get('/seller-review', [SellerController::class, 'sellerReview'])->name('seller.review');
+    Route::get('/seller-payments', [SellerController::class, 'sellerPayment'])->name('seller.payment');
+    Route::get('/seller-payments-details', [SellerController::class, 'paymentDetails'])->name('payment-details');
+    Route::get('/seller-support', [SellerController::class, 'sellerSupport'])->name('seller-support');
+    Route::get('/create-ticket', [SellerController::class, 'createTicket'])->name('create-ticket');
+    Route::get('/tickets', [SellerController::class, 'sellerTicket'])->name('seller-ticket');
+    Route::get('/seller-notification', [SellerController::class, 'sellerNotification'])->name('seller-notification');
+
 });
 
 // ─── Seller registration (public) ─────────────────────────────────────────────
@@ -40,13 +51,15 @@ Route::get('/top-sellers', [PageController::class, 'top_sellers'])->name('top-se
 Route::get('/about-us', [PageController::class, 'about_us'])->name('about-us');
 Route::get('/wishlist', [PageController::class, 'wishlist'])->name('wishlist');
 
-// ─── User Auth routes ─────────────────────────────────────────────────────────
-Route::middleware('guest')->group(function () {
+// ─── User Auth routes (guest on web guard) ────────────────────────────────────
+Route::middleware('web')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/register', [UserRegisterController::class, 'register'])->name('register');
     Route::get('/vendor/register', [VendorRegisterController::class, 'show'])->name('vendor.register');
-    Route::post('/vendor/register', [VendorRegisterController::class, 'register']);
+    Route::post('/vendor/register', [VendorRegisterController::class, 'register'])->name('vendor.register.post');
 });
 
+Route::get('test-email', [TestEmailControlelr::class, 'index'])->name('test.email');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::redirect('/login.php', '/login');
