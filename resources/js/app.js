@@ -63,9 +63,38 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalShowRegisterBtn = document.getElementById('modal-show-register');
     const modalShowLoginBtn = document.getElementById('modal-show-login');
 
+    // Keep track of the original page URL before showing the modal
+    let originalUrl = window.location.pathname + window.location.search;
+    if (originalUrl === '/userlogin' || originalUrl === '/userregister') {
+        originalUrl = '/';
+    }
+
+    // Helper: Update Browser Address Bar URL State
+    function updateUrlState(view) {
+        const path = view === 'register' ? '/userregister' : '/userlogin';
+        if (window.location.pathname !== path) {
+            history.pushState({ modal: view }, '', path);
+        }
+    }
+
+    // Helper: Restore URL State to Original
+    function restoreUrlState() {
+        if (window.location.pathname === '/userlogin' || window.location.pathname === '/userregister') {
+            history.pushState({ modal: null }, '', originalUrl);
+        }
+    }
+
     function openLoginModal(e, view = 'login') {
         if (e) e.preventDefault();
         closeDrawer(); // Close mobile drawer if open
+
+        // Store original URL if opening the modal for the first time
+        if (loginModal && loginModal.classList.contains('hidden')) {
+            const currentPath = window.location.pathname + window.location.search;
+            if (currentPath !== '/userlogin' && currentPath !== '/userregister') {
+                originalUrl = currentPath;
+            }
+        }
 
         if (loginModal && loginModalContainer) {
             if (view === 'register') {
@@ -73,11 +102,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     loginView.classList.add('hidden');
                     registerView.classList.remove('hidden');
                 }
+                updateUrlState('register');
             } else {
                 if (loginView && registerView) {
                     loginView.classList.remove('hidden');
                     registerView.classList.add('hidden');
                 }
+                updateUrlState('login');
             }
 
             loginModal.classList.remove('hidden');
@@ -97,6 +128,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function closeLoginModal() {
         if (loginModal && loginModalContainer) {
+            restoreUrlState();
+
             loginModal.classList.remove('opacity-100');
             loginModal.classList.add('opacity-0');
             loginModalContainer.classList.remove('scale-100', 'opacity-100');
@@ -117,6 +150,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Export functions to window object
+    window.openLoginModal = openLoginModal;
+    window.closeLoginModal = closeLoginModal;
+
     if (desktopSigninBtn) desktopSigninBtn.addEventListener('click', (e) => openLoginModal(e, 'login'));
     if (mobileSigninBtn) mobileSigninBtn.addEventListener('click', (e) => openLoginModal(e, 'login'));
     if (mobileSignupBtn) mobileSignupBtn.addEventListener('click', (e) => openLoginModal(e, 'register'));
@@ -128,6 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             loginView.classList.add('hidden');
             registerView.classList.remove('hidden');
+            updateUrlState('register');
         });
     }
 
@@ -137,6 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             registerView.classList.add('hidden');
             loginView.classList.remove('hidden');
+            updateUrlState('login');
         });
     }
 
@@ -155,6 +194,28 @@ document.addEventListener('DOMContentLoaded', () => {
             closeLoginModal();
         }
     });
+
+    // Browser back/forward (history state) support
+    window.addEventListener('popstate', function(e) {
+        const path = window.location.pathname;
+        if (path === '/userlogin') {
+            openLoginModal(null, 'login');
+        } else if (path === '/userregister') {
+            openLoginModal(null, 'register');
+        } else {
+            if (loginModal && !loginModal.classList.contains('hidden')) {
+                closeLoginModal();
+            }
+        }
+    });
+
+    // Auto-open modal on page load if direct URL
+    const pathOnLoad = window.location.pathname;
+    if (pathOnLoad === '/userlogin') {
+        openLoginModal(null, 'login');
+    } else if (pathOnLoad === '/userregister') {
+        openLoginModal(null, 'register');
+    }
 
     // Helper for press-and-hold password toggling
     function setupPasswordToggle(toggleBtn, passwordInput) {

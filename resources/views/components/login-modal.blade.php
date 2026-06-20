@@ -329,105 +329,25 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Get elements
-        const loginView = document.getElementById('login-view');
-        const registerView = document.getElementById('register-view');
-        const modal = document.getElementById('login-modal');
-        const modalContainer = document.getElementById('login-modal-container');
-        const closeBtn = document.getElementById('close-login-modal');
-
-        // === VIEW SWITCHING ===
-        // Switch to register view
-        const showRegisterBtn = document.getElementById('modal-show-register');
-        if (showRegisterBtn) {
-            showRegisterBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                loginView.classList.add('hidden');
-                registerView.classList.remove('hidden');
-            });
-        }
-
-        // Switch to login view
-        const showLoginBtn = document.getElementById('modal-show-login');
-        if (showLoginBtn) {
-            showLoginBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                registerView.classList.add('hidden');
-                loginView.classList.remove('hidden');
-            });
-        }
-
-
-        // === MODAL CONTROLS ===
-        // Open modal function
-        function openLoginModal() {
-            if (modal.classList.contains('hidden')) {
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-                setTimeout(() => {
-                    modal.classList.remove('opacity-0');
-                    if (modalContainer) {
-                        modalContainer.classList.remove('scale-95', 'opacity-0');
-                    }
-                }, 50);
-            }
-        }
-
-        // Close modal function
-        function closeModal() {
-            modal.classList.add('opacity-0');
-            if (modalContainer) {
-                modalContainer.classList.add('scale-95', 'opacity-0');
-            }
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }, 300);
-        }
-
-        // Close button
-        if (closeBtn) {
-            closeBtn.addEventListener('click', closeModal);
-        }
-
-        // Close on backdrop click
-        modal.addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
-            }
-        });
-
-        // Close on Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
-                closeModal();
-            }
-        });
-
         // === AUTO-SHOW REGISTER VIEW IF THERE ARE REGISTRATION ERRORS ===
         @if (session('show_register') || ($errors->any() && old('name')))
-            // Show register view
-            loginView.classList.add('hidden');
-            registerView.classList.remove('hidden');
-            // Open the modal
-            openLoginModal();
+            if (window.openLoginModal) {
+                window.openLoginModal(null, 'register');
+            }
         @endif
 
         // === AUTO-SHOW LOGIN VIEW IF THERE ARE LOGIN ERRORS ===
         @if ($errors->any() && !session('show_register') && !old('name'))
-            // Make sure login view is visible
-            loginView.classList.remove('hidden');
-            registerView.classList.add('hidden');
-            // Open the modal
-            openLoginModal();
+            if (window.openLoginModal) {
+                window.openLoginModal(null, 'login');
+            }
         @endif
 
         // === SUCCESS MESSAGE - Auto open modal if success message exists ===
         @if (session('success'))
-            openLoginModal();
+            if (window.openLoginModal) {
+                window.openLoginModal(null, 'login');
+            }
         @endif
-
-        // Make openLoginModal globally accessible
-        window.openLoginModal = openLoginModal;
     });
 </script>

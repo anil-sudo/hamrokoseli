@@ -57,8 +57,7 @@ Route::middleware('web')->group(function () {
     Route::post('/userlogin', [AuthController::class, 'login']);
     
     Route::get('/userregister', function () {
-        session()->flash('show_register', true);
-        return redirect()->route('userlogin');
+        return view('welcome');
     })->name('userregister');
     Route::post('/userregister', [UserRegisterController::class, 'register']);
 
