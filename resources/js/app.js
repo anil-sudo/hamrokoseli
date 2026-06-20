@@ -156,47 +156,59 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Password visibility toggle for login modal
-    const modalTogglePassword = document.getElementById('modal-toggle-password');
-    const modalPasswordInput = document.getElementById('modal-password');
-    if (modalTogglePassword && modalPasswordInput) {
-        modalTogglePassword.addEventListener('click', function() {
-            const type = modalPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            modalPasswordInput.setAttribute('type', type);
-            const icon = modalTogglePassword.querySelector('i');
+    // Helper for press-and-hold password toggling
+    function setupPasswordToggle(toggleBtn, passwordInput) {
+        if (!toggleBtn || !passwordInput) return;
+
+        const icon = toggleBtn.querySelector('i');
+        
+        const showPassword = (e) => {
+            if (e) e.preventDefault();
+            passwordInput.type = 'text';
             if (icon) {
-                icon.className = type === 'text' ? 'fas fa-eye text-sm' : 'far fa-eye-slash text-sm';
+                icon.className = 'fas fa-eye text-sm';
             }
-        });
+        };
+
+        const hidePassword = (e) => {
+            if (e) e.preventDefault();
+            passwordInput.type = 'password';
+            if (icon) {
+                icon.className = 'far fa-eye-slash text-sm';
+            }
+        };
+
+        // Mouse events
+        toggleBtn.addEventListener('mousedown', showPassword);
+        toggleBtn.addEventListener('mouseup', hidePassword);
+        toggleBtn.addEventListener('mouseleave', hidePassword);
+
+        // Touch events
+        toggleBtn.addEventListener('touchstart', showPassword);
+        toggleBtn.addEventListener('touchend', hidePassword);
+        toggleBtn.addEventListener('touchcancel', hidePassword);
+        
+        // Prevent click default
+        toggleBtn.addEventListener('click', (e) => e.preventDefault());
     }
 
-    // Password visibility toggle for register modal
-    const modalRegisterTogglePassword = document.getElementById('modal-register-toggle-password');
-    const modalRegisterPasswordInput = document.getElementById('modal-register-password');
-    if (modalRegisterTogglePassword && modalRegisterPasswordInput) {
-        modalRegisterTogglePassword.addEventListener('click', function() {
-            const type = modalRegisterPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            modalRegisterPasswordInput.setAttribute('type', type);
-            const icon = modalRegisterTogglePassword.querySelector('i');
-            if (icon) {
-                icon.className = type === 'text' ? 'fas fa-eye text-sm' : 'far fa-eye-slash text-sm';
-            }
-        });
-    }
+    // Password visibility toggles for login modal
+    setupPasswordToggle(
+        document.getElementById('modal-toggle-password'),
+        document.getElementById('modal-password')
+    );
 
-    // Confirm password visibility toggle for register modal
-    const modalRegisterTogglePasswordConfirm = document.getElementById('modal-register-toggle-password-confirm');
-    const modalRegisterPasswordConfirmInput = document.getElementById('modal-register-password_confirmation');
-    if (modalRegisterTogglePasswordConfirm && modalRegisterPasswordConfirmInput) {
-        modalRegisterTogglePasswordConfirm.addEventListener('click', function() {
-            const type = modalRegisterPasswordConfirmInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            modalRegisterPasswordConfirmInput.setAttribute('type', type);
-            const icon = modalRegisterTogglePasswordConfirm.querySelector('i');
-            if (icon) {
-                icon.className = type === 'text' ? 'fas fa-eye text-sm' : 'far fa-eye-slash text-sm';
-            }
-        });
-    }
+    // Password visibility toggles for register modal
+    setupPasswordToggle(
+        document.getElementById('modal-register-toggle-password'),
+        document.getElementById('modal-register-password')
+    );
+
+    // Confirm password visibility toggles for register modal
+    setupPasswordToggle(
+        document.getElementById('modal-register-toggle-password-confirm'),
+        document.getElementById('modal-register-password_confirmation')
+    );
 
     // Phone format filter for register modal
     const modalRegisterPhoneInput = document.getElementById('modal-register-phone');

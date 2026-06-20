@@ -357,54 +357,6 @@
             });
         }
 
-        // === PASSWORD TOGGLES ===
-        // Login password toggle
-        const togglePassword = document.getElementById('modal-toggle-password');
-        if (togglePassword) {
-            togglePassword.addEventListener('click', function() {
-                const passwordInput = document.getElementById('modal-password');
-                const icon = this.querySelector('i');
-                if (passwordInput.type === 'password') {
-                    passwordInput.type = 'text';
-                    icon.className = 'fas fa-eye text-sm';
-                } else {
-                    passwordInput.type = 'password';
-                    icon.className = 'far fa-eye-slash text-sm';
-                }
-            });
-        }
-
-        // Register password toggle
-        const regTogglePassword = document.getElementById('modal-register-toggle-password');
-        if (regTogglePassword) {
-            regTogglePassword.addEventListener('click', function() {
-                const passwordInput = document.getElementById('modal-register-password');
-                const icon = this.querySelector('i');
-                if (passwordInput.type === 'password') {
-                    passwordInput.type = 'text';
-                    icon.className = 'fas fa-eye text-sm';
-                } else {
-                    passwordInput.type = 'password';
-                    icon.className = 'far fa-eye-slash text-sm';
-                }
-            });
-        }
-
-        // Register confirm password toggle
-        const regToggleConfirm = document.getElementById('modal-register-toggle-password-confirm');
-        if (regToggleConfirm) {
-            regToggleConfirm.addEventListener('click', function() {
-                const passwordInput = document.getElementById('modal-register-password_confirmation');
-                const icon = this.querySelector('i');
-                if (passwordInput.type === 'password') {
-                    passwordInput.type = 'text';
-                    icon.className = 'fas fa-eye text-sm';
-                } else {
-                    passwordInput.type = 'password';
-                    icon.className = 'far fa-eye-slash text-sm';
-                }
-            });
-        }
 
         // === MODAL CONTROLS ===
         // Open modal function
