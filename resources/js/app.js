@@ -165,13 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
             modalPasswordInput.setAttribute('type', type);
             const icon = modalTogglePassword.querySelector('i');
             if (icon) {
-                if (type === 'text') {
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
-                } else {
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
-                }
+                icon.className = type === 'text' ? 'fas fa-eye text-sm' : 'far fa-eye-slash text-sm';
             }
         });
     }
@@ -185,13 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
             modalRegisterPasswordInput.setAttribute('type', type);
             const icon = modalRegisterTogglePassword.querySelector('i');
             if (icon) {
-                if (type === 'text') {
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
-                } else {
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
-                }
+                icon.className = type === 'text' ? 'fas fa-eye text-sm' : 'far fa-eye-slash text-sm';
             }
         });
     }
@@ -205,13 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
             modalRegisterPasswordConfirmInput.setAttribute('type', type);
             const icon = modalRegisterTogglePasswordConfirm.querySelector('i');
             if (icon) {
-                if (type === 'text') {
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
-                } else {
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
-                }
+                icon.className = type === 'text' ? 'fas fa-eye text-sm' : 'far fa-eye-slash text-sm';
             }
         });
     }

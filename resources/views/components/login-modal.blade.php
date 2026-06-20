@@ -366,12 +366,10 @@
                 const icon = this.querySelector('i');
                 if (passwordInput.type === 'password') {
                     passwordInput.type = 'text';
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
+                    icon.className = 'fas fa-eye text-sm';
                 } else {
                     passwordInput.type = 'password';
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
+                    icon.className = 'far fa-eye-slash text-sm';
                 }
             });
         }
@@ -384,12 +382,10 @@
                 const icon = this.querySelector('i');
                 if (passwordInput.type === 'password') {
                     passwordInput.type = 'text';
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
+                    icon.className = 'fas fa-eye text-sm';
                 } else {
                     passwordInput.type = 'password';
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
+                    icon.className = 'far fa-eye-slash text-sm';
                 }
             });
         }
@@ -402,12 +398,10 @@
                 const icon = this.querySelector('i');
                 if (passwordInput.type === 'password') {
                     passwordInput.type = 'text';
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
+                    icon.className = 'fas fa-eye text-sm';
                 } else {
                     passwordInput.type = 'password';
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
+                    icon.className = 'far fa-eye-slash text-sm';
                 }
             });
         }
