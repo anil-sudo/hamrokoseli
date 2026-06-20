@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{{-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -100,7 +100,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('vendor.register') }}" method="POST" class="space-y-4">
+                <form action="{{ route('vendor.register.post') }}" method="POST" class="space-y-4">
                     @csrf
                     
                     <!-- Name Field -->
@@ -170,11 +170,14 @@
                 <!-- Footer Links -->
                 <div class="text-center mt-6 text-xs font-semibold text-slate-500">
                     Already have an account? 
-                    <a href="{{ route('login') }}" class="text-[#1F3D2E] font-bold hover:underline ml-1">Sign in</a>
+                    <a href="{{ route('seller.login') }}" class="text-[#1F3D2E] font-bold hover:underline ml-1">Sign in</a>
                 </div>
             </div>
         </div>
     </div>
+    <div id="toast" class="hidden fixed top-5 right-5 bg-green-600 text-white px-6 py-4 rounded-xl shadow-lg z-50">
+    <span id="toast-message"></span>
+</div>
 
     <!-- Script to toggle password visibility and restrict phone input -->
     <script>
@@ -230,6 +233,17 @@
                 });
             }
         });
+         @if(session('success'))
+        const toast = document.getElementById('toast');
+        const msg = document.getElementById('toast-message');
+
+        msg.innerText = "{{ session('success') }}";
+        toast.classList.remove('hidden');
+
+        setTimeout(() => {
+            toast.classList.add('hidden');
+        }, 4000);
+    @endif
     </script>
 </body>
-</html>
+</html> --}}

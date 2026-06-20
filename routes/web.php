@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\SellerController;
+use App\Http\Controllers\TestEmailControlelr;
 use App\Http\Controllers\VendorRegisterController;
 use Illuminate\Support\Facades\Route;
 
@@ -16,12 +17,12 @@ Route::post('/seller-logout', [SellerController::class, 'logout'])->name('seller
 Route::get('/seller-profile', [SellerController::class, 'sellerProfile'])->name('seller.profile');
 
 // ─── Seller routes (protected by vendor guard) ────────────────────────────────
-Route::middleware(['auth:vendor', 'role:vendor'])->group(function () {
+Route::middleware(['auth', 'role:vendor'])->group(function () {
     Route::get('/seller-dashboard', [SellerController::class, 'dashboard'])->name('dashboard');
     Route::get('/product-management', [SellerController::class, 'product_management'])->name('product-management');
     Route::get('/create-product', [SellerController::class, 'productCreate'])->name('product-create');
     Route::post('/create-product', [SellerController::class, 'store'])->name('product.store');
-    Route::get('/edit-product/{id}', [SellerController::class, 'productEdit'])->name('product-edit');
+    Route::get('/edit-product/{id}', [SellerControljler::class, 'productEdit'])->name('product-edit');
     Route::delete('/product/{id}', [SellerController::class, 'destroy'])->name('product.destroy');
     Route::get('/orders', [SellerController::class, 'order'])->name('order');
     Route::get('/order-details', [SellerController::class, 'orderDetails'])->name('order-details');
@@ -49,12 +50,13 @@ Route::get('/top-sellers', [PageController::class, 'top_sellers'])->name('top-se
 Route::get('/about-us', [PageController::class, 'about_us'])->name('about-us');
 
 // ─── User Auth routes (guest on web guard) ────────────────────────────────────
-Route::middleware('guest:web')->group(function () {
+Route::middleware('web')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/vendor/register', [VendorRegisterController::class, 'show'])->name('vendor.register');
-    Route::post('/vendor/register', [VendorRegisterController::class, 'register']);
+    Route::post('/vendor/register', [VendorRegisterController::class, 'register'])->name('vendor.register.post');
 });
 
+Route::get('test-email', [TestEmailControlelr::class, 'index'])->name('test.email');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::redirect('/login.php', '/login');
