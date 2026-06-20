@@ -119,7 +119,7 @@
 
         <!-- Logout button section with proper spacing and hover effect (original design improved) -->
         <div class="navbar">
-            <form method="POST" action="{{ route('logout') }}">
+            <form method="POST" action="{{ route('seller.logout') }}">
                 @csrf
                 <button type="submit"
                     class="nav-link w-full flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017] hover:text-[#3A2A1F] transition-all duration-300 active:scale-[0.98]">

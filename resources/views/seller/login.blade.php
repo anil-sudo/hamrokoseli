@@ -169,7 +169,30 @@
                 </div>
             </div>
         </div>
-    </div>
+<div id="toast"
+     class="hidden fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-4 rounded-xl shadow-lg z-50 transition-all duration-300 opacity-0">
+    <span id="toast-message"></span>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const toast = document.getElementById('toast');
+    const msg = document.getElementById('toast-message');
+
+    const successMessage = @json(session('success'));
+
+    if (successMessage) {
+        msg.innerText = successMessage;
+
+        toast.classList.remove('hidden', 'opacity-0', 'translate-y-[-10px]');
+        toast.classList.add('opacity-100', 'translate-y-0');
+
+        setTimeout(() => {
+            toast.classList.add('hidden');
+        }, 4000);
+    }
+});
+</script> 
+</script>
 
     <!-- Password Toggle Script -->
     <script>

@@ -22,36 +22,50 @@ class SellerController extends Controller
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
+        if (Auth::attempt($credentials)) {
+
+            $user = Auth::user();
+
+            if ($user->vendor->status === 'active') {
+                // $request->session()->regenerate();
+                return redirect()->route('dashboard');
+            } else {
+                Auth::logout();
+                $request->session()->invalidate();
+
+                return redirect()->intended('seller-login');
+            }
+        }
 
         // Use 'vendor' guard instead of default
-        if (Auth::guard('vendor')->attempt($credentials, $request->boolean('remember'))) {
-            $user = Auth::guard('vendor')->user();
+        // if (Auth::guard('vendor')->attempt($credentials, $request->boolean('remember'))) {
+        //     $user = Auth::guard('vendor')->user();
 
-            if ($user->role !== 'vendor' || ! $user->is_active) {
-                Auth::guard('vendor')->logout();
+        //     if ($user->role !== 'vendor' || ! $user->is_active) {
+        //         Auth::guard('vendor')->logout();
 
-                return back()->withInput($request->only('email'))
-                    ->withErrors(['email' => 'You do not have a seller account.']);
-            }
+        //         return back()->withInput($request->only('email'))
+        //             ->withErrors(['email' => 'You do not have a seller account.']);
+        //     }
 
-            if (! $user->hasRole('vendor')) {
-                $user->assignRole('vendor');
-            }
+        //     if (! $user->hasRole('vendor')) {
+        //         $user->assignRole('vendor');
+        //     }
 
-            if (! $user->vendor) {
-                $user->vendor()->create([
-                    'vendor_name' => $user->name,
-                    'owner_name' => $user->name,
-                    'email' => $user->email,
-                    'phone' => $user->phone ?? '0000000000',
-                    'status' => 'pending',
-                ]);
-            }
+        //     if (! $user->vendor) {
+        //         $user->vendor()->create([
+        //             'vendor_name' => $user->name,
+        //             'owner_name' => $user->name,
+        //             'email' => $user->email,
+        //             'phone' => $user->phone ?? '0000000000',
+        //             'status' => 'pending',
+        //         ]);
+        //     }
 
-            $request->session()->regenerate();
+        //     $request->session()->regenerate();
 
-            return redirect()->route('dashboard');
-        }
+        //     return redirect()->route('dashboard');
+        // }
 
         return back()->withInput($request->only('email'))
             ->withErrors(['email' => 'These credentials do not match our records.']);
