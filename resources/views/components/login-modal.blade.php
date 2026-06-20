@@ -76,15 +76,41 @@
                     <p class="text-slate-400 text-xs font-medium mt-1">Sign in to continue supporting local business.</p>
                 </div>
 
+                <!-- SUCCESS MESSAGE - Shows after successful registration -->
+                @if (session('success'))
+                    <div class="mb-4 rounded-xl bg-[#E8F3EC] border border-[#9FC3AF]/50 text-[#1F3D2E] text-xs font-semibold px-4 py-3 flex items-center gap-2">
+                        <i class="fas fa-check-circle text-[#1F3D2E]"></i>
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                <!-- LOGIN ERRORS - Only show login-specific errors (not registration errors) -->
+                @if ($errors->any() && !session('show_register') && !old('name'))
+                    <div class="mb-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold px-4 py-3 space-y-1">
+                        @foreach ($errors->all() as $error)
+                            <p class="flex items-center gap-1.5">
+                                <i class="fas fa-exclamation-circle"></i>
+                                {{ $error }}
+                            </p>
+                        @endforeach
+                    </div>
+                @endif
+
                 <form action="{{ route('login') }}" method="POST" class="space-y-4">
                     @csrf
                     <div>
                         <label for="modal-email" class="block text-[10px] font-bold uppercase text-[#3A2A1F]/80 mb-1.5 tracking-wider">Email</label>
                         <div class="flex items-center bg-[#F5E8D6]/50 border border-[#ebd7be]/80 rounded-xl px-4 py-2.5 lg:py-3 focus-within:ring-2 focus-within:ring-[#1F3D2E]/40 focus-within:border-transparent transition-all">
                             <i class="far fa-envelope text-slate-400 text-sm shrink-0 mr-3"></i>
-                            <input type="email" id="modal-email" name="email" required placeholder="you@example.com"
+                            <input type="email" id="modal-email" name="email" required placeholder="you@example.com" value="{{ old('email') }}"
                                    class="bg-transparent border-0 outline-none w-full text-slate-800 text-sm placeholder-slate-400 font-medium p-0 focus:ring-0">
                         </div>
+                        @error('email')
+                            <p class="text-red-500 text-xs mt-1 font-medium flex items-center gap-1">
+                                <i class="fas fa-exclamation-circle text-[10px]"></i>
+                                {{ $message }}
+                            </p>
+                        @enderror
                     </div>
                     <div>
                         <div class="flex justify-between items-center mb-1.5">
@@ -99,6 +125,12 @@
                                 <i class="far fa-eye-slash text-sm"></i>
                             </button>
                         </div>
+                        @error('password')
+                            <p class="text-red-500 text-xs mt-1 font-medium flex items-center gap-1">
+                                <i class="fas fa-exclamation-circle text-[10px]"></i>
+                                {{ $message }}
+                            </p>
+                        @enderror
                     </div>
                     <div class="flex items-center gap-2">
                         <input type="checkbox" id="modal-remember" name="remember" class="w-4 h-4 rounded border-slate-300 accent-[#1F3D2E]">
@@ -153,7 +185,7 @@
                             JOIN OUR <span class="text-[#9FC3AF] font-semibold">ARTISAN</span><br>COMMUNITY.
                         </h2>
                         <p class="text-white/80 text-sm max-w-sm font-medium leading-relaxed">
-                            Start selling your art and handmade creations on HamroKoseli, and let your craftsmanship reach homes across Nepal.
+                            Create your account to discover unique, handcrafted, local products and support artisans across Nepal.
                         </p>
                     </div>
                     <div class="flex flex-col gap-3.5 max-w-sm">
@@ -161,19 +193,19 @@
                             <div class="w-9 h-9 rounded-full bg-[#1F3D2E]/20 border border-[#9FC3AF]/30 flex items-center justify-center shrink-0">
                                 <i class="fas fa-truck text-[#9FC3AF] text-base"></i>
                             </div>
-                            <div><h3 class="text-white font-bold text-[11px] tracking-wider uppercase">Easy Shipping</h3><p class="text-white/70 text-[10px] mt-0.5">We handle logistics so you can focus on creating</p></div>
+                            <div><h3 class="text-white font-bold text-[11px] tracking-wider uppercase">Local Pickup</h3><p class="text-white/70 text-[10px] mt-0.5">Convenient neighborhood collection</p></div>
                         </div>
                         <div class="flex items-start gap-3.5 bg-black/25 backdrop-blur-sm border border-white/10 p-3.5 rounded-xl hover:bg-black/35 transition duration-300">
                             <div class="w-9 h-9 rounded-full bg-[#1F3D2E]/20 border border-[#9FC3AF]/30 flex items-center justify-center shrink-0">
                                 <i class="fas fa-wallet text-[#9FC3AF] text-base"></i>
                             </div>
-                            <div><h3 class="text-white font-bold text-[11px] tracking-wider uppercase">Secure Payments</h3><p class="text-white/70 text-[10px] mt-0.5">Direct transfers for every piece you sell</p></div>
+                            <div><h3 class="text-white font-bold text-[11px] tracking-wider uppercase">Secure Payments</h3><p class="text-white/70 text-[10px] mt-0.5">100% protected transactions</p></div>
                         </div>
                         <div class="flex items-start gap-3.5 bg-black/25 backdrop-blur-sm border border-white/10 p-3.5 rounded-xl hover:bg-black/35 transition duration-300">
                             <div class="w-9 h-9 rounded-full bg-[#1F3D2E]/20 border border-[#9FC3AF]/30 flex items-center justify-center shrink-0">
-                                <i class="fas fa-users text-[#9FC3AF] text-base"></i>
+                                <i class="fas fa-hand-holding-heart text-[#9FC3AF] text-base"></i>
                             </div>
-                            <div><h3 class="text-white font-bold text-[11px] tracking-wider uppercase">Seller Network</h3><p class="text-white/70 text-[10px] mt-0.5">Access workshops and connect with local artists</p></div>
+                            <div><h3 class="text-white font-bold text-[11px] tracking-wider uppercase">Support Artisans</h3><p class="text-white/70 text-[10px] mt-0.5">Directly fund local creators</p></div>
                         </div>
                     </div>
                 </div>
@@ -194,31 +226,61 @@
                     <p class="text-slate-400 text-xs font-medium mt-1">Register to shop local crafts.</p>
                 </div>
 
-                <form action="{{ route('vendor.register') }}" method="POST" class="space-y-3.5 lg:space-y-4">
+                <!-- REGISTRATION ERRORS - Only show registration-specific errors -->
+                @if ($errors->any() && (session('show_register') || old('name')))
+                    <div class="mb-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold px-4 py-3 space-y-1">
+                        @foreach ($errors->all() as $error)
+                            <p class="flex items-center gap-1.5">
+                                <i class="fas fa-exclamation-circle"></i>
+                                {{ $error }}
+                            </p>
+                        @endforeach
+                    </div>
+                @endif
+
+                <form action="{{ route('register') }}" method="POST" class="space-y-3.5 lg:space-y-4">
                     @csrf
                     <div>
                         <label for="modal-register-name" class="block text-[10px] font-bold uppercase text-[#3A2A1F]/80 mb-1.5 tracking-wider">Full Name</label>
                         <div class="flex items-center bg-[#F5E8D6]/50 border border-[#ebd7be]/80 rounded-xl px-4 py-2.5 lg:py-3 focus-within:ring-2 focus-within:ring-[#1F3D2E]/40 focus-within:border-transparent transition-all">
                             <i class="far fa-user text-slate-400 text-sm shrink-0 mr-3"></i>
-                            <input type="text" id="modal-register-name" name="name" required placeholder="Your full name"
+                            <input type="text" id="modal-register-name" name="name" required placeholder="Your full name" value="{{ old('name') }}"
                                    class="bg-transparent border-0 outline-none w-full text-slate-800 text-sm placeholder-slate-400 font-medium p-0 focus:ring-0">
                         </div>
+                        @error('name')
+                            <p class="text-red-500 text-xs mt-1 font-medium flex items-center gap-1">
+                                <i class="fas fa-exclamation-circle text-[10px]"></i>
+                                {{ $message }}
+                            </p>
+                        @enderror
                     </div>
                     <div>
                         <label for="modal-register-email" class="block text-[10px] font-bold uppercase text-[#3A2A1F]/80 mb-1.5 tracking-wider">Email Address</label>
                         <div class="flex items-center bg-[#F5E8D6]/50 border border-[#ebd7be]/80 rounded-xl px-4 py-2.5 lg:py-3 focus-within:ring-2 focus-within:ring-[#1F3D2E]/40 focus-within:border-transparent transition-all">
                             <i class="far fa-envelope text-slate-400 text-sm shrink-0 mr-3"></i>
-                            <input type="email" id="modal-register-email" name="email" required placeholder="you@example.com"
+                            <input type="email" id="modal-register-email" name="email" required placeholder="you@example.com" value="{{ old('email') }}"
                                    class="bg-transparent border-0 outline-none w-full text-slate-800 text-sm placeholder-slate-400 font-medium p-0 focus:ring-0">
                         </div>
+                        @error('email')
+                            <p class="text-red-500 text-xs mt-1 font-medium flex items-center gap-1">
+                                <i class="fas fa-exclamation-circle text-[10px]"></i>
+                                {{ $message }}
+                            </p>
+                        @enderror
                     </div>
                     <div>
                         <label for="modal-register-phone" class="block text-[10px] font-bold uppercase text-[#3A2A1F]/80 mb-1.5 tracking-wider">Phone Number</label>
                         <div class="flex items-center bg-[#F5E8D6]/50 border border-[#ebd7be]/80 rounded-xl px-4 py-2.5 lg:py-3 focus-within:ring-2 focus-within:ring-[#1F3D2E]/40 focus-within:border-transparent transition-all">
                             <i class="fas fa-phone text-slate-400 text-sm shrink-0 mr-3"></i>
-                            <input type="tel" id="modal-register-phone" name="phone" placeholder="98XXXXXXXX"
+                            <input type="tel" id="modal-register-phone" name="phone" placeholder="98XXXXXXXX" value="{{ old('phone') }}"
                                    class="bg-transparent border-0 outline-none w-full text-slate-800 text-sm placeholder-slate-400 font-medium p-0 focus:ring-0">
                         </div>
+                        @error('phone')
+                            <p class="text-red-500 text-xs mt-1 font-medium flex items-center gap-1">
+                                <i class="fas fa-exclamation-circle text-[10px]"></i>
+                                {{ $message }}
+                            </p>
+                        @enderror
                     </div>
                     <div>
                         <label for="modal-register-password" class="block text-[10px] font-bold uppercase text-[#3A2A1F]/80 mb-1.5 tracking-wider">Password</label>
@@ -230,6 +292,12 @@
                                 <i class="far fa-eye-slash text-sm"></i>
                             </button>
                         </div>
+                        @error('password')
+                            <p class="text-red-500 text-xs mt-1 font-medium flex items-center gap-1">
+                                <i class="fas fa-exclamation-circle text-[10px]"></i>
+                                {{ $message }}
+                            </p>
+                        @enderror
                     </div>
                     <div>
                         <label for="modal-register-password_confirmation" class="block text-[10px] font-bold uppercase text-[#3A2A1F]/80 mb-1.5 tracking-wider">Confirm Password</label>
@@ -258,3 +326,162 @@
 
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get elements
+        const loginView = document.getElementById('login-view');
+        const registerView = document.getElementById('register-view');
+        const modal = document.getElementById('login-modal');
+        const modalContainer = document.getElementById('login-modal-container');
+        const closeBtn = document.getElementById('close-login-modal');
+
+        // === VIEW SWITCHING ===
+        // Switch to register view
+        const showRegisterBtn = document.getElementById('modal-show-register');
+        if (showRegisterBtn) {
+            showRegisterBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                loginView.classList.add('hidden');
+                registerView.classList.remove('hidden');
+            });
+        }
+
+        // Switch to login view
+        const showLoginBtn = document.getElementById('modal-show-login');
+        if (showLoginBtn) {
+            showLoginBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                registerView.classList.add('hidden');
+                loginView.classList.remove('hidden');
+            });
+        }
+
+        // === PASSWORD TOGGLES ===
+        // Login password toggle
+        const togglePassword = document.getElementById('modal-toggle-password');
+        if (togglePassword) {
+            togglePassword.addEventListener('click', function() {
+                const passwordInput = document.getElementById('modal-password');
+                const icon = this.querySelector('i');
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                } else {
+                    passwordInput.type = 'password';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                }
+            });
+        }
+
+        // Register password toggle
+        const regTogglePassword = document.getElementById('modal-register-toggle-password');
+        if (regTogglePassword) {
+            regTogglePassword.addEventListener('click', function() {
+                const passwordInput = document.getElementById('modal-register-password');
+                const icon = this.querySelector('i');
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                } else {
+                    passwordInput.type = 'password';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                }
+            });
+        }
+
+        // Register confirm password toggle
+        const regToggleConfirm = document.getElementById('modal-register-toggle-password-confirm');
+        if (regToggleConfirm) {
+            regToggleConfirm.addEventListener('click', function() {
+                const passwordInput = document.getElementById('modal-register-password_confirmation');
+                const icon = this.querySelector('i');
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                } else {
+                    passwordInput.type = 'password';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                }
+            });
+        }
+
+        // === MODAL CONTROLS ===
+        // Open modal function
+        function openLoginModal() {
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    if (modalContainer) {
+                        modalContainer.classList.remove('scale-95', 'opacity-0');
+                    }
+                }, 50);
+            }
+        }
+
+        // Close modal function
+        function closeModal() {
+            modal.classList.add('opacity-0');
+            if (modalContainer) {
+                modalContainer.classList.add('scale-95', 'opacity-0');
+            }
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+
+        // Close button
+        if (closeBtn) {
+            closeBtn.addEventListener('click', closeModal);
+        }
+
+        // Close on backdrop click
+        modal.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // Close on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
+                closeModal();
+            }
+        });
+
+        // === AUTO-SHOW REGISTER VIEW IF THERE ARE REGISTRATION ERRORS ===
+        @if (session('show_register') || ($errors->any() && old('name')))
+            // Show register view
+            loginView.classList.add('hidden');
+            registerView.classList.remove('hidden');
+            // Open the modal
+            openLoginModal();
+        @endif
+
+        // === AUTO-SHOW LOGIN VIEW IF THERE ARE LOGIN ERRORS ===
+        @if ($errors->any() && !session('show_register') && !old('name'))
+            // Make sure login view is visible
+            loginView.classList.remove('hidden');
+            registerView.classList.add('hidden');
+            // Open the modal
+            openLoginModal();
+        @endif
+
+        // === SUCCESS MESSAGE - Auto open modal if success message exists ===
+        @if (session('success'))
+            openLoginModal();
+        @endif
+
+        // Make openLoginModal globally accessible
+        window.openLoginModal = openLoginModal;
+    });
+</script>

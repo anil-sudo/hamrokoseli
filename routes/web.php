@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\SellerController;
 use App\Http\Controllers\TestEmailControlelr;
+use App\Http\Controllers\UserRegisterController;
 use App\Http\Controllers\VendorRegisterController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,7 +23,7 @@ Route::middleware(['auth', 'role:vendor'])->group(function () {
     Route::get('/product-management', [SellerController::class, 'product_management'])->name('product-management');
     Route::get('/create-product', [SellerController::class, 'productCreate'])->name('product-create');
     Route::post('/create-product', [SellerController::class, 'store'])->name('product.store');
-    Route::get('/edit-product/{id}', [SellerControljler::class, 'productEdit'])->name('product-edit');
+    Route::get('/edit-product/{id}', [SellerController::class, 'productEdit'])->name('product-edit');
     Route::delete('/product/{id}', [SellerController::class, 'destroy'])->name('product.destroy');
     Route::get('/orders', [SellerController::class, 'order'])->name('order');
     Route::get('/order-details', [SellerController::class, 'orderDetails'])->name('order-details');
@@ -53,6 +54,7 @@ Route::get('/about-us', [PageController::class, 'about_us'])->name('about-us');
 Route::middleware('web')->group(function () {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/register', [UserRegisterController::class, 'register'])->name('register');
     Route::get('/vendor/register', [VendorRegisterController::class, 'show'])->name('vendor.register');
     Route::post('/vendor/register', [VendorRegisterController::class, 'register'])->name('vendor.register.post');
 });
