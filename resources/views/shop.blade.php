@@ -227,8 +227,16 @@
                                     class="absolute top-4 right-4 bg-white/95 text-[#1F3D2E] text-[10px] font-bold tracking-wider uppercase px-3 py-1.5 rounded-full shadow-sm">
                                     Terai Plains</div>
                                 <button
-                                    class="absolute bottom-4 right-4 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-xl drop-shadow"><i
-                                        class="far fa-heart"></i></button>
+                                    class="wishlist-btn absolute bottom-4 right-4 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-xl drop-shadow"
+                                    data-product-id="1"
+                                    data-product-name="Copper Singing Bowl"
+                                    data-product-price="4500"
+                                    data-product-image="{{ asset('images/1st-image.png') }}"
+                                    data-product-desc="Experience the meditative resonance of ancient Patan copper singing bowls."
+                                    data-product-category="Metalware"
+                                    data-product-tag="Terai Plains">
+                                    <i class="far fa-heart"></i>
+                                </button>
                             </div>
                             <div class="p-5 flex-grow flex flex-col justify-between">
                                 <div>
@@ -253,8 +261,15 @@
                                 <img src="{{ asset('images/2nd-image.png') }}" alt="Thimi Crackle Bowl"
                                     class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                                 <button
-                                    class="absolute bottom-4 right-4 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-xl drop-shadow"><i
-                                        class="far fa-heart"></i></button>
+                                    class="wishlist-btn absolute bottom-4 right-4 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-xl drop-shadow"
+                                    data-product-id="2"
+                                    data-product-name="Thimi Crackle Bowl"
+                                    data-product-price="3500"
+                                    data-product-image="{{ asset('images/2nd-image.png') }}"
+                                    data-product-desc="Authentic ceramic crackle bowl handmade by master artisans in Bhaktapur."
+                                    data-product-category="Ceramics">
+                                    <i class="far fa-heart"></i>
+                                </button>
                             </div>
                             <div class="p-5 flex-grow flex flex-col justify-between">
                                 <div>
@@ -279,8 +294,16 @@
                                 <img src="{{ asset('images/Table.png') }}" alt="Patan Floral Lattice"
                                     class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                                 <button
-                                    class="absolute bottom-4 right-4 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-xl drop-shadow"><i
-                                        class="far fa-heart"></i></button>
+                                    class="wishlist-btn absolute bottom-4 right-4 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-xl drop-shadow"
+                                    data-product-id="3"
+                                    data-product-name="Patan Floral Lattice"
+                                    data-product-price="2500"
+                                    data-product-image="{{ asset('images/Table.png') }}"
+                                    data-product-desc="Beautifully hand-carved floral lattice wooden wall art panel."
+                                    data-product-category="Woodwork"
+                                    data-product-tag="Artisan Made">
+                                    <i class="far fa-heart"></i>
+                                </button>
                             </div>
                             <div class="p-5 flex-grow flex flex-col justify-between">
                                 <div>
@@ -305,8 +328,15 @@
                                 <img src="{{ asset('images/4th-image.png') }}" alt="Hand-Woven Dhankuta Dhaka"
                                     class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                                 <button
-                                    class="absolute bottom-4 right-4 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-xl drop-shadow"><i
-                                        class="far fa-heart"></i></button>
+                                    class="wishlist-btn absolute bottom-4 right-4 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-xl drop-shadow"
+                                    data-product-id="4"
+                                    data-product-name="Hand-Woven Dhankuta Dhaka"
+                                    data-product-price="2500"
+                                    data-product-image="{{ asset('images/4th-image.png') }}"
+                                    data-product-desc="Intricately woven traditional Dhaka fabric, handmade in Dhankuta."
+                                    data-product-category="Textiles">
+                                    <i class="far fa-heart"></i>
+                                </button>
                             </div>
                             <div class="p-5 flex-grow flex flex-col justify-between">
                                 <div>
@@ -334,8 +364,16 @@
                                     class="absolute top-4 right-4 bg-white/95 text-[#1F3D2E] text-[10px] font-bold tracking-wider uppercase px-3 py-1.5 rounded-full shadow-sm">
                                     Mustang</div>
                                 <button
-                                    class="absolute bottom-4 right-4 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-xl drop-shadow"><i
-                                        class="far fa-heart"></i></button>
+                                    class="wishlist-btn absolute bottom-4 right-4 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-xl drop-shadow"
+                                    data-product-id="5"
+                                    data-product-name="Himalayan Lokta Journal"
+                                    data-product-price="1500"
+                                    data-product-image="{{ asset('images/aboutus.jpg') }}"
+                                    data-product-desc="Eco-friendly journal made from traditional hand-pressed Lokta paper in Mustang."
+                                    data-product-category="Paper"
+                                    data-product-tag="Mustang">
+                                    <i class="far fa-heart"></i>
+                                </button>
                             </div>
                             <div class="p-5 flex-grow flex flex-col justify-between">
                                 <div>
@@ -363,8 +401,16 @@
                                     class="absolute top-4 right-4 bg-white/95 text-[#1F3D2E] text-[10px] font-bold tracking-wider uppercase px-3 py-1.5 rounded-full shadow-sm">
                                     Kathmandu Valley</div>
                                 <button
-                                    class="absolute bottom-4 right-4 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-xl drop-shadow"><i
-                                        class="far fa-heart"></i></button>
+                                    class="wishlist-btn absolute bottom-4 right-4 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-xl drop-shadow"
+                                    data-product-id="6"
+                                    data-product-name="Silver Filigree Pendant"
+                                    data-product-price="4500"
+                                    data-product-image="{{ asset('images/Jewlery and Accessory.png') }}"
+                                    data-product-desc="Stunning handmade silver filigree pendant crafted in Kathmandu Valley."
+                                    data-product-category="Jewelry"
+                                    data-product-tag="Kathmandu Valley">
+                                    <i class="far fa-heart"></i>
+                                </button>
                             </div>
                             <div class="p-5 flex-grow flex flex-col justify-between">
                                 <div>

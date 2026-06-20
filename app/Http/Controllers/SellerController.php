@@ -166,7 +166,7 @@ class SellerController extends Controller
             'specifications.*.key' => 'nullable|string|max:100',
             'specifications.*.value' => 'nullable|string|max:255',
             'variants' => 'nullable|array',
-            'variants.*.sku' => 'required_with:variants|string|max:100|distinct',
+            'variants.*.sku' => 'required_with:variants|string|max:100|distinct|unique:product_variants,sku',
             'variants.*.size' => 'nullable|string|max:50',
             'variants.*.color' => 'nullable|string|max:50',
             'variants.*.price' => 'nullable|numeric|min:0',

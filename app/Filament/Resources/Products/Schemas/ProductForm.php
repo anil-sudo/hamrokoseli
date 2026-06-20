@@ -65,6 +65,7 @@ class ProductForm
                     ->maxFiles(5)
                     ->maxSize(2048)
                     ->directory('products')
+                    ->disk('public')
                     ->helperText('Max 5 images, 2MB each. JPG, PNG, or WebP.')
                     ->panelLayout('integrated')
                     ->extraAttributes(['style' => 'min-height: 150px;'])

@@ -49,6 +49,7 @@ Route::get('/todays-deals', [PageController::class, 'todays_deals'])->name('toda
 Route::get('/featured-products', [PageController::class, 'featured_products'])->name('featured-products');
 Route::get('/top-sellers', [PageController::class, 'top_sellers'])->name('top-sellers');
 Route::get('/about-us', [PageController::class, 'about_us'])->name('about-us');
+Route::get('/wishlist', [PageController::class, 'wishlist'])->name('wishlist');
 
 // ─── User Auth routes (guest on web guard) ────────────────────────────────────
 Route::middleware('web')->group(function () {

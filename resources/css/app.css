@@ -444,3 +444,100 @@ a {
             rgba(31, 61, 46, 0.05) 0%,
             rgba(198, 90, 58, 0.08) 100%);
 }
+/* Toast Notification Style */
+.toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 999999;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    pointer-events: none;
+}
+
+.toast-item {
+    pointer-events: auto;
+    background: rgba(31, 61, 46, 0.95);
+    color: #FFF7EF;
+    border: 1px solid rgba(235, 215, 190, 0.2);
+    border-left: 4.5px solid #C65A3A;
+    padding: 14px 20px;
+    border-radius: 16px;
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 280px;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    backdrop-filter: blur(8px);
+}
+
+.toast-item.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.toast-item.hide {
+    transform: translateY(-20px);
+    opacity: 0;
+}
+
+/* Reusable Product Card and Filter Styles */
+.product-card {
+    transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s ease;
+}
+.product-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Style active filter pills */
+.filter-pill.active {
+    background-color: #1F3D2E !important;
+    color: #FFF7EF !important;
+    border-color: #1F3D2E !important;
+}
+
+/* Hide browser number-input spinner arrows */
+.qty-val-input::-webkit-outer-spin-button,
+.qty-val-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.qty-val-input {
+    -moz-appearance: textfield;
+}
+
+/* Discount Badge Style */
+.discount-badge {
+    background: linear-gradient(135deg, #e5b842 0%, #d48a17 100%);
+    color: #1A2A20;
+    box-shadow: 0 4px 12px rgba(229, 184, 66, 0.35);
+}
+
+/* Rank gold/silver/bronze badges */
+.rank-1 {
+    background: linear-gradient(135deg, #ffd700 0%, #ffa500 100%);
+    color: #1a1a1a;
+    box-shadow: 0 4px 10px rgba(255, 215, 0, 0.35);
+}
+.rank-2 {
+    background: linear-gradient(135deg, #c0c0c0 0%, #808080 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(192, 192, 192, 0.35);
+}
+.rank-3 {
+    background: linear-gradient(135deg, #cd7f32 0%, #8b4513 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 10px rgba(205, 127, 50, 0.35);
+}
+.rank-default {
+    background-color: rgba(31, 61, 46, 0.85);
+    color: #FFF7EF;
+    box-shadow: 0 4px 10px rgba(31, 61, 46, 0.2);
+}
