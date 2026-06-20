@@ -96,7 +96,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('login') }}" method="POST" class="space-y-4">
+                <form action="{{ route('userlogin') }}" method="POST" class="space-y-4">
                     @csrf
                     <div>
                         <label for="modal-email" class="block text-[10px] font-bold uppercase text-[#3A2A1F]/80 mb-1.5 tracking-wider">Email</label>
@@ -238,7 +238,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('register') }}" method="POST" class="space-y-3.5 lg:space-y-4">
+                <form action="{{ route('userregister') }}" method="POST" class="space-y-3.5 lg:space-y-4">
                     @csrf
                     <div>
                         <label for="modal-register-name" class="block text-[10px] font-bold uppercase text-[#3A2A1F]/80 mb-1.5 tracking-wider">Full Name</label>
