@@ -3,23 +3,57 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Vendor;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
      * Seed the application's database.
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // First seed roles and permissions
+        $this->call(RolesAndPermissionsSeeder::class);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Create admin user
+        $admin = User::firstOrCreate(
+            ['email' => 'aashutosbaral@gmail.com'],
+            [
+                'name' => 'Aashutos',
+                'password' => Hash::make('1234567890'),
+                'role' => 'admin',
+                'is_active' => 1,
+            ]
+        );
+        $admin->assignRole('admin');
+
+        // Create a vendor user account
+        $vendor = User::firstOrCreate(
+            ['email' => 'example@gmail.com'],
+            [
+                'name' => 'Aashutosh',
+                'password' => Hash::make('password123'),
+                'role' => 'vendor',
+                'is_active' => 1,
+            ]
+        );
+        $vendor->assignRole('vendor');
+
+        // Create or update the vendor profile for this user
+        Vendor::updateOrCreate(
+            ['user_id' => $vendor->id],
+            [
+                'vendor_name' => 'Aashutosh',
+                'owner_name' => 'Aashutosh',
+                'email' => 'example@gmail.com',
+                'phone' => '9876543210',
+                'vendor_address' => 'Default vendor address',
+                'city' => 'Kathmandu',
+                'province' => 'Bagmati',
+                'status' => 'active',
+            ]
+        );
     }
 }
