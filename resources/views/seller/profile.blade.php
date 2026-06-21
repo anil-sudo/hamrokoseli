@@ -33,41 +33,75 @@
                     </div>
 
                     <!-- Form Fields -->
-                    <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-medium text-brand-dark mb-2">Full Name <span
-                                    class="text-(--secondary-color)">*</span></label>
-                            <input type="text" placeholder="Enter your name"
-                                class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-brand-dark mb-1">Email Address <span
-                                    class="text-(--secondary-color)">*</span></label>
-                            <input type="email" placeholder="e.g. example22@gmail.com"
-                                class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-brand-dark mb-1">Phone Number <span
-                                    class="text-(--secondary-color)">*</span></label>
-                            <input type="tel" placeholder="e.g. 1234567890"
-                                class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-brand-dark mb-1">Preferred Delivery
-                                Region<span class="text-(--secondary-color)">*</span></label>
-                            <input type="text" placeholder="e.g. kathmandu valley"
-                                class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-brand-dark mb-1">
-                                Default Delivery Address
-                            </label>
-                            <input type="text" placeholder="e.g. Ward 3, Jhamsikhel, Lalitpur, Nepal"
-                                class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
-                        </div>
-                    </div>
-                </div>
+<div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
 
+    <!-- Full Name -->
+    <div>
+        <label class="block text-sm font-medium text-brand-dark mb-2">
+            Full Name <span class="text-(--secondary-color)">*</span>
+        </label>
+        <input
+            type="text"
+            name="name"
+            value="{{ old('name', $user->name) }}"
+            placeholder="Enter your name"
+            class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
+    </div>
+
+    <!-- Email -->
+    <div>
+        <label class="block text-sm font-medium text-brand-dark mb-1">
+            Email Address <span class="text-(--secondary-color)">*</span>
+        </label>
+        <input
+            type="email"
+            name="email"
+            value="{{ old('email', $user->email) }}"
+            placeholder="e.g. example22@gmail.com"
+            class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
+    </div>
+
+    <!-- Phone -->
+    <div>
+        <label class="block text-sm font-medium text-brand-dark mb-1">
+            Phone Number <span class="text-(--secondary-color)">*</span>
+        </label>
+        <input
+            type="tel"
+            name="phone"
+            value="{{ old('phone', $user->phone) }}"
+            placeholder="e.g. 1234567890"
+            class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
+    </div>
+
+    <!-- Preferred Delivery Region -->
+    <div>
+        <label class="block text-sm font-medium text-brand-dark mb-1">
+            Preferred Delivery Region
+            <span class="text-(--secondary-color)">*</span>
+        </label>
+        <input
+            type="text"
+            name="delivery_region"
+            value="{{ old('delivery_region', $vendor?->delivery_region) }}"
+            placeholder="e.g. Kathmandu Valley"
+            class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
+    </div>
+
+    <!-- Address -->
+    <div>
+        <label class="block text-sm font-medium text-brand-dark mb-1">
+            Default Delivery Address
+        </label>
+        <input
+            type="text"
+            name="address"
+            value="{{ old('address', $vendor?->address) }}"
+            placeholder="e.g. Ward 3, Jhamsikhel, Lalitpur, Nepal"
+            class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
+    </div>
+
+</div>
                 <!-- Buttons -->
                 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mt-8">
 
