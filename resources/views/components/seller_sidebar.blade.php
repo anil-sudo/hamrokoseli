@@ -26,7 +26,7 @@
     <!-- Brand / Logo Section -->
     <div class="px-6 pb-2 border-b border-white/10">
         <div class="flex items-center gap-3 mt-3.5">
-            <img src="{{ asset('images/logo.jpeg') }}" alt="HamroKoseli Logo" class="w-10 h-10 rounded-full object-cover">
+            <img src="{{ asset('images/logo.png') }}" alt="HamroKoseli Logo" class="w-10 h-10 bg-white rounded-full object-cover">
 
             <div class="transition-all duration-300 hover:translate-x-1">
                 <h1 class="text-2xl font-bold tracking-tight text-[#FFF7EF] font-sans">

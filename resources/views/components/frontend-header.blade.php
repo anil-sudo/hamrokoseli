@@ -35,8 +35,8 @@
 
                 <!-- Logo -->
                 <a href="{{ url('/') }}" class="flex items-center gap-2.5 group shrink-0">
-                    <img src="{{ asset('images/logo.jpeg') }}" alt="Hamro Koseli Logo"
-                        class="w-10 h-10 object-contain rounded-full shadow-md transform group-hover:scale-105 transition duration-300">
+                    <img src="{{ asset('images/logo.png') }}" alt="Hamro Koseli Logo"
+                        class="w-10 h-10 bg-white object-contain rounded-full shadow-md transform group-hover:scale-105 transition duration-300">
                     <div>
                         <div class="text-lg md:text-xl font-extrabold tracking-wide leading-none text-white">HAMRO KOSELI</div>
                         <span class="text-[9px] text-emerald-200/90 tracking-wide font-medium hidden sm:block">Special Koseli for Special People</span>
@@ -150,7 +150,7 @@
     <!-- Drawer header -->
     <div class="flex items-center justify-between px-5 py-4 border-b border-white/10">
         <div class="flex items-center gap-2.5">
-            <img src="{{ asset('images/logo.jpeg') }}" alt="Hamro Koseli" class="w-9 h-9 rounded-full object-contain">
+            <img src="{{ asset('images/logo.png') }}" alt="Hamro Koseli" class="w-9 h-9 bg-white rounded-full object-contain">
             <span class="font-extrabold text-white text-base">HAMRO KOSELI</span>
         </div>
         <!-- Close button -->

@@ -25,7 +25,7 @@
                  style="background-image: linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.55)), url('{{ asset('images/LoginPageImage.png') }}');">
                 <div class="z-10">
                     <div class="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-5 py-2.5">
-                        <img src="{{ asset('images/logo.jpeg') }}" alt="Hamro Koseli Logo" class="w-9 h-9 rounded-full object-cover">
+                        <img src="{{ asset('images/logo.png') }}" alt="Hamro Koseli Logo" class="w-9 h-9 bg-white rounded-full object-cover">
                         <span class="text-white font-serif tracking-widest font-bold text-sm uppercase">Hamro Koseli</span>
                     </div>
                 </div>
@@ -175,7 +175,7 @@
                  style="background-image: linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.55)), url('{{ asset('images/RegisterPageImage.png') }}');">
                 <div class="z-10">
                     <div class="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-5 py-2.5">
-                        <img src="{{ asset('images/logo.jpeg') }}" alt="Hamro Koseli Logo" class="w-9 h-9 rounded-full object-cover">
+                        <img src="{{ asset('images/logo.png') }}" alt="Hamro Koseli Logo" class="w-9 h-9 bg-white rounded-full object-cover">
                         <span class="text-white font-serif tracking-widest font-bold text-sm uppercase">Hamro Koseli</span>
                     </div>
                 </div>
