@@ -1,4 +1,4 @@
-<x-frontend-layout>
+{{-- <x-frontend-layout>
   <main class="bg-[#f7fafc] min-h-screen py-12 px-4 md:px-8 lg:px-16">
     <div class="max-w-7xl mx-auto">
       <!-- Breadcrumb -->
@@ -126,4 +126,4 @@
       </div>
     </div>
   </main>
-</x-frontend-layout>
+</x-frontend-layout> --}}

@@ -1,4 +1,4 @@
-<x-frontend-layout>
+{{-- <x-frontend-layout>
   <main class="bg-[#f7fafc] min-h-screen">
     <!-- Hero Section -->
     <section class="bg-gradient-to-r from-[#d93537] to-[#ff6b5b] text-white py-16 px-4 md:px-8 lg:px-16">
@@ -227,4 +227,4 @@
     </section>
 
   </main>
-</x-frontend-layout>
+</x-frontend-layout> --}}
