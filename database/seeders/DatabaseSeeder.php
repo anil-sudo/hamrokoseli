@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Models\Vendor;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -18,26 +19,41 @@ class DatabaseSeeder extends Seeder
 
         // Create admin user
         $admin = User::firstOrCreate(
-            ['email' => 'admin@admin.com'],
+            ['email' => 'aashutosbaral@gmail.com'],
             [
-                'name' => 'Admin',
-                'password' => Hash::make('password'),
+                'name' => 'Aashutos',
+                'password' => Hash::make('1234567890'),
                 'role' => 'admin',
                 'is_active' => 1,
             ]
         );
         $admin->assignRole('admin');
 
-        // Create a sample vendor user
+        // Create a vendor user account
         $vendor = User::firstOrCreate(
-            ['email' => 'vendor@example.com'],
+            ['email' => 'example@gmail.com'],
             [
-                'name' => 'Test Vendor',
-                'password' => Hash::make('password'),
+                'name' => 'Aashutosh',
+                'password' => Hash::make('password123'),
                 'role' => 'vendor',
                 'is_active' => 1,
             ]
         );
         $vendor->assignRole('vendor');
+
+        // Create or update the vendor profile for this user
+        Vendor::updateOrCreate(
+            ['user_id' => $vendor->id],
+            [
+                'vendor_name' => 'Aashutosh',
+                'owner_name' => 'Aashutosh',
+                'email' => 'example@gmail.com',
+                'phone' => '9876543210',
+                'vendor_address' => 'Default vendor address',
+                'city' => 'Kathmandu',
+                'province' => 'Bagmati',
+                'status' => 'active',
+            ]
+        );
     }
 }

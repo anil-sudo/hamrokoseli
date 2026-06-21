@@ -155,7 +155,7 @@
             <div class="card-dark p-6 shadow-sm hover:shadow-md transition-all duration-300">
                 <h3 class="text-xl font-semibold text-(--text-color) mb-5">Quick Actions</h3>
                 <div class="space-y-4">
-                    <a href="#"
+                    <a href="{{ route('product-create') }}"
                         class="flex items-center gap-4 p-4 rounded-2xl bg-(--card-dark)/40 hover:bg-(--card-dark)/70 transition-all duration-300 group">
                         <div
                             class="w-11 h-11 rounded-2xl bg-(--card-dark) flex items-center justify-center text-(--secondary-color) text-2xl group-hover:scale-110 transition-transform">
@@ -168,7 +168,7 @@
                         </div>
                     </a>
 
-                    <a href="#"
+                    <a href="{{ route('seller-support') }}"
                         class="flex items-center gap-4 p-4 rounded-2xl bg-(--card-dark)/40 hover:bg-(--card-dark)/70 transition-all duration-300 group">
                         <div
                             class="w-11 h-11 rounded-2xl bg-(--card-dark) flex items-center justify-center text-(--secondary-color) text-2xl group-hover:scale-110 transition-transform">
@@ -191,7 +191,7 @@
                     <i data-lucide="history" class="w-5 h-5"></i>
                     Recent Orders
                 </h3>
-                <a href="#" class="text-sm text-(--secondary-color) flex items-center gap-1.5 transition">
+                <a href="{{ route('order') }}" class="text-sm text-(--secondary-color) flex items-center gap-1.5 transition">
                     <span class="hover:underline">View All</span>
                     <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </a>
@@ -230,10 +230,10 @@
                                     class="px-4 py-1.5 text-xs font-medium rounded-full bg-(--hover-color)/50 text-(--secondary-color)">Pending</span>
                             </td>
                             <td class="px-6 py-5">
-                                <button
+                                <a href="{{ route('order-details') }}"
                                     class="text-(--secondary-color) hover:text-(--hover-color) transition flex items-center gap-1">
                                     <i data-lucide="square-pen" class="w-4 h-4"></i> Update
-                                </button>
+                                </a>
                             </td>
                         </tr>
 

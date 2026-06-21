@@ -13,15 +13,10 @@ class Product extends Model
     use HasFactory;
 
     protected $fillable = [
-        'vendor_id',
-        'category_id',
-        'name',
-        'description',
-        'price',
-        'discount_price',
-        'stock',
-        'image',
-        'status',
+        'vendor_id', 'category_id', 'name', 'slug',
+        'product_type', 'description', 'specifications',
+        'price', 'discount_price', 'stock', 'sku',
+        'image', 'status',
     ];
 
     protected function casts(): array
@@ -30,6 +25,7 @@ class Product extends Model
             'price' => 'decimal:2',
             'discount_price' => 'decimal:2',
             'stock' => 'integer',
+            'specifications' => 'array',
         ];
     }
 

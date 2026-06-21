@@ -35,8 +35,18 @@
             <div class="grid grid-cols-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
                 <!-- Product Card 1 -->
                 <div class="bg-[#FDFBF7] rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-amber-900/5 hover:shadow-md transition group">
-                    <div class="h-28 xs:h-32 sm:h-40 md:h-48 lg:h-56 overflow-hidden bg-slate-100">
+                    <div class="h-28 xs:h-32 sm:h-40 md:h-48 lg:h-56 overflow-hidden bg-slate-100 relative">
                         <img src="{{ asset('images/Sweaters.png') }}" alt="Textiles" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <button class="wishlist-btn absolute top-3 right-3 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-lg sm:text-xl drop-shadow focus:outline-none"
+                                data-product-id="101"
+                                data-product-name="Handwoven Wool Sweater"
+                                data-product-price="1299"
+                                data-product-image="{{ asset('images/Sweaters.png') }}"
+                                data-product-desc="Warm and cozy handwoven merino wool sweater from the Himalayas."
+                                data-product-category="Textile"
+                                data-product-tag="Artisan Made">
+                            <i class="far fa-heart"></i>
+                        </button>
                     </div>
                     <div class="p-1.5 sm:p-2 md:p-3 lg:p-4">
                         <h4 class="text-slate-500 font-semibold text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-wider mb-0.5 sm:mb-1 truncate">Textile</h4>
@@ -50,8 +60,17 @@
 
                 <!-- Product Card 2 -->
                 <div class="bg-[#FDFBF7] rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-amber-900/5 hover:shadow-md transition group">
-                    <div class="h-28 xs:h-32 sm:h-40 md:h-48 lg:h-56 overflow-hidden bg-slate-100">
+                    <div class="h-28 xs:h-32 sm:h-40 md:h-48 lg:h-56 overflow-hidden bg-slate-100 relative">
                         <img src="{{ asset('images/SunGlass.png') }}" alt="Accessories" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <button class="wishlist-btn absolute top-3 right-3 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-lg sm:text-xl drop-shadow focus:outline-none"
+                                data-product-id="102"
+                                data-product-name="Wooden Sunglasses"
+                                data-product-price="899"
+                                data-product-image="{{ asset('images/SunGlass.png') }}"
+                                data-product-desc="Eco-friendly and stylish hand-crafted wooden sunglasses."
+                                data-product-category="Accessories">
+                            <i class="far fa-heart"></i>
+                        </button>
                     </div>
                     <div class="p-1.5 sm:p-2 md:p-3 lg:p-4">
                         <h4 class="text-slate-500 font-semibold text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-wider mb-0.5 sm:mb-1 truncate">Accessories</h4>
@@ -65,8 +84,17 @@
 
                 <!-- Product Card 3 -->
                 <div class="bg-[#FDFBF7] rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-amber-900/5 hover:shadow-md transition group">
-                    <div class="h-28 xs:h-32 sm:h-40 md:h-48 lg:h-56 overflow-hidden bg-slate-100">
+                    <div class="h-28 xs:h-32 sm:h-40 md:h-48 lg:h-56 overflow-hidden bg-slate-100 relative">
                         <img src="{{ asset('images/Table.png') }}" alt="Furniture" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <button class="wishlist-btn absolute top-3 right-3 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-lg sm:text-xl drop-shadow focus:outline-none"
+                                data-product-id="103"
+                                data-product-name="Solid Wood Coffee Table"
+                                data-product-price="12999"
+                                data-product-image="{{ asset('images/Table.png') }}"
+                                data-product-desc="Durable coffee table hand-crafted from solid Nepalese Shorea wood."
+                                data-product-category="Furniture">
+                            <i class="far fa-heart"></i>
+                        </button>
                     </div>
                     <div class="p-1.5 sm:p-2 md:p-3 lg:p-4">
                         <h4 class="text-slate-500 font-semibold text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-wider mb-0.5 sm:mb-1 truncate">Furniture</h4>
@@ -80,8 +108,17 @@
 
                 <!-- Product Card 4 -->
                 <div class="bg-[#FDFBF7] rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-amber-900/5 hover:shadow-md transition group">
-                    <div class="h-28 xs:h-32 sm:h-40 md:h-48 lg:h-56 overflow-hidden bg-slate-100">
+                    <div class="h-28 xs:h-32 sm:h-40 md:h-48 lg:h-56 overflow-hidden bg-slate-100 relative">
                         <img src="{{ asset('images/Pottery.png') }}" alt="Pottery" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <button class="wishlist-btn absolute top-3 right-3 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-lg sm:text-xl drop-shadow focus:outline-none"
+                                data-product-id="104"
+                                data-product-name="Hand-Painted Ceramic Vase"
+                                data-product-price="2499"
+                                data-product-image="{{ asset('images/Pottery.png') }}"
+                                data-product-desc="Beautiful ceramic vase hand-painted with traditional patterns."
+                                data-product-category="Pottery">
+                            <i class="far fa-heart"></i>
+                        </button>
                     </div>
                     <div class="p-1.5 sm:p-2 md:p-3 lg:p-4">
                         <h4 class="text-slate-500 font-semibold text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-wider mb-0.5 sm:mb-1 truncate">Pottery</h4>
@@ -170,8 +207,17 @@
                         <span class="absolute top-1 left-1 sm:top-2 sm:left-2 bg-[#e5b842] text-brand-dark text-[8px] sm:text-[9px] md:text-[10px] font-extrabold uppercase px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full z-10 shadow-sm">
                             -20%
                         </span>
-                        <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-48 overflow-hidden bg-slate-100">
+                        <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-48 overflow-hidden bg-slate-100 relative">
                             <img src="{{ asset('images/Sweaters.png') }}" alt="Deal 1" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            <button class="wishlist-btn absolute top-2 right-2 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-base drop-shadow focus:outline-none"
+                                    data-product-id="105"
+                                    data-product-name="Merino Wool Sweater"
+                                    data-product-price="1299"
+                                    data-product-image="{{ asset('images/Sweaters.png') }}"
+                                    data-product-desc="High-quality merino wool sweater woven by local weavers."
+                                    data-product-category="Artisan Weaves">
+                                <i class="far fa-heart"></i>
+                            </button>
                         </div>
                         <div class="p-1.5 sm:p-2 md:p-3 lg:p-4">
                             <span class="text-slate-400 font-semibold text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] uppercase tracking-wider truncate block">Artisan Weaves</span>
@@ -197,8 +243,17 @@
 
                     <!-- Deal Card 2 -->
                     <div class="bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-[#ebd7be]/40 hover:shadow-md transition group">
-                        <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-48 overflow-hidden bg-slate-100">
+                        <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-48 overflow-hidden bg-slate-100 relative">
                             <img src="{{ asset('images/SunGlass.png') }}" alt="Deal 2" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            <button class="wishlist-btn absolute top-2 right-2 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-base drop-shadow focus:outline-none"
+                                    data-product-id="106"
+                                    data-product-name="Bamboo Sunglasses"
+                                    data-product-price="899"
+                                    data-product-image="{{ asset('images/SunGlass.png') }}"
+                                    data-product-desc="Stylish sunglasses crafted from sustainable natural bamboo wood."
+                                    data-product-category="Eco Eyewear">
+                                <i class="far fa-heart"></i>
+                            </button>
                         </div>
                         <div class="p-1.5 sm:p-2 md:p-3 lg:p-4">
                             <span class="text-slate-400 font-semibold text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] uppercase tracking-wider truncate block">Eco Eyewear</span>
@@ -224,8 +279,17 @@
 
                     <!-- Deal Card 3 -->
                     <div class="bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-[#ebd7be]/40 hover:shadow-md transition group">
-                        <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-48 overflow-hidden bg-slate-100">
+                        <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-48 overflow-hidden bg-slate-100 relative">
                             <img src="{{ asset('images/Table.png') }}" alt="Deal 3" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            <button class="wishlist-btn absolute top-2 right-2 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-base drop-shadow focus:outline-none"
+                                    data-product-id="107"
+                                    data-product-name="Teak Wood Side Table"
+                                    data-product-price="8999"
+                                    data-product-image="{{ asset('images/Table.png') }}"
+                                    data-product-desc="Sturdy, hand-crafted teak wood side table with rustic charm."
+                                    data-product-category="Woodcraft">
+                                <i class="far fa-heart"></i>
+                            </button>
                         </div>
                         <div class="p-1.5 sm:p-2 md:p-3 lg:p-4">
                             <span class="text-slate-400 font-semibold text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] uppercase tracking-wider truncate block">Woodcraft</span>
@@ -251,8 +315,17 @@
 
                     <!-- Deal Card 4 -->
                     <div class="bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-[#ebd7be]/40 hover:shadow-md transition group">
-                        <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-48 overflow-hidden bg-slate-100">
+                        <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-48 overflow-hidden bg-slate-100 relative">
                             <img src="{{ asset('images/Pottery.png') }}" alt="Deal 4" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            <button class="wishlist-btn absolute top-2 right-2 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-base drop-shadow focus:outline-none"
+                                    data-product-id="108"
+                                    data-product-name="Ceramic Bowl Set"
+                                    data-product-price="3499"
+                                    data-product-image="{{ asset('images/Pottery.png') }}"
+                                    data-product-desc="Set of handmade ceramic bowls, clay-fired and glazed by local potters."
+                                    data-product-category="Clay Studio">
+                                <i class="far fa-heart"></i>
+                            </button>
                         </div>
                         <div class="p-1.5 sm:p-2 md:p-3 lg:p-4">
                             <span class="text-slate-400 font-semibold text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] uppercase tracking-wider truncate block">Clay Studio</span>
@@ -301,8 +374,17 @@
                             <span class="absolute top-1 left-1 sm:top-2 sm:left-2 bg-[#b55b3d] text-white text-[8px] sm:text-[9px] md:text-[10px] font-extrabold uppercase px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full z-10 shadow-sm">
                                 Featured
                             </span>
-                            <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-48 overflow-hidden bg-slate-100">
+                            <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-48 overflow-hidden bg-slate-100 relative">
                                 <img src="{{ asset('images/Sweaters.png') }}" alt="Featured 1" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                <button class="wishlist-btn absolute top-2 right-2 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-base drop-shadow focus:outline-none"
+                                        data-product-id="109"
+                                        data-product-name="Cashmere Blend Scarf"
+                                        data-product-price="2499"
+                                        data-product-image="{{ asset('images/Sweaters.png') }}"
+                                        data-product-desc="Luxurious and warm cashmere blend scarf woven by hand in Kathmandu."
+                                        data-product-category="Artisan Weaves">
+                                    <i class="far fa-heart"></i>
+                                </button>
                             </div>
                             <div class="p-1.5 sm:p-2 md:p-3 lg:p-4">
                                 <span class="text-slate-400 font-semibold text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] uppercase tracking-wider truncate block">Artisan Weaves</span>
@@ -328,8 +410,17 @@
 
                         <!-- Featured Card 2 -->
                         <div class="bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-[#ebd7be]/40 hover:shadow-md transition group">
-                            <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-48 overflow-hidden bg-slate-100">
+                            <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-48 overflow-hidden bg-slate-100 relative">
                                 <img src="{{ asset('images/SunGlass.png') }}" alt="Featured 2" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                <button class="wishlist-btn absolute top-2 right-2 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-base drop-shadow focus:outline-none"
+                                        data-product-id="110"
+                                        data-product-name="Brass Wall Art"
+                                        data-product-price="4999"
+                                        data-product-image="{{ asset('images/SunGlass.png') }}"
+                                        data-product-desc="Intricately hand-hammered traditional Nepalese brass wall decor."
+                                        data-product-category="Lumiere">
+                                    <i class="far fa-heart"></i>
+                                </button>
                             </div>
                             <div class="p-1.5 sm:p-2 md:p-3 lg:p-4">
                                 <span class="text-slate-400 font-semibold text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] uppercase tracking-wider truncate block">Lumiere</span>
@@ -355,8 +446,17 @@
 
                         <!-- Featured Card 3 -->
                         <div class="bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-[#ebd7be]/40 hover:shadow-md transition group">
-                            <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-48 overflow-hidden bg-slate-100">
+                            <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-48 overflow-hidden bg-slate-100 relative">
                                 <img src="{{ asset('images/Table.png') }}" alt="Featured 3" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                <button class="wishlist-btn absolute top-2 right-2 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-base drop-shadow focus:outline-none"
+                                        data-product-id="111"
+                                        data-product-name="Modern Armchair"
+                                        data-product-price="24999"
+                                        data-product-image="{{ asset('images/Table.png') }}"
+                                        data-product-desc="Stylish and highly comfortable hand-finished modern wooden armchair."
+                                        data-product-category="Furnish Lab">
+                                    <i class="far fa-heart"></i>
+                                </button>
                             </div>
                             <div class="p-1.5 sm:p-2 md:p-3 lg:p-4">
                                 <span class="text-slate-400 font-semibold text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] uppercase tracking-wider truncate block">Furnish Lab</span>
@@ -385,8 +485,17 @@
                             <span class="absolute top-1 left-1 sm:top-2 sm:left-2 bg-[#b55b3d] text-white text-[8px] sm:text-[9px] md:text-[10px] font-extrabold uppercase px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full z-10 shadow-sm">
                                 Featured
                             </span>
-                            <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-48 overflow-hidden bg-slate-100">
+                            <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-48 overflow-hidden bg-slate-100 relative">
                                 <img src="{{ asset('images/Pottery.png') }}" alt="Featured 4" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                <button class="wishlist-btn absolute top-2 right-2 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-base drop-shadow focus:outline-none"
+                                        data-product-id="112"
+                                        data-product-name="Stoneware Dinner Set"
+                                        data-product-price="5999"
+                                        data-product-image="{{ asset('images/Pottery.png') }}"
+                                        data-product-desc="Complete traditional clay stoneware dining set, fired and glazed."
+                                        data-product-category="Clay & Kiln">
+                                    <i class="far fa-heart"></i>
+                                </button>
                             </div>
                             <div class="p-1.5 sm:p-2 md:p-3 lg:p-4">
                                 <span class="text-slate-400 font-semibold text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] uppercase tracking-wider truncate block">Clay & Kiln</span>
@@ -492,8 +601,18 @@
                         <span class="absolute top-1 left-1 sm:top-2 sm:left-2 bg-[#e5b842] text-brand-dark text-[8px] sm:text-[9px] md:text-[10px] font-extrabold uppercase px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full z-10 shadow-sm">
                             Best
                         </span>
-                        <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-48 overflow-hidden bg-slate-100">
+                        <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-48 overflow-hidden bg-slate-100 relative">
                             <img src="{{ asset('images/Sweaters.png') }}" alt="Seller 1" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            <button class="wishlist-btn absolute top-2 right-2 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-base drop-shadow focus:outline-none"
+                                    data-product-id="116"
+                                    data-product-name="Heritage Wool Blanket"
+                                    data-product-price="6999"
+                                    data-product-image="{{ asset('images/Sweaters.png') }}"
+                                    data-product-desc="Beautiful heritage wool blanket woven with traditional motifs."
+                                    data-product-category="The Wool Studio"
+                                    data-product-tag="Best">
+                                <i class="far fa-heart"></i>
+                            </button>
                         </div>
                         <div class="p-1.5 sm:p-2 md:p-3 lg:p-4">
                             <span class="text-slate-400 font-semibold text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] uppercase tracking-wider truncate block">The Wool Studio</span>
@@ -519,8 +638,17 @@
 
                     <!-- Seller Card 2 -->
                     <div class="bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-[#ebd7be]/40 hover:shadow-md transition group">
-                        <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-48 overflow-hidden bg-slate-100">
+                        <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-48 overflow-hidden bg-slate-100 relative">
                             <img src="{{ asset('images/SunGlass.png') }}" alt="Seller 2" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            <button class="wishlist-btn absolute top-2 right-2 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-base drop-shadow focus:outline-none"
+                                    data-product-id="117"
+                                    data-product-name="Labradorite Pendant"
+                                    data-product-price="3299"
+                                    data-product-image="{{ asset('images/SunGlass.png') }}"
+                                    data-product-desc="Stunning handcrafted labradorite gemstone pendant set in sterling silver."
+                                    data-product-category="Gem & Co.">
+                                <i class="far fa-heart"></i>
+                            </button>
                         </div>
                         <div class="p-1.5 sm:p-2 md:p-3 lg:p-4">
                             <span class="text-slate-400 font-semibold text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] uppercase tracking-wider truncate block">Gem & Co.</span>
@@ -546,8 +674,17 @@
 
                     <!-- Seller Card 3 -->
                     <div class="bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-[#ebd7be]/40 hover:shadow-md transition group">
-                        <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-48 overflow-hidden bg-slate-100">
+                        <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-48 overflow-hidden bg-slate-100 relative">
                             <img src="{{ asset('images/Table.png') }}" alt="Seller 3" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            <button class="wishlist-btn absolute top-2 right-2 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-base drop-shadow focus:outline-none"
+                                    data-product-id="118"
+                                    data-product-name="Reclaimed Wood Shelf"
+                                    data-product-price="15999"
+                                    data-product-image="{{ asset('images/Table.png') }}"
+                                    data-product-desc="Sturdy, rustic wooden wall shelf hand-made from reclaimed Nepalese timber."
+                                    data-product-category="Urban Rustic">
+                                <i class="far fa-heart"></i>
+                            </button>
                         </div>
                         <div class="p-1.5 sm:p-2 md:p-3 lg:p-4">
                             <span class="text-slate-400 font-semibold text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] uppercase tracking-wider truncate block">Urban Rustic</span>
@@ -573,8 +710,17 @@
 
                     <!-- Seller Card 4 -->
                     <div class="bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-[#ebd7be]/40 hover:shadow-md transition group">
-                        <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-48 overflow-hidden bg-slate-100">
+                        <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-48 overflow-hidden bg-slate-100 relative">
                             <img src="{{ asset('images/Pottery.png') }}" alt="Seller 4" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                            <button class="wishlist-btn absolute top-2 right-2 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-base drop-shadow focus:outline-none"
+                                    data-product-id="119"
+                                    data-product-name="Raku Fired Vase"
+                                    data-product-price="4499"
+                                    data-product-image="{{ asset('images/Pottery.png') }}"
+                                    data-product-desc="Exquisite raku-fired pottery vase with metallic glaze finish."
+                                    data-product-category="Earth & Clay">
+                                <i class="far fa-heart"></i>
+                            </button>
                         </div>
                         <div class="p-1.5 sm:p-2 md:p-3 lg:p-4">
                             <span class="text-slate-400 font-semibold text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] uppercase tracking-wider truncate block">Earth & Clay</span>

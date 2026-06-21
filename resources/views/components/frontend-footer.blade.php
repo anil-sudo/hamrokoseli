@@ -63,7 +63,7 @@
                     </button>
                 </div>
                 <div class="pt-1">
-                    <a href="{{ route('seller') }}"
+                    <a href="{{ route('seller.login') }}"
                         class="text-[#b55b3d] hover:text-[#a04e33] text-sm font-semibold underline underline-offset-4 transition-colors">Become
                         a Seller</a>
                 </div>
