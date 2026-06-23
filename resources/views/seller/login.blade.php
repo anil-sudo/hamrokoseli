@@ -201,16 +201,33 @@ document.addEventListener('DOMContentLoaded', function () {
             const passwordInput = document.getElementById('password');
 
             if (togglePasswordBtn && passwordInput) {
-                togglePasswordBtn.addEventListener('click', () => {
-                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                    passwordInput.setAttribute('type', type);
-
-                    const icon = togglePasswordBtn.querySelector('i');
+                const icon = togglePasswordBtn.querySelector('i');
+                
+                const showPassword = (e) => {
+                    if (e) e.preventDefault();
+                    passwordInput.type = 'text';
                     if (icon) {
-                        icon.classList.toggle('fa-eye-slash');
-                        icon.classList.toggle('fa-eye');
+                        icon.className = 'fas fa-eye text-base';
                     }
-                });
+                };
+
+                const hidePassword = (e) => {
+                    if (e) e.preventDefault();
+                    passwordInput.type = 'password';
+                    if (icon) {
+                        icon.className = 'far fa-eye-slash text-base';
+                    }
+                };
+
+                togglePasswordBtn.addEventListener('mousedown', showPassword);
+                togglePasswordBtn.addEventListener('mouseup', hidePassword);
+                togglePasswordBtn.addEventListener('mouseleave', hidePassword);
+
+                togglePasswordBtn.addEventListener('touchstart', showPassword);
+                togglePasswordBtn.addEventListener('touchend', hidePassword);
+                togglePasswordBtn.addEventListener('touchcancel', hidePassword);
+
+                togglePasswordBtn.addEventListener('click', (e) => e.preventDefault());
             }
         });
     </script>

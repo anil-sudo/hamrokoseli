@@ -55,7 +55,7 @@
             <div class="flex items-center gap-3 shrink-0">
                 <!-- Sign In / Account – hidden on mobile (available inside drawer) -->
                 @guest
-                    <a href="{{ route('login') }}" id="desktop-signin"
+                    <a href="{{ route('userlogin') }}" id="desktop-signin"
                         class="hidden md:inline-flex rounded-full border border-white/90 text-white font-semibold px-5 py-1.5 text-sm hover:bg-white hover:text-[#1f3d2e] transition-all duration-300 active:scale-95 shadow-sm">
                         Sign In
                     </a>
@@ -129,13 +129,13 @@
         <div class="max-w-7xl mx-auto">
             <div class="desktop-nav-container">
                 <ul class="desktop-nav-links">
-                    <li><a href="{{ url('/') }}" class="subnav-link"><i class="fas fa-home"></i> Home</a></li>
-                    <li><a href="{{ url('categories') }}" class="subnav-link"><i class="fas fa-th-large"></i> Category</a></li>
-                    <li><a href="{{ url('shop') }}" class="subnav-link"><i class="fas fa-store"></i> Shop</a></li>
-                    <li><a href="{{ url('todays-deals') }}" class="subnav-link"><i class="fas fa-tag"></i> Today's Deals</a></li>
-                    <li><a href="{{ url('featured-products') }}" class="subnav-link"><i class="fas fa-star"></i> Featured</a></li>
-                    <li><a href="{{ url('top-sellers') }}" class="subnav-link"><i class="fas fa-trophy"></i> Top Sellers</a></li>
-                    <li><a href="{{ url('new-arrivals') }}" class="subnav-link"><i class="fa-solid fa-mobile-screen-button"></i> New Arrivals</a></li>
+                    <li><a href="{{ url('/') }}" class="subnav-link {{ Request::is('/') ? 'active' : '' }}"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="{{ url('categories') }}" class="subnav-link {{ Request::is('categories*') ? 'active' : '' }}"><i class="fas fa-th-large"></i> Category</a></li>
+                    <li><a href="{{ url('shop') }}" class="subnav-link {{ Request::is('shop*') ? 'active' : '' }}"><i class="fas fa-store"></i> Shop</a></li>
+                    <li><a href="{{ url('todays-deals') }}" class="subnav-link {{ Request::is('todays-deals*') ? 'active' : '' }}"><i class="fas fa-tag"></i> Today's Deals</a></li>
+                    <li><a href="{{ url('featured-products') }}" class="subnav-link {{ Request::is('featured-products*') ? 'active' : '' }}"><i class="fas fa-star"></i> Featured</a></li>
+                    <li><a href="{{ url('top-sellers') }}" class="subnav-link {{ Request::is('top-sellers*') ? 'active' : '' }}"><i class="fas fa-trophy"></i> Top Sellers</a></li>
+                    <li><a href="{{ url('new-arrivals') }}" class="subnav-link {{ Request::is('new-arrivals*') ? 'active' : '' }}"><i class="fa-solid fa-mobile-screen-button"></i> New Arrivals</a></li>
                 </ul>
             </div>
         </div>
@@ -166,11 +166,11 @@
     <!-- Login / Signup buttons in drawer -->
     <div class="flex gap-3 px-5 py-4 border-b border-white/10">
         @guest
-            <a href="{{ route('login') }}" id="mobile-signin"
+            <a href="{{ route('userlogin') }}" id="mobile-signin"
                 class="flex-1 text-center rounded-full border border-white text-white font-semibold py-2 text-sm hover:bg-white hover:text-[#1f3d2e] transition-all duration-300">
                 Login
             </a>
-            <a href="{{ route('login') }}" id="mobile-signup"
+            <a href="{{ route('userregister') }}" id="mobile-signup"
                 class="flex-1 text-center rounded-full bg-white text-[#1f3d2e] font-semibold py-2 text-sm hover:bg-emerald-100 transition-all duration-300">
                 Sign Up
             </a>
@@ -191,13 +191,13 @@
 
     <!-- Navigation links with icons for ALL items (including New Arrivals) -->
     <nav>
-        <a href="{{ url('/') }}"          class="mob-nav-link"><i class="fas fa-home"></i>Home</a>
-        <a href="{{ url('categories') }}"     class="mob-nav-link"><i class="fas fa-th-large"></i>Category</a>
-        <a href="{{ url('shop') }}"           class="mob-nav-link"><i class="fas fa-store"></i>Shop</a>
-        <a href="{{ url('#todays-deals') }}"      class="mob-nav-link"><i class="fas fa-tag"></i>Today's Deals</a>
-        <a href="{{ url('#featured-products') }}" class="mob-nav-link"><i class="fas fa-star"></i>Featured Products</a>
-        <a href="{{ url('#top-sellers') }}"       class="mob-nav-link"><i class="fas fa-trophy"></i>Top Sellers</a>
-        <a href="{{ url('new-arrivals') }}"   class="mob-nav-link"><i class="fa-solid fa-mobile-screen-button"></i>New Arrivals</a>
+        <a href="{{ url('/') }}"          class="mob-nav-link {{ Request::is('/') ? 'active' : '' }}"><i class="fas fa-home"></i>Home</a>
+        <a href="{{ url('categories') }}"     class="mob-nav-link {{ Request::is('categories*') ? 'active' : '' }}"><i class="fas fa-th-large"></i>Category</a>
+        <a href="{{ url('shop') }}"           class="mob-nav-link {{ Request::is('shop*') ? 'active' : '' }}"><i class="fas fa-store"></i>Shop</a>
+        <a href="{{ url('todays-deals') }}"      class="mob-nav-link {{ Request::is('todays-deals*') ? 'active' : '' }}"><i class="fas fa-tag"></i>Today's Deals</a>
+        <a href="{{ url('featured-products') }}" class="mob-nav-link {{ Request::is('featured-products*') ? 'active' : '' }}"><i class="fas fa-star"></i>Featured Products</a>
+        <a href="{{ url('top-sellers') }}"       class="mob-nav-link {{ Request::is('top-sellers*') ? 'active' : '' }}"><i class="fas fa-trophy"></i>Top Sellers</a>
+        <a href="{{ url('new-arrivals') }}"   class="mob-nav-link {{ Request::is('new-arrivals*') ? 'active' : '' }}"><i class="fa-solid fa-mobile-screen-button"></i>New Arrivals</a>
         @auth
             @if(auth()->user()->hasRole('vendor'))
                 <a href="{{ route('dashboard') }}" class="mob-nav-link"><i class="fas fa-store"></i>Seller Dashboard</a>

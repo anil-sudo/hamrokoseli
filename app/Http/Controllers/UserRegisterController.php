@@ -34,7 +34,7 @@ class UserRegisterController extends Controller
 
             $user->assignRole('user');
 
-            return redirect()->route('login')
+            return redirect()->route('userlogin')
                 ->with('success', 'Account created successfully! Please sign in to continue.');
 
         } catch (ValidationException $e) {

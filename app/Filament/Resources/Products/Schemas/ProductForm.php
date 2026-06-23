@@ -59,7 +59,6 @@ class ProductForm
                     ->extraAttributes(['style' => 'min-height: 160px'])
                     ->default(null)
                     ->columnSpanFull(),
-
                 // Replaces the old FileUpload::make('image')->multiple(), which wrote
                 // multiple paths into a single plain string column on `products` that
                 // was never read anywhere (see Product::primaryImageUrl()). Images

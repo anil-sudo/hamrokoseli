@@ -53,13 +53,25 @@ Route::get('/wishlist', [PageController::class, 'wishlist'])->name('wishlist');
 
 // ─── User Auth routes (guest on web guard) ────────────────────────────────────
 Route::middleware('web')->group(function () {
-    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::get('/userlogin', [AuthController::class, 'showLogin'])->name('userlogin');
+    Route::post('/userlogin', [AuthController::class, 'login']);
+
+    Route::get('/userregister', function () {
+        return view('welcome');
+    })->name('userregister');
+    Route::post('/userregister', [UserRegisterController::class, 'register']);
+
+    // Fallback/compatibility routes
+    Route::get('/login', function () {
+        return redirect()->route('userlogin');
+    })->name('login');
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [UserRegisterController::class, 'register'])->name('register');
+
     Route::get('/vendor/register', [VendorRegisterController::class, 'show'])->name('vendor.register');
     Route::post('/vendor/register', [VendorRegisterController::class, 'register'])->name('vendor.register.post');
 });
 
 Route::get('test-email', [TestEmailControlelr::class, 'index'])->name('test.email');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-Route::redirect('/login.php', '/login');
+Route::redirect('/login.php', '/userlogin');
