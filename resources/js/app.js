@@ -285,6 +285,47 @@ document.addEventListener('DOMContentLoaded', () => {
     let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
     const wishlistGridContainer = document.getElementById('wishlist-grid-container');
 
+    // Helper: Seeding defaults on first visit if we are on the wishlist page
+    if (wishlistGridContainer && wishlist.length === 0 && !localStorage.getItem('wishlist_visited')) {
+        wishlist = [
+            {
+                id: "1",
+                name: "Patan Bronze Bowl",
+                price: "4500",
+                image: "/images/1st-image.png",
+                desc: "Hand-hammered ritual vessel by local metalsmiths.",
+                category: "Metalware",
+                tag: "Authentic Patan"
+            },
+            {
+                id: "201",
+                name: "Yak Wool Scarf",
+                price: "3200",
+                image: "/images/4th-image.png",
+                desc: "100% pure Himalayan wool, naturally dyed.",
+                category: "Textiles",
+                tag: "Artisan Made"
+            },
+            {
+                id: "202",
+                name: "Traditional Dhaka Topi",
+                price: "1800",
+                image: "/images/Sweaters.png",
+                desc: "Hand-woven patterns from the Palpa region.",
+                category: "Textiles"
+            },
+            {
+                id: "203",
+                name: "Wild Hemp Backpack",
+                price: "5600",
+                image: "/images/aboutus.jpg",
+                desc: "Durable, sustainable, and 100% biodegradable.",
+                category: "Accessories"
+            }
+        ];
+        localStorage.setItem('wishlist', JSON.stringify(wishlist));
+        localStorage.setItem('wishlist_visited', 'true');
+    }
 
     // Helper: Create/Retrieve Toast Container
     function getToastContainer() {

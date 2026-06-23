@@ -192,7 +192,7 @@ class SellerController extends Controller
                                     : null,
             'stock' => $validated['stock'],
             'sku' => $validated['sku'],
-            'status' => 'draft',
+            'status' => 'active',
         ]);
 
         // 2. Save variants

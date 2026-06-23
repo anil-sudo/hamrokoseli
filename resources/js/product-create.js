@@ -89,18 +89,6 @@ function validateForm() {
         isValid = false;
     } else clearError(stock);
 
-    // At least one specification
-    const specs = document.querySelectorAll('#specifications > div');
-    if (specs.length === 0) {
-        showToast("Please add at least one specification.", 'error'); isValid = false;
-    }
-
-    // At least one variant
-    const variants = document.querySelectorAll('#variants .border');
-    if (variants.length === 0) {
-        showToast("Please add at least one variant.", 'error'); isValid = false;
-    }
-
     if (uploadedFiles.length === 0) {
         showToast("Please upload at least one image.");
         isValid = false;
@@ -197,6 +185,16 @@ uploadArea.addEventListener('drop', (e) => {
     handleFiles(e.dataTransfer.files);
 });
 
+function syncFileInput() {
+    // Rebuild the real <input type="file"> FileList from our tracked
+    // uploadedFiles array, since browsers won't let us assign an array
+    // directly to input.files. Without this, the form submits with no
+    // files attached and nothing gets saved to the database.
+    const dataTransfer = new DataTransfer();
+    uploadedFiles.forEach(file => dataTransfer.items.add(file));
+    mediaInput.files = dataTransfer.files;
+}
+
 function handleFiles(files) {
     Array.from(files).forEach(file => {
         if (!file.type.startsWith('image/')) {
@@ -223,7 +221,7 @@ function handleFiles(files) {
         uploadedFiles.push(file);
         renderImagePreview(file);
     });
-    mediaInput.value = '';
+    syncFileInput();
 }
 
 function renderImagePreview(file) {
@@ -251,7 +249,7 @@ function removeImage(btn) {
     uploadedFiles.splice(index, 1);
     btn.parentElement.remove();
 
-    mediaInput.value = '';
+    syncFileInput();
 }
 
 // ==================== DESCRIPTION COUNTER ====================
