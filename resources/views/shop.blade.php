@@ -1,4 +1,5 @@
 <x-frontend-layout>
+    
     <style>
         /* Hide browser number-input spinner arrows */
         .qty-val-input::-webkit-outer-spin-button,
@@ -217,218 +218,68 @@
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
-                        {{-- Card 1: Copper Singing Bowl --}}
-                        <div data-category="metalware"
-                            class="product-card bg-white rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group">
-                            <div class="relative w-full aspect-[4/5] overflow-hidden rounded-t-3xl">
-                                <img src="{{ asset('images/1st-image.png') }}" alt="Copper Singing Bowl"
-                                    class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                                <div
-                                    class="absolute top-4 right-4 bg-white/95 text-[#1F3D2E] text-[10px] font-bold tracking-wider uppercase px-3 py-1.5 rounded-full shadow-sm">
-                                    Terai Plains</div>
-                                <button
-                                    class="wishlist-btn absolute bottom-4 right-4 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-xl drop-shadow"
-                                    data-product-id="1"
-                                    data-product-name="Copper Singing Bowl"
-                                    data-product-price="4500"
-                                    data-product-image="{{ asset('images/1st-image.png') }}"
-                                    data-product-desc="Experience the meditative resonance of ancient Patan copper singing bowls."
-                                    data-product-category="Metalware"
-                                    data-product-tag="Terai Plains">
-                                    <i class="far fa-heart"></i>
-                                </button>
-                            </div>
-                            <div class="p-5 flex-grow flex flex-col justify-between">
-                                <div>
-                                    <span
-                                        class="text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-1">Metalwork</span>
-                                    <h3
-                                        class="text-lg font-bold text-[#1F3D2E] mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1">
-                                        Copper Singing Bowl</h3>
-                                    <span class="text-[#C65A3A] font-bold text-base block mb-4">Rs 4,500</span>
-                                </div>
-                                <a href="#"
-                                    class="w-full flex items-center justify-center gap-2 bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-sm font-semibold py-3 px-4 rounded-xl shadow-sm hover:shadow transition duration-300">
-                                    <i class="fa-solid fa-circle-plus text-xs"></i> View Details
-                                </a>
-                            </div>
-                        </div>
+    @forelse($products as $product)
+        <div
+            data-category="{{ strtolower($product->category?->name ?? 'uncategorized') }}"
+            class="product-card bg-white rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group">
 
-                        {{-- Card 2: Thimi Crackle Bowl --}}
-                        <div data-category="pottery"
-                            class="product-card bg-white rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group">
-                            <div class="relative w-full aspect-[4/5] overflow-hidden rounded-t-3xl">
-                                <img src="{{ asset('images/2nd-image.png') }}" alt="Thimi Crackle Bowl"
-                                    class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                                <button
-                                    class="wishlist-btn absolute bottom-4 right-4 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-xl drop-shadow"
-                                    data-product-id="2"
-                                    data-product-name="Thimi Crackle Bowl"
-                                    data-product-price="3500"
-                                    data-product-image="{{ asset('images/2nd-image.png') }}"
-                                    data-product-desc="Authentic ceramic crackle bowl handmade by master artisans in Bhaktapur."
-                                    data-product-category="Ceramics">
-                                    <i class="far fa-heart"></i>
-                                </button>
-                            </div>
-                            <div class="p-5 flex-grow flex flex-col justify-between">
-                                <div>
-                                    <span
-                                        class="text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-1">Ceramics</span>
-                                    <h3
-                                        class="text-lg font-bold text-[#1F3D2E] mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1">
-                                        Thimi Crackle Bowl</h3>
-                                    <span class="text-[#C65A3A] font-bold text-base block mb-4">Rs 3,500</span>
-                                </div>
-                                <a href="#"
-                                    class="w-full flex items-center justify-center gap-2 bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-sm font-semibold py-3 px-4 rounded-xl shadow-sm hover:shadow transition duration-300">
-                                    <i class="fa-solid fa-circle-plus text-xs"></i> View Details
-                                </a>
-                            </div>
-                        </div>
+            <div class="relative w-full aspect-[4/5] overflow-hidden rounded-t-3xl">
 
-                        {{-- Card 3: Patan Floral Lattice --}}
-                        <div data-category="woodcraft"
-                            class="product-card bg-white rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group">
-                            <div class="relative w-full aspect-[4/5] overflow-hidden rounded-t-3xl">
-                                <img src="{{ asset('images/Table.png') }}" alt="Patan Floral Lattice"
-                                    class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                                <button
-                                    class="wishlist-btn absolute bottom-4 right-4 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-xl drop-shadow"
-                                    data-product-id="3"
-                                    data-product-name="Patan Floral Lattice"
-                                    data-product-price="2500"
-                                    data-product-image="{{ asset('images/Table.png') }}"
-                                    data-product-desc="Beautifully hand-carved floral lattice wooden wall art panel."
-                                    data-product-category="Woodwork"
-                                    data-product-tag="Artisan Made">
-                                    <i class="far fa-heart"></i>
-                                </button>
-                            </div>
-                            <div class="p-5 flex-grow flex flex-col justify-between">
-                                <div>
-                                    <span
-                                        class="text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-1">Woodwork</span>
-                                    <h3
-                                        class="text-lg font-bold text-[#1F3D2E] mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1">
-                                        Patan Floral Lattice</h3>
-                                    <span class="text-[#C65A3A] font-bold text-base block mb-4">Rs 2,500</span>
-                                </div>
-                                <a href="#"
-                                    class="w-full flex items-center justify-center gap-2 bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-sm font-semibold py-3 px-4 rounded-xl shadow-sm hover:shadow transition duration-300">
-                                    <i class="fa-solid fa-circle-plus text-xs"></i> View Details
-                                </a>
-                            </div>
-                        </div>
+                <img
+                    src="{{ $product->primaryImageUrl() }}"
+                    alt="{{ $product->name }}"
+                    class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
 
-                        {{-- Card 4: Hand-Woven Dhankuta Dhaka --}}
-                        <div data-category="textiles"
-                            class="product-card bg-white rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group">
-                            <div class="relative w-full aspect-[4/5] overflow-hidden rounded-t-3xl">
-                                <img src="{{ asset('images/4th-image.png') }}" alt="Hand-Woven Dhankuta Dhaka"
-                                    class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                                <button
-                                    class="wishlist-btn absolute bottom-4 right-4 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-xl drop-shadow"
-                                    data-product-id="4"
-                                    data-product-name="Hand-Woven Dhankuta Dhaka"
-                                    data-product-price="2500"
-                                    data-product-image="{{ asset('images/4th-image.png') }}"
-                                    data-product-desc="Intricately woven traditional Dhaka fabric, handmade in Dhankuta."
-                                    data-product-category="Textiles">
-                                    <i class="far fa-heart"></i>
-                                </button>
-                            </div>
-                            <div class="p-5 flex-grow flex flex-col justify-between">
-                                <div>
-                                    <span
-                                        class="text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-1">Textiles</span>
-                                    <h3
-                                        class="text-lg font-bold text-[#1F3D2E] mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1">
-                                        Hand-Woven Dhankuta Dhaka</h3>
-                                    <span class="text-[#C65A3A] font-bold text-base block mb-4">Rs 2,500</span>
-                                </div>
-                                <a href="#"
-                                    class="w-full flex items-center justify-center gap-2 bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-sm font-semibold py-3 px-4 rounded-xl shadow-sm hover:shadow transition duration-300">
-                                    <i class="fa-solid fa-circle-plus text-xs"></i> View Details
-                                </a>
-                            </div>
-                        </div>
+                @if($product->vendor)
+                    <div class="absolute top-4 right-4 bg-white/95 text-[#1F3D2E] text-[10px] font-bold tracking-wider uppercase px-3 py-1.5 rounded-full shadow-sm">
+                        {{ $product->vendor->business_name ?? $product->vendor->name }}
+                    </div>
+                @endif
 
-                        {{-- Card 5: Himalayan Lokta Journal --}}
-                        <div data-category="pottery-ceramics"
-                            class="product-card bg-white rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group">
-                            <div class="relative w-full aspect-[4/5] overflow-hidden rounded-t-3xl">
-                                <img src="{{ asset('images/aboutus.jpg') }}" alt="Himalayan Lokta Journal"
-                                    class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                                <div
-                                    class="absolute top-4 right-4 bg-white/95 text-[#1F3D2E] text-[10px] font-bold tracking-wider uppercase px-3 py-1.5 rounded-full shadow-sm">
-                                    Mustang</div>
-                                <button
-                                    class="wishlist-btn absolute bottom-4 right-4 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-xl drop-shadow"
-                                    data-product-id="5"
-                                    data-product-name="Himalayan Lokta Journal"
-                                    data-product-price="1500"
-                                    data-product-image="{{ asset('images/aboutus.jpg') }}"
-                                    data-product-desc="Eco-friendly journal made from traditional hand-pressed Lokta paper in Mustang."
-                                    data-product-category="Paper"
-                                    data-product-tag="Mustang">
-                                    <i class="far fa-heart"></i>
-                                </button>
-                            </div>
-                            <div class="p-5 flex-grow flex flex-col justify-between">
-                                <div>
-                                    <span
-                                        class="text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-1">Paper</span>
-                                    <h3
-                                        class="text-lg font-bold text-[#1F3D2E] mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1">
-                                        Himalayan Lokta Journal</h3>
-                                    <span class="text-[#C65A3A] font-bold text-base block mb-4">Rs 1,500</span>
-                                </div>
-                                <a href="#"
-                                    class="w-full flex items-center justify-center gap-2 bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-sm font-semibold py-3 px-4 rounded-xl shadow-sm hover:shadow transition duration-300">
-                                    <i class="fa-solid fa-circle-plus text-xs"></i> View Details
-                                </a>
-                            </div>
-                        </div>
+                <button
+                    class="wishlist-btn absolute bottom-4 right-4 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-xl drop-shadow"
+                    data-product-id="{{ $product->id }}"
+                    data-product-name="{{ $product->name }}"
+                    data-product-price="{{ $product->effectivePrice() }}"
+                    data-product-image="{{ $product->primaryImageUrl() }}"
+                    data-product-desc="{{ $product->description }}"
+                    data-product-category="{{ $product->category?->name }}">
+                    <i class="far fa-heart"></i>
+                </button>
 
-                        {{-- Card 6: Silver Filigree Pendant --}}
-                        <div data-category="metalware"
-                            class="product-card bg-white rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group">
-                            <div class="relative w-full aspect-[4/5] overflow-hidden rounded-t-3xl">
-                                <img src="{{ asset('images/Jewlery and Accessory.png') }}" alt="Silver Filigree Pendant"
-                                    class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                                <div
-                                    class="absolute top-4 right-4 bg-white/95 text-[#1F3D2E] text-[10px] font-bold tracking-wider uppercase px-3 py-1.5 rounded-full shadow-sm">
-                                    Kathmandu Valley</div>
-                                <button
-                                    class="wishlist-btn absolute bottom-4 right-4 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-xl drop-shadow"
-                                    data-product-id="6"
-                                    data-product-name="Silver Filigree Pendant"
-                                    data-product-price="4500"
-                                    data-product-image="{{ asset('images/Jewlery and Accessory.png') }}"
-                                    data-product-desc="Stunning handmade silver filigree pendant crafted in Kathmandu Valley."
-                                    data-product-category="Jewelry"
-                                    data-product-tag="Kathmandu Valley">
-                                    <i class="far fa-heart"></i>
-                                </button>
-                            </div>
-                            <div class="p-5 flex-grow flex flex-col justify-between">
-                                <div>
-                                    <span
-                                        class="text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-1">Jewelry</span>
-                                    <h3
-                                        class="text-lg font-bold text-[#1F3D2E] mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1">
-                                        Silver Filigree Pendant</h3>
-                                    <span class="text-[#C65A3A] font-bold text-base block mb-4">Rs 4,500</span>
-                                </div>
-                                <a href="#"
-                                    class="w-full flex items-center justify-center gap-2 bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-sm font-semibold py-3 px-4 rounded-xl shadow-sm hover:shadow transition duration-300">
-                                    <i class="fa-solid fa-circle-plus text-xs"></i> View Details
-                                </a>
-                            </div>
-                        </div>
+            </div>
 
-                    </div>{{-- end product grid --}}
+            <div class="p-5 flex-grow flex flex-col justify-between">
+
+                <div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-1">
+                        {{ $product->category?->name ?? 'General' }}
+                    </span>
+
+                    <h3 class="text-lg font-bold text-[#1F3D2E] mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1">
+                        {{ $product->name }}
+                    </h3>
+
+                    <span class="text-[#C65A3A] font-bold text-base block mb-4">
+                        Rs {{ number_format($product->effectivePrice(), 2) }}
+                    </span>
+                </div>
+
+                    <a href="#"
+   class="w-full flex items-center justify-center gap-2 bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-sm font-semibold py-3 px-4 rounded-xl shadow-sm hover:shadow transition duration-300">
+    <i class="fa-solid fa-circle-plus text-xs"></i>
+    View Details
+</a>
+
+            </div>
+        </div>
+    @empty
+        <div class="col-span-3 text-center py-12">
+            No products found.
+        </div>
+    @endforelse
+
+</div>
 
                     {{-- ==================== PAGINATION ==================== --}}
                     <div class="flex items-center justify-center gap-3 mt-12 pb-6">
