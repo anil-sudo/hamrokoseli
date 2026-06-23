@@ -55,7 +55,7 @@ Route::get('/wishlist', [PageController::class, 'wishlist'])->name('wishlist');
 Route::middleware('web')->group(function () {
     Route::get('/userlogin', [AuthController::class, 'showLogin'])->name('userlogin');
     Route::post('/userlogin', [AuthController::class, 'login']);
-    
+
     Route::get('/userregister', function () {
         return view('welcome');
     })->name('userregister');
@@ -67,7 +67,7 @@ Route::middleware('web')->group(function () {
     })->name('login');
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [UserRegisterController::class, 'register'])->name('register');
-    
+
     Route::get('/vendor/register', [VendorRegisterController::class, 'show'])->name('vendor.register');
     Route::post('/vendor/register', [VendorRegisterController::class, 'register'])->name('vendor.register.post');
 });
