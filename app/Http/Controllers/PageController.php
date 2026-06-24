@@ -18,7 +18,12 @@ class PageController extends Controller
 
     public function shop()
     {
-        return view('shop');
+        $products = Product::with(['category', 'vendor', 'images'])
+            ->where('status', 'active')
+            ->latest()
+            ->get();
+
+        return view('shop', compact('products'));
     }
 
     public function new_arrival()

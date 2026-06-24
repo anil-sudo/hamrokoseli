@@ -21,7 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 return '/seller-login';
             }
 
-            return '/login';
+            return '/userlogin';
         });
 
         $middleware->alias([
@@ -42,7 +42,7 @@ return Application::configure(basePath: dirname(__DIR__))
                     ->withErrors(['email' => 'You do not have vendor access.']);
             }
 
-            return redirect('/login')
+            return redirect('/userlogin')
                 ->withErrors(['email' => 'You do not have access to this page.']);
         });
     })->create();

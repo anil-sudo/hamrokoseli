@@ -118,4 +118,23 @@ class Product extends Model
     {
         return $this->stock > 0;
     }
+
+    /**
+     * Returns the URL of this product's primary image, falling back to the
+     * first uploaded image, then to a placeholder if none exist.
+     *
+     * NOTE: the `image` column on `products` is legacy/unused — vendor
+     * uploads are stored in the polymorphic `images` table instead. Make
+     * sure to eager-load `images` (e.g. ->with('images')) before calling
+     * this in a loop, or it will trigger an N+1 query per product.
+     */
+    public function primaryImageUrl(): string
+    {
+        $image = $this->images->firstWhere('is_primary', true)
+            ?? $this->images->first();
+
+        return $image
+            ? asset('storage/'.$image->path)
+            : asset('images/placeholder.png');
+    }
 }

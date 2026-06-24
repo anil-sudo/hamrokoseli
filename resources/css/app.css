@@ -115,11 +115,13 @@ textarea {
     transition: width 0.25s;
 }
 
-.subnav-link:hover::after {
+.subnav-link:hover::after,
+.subnav-link.active::after {
     width: 100%;
 }
 
-.subnav-link:hover {
+.subnav-link:hover,
+.subnav-link.active {
     color: #ffffff;
 }
 
@@ -129,7 +131,8 @@ textarea {
     display: inline-block;
 }
 
-.subnav-link:hover i {
+.subnav-link:hover i,
+.subnav-link.active i {
     opacity: 1;
 }
 
@@ -196,7 +199,14 @@ textarea {
     color: #fff;
 }
 
-.mob-nav-link:hover i {
+.mob-nav-link.active {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    border-left: 4px solid var(--secondary-color, #C65A3A);
+}
+
+.mob-nav-link:hover i,
+.mob-nav-link.active i {
     opacity: 1;
 }
 

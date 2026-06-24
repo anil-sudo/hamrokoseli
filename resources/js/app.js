@@ -1,6 +1,6 @@
 //
 import './seller-layout';
-(function () {
+document.addEventListener('DOMContentLoaded', () => {
     const hamburger     = document.getElementById('hamburger-btn');
     const drawer        = document.getElementById('mobile-drawer');
     const overlay       = document.getElementById('drawer-overlay');
@@ -63,9 +63,38 @@ import './seller-layout';
     const modalShowRegisterBtn = document.getElementById('modal-show-register');
     const modalShowLoginBtn = document.getElementById('modal-show-login');
 
+    // Keep track of the original page URL before showing the modal
+    let originalUrl = window.location.pathname + window.location.search;
+    if (originalUrl === '/userlogin' || originalUrl === '/userregister') {
+        originalUrl = '/';
+    }
+
+    // Helper: Update Browser Address Bar URL State
+    function updateUrlState(view) {
+        const path = view === 'register' ? '/userregister' : '/userlogin';
+        if (window.location.pathname !== path) {
+            history.pushState({ modal: view }, '', path);
+        }
+    }
+
+    // Helper: Restore URL State to Original
+    function restoreUrlState() {
+        if (window.location.pathname === '/userlogin' || window.location.pathname === '/userregister') {
+            history.pushState({ modal: null }, '', originalUrl);
+        }
+    }
+
     function openLoginModal(e, view = 'login') {
         if (e) e.preventDefault();
         closeDrawer(); // Close mobile drawer if open
+
+        // Store original URL if opening the modal for the first time
+        if (loginModal && loginModal.classList.contains('hidden')) {
+            const currentPath = window.location.pathname + window.location.search;
+            if (currentPath !== '/userlogin' && currentPath !== '/userregister') {
+                originalUrl = currentPath;
+            }
+        }
 
         if (loginModal && loginModalContainer) {
             if (view === 'register') {
@@ -73,11 +102,13 @@ import './seller-layout';
                     loginView.classList.add('hidden');
                     registerView.classList.remove('hidden');
                 }
+                updateUrlState('register');
             } else {
                 if (loginView && registerView) {
                     loginView.classList.remove('hidden');
                     registerView.classList.add('hidden');
                 }
+                updateUrlState('login');
             }
 
             loginModal.classList.remove('hidden');
@@ -97,6 +128,8 @@ import './seller-layout';
 
     function closeLoginModal() {
         if (loginModal && loginModalContainer) {
+            restoreUrlState();
+
             loginModal.classList.remove('opacity-100');
             loginModal.classList.add('opacity-0');
             loginModalContainer.classList.remove('scale-100', 'opacity-100');
@@ -117,6 +150,10 @@ import './seller-layout';
         }
     }
 
+    // Export functions to window object
+    window.openLoginModal = openLoginModal;
+    window.closeLoginModal = closeLoginModal;
+
     if (desktopSigninBtn) desktopSigninBtn.addEventListener('click', (e) => openLoginModal(e, 'login'));
     if (mobileSigninBtn) mobileSigninBtn.addEventListener('click', (e) => openLoginModal(e, 'login'));
     if (mobileSignupBtn) mobileSignupBtn.addEventListener('click', (e) => openLoginModal(e, 'register'));
@@ -128,6 +165,7 @@ import './seller-layout';
             e.preventDefault();
             loginView.classList.add('hidden');
             registerView.classList.remove('hidden');
+            updateUrlState('register');
         });
     }
 
@@ -137,6 +175,7 @@ import './seller-layout';
             e.preventDefault();
             registerView.classList.add('hidden');
             loginView.classList.remove('hidden');
+            updateUrlState('login');
         });
     }
 
@@ -156,65 +195,81 @@ import './seller-layout';
         }
     });
 
-    // Password visibility toggle for login modal
-    const modalTogglePassword = document.getElementById('modal-toggle-password');
-    const modalPasswordInput = document.getElementById('modal-password');
-    if (modalTogglePassword && modalPasswordInput) {
-        modalTogglePassword.addEventListener('click', function() {
-            const type = modalPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            modalPasswordInput.setAttribute('type', type);
-            const icon = modalTogglePassword.querySelector('i');
-            if (icon) {
-                if (type === 'text') {
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
-                } else {
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
-                }
+    // Browser back/forward (history state) support
+    window.addEventListener('popstate', function(e) {
+        const path = window.location.pathname;
+        if (path === '/userlogin') {
+            openLoginModal(null, 'login');
+        } else if (path === '/userregister') {
+            openLoginModal(null, 'register');
+        } else {
+            if (loginModal && !loginModal.classList.contains('hidden')) {
+                closeLoginModal();
             }
-        });
+        }
+    });
+
+    // Auto-open modal on page load if direct URL
+    const pathOnLoad = window.location.pathname;
+    if (pathOnLoad === '/userlogin') {
+        openLoginModal(null, 'login');
+    } else if (pathOnLoad === '/userregister') {
+        openLoginModal(null, 'register');
     }
 
-    // Password visibility toggle for register modal
-    const modalRegisterTogglePassword = document.getElementById('modal-register-toggle-password');
-    const modalRegisterPasswordInput = document.getElementById('modal-register-password');
-    if (modalRegisterTogglePassword && modalRegisterPasswordInput) {
-        modalRegisterTogglePassword.addEventListener('click', function() {
-            const type = modalRegisterPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            modalRegisterPasswordInput.setAttribute('type', type);
-            const icon = modalRegisterTogglePassword.querySelector('i');
+    // Helper for press-and-hold password toggling
+    function setupPasswordToggle(toggleBtn, passwordInput) {
+        if (!toggleBtn || !passwordInput) return;
+
+        const icon = toggleBtn.querySelector('i');
+        
+        const showPassword = (e) => {
+            if (e) e.preventDefault();
+            passwordInput.type = 'text';
             if (icon) {
-                if (type === 'text') {
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
-                } else {
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
-                }
+                icon.className = 'fas fa-eye text-sm';
             }
-        });
+        };
+
+        const hidePassword = (e) => {
+            if (e) e.preventDefault();
+            passwordInput.type = 'password';
+            if (icon) {
+                icon.className = 'far fa-eye-slash text-sm';
+            }
+        };
+
+        // Mouse events
+        toggleBtn.addEventListener('mousedown', showPassword);
+        toggleBtn.addEventListener('mouseup', hidePassword);
+        toggleBtn.addEventListener('mouseleave', hidePassword);
+
+        // Touch events
+        toggleBtn.addEventListener('touchstart', showPassword);
+        toggleBtn.addEventListener('touchend', hidePassword);
+        toggleBtn.addEventListener('touchcancel', hidePassword);
+        
+        // Prevent click default
+        toggleBtn.addEventListener('click', (e) => e.preventDefault());
     }
 
-    // Confirm password visibility toggle for register modal
-    const modalRegisterTogglePasswordConfirm = document.getElementById('modal-register-toggle-password-confirm');
-    const modalRegisterPasswordConfirmInput = document.getElementById('modal-register-password_confirmation');
-    if (modalRegisterTogglePasswordConfirm && modalRegisterPasswordConfirmInput) {
-        modalRegisterTogglePasswordConfirm.addEventListener('click', function() {
-            const type = modalRegisterPasswordConfirmInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            modalRegisterPasswordConfirmInput.setAttribute('type', type);
-            const icon = modalRegisterTogglePasswordConfirm.querySelector('i');
-            if (icon) {
-                if (type === 'text') {
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
-                } else {
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
-                }
-            }
-        });
-    }
+    // Password visibility toggles for login modal
+    setupPasswordToggle(
+        document.getElementById('modal-toggle-password'),
+        document.getElementById('modal-password')
+    );
+
+    // Password visibility toggles for register modal
+    setupPasswordToggle(
+        document.getElementById('modal-register-toggle-password'),
+        document.getElementById('modal-register-password')
+    );
+
+    // Confirm password visibility toggles for register modal
+    setupPasswordToggle(
+        document.getElementById('modal-register-toggle-password-confirm'),
+        document.getElementById('modal-register-password_confirmation')
+    );
 
     // Phone format filter for register modal
     const modalRegisterPhoneInput = document.getElementById('modal-register-phone');
@@ -477,5 +532,5 @@ import './seller-layout';
     updateWishlistBadge();
     syncWishlistIcons();
     renderWishlistPage();
-})();
+});
 

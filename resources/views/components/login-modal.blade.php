@@ -96,7 +96,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('login') }}" method="POST" class="space-y-4">
+                <form action="{{ route('userlogin') }}" method="POST" class="space-y-4">
                     @csrf
                     <div>
                         <label for="modal-email" class="block text-[10px] font-bold uppercase text-[#3A2A1F]/80 mb-1.5 tracking-wider">Email</label>
@@ -238,7 +238,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('register') }}" method="POST" class="space-y-3.5 lg:space-y-4">
+                <form action="{{ route('userregister') }}" method="POST" class="space-y-3.5 lg:space-y-4">
                     @csrf
                     <div>
                         <label for="modal-register-name" class="block text-[10px] font-bold uppercase text-[#3A2A1F]/80 mb-1.5 tracking-wider">Full Name</label>
@@ -329,159 +329,25 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Get elements
-        const loginView = document.getElementById('login-view');
-        const registerView = document.getElementById('register-view');
-        const modal = document.getElementById('login-modal');
-        const modalContainer = document.getElementById('login-modal-container');
-        const closeBtn = document.getElementById('close-login-modal');
-
-        // === VIEW SWITCHING ===
-        // Switch to register view
-        const showRegisterBtn = document.getElementById('modal-show-register');
-        if (showRegisterBtn) {
-            showRegisterBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                loginView.classList.add('hidden');
-                registerView.classList.remove('hidden');
-            });
-        }
-
-        // Switch to login view
-        const showLoginBtn = document.getElementById('modal-show-login');
-        if (showLoginBtn) {
-            showLoginBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                registerView.classList.add('hidden');
-                loginView.classList.remove('hidden');
-            });
-        }
-
-        // === PASSWORD TOGGLES ===
-        // Login password toggle
-        const togglePassword = document.getElementById('modal-toggle-password');
-        if (togglePassword) {
-            togglePassword.addEventListener('click', function() {
-                const passwordInput = document.getElementById('modal-password');
-                const icon = this.querySelector('i');
-                if (passwordInput.type === 'password') {
-                    passwordInput.type = 'text';
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
-                } else {
-                    passwordInput.type = 'password';
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
-                }
-            });
-        }
-
-        // Register password toggle
-        const regTogglePassword = document.getElementById('modal-register-toggle-password');
-        if (regTogglePassword) {
-            regTogglePassword.addEventListener('click', function() {
-                const passwordInput = document.getElementById('modal-register-password');
-                const icon = this.querySelector('i');
-                if (passwordInput.type === 'password') {
-                    passwordInput.type = 'text';
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
-                } else {
-                    passwordInput.type = 'password';
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
-                }
-            });
-        }
-
-        // Register confirm password toggle
-        const regToggleConfirm = document.getElementById('modal-register-toggle-password-confirm');
-        if (regToggleConfirm) {
-            regToggleConfirm.addEventListener('click', function() {
-                const passwordInput = document.getElementById('modal-register-password_confirmation');
-                const icon = this.querySelector('i');
-                if (passwordInput.type === 'password') {
-                    passwordInput.type = 'text';
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
-                } else {
-                    passwordInput.type = 'password';
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
-                }
-            });
-        }
-
-        // === MODAL CONTROLS ===
-        // Open modal function
-        function openLoginModal() {
-            if (modal.classList.contains('hidden')) {
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-                setTimeout(() => {
-                    modal.classList.remove('opacity-0');
-                    if (modalContainer) {
-                        modalContainer.classList.remove('scale-95', 'opacity-0');
-                    }
-                }, 50);
-            }
-        }
-
-        // Close modal function
-        function closeModal() {
-            modal.classList.add('opacity-0');
-            if (modalContainer) {
-                modalContainer.classList.add('scale-95', 'opacity-0');
-            }
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }, 300);
-        }
-
-        // Close button
-        if (closeBtn) {
-            closeBtn.addEventListener('click', closeModal);
-        }
-
-        // Close on backdrop click
-        modal.addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
-            }
-        });
-
-        // Close on Escape key
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && !modal.classList.contains('hidden')) {
-                closeModal();
-            }
-        });
-
         // === AUTO-SHOW REGISTER VIEW IF THERE ARE REGISTRATION ERRORS ===
         @if (session('show_register') || ($errors->any() && old('name')))
-            // Show register view
-            loginView.classList.add('hidden');
-            registerView.classList.remove('hidden');
-            // Open the modal
-            openLoginModal();
+            if (window.openLoginModal) {
+                window.openLoginModal(null, 'register');
+            }
         @endif
 
         // === AUTO-SHOW LOGIN VIEW IF THERE ARE LOGIN ERRORS ===
         @if ($errors->any() && !session('show_register') && !old('name'))
-            // Make sure login view is visible
-            loginView.classList.remove('hidden');
-            registerView.classList.add('hidden');
-            // Open the modal
-            openLoginModal();
+            if (window.openLoginModal) {
+                window.openLoginModal(null, 'login');
+            }
         @endif
 
         // === SUCCESS MESSAGE - Auto open modal if success message exists ===
         @if (session('success'))
-            openLoginModal();
+            if (window.openLoginModal) {
+                window.openLoginModal(null, 'login');
+            }
         @endif
-
-        // Make openLoginModal globally accessible
-        window.openLoginModal = openLoginModal;
     });
 </script>
