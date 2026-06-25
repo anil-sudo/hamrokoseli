@@ -321,4 +321,9 @@ class PageController extends Controller
     {
         return view('wishlist');
     }
+
+    public function privacy()
+    {
+        return view('privacy');
+    }
 }
