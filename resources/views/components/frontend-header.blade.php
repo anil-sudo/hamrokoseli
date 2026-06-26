@@ -97,8 +97,9 @@
                         <span id="wishlist-badge" class="absolute -top-1.5 -right-1.5 bg-[#b55b3d] text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold border border-[#1f3d2e] hidden">0</span>
                     </a>
                     <!-- Cart -->
-                    <a href="cart.php" class="hover:text-emerald-200 transition-colors p-1 relative" title="Cart">
-                        <i class="fas fa-shopping-cart"></i>
+                    <a href="{{ route('cart') }}" class="hover:text-emerald-200 transition-colors p-1 relative flex items-center justify-center" title="Cart" id="cart-header-btn">
+                        <i class="fas fa-shopping-cart" id="cart-header-icon"></i>
+                        <span id="cart-badge" class="absolute -top-1.5 -right-1.5 bg-[#b55b3d] text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold border border-[#1f3d2e] hidden">0</span>
                     </a>
                     <!-- Logout icon (always visible, logged-in users only) -->
                     @auth

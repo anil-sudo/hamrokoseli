@@ -41,7 +41,7 @@
       <div class="max-w-7xl mx-auto">
         <div class="flex justify-between items-center mb-8">
           <div class="flex items-center gap-3">
-            <span class="text-2xl">Alart</span>
+            <span class="text-2xl">⚡</span>
             <h2 class="text-2xl font-bold text-[#181c1e] font-['Plus_Jakarta_Sans']">Today's Deals</h2>
           </div>
         </div>
@@ -56,13 +56,14 @@
                 <button data-category="all" class="filter-pill px-4 py-2 border border-[#b51822] text-[#181c1e] text-xs font-bold rounded-full hover:bg-[#b51822] hover:text-white transition active">
                   All Categories
                 </button>
-                @if(isset($categories))
-                  @foreach($categories as $cat)
-                    <button data-category="{{ strtolower($cat) }}" class="filter-pill px-4 py-2 border border-[#e0e3e5] text-[#181c1e] text-xs font-bold rounded-full hover:border-[#b51822] transition">
-                      {{ $cat }}
-                    </button>
-                  @endforeach
-                @endif
+                @php
+                    $categories = $products->pluck('category.cat_name')->unique()->filter()->values();
+                @endphp
+                @foreach($categories as $cat)
+                  <button data-category="{{ strtolower($cat) }}" class="filter-pill px-4 py-2 border border-[#e0e3e5] text-[#181c1e] text-xs font-bold rounded-full hover:border-[#b51822] hover:text-white transition">
+                    {{ $cat }}
+                  </button>
+                @endforeach
               </div>
             </div>
 
@@ -112,19 +113,24 @@
                     <span class="text-xs text-[#5b403e]">({{ $product->reviews_count ?? 0 }} Reviews)</span>
                   </div>
                   <div class="flex gap-2">
-                    <button class="flex-1 bg-[#b51822] text-white py-2 rounded-lg font-semibold hover:bg-[#930013] transition text-sm view-details-btn"
-                            data-name="{{ $product->name }}"
-                            data-price="{{ $displayPrice }}"
-                            data-original-price="{{ $price }}"
-                            data-image="{{ asset($product->image) }}"
-                            data-category="{{ $product->category->cat_name ?? '' }}"
-                            data-vendor="{{ $product->vendor->vendor_name ?? 'Local Artisan' }}"
-                            data-desc="{{ $product->description }}"
-                            data-rating="{{ $product->rating ?? 5 }}"
-                            data-reviews="{{ $product->reviews_count ?? 0 }}"
-                            data-stock="{{ $product->stock ?? 10 }}">
+                    <a href="{{ route('viewdetails', $product->id) }}"
+                       class="flex-1 bg-[#b51822] text-white py-2 rounded-lg font-semibold hover:bg-[#930013] transition text-sm view-details-btn text-center cursor-pointer"
+                       data-id="{{ $product->id }}"
+                       data-name="{{ $product->name }}"
+                       data-price="{{ $displayPrice }}"
+                       data-original-price="{{ $price }}"
+                       data-discount="{{ $hasDiscount ? 'true' : 'false' }}"
+                       data-discount-percentage="{{ $discountPercentage }}"
+                       data-savings="{{ $price - $displayPrice }}"
+                       data-image="{{ asset($product->image) }}"
+                       data-category="{{ $product->category->cat_name ?? '' }}"
+                       data-vendor="{{ $product->vendor->vendor_name ?? 'Local Artisan' }}"
+                       data-desc="{{ $product->description }}"
+                       data-rating="{{ $product->rating ?? 5 }}"
+                       data-reviews="{{ $product->reviews_count ?? 0 }}"
+                       data-stock="{{ $product->stock ?? 10 }}">
                       View Details
-                    </button>
+                    </a>
                     <button class="px-3 py-2 border border-[#e0e3e5] rounded-lg hover:bg-[#ebeef0] transition">...</button>
                   </div>
                 </div>
@@ -384,52 +390,145 @@
 
   </main>
 
-  <!-- Product Details Modal -->
-  <div id="product-details-modal" class="fixed inset-0 z-[99999] hidden bg-black/60 backdrop-blur-sm overflow-y-auto p-4 opacity-0 transition-opacity duration-300">
-    <div class="relative bg-white max-w-3xl mx-auto rounded-2xl overflow-hidden shadow-2xl transform scale-95 opacity-0 transition-all duration-300" id="product-details-container">
-      <button id="close-product-details" class="absolute top-4 right-4 z-50 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full w-10 h-10 flex items-center justify-center transition">
-        <i class="fas fa-times text-lg"></i>
-      </button>
+  <!-- Client-Side Filter, Sort and Carousel Script -->
+  <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          // ==================== FILTER LOGIC ====================
+          const categoryPills = document.querySelectorAll('.filter-pill');
+          const productCards = document.querySelectorAll('.product-card');
+          const gridContainer = document.getElementById('product-grid');
 
-      <div class="p-8 space-y-6">
-        <div class="grid md:grid-cols-2 gap-8">
-          <div>
-            <img src="" id="modal-main-image" alt="" class="w-full rounded-lg">
-          </div>
+          function filterProducts(category) {
+              productCards.forEach(card => {
+                  const cardCategory = card.getAttribute('data-category');
+                  if (category === 'all' || cardCategory === category) {
+                      card.style.display = '';
+                  } else {
+                      card.style.display = 'none';
+                  }
+              });
+          }
 
-          <div>
-            <h2 id="modal-product-name" class="text-2xl font-bold text-[#181c1e] mb-2 font-['Plus_Jakarta_Sans']">Product Name</h2>
-            <div class="flex items-center gap-2 mb-4">
-              <div id="modal-stars-container" class="flex gap-1 text-yellow-400"></div>
-              <span class="text-sm text-[#5b403e]">(<span id="modal-reviews-count">0</span> Reviews)</span>
-            </div>
+          categoryPills.forEach(pill => {
+              pill.addEventListener('click', function() {
+                  categoryPills.forEach(p => p.classList.remove('active'));
+                  pill.classList.add('active');
+                  filterProducts(pill.getAttribute('data-category'));
+              });
+          });
 
-            <div class="bg-[#ebeef0] rounded-lg p-4 mb-4">
-              <p class="text-[28px] font-bold text-[#b51822] font-['Plus_Jakarta_Sans']" id="modal-product-price">Rs. 0</p>
-              <p class="text-sm text-[#5b403e] line-through hidden" id="modal-product-original-price">Rs. 0</p>
-            </div>
+          // ==================== SORT LOGIC ====================
+          const sortSelect = document.getElementById('sort-select');
 
-            <p id="modal-product-desc" class="text-[#5b403e] text-sm mb-6">Product description</p>
+          function sortProducts(criteria) {
+              const cardsArray = Array.from(productCards);
+              
+              cardsArray.sort((a, b) => {
+                  if (criteria === 'discount') {
+                      return parseInt(b.getAttribute('data-discount')) - parseInt(a.getAttribute('data-discount'));
+                  } else if (criteria === 'price-asc') {
+                      return parseFloat(a.getAttribute('data-price')) - parseFloat(b.getAttribute('data-price'));
+                  } else if (criteria === 'price-desc') {
+                      return parseFloat(b.getAttribute('data-price')) - parseFloat(a.getAttribute('data-price'));
+                  }
+                  return 0;
+              });
 
-            <div class="flex gap-4 mb-6">
-              <button id="modal-add-to-cart-btn" class="flex-1 bg-[#b51822] text-white font-bold py-3 rounded-lg hover:bg-[#930013] transition">
-                Add to Cart
-              </button>
-              <button id="modal-buy-now-btn" class="flex-1 border-2 border-[#b51822] text-[#b51822] font-bold py-3 rounded-lg hover:bg-[#ebeef0] transition">
-                Buy Now
-              </button>
-            </div>
+              // Clear and re-append sorted items (non-destructive)
+              cardsArray.forEach(card => gridContainer.appendChild(card));
+          }
 
-            <div class="text-sm text-[#5b403e] space-y-2">
-              <p>✓ Free shipping on orders over Rs. 5,000</p>
-              <p>✓ 30-day returns</p>
-              <p>✓ Authentic product from Nepal</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+          sortSelect.addEventListener('change', function() {
+              sortProducts(sortSelect.value);
+          });
 
+          // Sort products by discount on load
+          sortProducts('discount');
 
+          // ==================== CAROUSEL LOGIC ====================
+          // 1. Featured Star Deals Carousel (1 slide at a time)
+          const featuredCarousel = document.getElementById('featured-carousel');
+          const featuredPrev = document.getElementById('featured-prev');
+          const featuredNext = document.getElementById('featured-next');
+          if (featuredCarousel && featuredPrev && featuredNext) {
+              const cards = featuredCarousel.querySelectorAll('.featured-card');
+              let currentIndex = 0;
+              
+              function updateFeaturedCarousel() {
+                  if (cards.length === 0) return;
+                  const cardWidth = cards[0].getBoundingClientRect().width;
+                  featuredCarousel.style.transform = `translateX(-${currentIndex * (cardWidth + 24)}px)`;
+              }
+              
+              featuredNext.addEventListener('click', () => {
+                  if (currentIndex < cards.length - 1) {
+                      currentIndex++;
+                      updateFeaturedCarousel();
+                  } else {
+                      currentIndex = 0; // Wrap around
+                      updateFeaturedCarousel();
+                  }
+              });
+              
+              featuredPrev.addEventListener('click', () => {
+                  if (currentIndex > 0) {
+                      currentIndex--;
+                      updateFeaturedCarousel();
+                  } else {
+                      currentIndex = cards.length - 1; // Wrap around to end
+                      updateFeaturedCarousel();
+                  }
+              });
+
+              // Handle resize
+              window.addEventListener('resize', updateFeaturedCarousel);
+          }
+
+          // 2. Trending Now Carousel
+          const trendingCarousel = document.getElementById('trending-carousel');
+          const trendingPrev = document.getElementById('trending-prev');
+          const trendingNext = document.getElementById('trending-next');
+          if (trendingCarousel && trendingPrev && trendingNext) {
+              const cards = trendingCarousel.querySelectorAll('.trending-card');
+              let currentIndex = 0;
+              
+              function updateTrendingCarousel() {
+                  if (cards.length === 0) return;
+                  const cardWidth = cards[0].getBoundingClientRect().width;
+                  trendingCarousel.style.transform = `translateX(-${currentIndex * (cardWidth + 24)}px)`;
+              }
+              
+              trendingNext.addEventListener('click', () => {
+                  // Determine how many cards are visible
+                  let visibleCount = 1;
+                  if (window.innerWidth >= 1024) visibleCount = 4;
+                  else if (window.innerWidth >= 768) visibleCount = 2;
+                  
+                  const maxIndex = cards.length - visibleCount;
+                  if (currentIndex < maxIndex) {
+                      currentIndex++;
+                  } else {
+                      currentIndex = 0; // Wrap around
+                  }
+                  updateTrendingCarousel();
+              });
+              
+              trendingPrev.addEventListener('click', () => {
+                  let visibleCount = 1;
+                  if (window.innerWidth >= 1024) visibleCount = 4;
+                  else if (window.innerWidth >= 768) visibleCount = 2;
+                  
+                  const maxIndex = cards.length - visibleCount;
+                  if (currentIndex > 0) {
+                      currentIndex--;
+                  } else {
+                      currentIndex = maxIndex > 0 ? maxIndex : 0; // Wrap around to end
+                  }
+                  updateTrendingCarousel();
+              });
+
+              window.addEventListener('resize', updateTrendingCarousel);
+          }
+      });
+  </script>
 </x-frontend-layout>

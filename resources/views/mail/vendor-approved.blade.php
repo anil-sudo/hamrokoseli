@@ -29,7 +29,7 @@ You can now start listing your products on **Hamrokoseli** and reach thousands o
 - Manage orders and track earnings  
 - Promote your shop
 
-@component('mail::button', ['url' => url('/seller-login')])
+@component('mail::button', ['url' => config('app.url').'/seller-login'])
 Go to Vendor Dashboard
 @endcomponent
 
