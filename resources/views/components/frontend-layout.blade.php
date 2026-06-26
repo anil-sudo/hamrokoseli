@@ -16,5 +16,6 @@
    {{ $slot }}
 <x-frontend-footer />
 <x-login-modal />
+<x-product-details-modal />
 </body>
 </html>
