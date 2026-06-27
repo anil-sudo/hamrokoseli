@@ -7,27 +7,27 @@
         <div>
           <span class="inline-block bg-white bg-opacity-20 text-white text-xs font-bold px-3 py-1 rounded-full mb-4">LIMITED TIME OFFER</span>
           <h1 class="text-[30px] md:text-[24px] font-bold leading-[38px] md:leading-[30px] tracking-[-0.02em] mb-4 font-['Plus_Jakarta_Sans']">Authentic Nepali Heritage</h1>
-          <p class="text-white text-opacity-90 text-base leading-6 mb-6">Experience the pinnacle of Nepalese craftsmanship with our exclusive artisanal collection. Up to 60% off for the next 24 hours.</p>
+          <p class="text-white text-opacity-90 text-base leading-6 mb-6">Experience the pinnacle of Nepalese craftsmanship with our exclusive artisanal collection. Today's deals refresh at midnight.</p>
 
-          <!-- Countdown Timer -->
+          <!-- Countdown Timer (real — counts down to midnight) -->
           <div class="flex gap-6 mb-8 font-['Plus_Jakarta_Sans']">
             <div class="text-center">
-              <div class="text-3xl font-bold">08</div>
+              <div id="countdown-hours" class="text-3xl font-bold">--</div>
               <div class="text-xs font-semibold text-white text-opacity-80 uppercase">Hours</div>
             </div>
             <span class="text-2xl font-bold">:</span>
             <div class="text-center">
-              <div class="text-3xl font-bold">42</div>
+              <div id="countdown-mins" class="text-3xl font-bold">--</div>
               <div class="text-xs font-semibold text-white text-opacity-80 uppercase">Mins</div>
             </div>
             <span class="text-2xl font-bold">:</span>
             <div class="text-center">
-              <div class="text-3xl font-bold">13</div>
+              <div id="countdown-secs" class="text-3xl font-bold">--</div>
               <div class="text-xs font-semibold text-white text-opacity-80 uppercase">Secs</div>
             </div>
           </div>
 
-          <button class="bg-white text-[#d93537] font-bold px-8 py-3 rounded-full hover:bg-opacity-90 transition font-['Plus_Jakarta_Sans']">Shop The Drop</button>
+          <a href="#deals-grid" class="bg-white text-[#d93537] font-bold px-8 py-3 rounded-full hover:bg-opacity-90 transition font-['Plus_Jakarta_Sans'] inline-block">Shop The Drop</a>
         </div>
 
         <div class="flex justify-center">
@@ -37,7 +37,7 @@
     </section>
 
     <!-- Lightning Deals Section -->
-    <section class="py-12 px-4 md:px-8 lg:px-16">
+    <section id="deals-grid" class="py-12 px-4 md:px-8 lg:px-16">
       <div class="max-w-7xl mx-auto">
         <div class="flex justify-between items-center mb-8">
           <div class="flex items-center gap-3">
@@ -46,105 +46,158 @@
           </div>
         </div>
 
-        <!-- Filter Controls -->
-        <div class="bg-white rounded-lg border border-[#e0e3e5] p-6 mb-8">
-          <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-            <!-- Category Filter -->
-            <div>
-              <span class="text-xs font-bold uppercase tracking-wider text-[#181c1e] block mb-3">Filter by Category</span>
-              <div class="flex flex-wrap gap-2" id="category-filters">
-                <button data-category="all" class="filter-pill px-4 py-2 border border-[#b51822] text-[#181c1e] text-xs font-bold rounded-full hover:bg-[#b51822] hover:text-white transition active">
-                  All Categories
-                </button>
-                @php
-                    $categories = $products->pluck('category.cat_name')->unique()->filter()->values();
-                @endphp
-                @foreach($categories as $cat)
-                  <button data-category="{{ strtolower($cat) }}" class="filter-pill px-4 py-2 border border-[#e0e3e5] text-[#181c1e] text-xs font-bold rounded-full hover:border-[#b51822] hover:text-white transition">
-                    {{ $cat }}
+        <form id="deals-filter-form" method="GET" action="{{ route('todays-deals') }}">
+
+          <!-- Filter Controls -->
+          <div class="bg-white rounded-lg border border-[#e0e3e5] p-6 mb-8">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+              <!-- Category Filter -->
+              <div>
+                <span class="text-xs font-bold uppercase tracking-wider text-[#181c1e] block mb-3">Filter by Category</span>
+                <div class="flex flex-wrap gap-2" id="category-filters">
+                  <button type="submit" name="category" value="all"
+                    class="filter-pill px-4 py-2 border text-xs font-bold rounded-full transition
+                    {{ request('category', 'all') === 'all' ? 'bg-[#b51822] text-white border-[#b51822]' : 'border-[#e0e3e5] text-[#181c1e] hover:border-[#b51822]' }}">
+                    All Categories
                   </button>
-                @endforeach
+                  @foreach($categories as $cat)
+                    <button type="submit" name="category" value="{{ $cat->slug }}"
+                      class="filter-pill px-4 py-2 border text-xs font-bold rounded-full transition
+                      {{ request('category') === $cat->slug ? 'bg-[#b51822] text-white border-[#b51822]' : 'border-[#e0e3e5] text-[#181c1e] hover:border-[#b51822]' }}">
+                      {{ $cat->cat_name }}
+                    </button>
+                  @endforeach
+                </div>
+              </div>
+
+              <!-- Sort -->
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-[#181c1e]">Sort By:</span>
+                <select id="sort-select" name="sort" class="border border-[#e0e3e5] rounded-lg px-4 py-2 text-sm font-semibold text-[#181c1e] focus:outline-none focus:ring-2 focus:ring-[#b51822]">
+                  <option value="discount" {{ request('sort', 'discount') === 'discount' ? 'selected' : '' }}>Biggest Discount</option>
+                  <option value="price-asc" {{ request('sort') === 'price-asc' ? 'selected' : '' }}>Price: Low to High</option>
+                  <option value="price-desc" {{ request('sort') === 'price-desc' ? 'selected' : '' }}>Price: High to Low</option>
+                </select>
               </div>
             </div>
-
-            <!-- Sort -->
-            <div class="flex items-center gap-3">
-              <span class="text-xs font-bold uppercase tracking-wider text-[#181c1e]">Sort By:</span>
-              <select id="sort-select" class="border border-[#e0e3e5] rounded-lg px-4 py-2 text-sm font-semibold text-[#181c1e] focus:outline-none focus:ring-2 focus:ring-[#b51822]">
-                <option value="discount">Biggest Discount</option>
-                <option value="price-asc">Price: Low to High</option>
-                <option value="price-desc">Price: High to Low</option>
-              </select>
-            </div>
           </div>
-        </div>
 
-        <!-- Product Grid -->
-        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6" id="product-grid">
-          @if(isset($products) && $products->count() > 0)
-            @foreach($products as $product)
+          <!-- Product Grid -->
+          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6" id="product-grid">
+            @forelse($products as $product)
               @php
-                $price = $product->price;
-                $discountPrice = $product->discount_price ?? null;
-                $hasDiscount = !is_null($discountPrice) && $discountPrice < $price;
-                $displayPrice = $hasDiscount ? $discountPrice : $price;
-                $discountPercentage = $hasDiscount ? round((($price - $discountPrice) / $price) * 100) : 0;
+                $price = (float) $product->price;
+                $discountPrice = (float) $product->discount_price;
+                $discountPercentage = $price > 0 ? round((($price - $discountPrice) / $price) * 100) : 0;
+                $avgRating = $product->reviews_avg_rating ? round($product->reviews_avg_rating, 1) : null;
+                $reviewCount = $product->reviews_count ?? 0;
               @endphp
-              <div class="bg-white rounded-[16px] border border-[#e0e3e5] overflow-hidden hover:shadow-lg transition-all product-card"
-                   data-id="{{ $product->id }}"
-                   data-name="{{ $product->name }}"
-                   data-price="{{ $displayPrice }}"
-                   data-category="{{ strtolower($product->category->cat_name ?? '') }}"
-                   data-discount="{{ $discountPercentage }}">
+              <div class="bg-white rounded-[16px] border border-[#e0e3e5] overflow-hidden hover:shadow-lg transition-all product-card">
                 <div class="relative aspect-square bg-gray-200 overflow-hidden">
-                  <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover hover:scale-105 transition duration-300">
-                  @if($hasDiscount)
-                    <span class="absolute top-3 left-3 bg-[#b51822] text-white text-xs font-bold px-3 py-1 rounded-full">-{{ $discountPercentage }}% OFF</span>
-                  @endif
+                  <img src="{{ $product->primaryImageUrl() }}" alt="{{ $product->name }}" class="w-full h-full object-cover hover:scale-105 transition duration-300">
+                  <span class="absolute top-3 left-3 bg-[#b51822] text-white text-xs font-bold px-3 py-1 rounded-full">-{{ $discountPercentage }}% OFF</span>
                 </div>
                 <div class="p-4">
-                  <h3 class="font-bold text-[16px] leading-6 text-[#181c1e] mb-2 font-['Plus_Jakarta_Sans'] line-clamp-2">{{ $product->name }}</h3>
-                  <p class="text-[22px] font-bold text-[#b51822] mb-1 font-['Plus_Jakarta_Sans']">Rs. {{ number_format($displayPrice) }}</p>
-                  @if($hasDiscount)
-                    <p class="text-sm text-[#5b403e] line-through mb-2">Rs. {{ number_format($price) }}</p>
-                  @endif
+                  <span class="text-xs font-bold text-[#b51822] uppercase tracking-widest">{{ $product->category?->cat_name ?? 'Crafts' }}</span>
+                  <h3 class="font-bold text-[16px] leading-6 text-[#181c1e] mb-2 mt-1 font-['Plus_Jakarta_Sans'] line-clamp-2">{{ $product->name }}</h3>
+                  <p class="text-[22px] font-bold text-[#b51822] mb-1 font-['Plus_Jakarta_Sans']">Rs. {{ number_format($discountPrice) }}</p>
+                  <p class="text-sm text-[#5b403e] line-through mb-2">Rs. {{ number_format($price) }}</p>
                   <div class="flex items-center gap-1 mb-4">
-                    <span class="text-yellow-400">★★★★★</span>
-                    <span class="text-xs text-[#5b403e]">({{ $product->reviews_count ?? 0 }} Reviews)</span>
+                    @if($avgRating)
+                      <span class="text-yellow-400">★</span>
+                      <span class="text-xs text-[#5b403e] font-semibold">{{ $avgRating }}</span>
+                      <span class="text-xs text-[#5b403e]">({{ $reviewCount }} {{ Str::plural('Review', $reviewCount) }})</span>
+                    @else
+                      <span class="text-xs text-[#5b403e]">No reviews yet</span>
+                    @endif
                   </div>
                   <div class="flex gap-2">
                     <a href="{{ route('viewdetails', $product->id) }}"
                        class="flex-1 bg-[#b51822] text-white py-2 rounded-lg font-semibold hover:bg-[#930013] transition text-sm view-details-btn text-center cursor-pointer"
                        data-id="{{ $product->id }}"
                        data-name="{{ $product->name }}"
-                       data-price="{{ $displayPrice }}"
+                       data-price="{{ $discountPrice }}"
                        data-original-price="{{ $price }}"
-                       data-discount="{{ $hasDiscount ? 'true' : 'false' }}"
+                       data-discount="true"
                        data-discount-percentage="{{ $discountPercentage }}"
-                       data-savings="{{ $price - $displayPrice }}"
-                       data-image="{{ asset($product->image) }}"
-                       data-category="{{ $product->category->cat_name ?? '' }}"
+                       data-savings="{{ $price - $discountPrice }}"
+                       data-image="{{ $product->primaryImageUrl() }}"
+                       data-category="{{ $product->category?->cat_name ?? 'Crafts' }}"
                        data-vendor="{{ $product->vendor->vendor_name ?? 'Local Artisan' }}"
                        data-desc="{{ $product->description }}"
-                       data-rating="{{ $product->rating ?? 5 }}"
-                       data-reviews="{{ $product->reviews_count ?? 0 }}"
-                       data-stock="{{ $product->stock ?? 10 }}">
+                       data-rating="{{ $avgRating ?? 0 }}"
+                       data-reviews="{{ $reviewCount }}"
+                       data-stock="{{ $product->stock }}">
                       View Details
                     </a>
-                    <button class="px-3 py-2 border border-[#e0e3e5] rounded-lg hover:bg-[#ebeef0] transition">...</button>
                   </div>
                 </div>
               </div>
-            @endforeach
-          @else
-            <div class="col-span-full text-center py-12">
-              <p class="text-[#5b403e] text-lg">No products available</p>
+            @empty
+              <div class="col-span-full text-center py-12">
+                <p class="text-[#5b403e] text-lg">No deals available right now — check back soon.</p>
+              </div>
+            @endforelse
+          </div>
+
+          {{-- Pagination --}}
+          @if($products->hasPages())
+            <div class="flex items-center justify-center gap-3 mt-10">
+              @if($products->onFirstPage())
+                <span class="w-10 h-10 rounded-full border border-[#e0e3e5] flex items-center justify-center text-[#181c1e]/30 cursor-not-allowed">
+                  <i class="fas fa-chevron-left text-xs"></i>
+                </span>
+              @else
+                <a href="{{ $products->previousPageUrl() }}" class="w-10 h-10 rounded-full border border-[#e0e3e5] flex items-center justify-center text-[#181c1e] hover:bg-[#ebeef0] transition">
+                  <i class="fas fa-chevron-left text-xs"></i>
+                </a>
+              @endif
+
+              <div class="flex items-center gap-1">
+                @php
+                  $start = max(1, $products->currentPage() - 2);
+                  $end = min($products->lastPage(), $products->currentPage() + 2);
+                @endphp
+
+                @if($start > 1)
+                  <a href="{{ $products->url(1) }}" class="w-10 h-10 flex items-center justify-center text-sm font-semibold text-[#181c1e]/60 hover:text-[#181c1e] transition-colors">1</a>
+                  @if($start > 2)<span class="text-sm font-semibold text-[#181c1e]/40 px-2">...</span>@endif
+                @endif
+
+                @for($page = $start; $page <= $end; $page++)
+                  @if($page == $products->currentPage())
+                    <a href="{{ $products->url($page) }}" class="w-10 h-10 flex flex-col items-center justify-center text-sm font-bold text-[#b51822] relative">
+                      <span>{{ $page }}</span>
+                      <span class="absolute bottom-1 w-5 h-0.5 bg-[#b51822] rounded-full"></span>
+                    </a>
+                  @else
+                    <a href="{{ $products->url($page) }}" class="w-10 h-10 flex items-center justify-center text-sm font-semibold text-[#181c1e]/60 hover:text-[#181c1e] transition-colors">{{ $page }}</a>
+                  @endif
+                @endfor
+
+                @if($end < $products->lastPage())
+                  @if($end < $products->lastPage() - 1)<span class="text-sm font-semibold text-[#181c1e]/40 px-2">...</span>@endif
+                  <a href="{{ $products->url($products->lastPage()) }}" class="w-10 h-10 flex items-center justify-center text-sm font-semibold text-[#181c1e]/60 hover:text-[#181c1e] transition-colors">{{ $products->lastPage() }}</a>
+                @endif
+              </div>
+
+              @if($products->hasMorePages())
+                <a href="{{ $products->nextPageUrl() }}" class="w-10 h-10 rounded-full border border-[#e0e3e5] flex items-center justify-center text-[#181c1e] hover:bg-[#ebeef0] transition">
+                  <i class="fas fa-chevron-right text-xs"></i>
+                </a>
+              @else
+                <span class="w-10 h-10 rounded-full border border-[#e0e3e5] flex items-center justify-center text-[#181c1e]/30 cursor-not-allowed">
+                  <i class="fas fa-chevron-right text-xs"></i>
+                </span>
+              @endif
             </div>
           @endif
-        </div>
+
+        </form>
       </div>
     </section>
 
+    @if($featuredDeals->isNotEmpty())
     <!-- Featured Star Deal Carousel Section -->
     <section class="bg-[#2d3133] text-white py-16 px-4 md:px-8 lg:px-16">
       <div class="max-w-7xl mx-auto">
@@ -154,10 +207,10 @@
             <h2 class="text-2xl font-bold font-['Plus_Jakarta_Sans']">Featured Star Deals</h2>
           </div>
           <div class="flex gap-3">
-            <button id="featured-prev" class="p-2 border border-white rounded-lg hover:bg-white hover:text-[#2d3133] transition">
+            <button id="featured-prev" type="button" class="p-2 border border-white rounded-lg hover:bg-white hover:text-[#2d3133] transition">
               <i class="fas fa-chevron-left"></i>
             </button>
-            <button id="featured-next" class="p-2 border border-white rounded-lg hover:bg-white hover:text-[#2d3133] transition">
+            <button id="featured-next" type="button" class="p-2 border border-white rounded-lg hover:bg-white hover:text-[#2d3133] transition">
               <i class="fas fa-chevron-right"></i>
             </button>
           </div>
@@ -166,120 +219,39 @@
         <!-- Carousel Container -->
         <div class="relative overflow-hidden">
           <div id="featured-carousel" class="flex gap-6 transition-transform duration-500 ease-out">
-            <!-- Featured Product 1 -->
-            <div class="featured-card flex-shrink-0 w-full">
-              <div class="grid md:grid-cols-2 gap-6 items-center bg-[#1a1a1a] rounded-2xl p-6">
-                <div class="flex justify-center">
-                  <img src="{{ asset('images/Pottery.png') }}" alt="Hand-Knotted Wool Mandala Rug" class="w-full max-w-xs rounded-lg">
-                </div>
-                <div>
-                  <span class="inline-block bg-white bg-opacity-20 text-white text-xs font-bold px-3 py-1 rounded-full mb-3">FEATURED</span>
-                  <h3 class="text-2xl font-bold mb-3 font-['Plus_Jakarta_Sans']">Hand-Knotted Wool Mandala Rug</h3>
-                  <p class="text-white text-opacity-80 text-sm leading-6 mb-4">Exquisite hand-knotted wool rug featuring traditional mandala patterns. A masterpiece of Nepalese weaving heritage.</p>
-                  <p class="text-sm text-white text-opacity-70 mb-1">Regularly Rs. 65,000</p>
-                  <p class="text-4xl font-bold mb-4 font-['Plus_Jakarta_Sans']">Rs. 45,000</p>
-                  <div class="flex gap-3">
-                    <button class="bg-[#d4a017] hover:bg-[#b38a0a] text-black font-bold px-6 py-2 rounded-full transition flex items-center gap-2 font-['Plus_Jakarta_Sans'] text-sm">
-                      Buy Now <span>→</span>
-                    </button>
-                    <button class="border border-white text-white font-bold px-6 py-2 rounded-full hover:bg-white hover:text-[#2d3133] transition text-sm">Details</button>
+            @foreach($featuredDeals as $deal)
+              @php
+                $dPrice = (float) $deal->price;
+                $dDiscount = (float) $deal->discount_price;
+              @endphp
+              <div class="featured-card flex-shrink-0 w-full">
+                <div class="grid md:grid-cols-2 gap-6 items-center bg-[#1a1a1a] rounded-2xl p-6">
+                  <div class="flex justify-center">
+                    <img src="{{ $deal->primaryImageUrl() }}" alt="{{ $deal->name }}" class="w-full max-w-xs rounded-lg">
+                  </div>
+                  <div>
+                    <span class="inline-block bg-white bg-opacity-20 text-white text-xs font-bold px-3 py-1 rounded-full mb-3">FEATURED</span>
+                    <h3 class="text-2xl font-bold mb-3 font-['Plus_Jakarta_Sans']">{{ $deal->name }}</h3>
+                    <p class="text-white text-opacity-80 text-sm leading-6 mb-4 line-clamp-3">{{ $deal->description }}</p>
+                    <p class="text-sm text-white text-opacity-70 mb-1">Regularly Rs. {{ number_format($dPrice) }}</p>
+                    <p class="text-4xl font-bold mb-4 font-['Plus_Jakarta_Sans']">Rs. {{ number_format($dDiscount) }}</p>
+                    <div class="flex gap-3">
+                      <a href="{{ route('viewdetails', $deal->id) }}" class="bg-[#d4a017] hover:bg-[#b38a0a] text-black font-bold px-6 py-2 rounded-full transition flex items-center gap-2 font-['Plus_Jakarta_Sans'] text-sm">
+                        Buy Now <span>→</span>
+                      </a>
+                      <a href="{{ route('viewdetails', $deal->id) }}" class="border border-white text-white font-bold px-6 py-2 rounded-full hover:bg-white hover:text-[#2d3133] transition text-sm">Details</a>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-
-            <!-- Featured Product 2 -->
-            <div class="featured-card flex-shrink-0 w-full">
-              <div class="grid md:grid-cols-2 gap-6 items-center bg-[#1a1a1a] rounded-2xl p-6">
-                <div class="flex justify-center">
-                  <img src="{{ asset('images/Pottery.png') }}" alt="Traditional Dhaka Textile" class="w-full max-w-xs rounded-lg">
-                </div>
-                <div>
-                  <span class="inline-block bg-white bg-opacity-20 text-white text-xs font-bold px-3 py-1 rounded-full mb-3">FEATURED</span>
-                  <h3 class="text-2xl font-bold mb-3 font-['Plus_Jakarta_Sans']">Traditional Dhaka Textile</h3>
-                  <p class="text-white text-opacity-80 text-sm leading-6 mb-4">Authentic handwoven Dhaka fabric with intricate traditional patterns, perfect for traditional clothing.</p>
-                  <p class="text-sm text-white text-opacity-70 mb-1">Regularly Rs. 20,600</p>
-                  <p class="text-4xl font-bold mb-4 font-['Plus_Jakarta_Sans']">Rs. 12,400</p>
-                  <div class="flex gap-3">
-                    <button class="bg-[#d4a017] hover:bg-[#b38a0a] text-black font-bold px-6 py-2 rounded-full transition flex items-center gap-2 font-['Plus_Jakarta_Sans'] text-sm">
-                      Buy Now <span>→</span>
-                    </button>
-                    <button class="border border-white text-white font-bold px-6 py-2 rounded-full hover:bg-white hover:text-[#2d3133] transition text-sm">Details</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Featured Product 3 -->
-            <div class="featured-card flex-shrink-0 w-full">
-              <div class="grid md:grid-cols-2 gap-6 items-center bg-[#1a1a1a] rounded-2xl p-6">
-                <div class="flex justify-center">
-                  <img src="{{ asset('images/Pottery.png') }}" alt="Himalayan Salt Lamp" class="w-full max-w-xs rounded-lg">
-                </div>
-                <div>
-                  <span class="inline-block bg-white bg-opacity-20 text-white text-xs font-bold px-3 py-1 rounded-full mb-3">FEATURED</span>
-                  <h3 class="text-2xl font-bold mb-3 font-['Plus_Jakarta_Sans']">Himalayan Salt Lamp</h3>
-                  <p class="text-white text-opacity-80 text-sm leading-6 mb-4">Premium natural Himalayan salt lamp that creates a warm ambiance and promotes wellness in your home.</p>
-                  <p class="text-sm text-white text-opacity-70 mb-1">Regularly Rs. 2,300</p>
-                  <p class="text-4xl font-bold mb-4 font-['Plus_Jakarta_Sans']">Rs. 1,850</p>
-                  <div class="flex gap-3">
-                    <button class="bg-[#d4a017] hover:bg-[#b38a0a] text-black font-bold px-6 py-2 rounded-full transition flex items-center gap-2 font-['Plus_Jakarta_Sans'] text-sm">
-                      Buy Now <span>→</span>
-                    </button>
-                    <button class="border border-white text-white font-bold px-6 py-2 rounded-full hover:bg-white hover:text-[#2d3133] transition text-sm">Details</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Featured Product 4 -->
-            <div class="featured-card flex-shrink-0 w-full">
-              <div class="grid md:grid-cols-2 gap-6 items-center bg-[#1a1a1a] rounded-2xl p-6">
-                <div class="flex justify-center">
-                  <img src="{{ asset('images/Pottery.png') }}" alt="Silver Filigree Jewelry" class="w-full max-w-xs rounded-lg">
-                </div>
-                <div>
-                  <span class="inline-block bg-white bg-opacity-20 text-white text-xs font-bold px-3 py-1 rounded-full mb-3">FEATURED</span>
-                  <h3 class="text-2xl font-bold mb-3 font-['Plus_Jakarta_Sans']">Silver Filigree Jewelry Set</h3>
-                  <p class="text-white text-opacity-80 text-sm leading-6 mb-4">Exquisite handcrafted silver filigree jewelry set showcasing traditional Nepalese metalwork artistry.</p>
-                  <p class="text-sm text-white text-opacity-70 mb-1">Regularly Rs. 4,500</p>
-                  <p class="text-4xl font-bold mb-4 font-['Plus_Jakarta_Sans']">Rs. 3,200</p>
-                  <div class="flex gap-3">
-                    <button class="bg-[#d4a017] hover:bg-[#b38a0a] text-black font-bold px-6 py-2 rounded-full transition flex items-center gap-2 font-['Plus_Jakarta_Sans'] text-sm">
-                      Buy Now <span>→</span>
-                    </button>
-                    <button class="border border-white text-white font-bold px-6 py-2 rounded-full hover:bg-white hover:text-[#2d3133] transition text-sm">Details</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Featured Product 5 -->
-            <div class="featured-card flex-shrink-0 w-full">
-              <div class="grid md:grid-cols-2 gap-6 items-center bg-[#1a1a1a] rounded-2xl p-6">
-                <div class="flex justify-center">
-                  <img src="{{ asset('images/Pottery.png') }}" alt="Botanical Brass Candle" class="w-full max-w-xs rounded-lg">
-                </div>
-                <div>
-                  <span class="inline-block bg-white bg-opacity-20 text-white text-xs font-bold px-3 py-1 rounded-full mb-3">FEATURED</span>
-                  <h3 class="text-2xl font-bold mb-3 font-['Plus_Jakarta_Sans']">Botanical Brass Candle</h3>
-                  <p class="text-white text-opacity-80 text-sm leading-6 mb-4">Hand-poured botanical candle in an elegant brass holder, perfect for creating a luxurious atmosphere.</p>
-                  <p class="text-sm text-white text-opacity-70 mb-1">Regularly Rs. 1,500</p>
-                  <p class="text-4xl font-bold mb-4 font-['Plus_Jakarta_Sans']">Rs. 950</p>
-                  <div class="flex gap-3">
-                    <button class="bg-[#d4a017] hover:bg-[#b38a0a] text-black font-bold px-6 py-2 rounded-full transition flex items-center gap-2 font-['Plus_Jakarta_Sans'] text-sm">
-                      Buy Now <span>→</span>
-                    </button>
-                    <button class="border border-white text-white font-bold px-6 py-2 rounded-full hover:bg-white hover:text-[#2d3133] transition text-sm">Details</button>
-                  </div>
-                </div>
-              </div>
-            </div>
+            @endforeach
           </div>
         </div>
       </div>
     </section>
+    @endif
 
+    @if($trendingProducts->isNotEmpty())
     <!-- Trending Now Section -->
     <section class="py-16 px-4 md:px-8 lg:px-16">
       <div class="max-w-7xl mx-auto">
@@ -288,10 +260,10 @@
             <span class="text-2xl">📈</span> Trending Now
           </h2>
           <div class="flex gap-3">
-            <button id="trending-prev" class="p-2 border border-[#e0e3e5] rounded-lg hover:bg-[#ebeef0] transition">
+            <button id="trending-prev" type="button" class="p-2 border border-[#e0e3e5] rounded-lg hover:bg-[#ebeef0] transition">
               <i class="fas fa-chevron-left text-[#181c1e]"></i>
             </button>
-            <button id="trending-next" class="p-2 border border-[#e0e3e5] rounded-lg hover:bg-[#ebeef0] transition">
+            <button id="trending-next" type="button" class="p-2 border border-[#e0e3e5] rounded-lg hover:bg-[#ebeef0] transition">
               <i class="fas fa-chevron-right text-[#181c1e]"></i>
             </button>
           </div>
@@ -300,150 +272,55 @@
         <!-- Trending Carousel -->
         <div class="relative overflow-hidden">
           <div id="trending-carousel" class="flex gap-6 transition-transform duration-500 ease-out">
-            <!-- Trending Product 1 -->
-            <div class="trending-card flex-shrink-0 w-full md:w-1/2 lg:w-1/4">
-              <div class="bg-white rounded-[16px] border border-[#e0e3e5] overflow-hidden hover:shadow-lg transition-all">
-                <div class="aspect-square bg-gray-200 flex items-center justify-center">
-                  <img src="{{ asset('images/Pottery.png') }}" alt="Silver Filigree Jewelry Set" class="w-full h-full object-cover">
-                </div>
-                <div class="p-4">
-                  <span class="text-xs font-bold text-[#b51822] uppercase tracking-widest">Accessories</span>
-                  <h3 class="font-bold text-[16px] text-[#181c1e] mb-2 font-['Plus_Jakarta_Sans']">Silver Filigree Jewelry Set</h3>
-                  <p class="text-[22px] font-bold text-[#181c1e] font-['Plus_Jakarta_Sans']">Rs. 3,200</p>
-                </div>
+            @foreach($trendingProducts as $trend)
+              <div class="trending-card flex-shrink-0 w-full md:w-1/2 lg:w-1/4">
+                <a href="{{ route('viewdetails', $trend->id) }}" class="block bg-white rounded-[16px] border border-[#e0e3e5] overflow-hidden hover:shadow-lg transition-all">
+                  <div class="aspect-square bg-gray-200 flex items-center justify-center">
+                    <img src="{{ $trend->primaryImageUrl() }}" alt="{{ $trend->name }}" class="w-full h-full object-cover">
+                  </div>
+                  <div class="p-4">
+                    <span class="text-xs font-bold text-[#b51822] uppercase tracking-widest">{{ $trend->category?->cat_name ?? 'Crafts' }}</span>
+                    <h3 class="font-bold text-[16px] text-[#181c1e] mb-2 font-['Plus_Jakarta_Sans'] line-clamp-1">{{ $trend->name }}</h3>
+                    <p class="text-[22px] font-bold text-[#181c1e] font-['Plus_Jakarta_Sans']">Rs. {{ number_format($trend->effectivePrice()) }}</p>
+                  </div>
+                </a>
               </div>
-            </div>
-
-            <!-- Trending Product 2 -->
-            <div class="trending-card flex-shrink-0 w-full md:w-1/2 lg:w-1/4">
-              <div class="bg-white rounded-[16px] border border-[#e0e3e5] overflow-hidden hover:shadow-lg transition-all">
-                <div class="aspect-square bg-gray-200 flex items-center justify-center">
-                  <img src="{{ asset('images/Pottery.png') }}" alt="Botanical Brass Candle" class="w-full h-full object-cover">
-                </div>
-                <div class="p-4">
-                  <span class="text-xs font-bold text-[#b51822] uppercase tracking-widest">Home Decor</span>
-                  <h3 class="font-bold text-[16px] text-[#181c1e] mb-2 font-['Plus_Jakarta_Sans']">Botanical Brass Candle</h3>
-                  <p class="text-[22px] font-bold text-[#181c1e] font-['Plus_Jakarta_Sans']">Rs. 950</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Trending Product 3 -->
-            <div class="trending-card flex-shrink-0 w-full md:w-1/2 lg:w-1/4">
-              <div class="bg-white rounded-[16px] border border-[#e0e3e5] overflow-hidden hover:shadow-lg transition-all">
-                <div class="aspect-square bg-gray-200 flex items-center justify-center">
-                  <img src="{{ asset('images/Pottery.png') }}" alt="Carved Wooden Deity Mask" class="w-full h-full object-cover">
-                </div>
-                <div class="p-4">
-                  <span class="text-xs font-bold text-[#b51822] uppercase tracking-widest">Art</span>
-                  <h3 class="font-bold text-[16px] text-[#181c1e] mb-2 font-['Plus_Jakarta_Sans']">Carved Wooden Deity Mask</h3>
-                  <p class="text-[22px] font-bold text-[#181c1e] font-['Plus_Jakarta_Sans']">Rs. 1,600</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Trending Product 4 -->
-            <div class="trending-card flex-shrink-0 w-full md:w-1/2 lg:w-1/4">
-              <div class="bg-white rounded-[16px] border border-[#e0e3e5] overflow-hidden hover:shadow-lg transition-all">
-                <div class="aspect-square bg-gray-200 flex items-center justify-center">
-                  <img src="{{ asset('images/Pottery.png') }}" alt="Organic Clay Bowls" class="w-full h-full object-cover">
-                </div>
-                <div class="p-4">
-                  <span class="text-xs font-bold text-[#b51822] uppercase tracking-widest">Pottery</span>
-                  <h3 class="font-bold text-[16px] text-[#181c1e] mb-2 font-['Plus_Jakarta_Sans']">Organic Clay Bowls</h3>
-                  <p class="text-[22px] font-bold text-[#181c1e] font-['Plus_Jakarta_Sans']">Rs. 4,500</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Trending Product 5 -->
-            <div class="trending-card flex-shrink-0 w-full md:w-1/2 lg:w-1/4">
-              <div class="bg-white rounded-[16px] border border-[#e0e3e5] overflow-hidden hover:shadow-lg transition-all">
-                <div class="aspect-square bg-gray-200 flex items-center justify-center">
-                  <img src="{{ asset('images/Pottery.png') }}" alt="Lokta Paper Journal" class="w-full h-full object-cover">
-                </div>
-                <div class="p-4">
-                  <span class="text-xs font-bold text-[#b51822] uppercase tracking-widest">Stationary</span>
-                  <h3 class="font-bold text-[16px] text-[#181c1e] mb-2 font-['Plus_Jakarta_Sans']">Lokta Paper Journal</h3>
-                  <p class="text-[22px] font-bold text-[#181c1e] font-['Plus_Jakarta_Sans']">Rs. 5,800</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Trending Product 6 -->
-            <div class="trending-card flex-shrink-0 w-full md:w-1/2 lg:w-1/4">
-              <div class="bg-white rounded-[16px] border border-[#e0e3e5] overflow-hidden hover:shadow-lg transition-all">
-                <div class="aspect-square bg-gray-200 flex items-center justify-center">
-                  <img src="{{ asset('images/Pottery.png') }}" alt="Traditional Dhaka Textile" class="w-full h-full object-cover">
-                </div>
-                <div class="p-4">
-                  <span class="text-xs font-bold text-[#b51822] uppercase tracking-widest">Textiles</span>
-                  <h3 class="font-bold text-[16px] text-[#181c1e] mb-2 font-['Plus_Jakarta_Sans']">Traditional Dhaka Textile</h3>
-                  <p class="text-[22px] font-bold text-[#181c1e] font-['Plus_Jakarta_Sans']">Rs. 12,400</p>
-                </div>
-              </div>
-            </div>
+            @endforeach
           </div>
         </div>
       </div>
     </section>
+    @endif
 
   </main>
 
-  <!-- Client-Side Filter, Sort and Carousel Script -->
+  <!-- Countdown + Sort Auto-Submit + Carousel Script -->
   <script>
       document.addEventListener('DOMContentLoaded', function() {
-          // ==================== FILTER LOGIC ====================
-          const categoryPills = document.querySelectorAll('.filter-pill');
-          const productCards = document.querySelectorAll('.product-card');
-          const gridContainer = document.getElementById('product-grid');
 
-          function filterProducts(category) {
-              productCards.forEach(card => {
-                  const cardCategory = card.getAttribute('data-category');
-                  if (category === 'all' || cardCategory === category) {
-                      card.style.display = '';
-                  } else {
-                      card.style.display = 'none';
-                  }
-              });
+          // ==================== REAL COUNTDOWN TO MIDNIGHT ====================
+          function updateCountdown() {
+              const now = new Date();
+              const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+              const diff = Math.max(0, (endOfDay - now) / 1000);
+
+              const hours = Math.floor(diff / 3600);
+              const mins = Math.floor((diff % 3600) / 60);
+              const secs = Math.floor(diff % 60);
+
+              document.getElementById('countdown-hours').textContent = String(hours).padStart(2, '0');
+              document.getElementById('countdown-mins').textContent = String(mins).padStart(2, '0');
+              document.getElementById('countdown-secs').textContent = String(secs).padStart(2, '0');
           }
+          updateCountdown();
+          setInterval(updateCountdown, 1000);
 
-          categoryPills.forEach(pill => {
-              pill.addEventListener('click', function() {
-                  categoryPills.forEach(p => p.classList.remove('active'));
-                  pill.classList.add('active');
-                  filterProducts(pill.getAttribute('data-category'));
-              });
-          });
-
-          // ==================== SORT LOGIC ====================
+          // ==================== SORT AUTO-SUBMIT ====================
+          const dealsForm = document.getElementById('deals-filter-form');
           const sortSelect = document.getElementById('sort-select');
-
-          function sortProducts(criteria) {
-              const cardsArray = Array.from(productCards);
-              
-              cardsArray.sort((a, b) => {
-                  if (criteria === 'discount') {
-                      return parseInt(b.getAttribute('data-discount')) - parseInt(a.getAttribute('data-discount'));
-                  } else if (criteria === 'price-asc') {
-                      return parseFloat(a.getAttribute('data-price')) - parseFloat(b.getAttribute('data-price'));
-                  } else if (criteria === 'price-desc') {
-                      return parseFloat(b.getAttribute('data-price')) - parseFloat(a.getAttribute('data-price'));
-                  }
-                  return 0;
-              });
-
-              // Clear and re-append sorted items (non-destructive)
-              cardsArray.forEach(card => gridContainer.appendChild(card));
+          if (sortSelect && dealsForm) {
+              sortSelect.addEventListener('change', () => dealsForm.submit());
           }
-
-          sortSelect.addEventListener('change', function() {
-              sortProducts(sortSelect.value);
-          });
-
-          // Sort products by discount on load
-          sortProducts('discount');
 
           // ==================== CAROUSEL LOGIC ====================
           // 1. Featured Star Deals Carousel (1 slide at a time)
@@ -453,34 +330,23 @@
           if (featuredCarousel && featuredPrev && featuredNext) {
               const cards = featuredCarousel.querySelectorAll('.featured-card');
               let currentIndex = 0;
-              
+
               function updateFeaturedCarousel() {
                   if (cards.length === 0) return;
                   const cardWidth = cards[0].getBoundingClientRect().width;
                   featuredCarousel.style.transform = `translateX(-${currentIndex * (cardWidth + 24)}px)`;
               }
-              
+
               featuredNext.addEventListener('click', () => {
-                  if (currentIndex < cards.length - 1) {
-                      currentIndex++;
-                      updateFeaturedCarousel();
-                  } else {
-                      currentIndex = 0; // Wrap around
-                      updateFeaturedCarousel();
-                  }
-              });
-              
-              featuredPrev.addEventListener('click', () => {
-                  if (currentIndex > 0) {
-                      currentIndex--;
-                      updateFeaturedCarousel();
-                  } else {
-                      currentIndex = cards.length - 1; // Wrap around to end
-                      updateFeaturedCarousel();
-                  }
+                  currentIndex = currentIndex < cards.length - 1 ? currentIndex + 1 : 0;
+                  updateFeaturedCarousel();
               });
 
-              // Handle resize
+              featuredPrev.addEventListener('click', () => {
+                  currentIndex = currentIndex > 0 ? currentIndex - 1 : cards.length - 1;
+                  updateFeaturedCarousel();
+              });
+
               window.addEventListener('resize', updateFeaturedCarousel);
           }
 
@@ -491,40 +357,28 @@
           if (trendingCarousel && trendingPrev && trendingNext) {
               const cards = trendingCarousel.querySelectorAll('.trending-card');
               let currentIndex = 0;
-              
+
+              function visibleCount() {
+                  if (window.innerWidth >= 1024) return 4;
+                  if (window.innerWidth >= 768) return 2;
+                  return 1;
+              }
+
               function updateTrendingCarousel() {
                   if (cards.length === 0) return;
                   const cardWidth = cards[0].getBoundingClientRect().width;
                   trendingCarousel.style.transform = `translateX(-${currentIndex * (cardWidth + 24)}px)`;
               }
-              
+
               trendingNext.addEventListener('click', () => {
-                  // Determine how many cards are visible
-                  let visibleCount = 1;
-                  if (window.innerWidth >= 1024) visibleCount = 4;
-                  else if (window.innerWidth >= 768) visibleCount = 2;
-                  
-                  const maxIndex = cards.length - visibleCount;
-                  if (currentIndex < maxIndex) {
-                      currentIndex++;
-                  } else {
-                      currentIndex = 0; // Wrap around
-                      updateTrendingCarousel();
-                  }
+                  const maxIndex = Math.max(0, cards.length - visibleCount());
+                  currentIndex = currentIndex < maxIndex ? currentIndex + 1 : 0;
                   updateTrendingCarousel();
               });
-              
+
               trendingPrev.addEventListener('click', () => {
-                  let visibleCount = 1;
-                  if (window.innerWidth >= 1024) visibleCount = 4;
-                  else if (window.innerWidth >= 768) visibleCount = 2;
-                  
-                  const maxIndex = cards.length - visibleCount;
-                  if (currentIndex > 0) {
-                      currentIndex--;
-                  } else {
-                      currentIndex = maxIndex > 0 ? maxIndex : 0; // Wrap around to end
-                  }
+                  const maxIndex = Math.max(0, cards.length - visibleCount());
+                  currentIndex = currentIndex > 0 ? currentIndex - 1 : maxIndex;
                   updateTrendingCarousel();
               });
 
