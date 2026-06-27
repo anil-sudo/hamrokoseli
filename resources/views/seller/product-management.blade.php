@@ -154,9 +154,9 @@
                                     @php
                                         $resolvedDiscount = $product->resolvedDiscountPrice();
                                     @endphp
-                                    <p class="font-semibold text-(--text-dark)">Rs.{{ number_format($product->price) }}</p>
+                                    <p class="font-semibold text-(--text-dark)">Rs.{{ number_format($resolvedDiscount) }}</p>
                                     @if($resolvedDiscount)
-                                        <p class="text-xs text-(--text-color)/50 line-through">Rs.{{ number_format($resolvedDiscount) }}</p>
+                                        <p class="text-xs text-(--text-color)/50 line-through">Rs.{{ number_format($product->price) }}</p>
                                     @endif
                                 </td>
 

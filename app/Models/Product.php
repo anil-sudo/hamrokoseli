@@ -103,32 +103,59 @@ class Product extends Model
 
     /**
      * Returns the effective selling price (discount price if set, otherwise base price).
-     * For variant products, uses the minimum variant price.
+     * For variant products, returns the lowest final variant price.
      */
     public function effectivePrice(): float
     {
         if ($this->variants->isNotEmpty()) {
-            return $this->variants->min('price') ?? $this->price;
+            return (float) $this->variants
+                ->map(fn ($variant) => (! is_null($variant->discount_price) && $variant->discount_price > 0)
+                    ? $variant->discount_price
+                    : $variant->price)
+                ->min();
         }
 
-        return $this->discount_price ?? $this->price;
+        return (! is_null($this->discount_price) && $this->discount_price > 0)
+            ? (float) $this->discount_price
+            : (float) $this->price;
+    }
+
+    public function originalPrice(): float
+    {
+        if ($this->variants->isNotEmpty()) {
+            $discountedVariant = $this->variants
+                ->filter(fn ($variant) => ! is_null($variant->discount_price) && $variant->discount_price > 0)
+                ->sortBy('discount_price')
+                ->first();
+
+            if ($discountedVariant) {
+                return (float) $discountedVariant->price;
+            }
+
+            return (float) $this->variants->min('price');
+        }
+
+        return (float) $this->price;
     }
 
     /**
      * Returns the resolved discount price.
-     * For variant products, returns the minimum discount_price across all variants (if any).
+     * For variant products, returns the lowest non-zero discount_price across all variants.
      * For normal products, returns the product-level discount_price.
      */
     public function resolvedDiscountPrice(): ?float
     {
         if ($this->variants->isNotEmpty()) {
-            // Get the cheapest variant's discount_price
-            $minVariant = $this->variants->sortBy('price')->first();
+            $discountPrice = $this->variants
+                ->filter(fn ($variant) => ! is_null($variant->discount_price) && $variant->discount_price > 0)
+                ->min('discount_price');
 
-            return $minVariant?->discount_price ? (float) $minVariant->discount_price : null;
+            return $discountPrice ? (float) $discountPrice : null;
         }
 
-        return $this->discount_price ? (float) $this->discount_price : null;
+        return (! is_null($this->discount_price) && $this->discount_price > 0)
+            ? (float) $this->discount_price
+            : null;
     }
 
     /**
@@ -137,10 +164,15 @@ class Product extends Model
     public function hasDiscount(): bool
     {
         if ($this->variants->isNotEmpty()) {
-            return $this->variants->contains(fn ($v) => ! is_null($v->discount_price) && $v->discount_price > 0);
+            return $this->variants->contains(fn ($variant) => ! is_null($variant->discount_price)
+                && $variant->discount_price > 0
+                && $variant->discount_price < $variant->price
+            );
         }
 
-        return ! is_null($this->discount_price) && $this->discount_price > 0;
+        return ! is_null($this->discount_price)
+            && $this->discount_price > 0
+            && $this->discount_price < $this->price;
     }
 
     public function isActive(): bool
@@ -170,5 +202,21 @@ class Product extends Model
         return $image
             ? asset('storage/'.$image->path)
             : asset('images/placeholder.png');
+    }
+
+    public function getImageAttribute(?string $value): ?string
+    {
+        if (filled($value)) {
+            return $value;
+        }
+
+        return $this->images->firstWhere('is_primary', true)?->path
+            ?? $this->images->first()?->path;
+    }
+
+    public function getPrimaryImagePathAttribute(): ?string
+    {
+        return $this->images->firstWhere('is_primary', true)?->path
+            ?? $this->images->first()?->path;
     }
 }

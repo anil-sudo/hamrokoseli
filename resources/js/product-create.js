@@ -75,6 +75,21 @@ function validateForm() {
             showError(stock, "Stock quantity cannot be negative");
             isValid = false;
         } else clearError(stock);
+
+        const discountedPrice = document.getElementById('discounted_price');
+        if (discountedPrice && discountedPrice.value && discountedPrice.value !== '0') {
+            const discVal = parseFloat(discountedPrice.value);
+            const baseVal = parseFloat(basePrice.value || 0);
+            if (discVal < 0) {
+                showError(discountedPrice, "Discount cannot be negative");
+                isValid = false;
+            } else if (discVal >= baseVal) {
+                showError(discountedPrice, "Discount must be less than the base price");
+                isValid = false;
+            } else {
+                clearError(discountedPrice);
+            }
+        }
     }
 
     return isValid;
@@ -183,7 +198,7 @@ function addVariant() {
                 class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
             <input type="number" name="variants[${variantIndex}][price]" placeholder="Price" min="0" step="1"
                 class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-            <input type="number" name="variants[${variantIndex}][discounted_price]" placeholder="Discount Price" min="0" step="1"
+            <input type="number" name="variants[${variantIndex}][discounted_price]" placeholder="Discount (Rs.)" min="0" step="1"
                 class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
             <input type="number" name="variants[${variantIndex}][stock]" placeholder="Stock" min="0" value="0"
                 class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">

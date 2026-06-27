@@ -68,12 +68,23 @@ function validateForm() {
         isValid = false;
     } else clearError(basePrice);
 
-    // Discount Price
+    // Discount Amount
     const discPrice = document.getElementById('discounted_price');
-    if (parseFloat(discPrice.value) > parseFloat(basePrice.value)) {
-        showError(discPrice, "Discount price cannot be higher than base price");
-        isValid = false;
-    } else clearError(discPrice);
+    if (discPrice && discPrice.value && discPrice.value !== '0') {
+        const discVal = parseFloat(discPrice.value);
+        const baseVal = parseFloat(basePrice.value || 0);
+        if (discVal < 0) {
+            showError(discPrice, "Discount cannot be negative");
+            isValid = false;
+        } else if (discVal >= baseVal) {
+            showError(discPrice, "Discount must be less than the base price");
+            isValid = false;
+        } else {
+            clearError(discPrice);
+        }
+    } else {
+        clearError(discPrice);
+    }
 
     // SKU
     const sku = document.getElementById('sku');
@@ -197,6 +208,14 @@ function handleFiles(files) {
         uploadedFiles.push(file);
         renderImagePreview(file);
     });
+
+    syncFileInput();
+}
+
+function syncFileInput() {
+    const dataTransfer = new DataTransfer();
+    uploadedFiles.forEach(file => dataTransfer.items.add(file));
+    mediaInput.files = dataTransfer.files;
 }
 
 function renderImagePreview(file) {
@@ -221,6 +240,7 @@ function removeImage(btn) {
     const index = Array.from(previewGrid.children).indexOf(btn.parentElement);
     uploadedFiles.splice(index, 1);
     btn.parentElement.remove();
+    syncFileInput();
 }
 
 

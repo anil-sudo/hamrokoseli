@@ -873,26 +873,30 @@ document.addEventListener('DOMContentLoaded', () => {
         if (modalReviewsCount) modalReviewsCount.textContent = productData.reviews || productData.reviews_count || '0';
 
         // Pricing
-        const price = parseFloat(productData.price || 0);
-        const originalPrice = parseFloat(productData.originalPrice || productData.original_price || price);
-        const hasDiscount = productData.discount === 'true' || (productData.discount_price && productData.discount_price < productData.price) || (originalPrice > price);
+        const price = Number(productData.price ?? productData.effective_price ?? 0);
+        const originalPrice = Number(productData.originalPrice ?? productData.original_price ?? productData.price ?? price);
+        const discountPrice = Number(productData.discount_price ?? productData.discountPrice ?? 0);
+        const hasDiscount = productData.discount === 'true'
+            || (!isNaN(discountPrice) && discountPrice > 0 && discountPrice < originalPrice)
+            || originalPrice > price;
+
+        const displayPrice = Number.isFinite(price) ? price : 0;
+        const displayOriginalPrice = Number.isFinite(originalPrice) ? originalPrice : displayPrice;
+        const savings = Math.max(0, displayOriginalPrice - displayPrice);
+        const discountPercentage = displayOriginalPrice > 0 ? Math.round((savings / displayOriginalPrice) * 100) : 0;
         
-        if (modalProductPrice) modalProductPrice.textContent = `Rs. ${price.toLocaleString()}`;
+        if (modalProductPrice) modalProductPrice.textContent = `Rs. ${displayPrice.toLocaleString()}`;
         
-        if (hasDiscount && modalProductOriginalPrice) {
-            modalProductOriginalPrice.textContent = `Rs. ${originalPrice.toLocaleString()}`;
+        if (hasDiscount && modalProductOriginalPrice && savings > 0) {
+            modalProductOriginalPrice.textContent = `Rs. ${displayOriginalPrice.toLocaleString()}`;
             modalProductOriginalPrice.classList.remove('hidden');
-            
-            const savings = originalPrice - price;
-            const discountPercentage = Math.round((savings / originalPrice) * 100);
             
             if (modalDiscountTag) {
                 modalDiscountTag.textContent = `-${discountPercentage}% OFF`;
                 modalDiscountTag.classList.remove('hidden');
             }
             if (modalSavingsTag) {
-                modalSavingsTag.textContent = `Save Rs. ${savings.toLocaleString()}`;
-                modalSavingsTag.classList.remove('hidden');
+                modalSavingsTag.classList.add('hidden');
             }
         } else {
             if (modalProductOriginalPrice) modalProductOriginalPrice.classList.add('hidden');
@@ -974,6 +978,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 price: btn.getAttribute('data-price'),
                 originalPrice: btn.getAttribute('data-original-price'),
                 discount: btn.getAttribute('data-discount'),
+                discount_price: btn.getAttribute('data-discount-price'),
                 image: btn.getAttribute('data-image'),
                 category: btn.getAttribute('data-category'),
                 vendor: btn.getAttribute('data-vendor'),

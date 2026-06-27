@@ -24,19 +24,31 @@ class SellerController extends Controller
         ]);
         if (Auth::attempt($credentials)) {
 
+            $request->session()->regenerate();
+
             $user = Auth::user();
+            $vendor = $user->vendor;
 
-            if ($user->vendor->status === 'active') {
-                // $request->session()->regenerate();
-                return redirect()->route('dashboard');
-            } else {
+            if (! $vendor) {
+
                 Auth::logout();
-                $request->session()->invalidate();
 
-                return redirect()->intended('seller-login');
+                return redirect()
+                    ->route('seller.login')
+                    ->with('error', 'Vendor account not found.');
             }
-        }
 
+            if ($vendor->status !== 'active') {
+
+                Auth::logout();
+
+                return redirect()
+                    ->route('seller.login')
+                    ->with('error', 'Your account is pending approval.');
+            }
+
+            return redirect()->route('dashboard');
+        }
         // Use 'vendor' guard instead of default
         // if (Auth::guard('vendor')->attempt($credentials, $request->boolean('remember'))) {
         //     $user = Auth::guard('vendor')->user();
@@ -183,7 +195,7 @@ class SellerController extends Controller
         } else {
             // NORMAL MODE
             $rules['base_price'] = 'required|numeric|min:1';
-            $rules['discounted_price'] = 'nullable|numeric|min:0';
+            $rules['discounted_price'] = 'nullable|numeric|min:0|lt:base_price';
             $rules['sku'] = 'required|string|max:100|unique:products,sku';
             $rules['stock'] = 'required|integer|min:0';
         }
@@ -204,6 +216,20 @@ class SellerController extends Controller
                 ->sum(fn ($v) => (int) ($v['stock'] ?? 0));
         }
 
+        // Custom validation for variant discount amount
+        if ($isVariantMode && ! empty($validated['variants'])) {
+            foreach ($validated['variants'] as $index => $variant) {
+                if (isset($variant['discounted_price']) && $variant['discounted_price'] !== '') {
+                    $vPrice = ! empty($variant['price']) ? $variant['price'] : $productPrice;
+                    if ($variant['discounted_price'] >= $vPrice) {
+                        return back()->withErrors([
+                            "variants.{$index}.discounted_price" => 'The variant discount amount must be less than its price.',
+                        ])->withInput();
+                    }
+                }
+            }
+        }
+
         // Generate SKU for main product when using variants
         $mainSku = $validated['sku'] ?? null;
         if ($isVariantMode && empty($mainSku)) {
@@ -211,6 +237,10 @@ class SellerController extends Controller
         }
 
         // Create Product
+        $productDiscountAmount = isset($validated['discounted_price'])
+            ? floatval($validated['discounted_price'])
+            : 0;
+
         $product = Product::create([
             'vendor_id' => auth()->user()->vendor->id,
             'category_id' => $validated['category'],
@@ -222,8 +252,9 @@ class SellerController extends Controller
                 ? $this->filterSpecs($validated['specifications'])
                 : null,
             'price' => $productPrice,
-            'discount_price' => isset($validated['discounted_price']) && $validated['discounted_price'] > 0
-                ? $validated['discounted_price']
+            'discount_price' => $productDiscountAmount > 0
+                && $productDiscountAmount < $productPrice
+                ? ($productPrice - $productDiscountAmount)
                 : null,
             'stock' => $productStock,
             'sku' => $mainSku,
@@ -237,13 +268,21 @@ class SellerController extends Controller
                     continue;
                 }
 
+                $vPrice = ! empty($variant['price']) ? floatval($variant['price']) : $productPrice;
+                $vDiscountAmount = isset($variant['discounted_price']) && $variant['discounted_price'] !== ''
+                    ? floatval($variant['discounted_price'])
+                    : 0;
+
                 ProductVariant::create([
                     'product_id' => $product->id,
                     'sku' => $variant['sku'],
                     'size' => $variant['size'] ?? null,
                     'color' => $variant['color'] ?? null,
-                    'price' => ! empty($variant['price']) ? $variant['price'] : $productPrice,
-                    'discount_price' => ! empty($variant['discounted_price']) ? $variant['discounted_price'] : null,
+                    'price' => $vPrice,
+                    'discount_price' => $vDiscountAmount > 0
+                        && $vDiscountAmount < $vPrice
+                        ? ($vPrice - $vDiscountAmount)
+                        : null,
                     'stock' => $variant['stock'] ?? 0,
                     'status' => 'active',
                 ]);
