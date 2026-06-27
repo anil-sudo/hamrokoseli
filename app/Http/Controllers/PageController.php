@@ -321,4 +321,30 @@ class PageController extends Controller
     {
         return view('wishlist');
     }
+
+    public function cart()
+    {
+        return view('cart');
+    }
+
+    public function viewProduct($id)
+    {
+        $product = Product::with(['category', 'vendor', 'images'])->findOrFail($id);
+
+        // Add computed properties for easy JSON serialization
+        $product->effective_price = method_exists($product, 'effectivePrice') ? $product->effectivePrice() : $product->price;
+        $product->primary_image_url = method_exists($product, 'primaryImageUrl') ? $product->primaryImageUrl() : asset($product->image);
+        $product->category_name = $product->category?->cat_name ?? $product->category?->name ?? 'Crafts';
+        $product->vendor_name = $product->vendor?->vendor_name ?? $product->vendor?->name ?? 'Local Artisan';
+
+        $products = Product::with(['category', 'vendor', 'images'])
+            ->where('status', 'active')
+            ->latest()
+            ->get();
+
+        return view('shop', [
+            'products' => $products,
+            'activeProduct' => $product,
+        ]);
+    }
 }

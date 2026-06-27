@@ -35,7 +35,15 @@
                             <span class="text-2xl font-bold text-[#1a3c34]">Rs. 4,500</span>
                         </div>
                         <a href="#"
-                            class="w-full bg-[#C65A3A] hover:bg-[#b04a2c] text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2 transition-colors">
+                            class="add-to-cart-btn w-full bg-[#C65A3A] hover:bg-[#b04a2c] text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2 transition-colors"
+                            data-product-id="new-arrival-1"
+                            data-product-name="Patan Bronze Bowl"
+                            data-product-price="4500"
+                            data-product-image="/images/pot.png"
+                            data-product-desc="Hand-hammered ritual vessel by local metalsmiths."
+                            data-product-category="Metalware"
+                            data-product-tag="Authentic"
+                            data-product-specs="Type: Bronze Alloy | Origin: Patan Industrial Estate">
                             <span> <i class="fas fa-shopping-cart"></i>
                             </span> Add to Cart
                         </a>
@@ -62,7 +70,15 @@
                             <span class="text-2xl font-bold text-[#1a3c34]">Rs. 3,200</span>
                         </div>
                         <a href="#"
-                            class="w-full bg-[#C65A3A] hover:bg-[#b04a2c] text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2 transition-colors">
+                            class="add-to-cart-btn w-full bg-[#C65A3A] hover:bg-[#b04a2c] text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2 transition-colors"
+                            data-product-id="new-arrival-2"
+                            data-product-name="Yak Wool Scarf"
+                            data-product-price="3200"
+                            data-product-image="/images/Sweaters.png"
+                            data-product-desc="100% pure Himalayan wool, naturally dyed."
+                            data-product-category="Textiles"
+                            data-product-tag="Artisan Made"
+                            data-product-specs="Material: 100% Yak Wool | Style: Hand-woven Pattern">
                             <span> <i class="fas fa-shopping-cart"></i>
                             </span> Add to Cart
                         </a>
@@ -89,7 +105,15 @@
                             <span class="text-2xl font-bold text-[#1a3c34]">Rs. 1,800</span>
                         </div>
                         <a href="#"
-                            class="w-full bg-[#C65A3A] hover:bg-[#b04a2c] text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2 transition-colors">
+                            class="add-to-cart-btn w-full bg-[#C65A3A] hover:bg-[#b04a2c] text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2 transition-colors"
+                            data-product-id="new-arrival-3"
+                            data-product-name="Traditional Dhaka Topi"
+                            data-product-price="1800"
+                            data-product-image="/images/topi.png"
+                            data-product-desc="Hand-woven patterns from the Palpa region."
+                            data-product-category="Textiles"
+                            data-product-tag="Dhaka"
+                            data-product-specs="Pattern: Palpali Dhaka | Material: Pure Cotton">
                             <span> <i class="fas fa-shopping-cart"></i>
                             </span> Add to Cart
                         </a>
@@ -116,7 +140,15 @@
                             <span class="text-2xl font-bold text-[#1a3c34]">Rs. 5,600</span>
                         </div>
                         <a href="#"
-                            class="w-full bg-[#C65A3A] hover:bg-[#b04a2c] text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2 transition-colors">
+                            class="add-to-cart-btn w-full bg-[#C65A3A] hover:bg-[#b04a2c] text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2 transition-colors"
+                            data-product-id="new-arrival-4"
+                            data-product-name="Wild Hemp Backpack"
+                            data-product-price="5600"
+                            data-product-image="/images/backpack.png"
+                            data-product-desc="Durable, sustainable, and 100% biodegradable."
+                            data-product-category="Accessories"
+                            data-product-tag="Eco-friendly"
+                            data-product-specs="Material: 100% Himalayan Hemp | Pockets: 3 Utility Compartments">
                             <span> <i class="fas fa-shopping-cart"></i>
                             </span> Add to Cart
                         </a>

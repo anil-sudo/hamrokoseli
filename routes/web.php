@@ -52,19 +52,32 @@ Route::get('/featured-products', [PageController::class, 'featured_products'])->
 Route::get('/top-sellers', [PageController::class, 'top_sellers'])->name('top-sellers');
 Route::get('/about-us', [PageController::class, 'about_us'])->name('about-us');
 Route::get('/wishlist', [PageController::class, 'wishlist'])->name('wishlist');
+Route::get('/cart', [PageController::class, 'cart'])->name('cart');
+Route::get('/viewdetails/{id}', [PageController::class, 'viewProduct'])->name('viewdetails');
 
 // ─── User Auth routes (guest on web guard) ────────────────────────────────────
 Route::middleware('web')->group(function () {
-    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+    Route::get('/userlogin', [AuthController::class, 'showLogin'])->name('userlogin');
+    Route::post('/userlogin', [AuthController::class, 'login']);
+
+    Route::get('/userregister', function () {
+        return view('welcome');
+    })->name('userregister');
+    Route::post('/userregister', [UserRegisterController::class, 'register']);
+
+    // Fallback/compatibility routes
+    Route::get('/login', function () {
+        return redirect()->route('userlogin');
+    })->name('login');
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [UserRegisterController::class, 'register'])->name('register');
+
     Route::get('/vendor/register', [VendorRegisterController::class, 'show'])->name('vendor.register');
     Route::post('/vendor/register', [VendorRegisterController::class, 'register'])->name('vendor.register.post');
 });
 
 Route::get('test-email', [TestEmailControlelr::class, 'index'])->name('test.email');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-Route::redirect('/login.php', '/login');
 
 Route::get('/user-dashboard', [UserController::class, 'dashboard'])->name('Userdashboard');
 Route::get('/user-orders', [UserController::class, 'orders'])->name('User-orders');
@@ -72,3 +85,4 @@ Route::get('/user-order-details', [UserController::class, 'orderDetail'])->name(
 Route::get('/return-product', [UserController::class, 'returnProduct'])->name('return-product');
 Route::get('/user-profile', [UserController::class, 'userProfile'])->name('user-profile');
 Route::get('/user-notification', [UserController::class, 'userNotification'])->name('user-notification');
+Route::redirect('/login.php', '/userlogin');

@@ -1,6 +1,6 @@
 //
 import './seller-layout';
-(function () {
+document.addEventListener('DOMContentLoaded', () => {
     const hamburger     = document.getElementById('hamburger-btn');
     const drawer        = document.getElementById('mobile-drawer');
     const overlay       = document.getElementById('drawer-overlay');
@@ -63,9 +63,38 @@ import './seller-layout';
     const modalShowRegisterBtn = document.getElementById('modal-show-register');
     const modalShowLoginBtn = document.getElementById('modal-show-login');
 
+    // Keep track of the original page URL before showing the modal
+    let originalUrl = window.location.pathname + window.location.search;
+    if (originalUrl === '/userlogin' || originalUrl === '/userregister') {
+        originalUrl = '/';
+    }
+
+    // Helper: Update Browser Address Bar URL State
+    function updateUrlState(view) {
+        const path = view === 'register' ? '/userregister' : '/userlogin';
+        if (window.location.pathname !== path) {
+            history.pushState({ modal: view }, '', path);
+        }
+    }
+
+    // Helper: Restore URL State to Original
+    function restoreUrlState() {
+        if (window.location.pathname === '/userlogin' || window.location.pathname === '/userregister') {
+            history.pushState({ modal: null }, '', originalUrl);
+        }
+    }
+
     function openLoginModal(e, view = 'login') {
         if (e) e.preventDefault();
         closeDrawer(); // Close mobile drawer if open
+
+        // Store original URL if opening the modal for the first time
+        if (loginModal && loginModal.classList.contains('hidden')) {
+            const currentPath = window.location.pathname + window.location.search;
+            if (currentPath !== '/userlogin' && currentPath !== '/userregister') {
+                originalUrl = currentPath;
+            }
+        }
 
         if (loginModal && loginModalContainer) {
             if (view === 'register') {
@@ -73,11 +102,13 @@ import './seller-layout';
                     loginView.classList.add('hidden');
                     registerView.classList.remove('hidden');
                 }
+                updateUrlState('register');
             } else {
                 if (loginView && registerView) {
                     loginView.classList.remove('hidden');
                     registerView.classList.add('hidden');
                 }
+                updateUrlState('login');
             }
 
             loginModal.classList.remove('hidden');
@@ -97,6 +128,8 @@ import './seller-layout';
 
     function closeLoginModal() {
         if (loginModal && loginModalContainer) {
+            restoreUrlState();
+
             loginModal.classList.remove('opacity-100');
             loginModal.classList.add('opacity-0');
             loginModalContainer.classList.remove('scale-100', 'opacity-100');
@@ -117,6 +150,10 @@ import './seller-layout';
         }
     }
 
+    // Export functions to window object
+    window.openLoginModal = openLoginModal;
+    window.closeLoginModal = closeLoginModal;
+
     if (desktopSigninBtn) desktopSigninBtn.addEventListener('click', (e) => openLoginModal(e, 'login'));
     if (mobileSigninBtn) mobileSigninBtn.addEventListener('click', (e) => openLoginModal(e, 'login'));
     if (mobileSignupBtn) mobileSignupBtn.addEventListener('click', (e) => openLoginModal(e, 'register'));
@@ -128,6 +165,7 @@ import './seller-layout';
             e.preventDefault();
             loginView.classList.add('hidden');
             registerView.classList.remove('hidden');
+            updateUrlState('register');
         });
     }
 
@@ -137,6 +175,7 @@ import './seller-layout';
             e.preventDefault();
             registerView.classList.add('hidden');
             loginView.classList.remove('hidden');
+            updateUrlState('login');
         });
     }
 
@@ -156,65 +195,81 @@ import './seller-layout';
         }
     });
 
-    // Password visibility toggle for login modal
-    const modalTogglePassword = document.getElementById('modal-toggle-password');
-    const modalPasswordInput = document.getElementById('modal-password');
-    if (modalTogglePassword && modalPasswordInput) {
-        modalTogglePassword.addEventListener('click', function() {
-            const type = modalPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            modalPasswordInput.setAttribute('type', type);
-            const icon = modalTogglePassword.querySelector('i');
-            if (icon) {
-                if (type === 'text') {
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
-                } else {
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
-                }
+    // Browser back/forward (history state) support
+    window.addEventListener('popstate', function(e) {
+        const path = window.location.pathname;
+        if (path === '/userlogin') {
+            openLoginModal(null, 'login');
+        } else if (path === '/userregister') {
+            openLoginModal(null, 'register');
+        } else {
+            if (loginModal && !loginModal.classList.contains('hidden')) {
+                closeLoginModal();
             }
-        });
+        }
+    });
+
+    // Auto-open modal on page load if direct URL
+    const pathOnLoad = window.location.pathname;
+    if (pathOnLoad === '/userlogin') {
+        openLoginModal(null, 'login');
+    } else if (pathOnLoad === '/userregister') {
+        openLoginModal(null, 'register');
     }
 
-    // Password visibility toggle for register modal
-    const modalRegisterTogglePassword = document.getElementById('modal-register-toggle-password');
-    const modalRegisterPasswordInput = document.getElementById('modal-register-password');
-    if (modalRegisterTogglePassword && modalRegisterPasswordInput) {
-        modalRegisterTogglePassword.addEventListener('click', function() {
-            const type = modalRegisterPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            modalRegisterPasswordInput.setAttribute('type', type);
-            const icon = modalRegisterTogglePassword.querySelector('i');
+    // Helper for press-and-hold password toggling
+    function setupPasswordToggle(toggleBtn, passwordInput) {
+        if (!toggleBtn || !passwordInput) return;
+
+        const icon = toggleBtn.querySelector('i');
+        
+        const showPassword = (e) => {
+            if (e) e.preventDefault();
+            passwordInput.type = 'text';
             if (icon) {
-                if (type === 'text') {
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
-                } else {
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
-                }
+                icon.className = 'fas fa-eye text-sm';
             }
-        });
+        };
+
+        const hidePassword = (e) => {
+            if (e) e.preventDefault();
+            passwordInput.type = 'password';
+            if (icon) {
+                icon.className = 'far fa-eye-slash text-sm';
+            }
+        };
+
+        // Mouse events
+        toggleBtn.addEventListener('mousedown', showPassword);
+        toggleBtn.addEventListener('mouseup', hidePassword);
+        toggleBtn.addEventListener('mouseleave', hidePassword);
+
+        // Touch events
+        toggleBtn.addEventListener('touchstart', showPassword);
+        toggleBtn.addEventListener('touchend', hidePassword);
+        toggleBtn.addEventListener('touchcancel', hidePassword);
+        
+        // Prevent click default
+        toggleBtn.addEventListener('click', (e) => e.preventDefault());
     }
 
-    // Confirm password visibility toggle for register modal
-    const modalRegisterTogglePasswordConfirm = document.getElementById('modal-register-toggle-password-confirm');
-    const modalRegisterPasswordConfirmInput = document.getElementById('modal-register-password_confirmation');
-    if (modalRegisterTogglePasswordConfirm && modalRegisterPasswordConfirmInput) {
-        modalRegisterTogglePasswordConfirm.addEventListener('click', function() {
-            const type = modalRegisterPasswordConfirmInput.getAttribute('type') === 'password' ? 'text' : 'password';
-            modalRegisterPasswordConfirmInput.setAttribute('type', type);
-            const icon = modalRegisterTogglePasswordConfirm.querySelector('i');
-            if (icon) {
-                if (type === 'text') {
-                    icon.classList.remove('fa-eye-slash');
-                    icon.classList.add('fa-eye');
-                } else {
-                    icon.classList.remove('fa-eye');
-                    icon.classList.add('fa-eye-slash');
-                }
-            }
-        });
-    }
+    // Password visibility toggles for login modal
+    setupPasswordToggle(
+        document.getElementById('modal-toggle-password'),
+        document.getElementById('modal-password')
+    );
+
+    // Password visibility toggles for register modal
+    setupPasswordToggle(
+        document.getElementById('modal-register-toggle-password'),
+        document.getElementById('modal-register-password')
+    );
+
+    // Confirm password visibility toggles for register modal
+    setupPasswordToggle(
+        document.getElementById('modal-register-toggle-password-confirm'),
+        document.getElementById('modal-register-password_confirmation')
+    );
 
     // Phone format filter for register modal
     const modalRegisterPhoneInput = document.getElementById('modal-register-phone');
@@ -463,7 +518,16 @@ import './seller-layout';
             const addCartBtn = clone.querySelector('.wishlist-add-cart-btn');
             if (addCartBtn) {
                 addCartBtn.addEventListener('click', function() {
-                    showToast(`${item.name} added to cart!`, 'success');
+                    addToCart({
+                        id: item.id,
+                        name: item.name,
+                        price: item.price,
+                        image: item.image,
+                        desc: item.desc,
+                        category: item.category,
+                        tag: item.tag,
+                        specs: item.specs || ''
+                    }, 1);
                 });
             }
             
@@ -473,9 +537,582 @@ import './seller-layout';
         wishlistGridContainer.appendChild(grid);
     }
 
+    // ==================== CART FEATURE LOGIC ====================
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const cartItemsContainer = document.getElementById('cart-items-container');
+
+    // Update Header Badge Count
+    function updateCartBadge() {
+        const badge = document.getElementById('cart-badge');
+        const headerIcon = document.getElementById('cart-header-icon');
+        if (badge) {
+            const count = cart.reduce((sum, item) => sum + parseInt(item.qty || 1), 0);
+            badge.textContent = count;
+            if (count > 0) {
+                badge.classList.remove('hidden');
+                if (headerIcon) {
+                    headerIcon.classList.add('text-amber-400');
+                }
+            } else {
+                badge.classList.add('hidden');
+                if (headerIcon) {
+                    headerIcon.classList.remove('text-amber-400');
+                }
+            }
+        }
+    }
+
+    // Add to cart
+    function addToCart(productData, qty = 1) {
+        qty = parseInt(qty) || 1;
+        const index = cart.findIndex(item => String(item.id) === String(productData.id));
+        if (index > -1) {
+            cart[index].qty = parseInt(cart[index].qty) + qty;
+            showToast(`Updated quantity of ${productData.name} in cart!`, 'success');
+        } else {
+            cart.push({
+                id: productData.id,
+                name: productData.name,
+                price: productData.price,
+                image: productData.image,
+                desc: productData.desc || '',
+                category: productData.category || '',
+                tag: productData.tag || '',
+                specs: productData.specs || '',
+                qty: qty
+            });
+            showToast(`${productData.name} added to cart!`, 'success');
+        }
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartBadge();
+        
+        if (cartItemsContainer) {
+            renderCartPage();
+        }
+    }
+
+    // Remove from cart
+    function removeFromCart(productId) {
+        const index = cart.findIndex(item => String(item.id) === String(productId));
+        if (index > -1) {
+            const name = cart[index].name;
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            showToast(`${name} removed from cart.`, 'info');
+            updateCartBadge();
+            if (cartItemsContainer) {
+                renderCartPage();
+            }
+        }
+    }
+
+    // Update quantity
+    function updateCartQuantity(productId, qty) {
+        const index = cart.findIndex(item => String(item.id) === String(productId));
+        if (index > -1) {
+            cart[index].qty = Math.max(1, parseInt(qty) || 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartBadge();
+            if (cartItemsContainer) {
+                renderCartPage();
+            }
+        }
+    }
+
+    // Move to wishlist
+    function moveCartItemToWishlist(item) {
+        // Add to wishlist if not already there
+        const wishlistIndex = wishlist.findIndex(w => String(w.id) === String(item.id));
+        if (wishlistIndex === -1) {
+            wishlist.push({
+                id: item.id,
+                name: item.name,
+                price: item.price,
+                image: item.image,
+                desc: item.desc || '',
+                category: item.category || '',
+                tag: item.tag || ''
+            });
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+        }
+        showToast(`${item.name} moved to wishlist!`, 'success');
+        
+        // Remove from cart
+        const cartIndex = cart.findIndex(c => String(c.id) === String(item.id));
+        if (cartIndex > -1) {
+            cart.splice(cartIndex, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+        
+        updateCartBadge();
+        updateWishlistBadge();
+        syncWishlistIcons();
+        if (cartItemsContainer) {
+            renderCartPage();
+        }
+    }
+
+    // Export functions globally
+    window.addToCart = addToCart;
+    window.updateCartBadge = updateCartBadge;
+    window.removeFromCart = removeFromCart;
+    window.updateCartQuantity = updateCartQuantity;
+    window.moveCartItemToWishlist = moveCartItemToWishlist;
+
+    // Attach global click listener for any elements with .add-to-cart-btn
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('.add-to-cart-btn');
+        if (btn) {
+            e.preventDefault();
+            e.stopPropagation();
+            const productData = {
+                id: btn.getAttribute('data-product-id'),
+                name: btn.getAttribute('data-product-name'),
+                price: btn.getAttribute('data-product-price'),
+                image: btn.getAttribute('data-product-image'),
+                desc: btn.getAttribute('data-product-desc') || '',
+                category: btn.getAttribute('data-product-category') || '',
+                tag: btn.getAttribute('data-product-tag') || '',
+                specs: btn.getAttribute('data-product-specs') || ''
+            };
+            const qty = parseInt(btn.getAttribute('data-product-qty') || '1');
+            addToCart(productData, qty);
+        }
+    });
+
+    // Render Cart Page
+    function renderCartPage() {
+        if (!cartItemsContainer) return;
+        
+        cartItemsContainer.innerHTML = '';
+        
+        if (cart.length === 0) {
+            const emptyTemplate = document.getElementById('cart-empty-template');
+            if (emptyTemplate) {
+                const clone = emptyTemplate.content.cloneNode(true);
+                cartItemsContainer.appendChild(clone);
+            }
+            // Reset Summary panel
+            const subtotalEl = document.getElementById('cart-subtotal');
+            const totalEl = document.getElementById('cart-total');
+            const taxEl = document.getElementById('cart-tax');
+            if (subtotalEl) subtotalEl.textContent = 'रू 0';
+            if (taxEl) taxEl.textContent = 'रू 0';
+            if (totalEl) totalEl.textContent = 'रू 0';
+            return;
+        }
+        
+        const cardTemplate = document.getElementById('cart-item-template');
+        if (!cardTemplate) return;
+        
+        let subtotal = 0;
+        
+        cart.forEach(item => {
+            const clone = cardTemplate.content.cloneNode(true);
+            
+            // Image
+            const img = clone.querySelector('.cart-item-img');
+            if (img) {
+                img.src = item.image;
+                img.alt = item.name;
+            }
+            
+            // Tag
+            const tagSpan = clone.querySelector('.cart-item-tag');
+            const tagText = clone.querySelector('.cart-item-tag-text');
+            if (tagSpan) {
+                if (item.tag) {
+                    if (tagText) tagText.textContent = item.tag;
+                    tagSpan.classList.remove('hidden');
+                } else {
+                    tagSpan.classList.add('hidden');
+                }
+            }
+            
+            // Title
+            const title = clone.querySelector('.cart-item-title');
+            if (title) title.textContent = item.name;
+            
+            // Specs / Description
+            const specs = clone.querySelector('.cart-item-specs');
+            if (specs) {
+                specs.textContent = item.specs || (item.desc ? item.desc : '');
+            }
+            
+            // Price
+            const price = clone.querySelector('.cart-item-price');
+            if (price) {
+                const formattedPrice = parseInt(item.price).toLocaleString();
+                price.textContent = `रू ${formattedPrice}`;
+            }
+            
+            // Quantity Input value
+            const qtyVal = clone.querySelector('.qty-val');
+            if (qtyVal) {
+                qtyVal.textContent = item.qty;
+            }
+            
+            // Quantity decrement
+            const qtyMinus = clone.querySelector('.qty-minus');
+            if (qtyMinus) {
+                qtyMinus.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (item.qty > 1) {
+                        updateCartQuantity(item.id, item.qty - 1);
+                    }
+                });
+            }
+            
+            // Quantity increment
+            const qtyPlus = clone.querySelector('.qty-plus');
+            if (qtyPlus) {
+                qtyPlus.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    updateCartQuantity(item.id, item.qty + 1);
+                });
+            }
+            
+            // Move to wishlist
+            const wishlistBtn = clone.querySelector('.cart-move-wishlist');
+            if (wishlistBtn) {
+                wishlistBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    moveCartItemToWishlist(item);
+                });
+            }
+            
+            // Delete button
+            const deleteBtn = clone.querySelector('.cart-delete-btn');
+            if (deleteBtn) {
+                deleteBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    removeFromCart(item.id);
+                });
+            }
+            
+            cartItemsContainer.appendChild(clone);
+            subtotal += parseInt(item.price) * parseInt(item.qty);
+        });
+        
+        // Update Order Summary
+        const tax = Math.round(subtotal * 0.0837); // Simulated taxes like in the image (1850 tax on 22100 subtotal is ~8.37%)
+        const total = subtotal + tax; // shipping is FREE
+        
+        const subtotalEl = document.getElementById('cart-subtotal');
+        const taxEl = document.getElementById('cart-tax');
+        const totalEl = document.getElementById('cart-total');
+        
+        if (subtotalEl) subtotalEl.textContent = `रू ${subtotal.toLocaleString()}`;
+        if (taxEl) taxEl.textContent = `रू ${tax.toLocaleString()}`;
+        if (totalEl) totalEl.textContent = `रू ${total.toLocaleString()}`;
+    }
+
+    // ==================== PRODUCT DETAILS MODAL GLOBAL LOGIC ====================
+    const productModal = document.getElementById('product-details-modal');
+    const productContainer = document.getElementById('product-details-container');
+    const closeProductBtn = document.getElementById('close-product-details');
+    const qtyInput = productModal ? productModal.querySelector('.qty-val-input') : null;
+
+    let originalUrlBeforeProduct = window.location.pathname + window.location.search;
+    if (originalUrlBeforeProduct.startsWith('/viewdetails/')) {
+        originalUrlBeforeProduct = '/shop'; // Default fallback
+    }
+
+    function updateProductUrlState(productId) {
+        const path = `/viewdetails/${productId}`;
+        if (window.location.pathname !== path) {
+            const currentPath = window.location.pathname + window.location.search;
+            if (!currentPath.startsWith('/viewdetails/')) {
+                originalUrlBeforeProduct = currentPath;
+            }
+            history.pushState({ productModal: productId }, '', path);
+        }
+    }
+
+    function restoreProductUrlState() {
+        if (window.location.pathname.startsWith('/viewdetails/')) {
+            history.pushState({ productModal: null }, '', originalUrlBeforeProduct);
+        }
+    }
+
+    function populateAndShowProductModal(productData) {
+        if (!productModal || !productContainer) return;
+
+        window.activeProduct = {
+            id: productData.id,
+            name: productData.name,
+            price: parseFloat(productData.price),
+            image: productData.image || productData.primary_image_url || '',
+            category: productData.category || productData.category_name || '',
+            desc: productData.desc || productData.description || '',
+            vendor: productData.vendor || productData.vendor_name || '',
+            tag: productData.tag || (productData.category === 'Metalware' ? 'Authentic' : 'Handmade')
+        };
+
+        const modalProductName = document.getElementById('modal-product-name');
+        const modalMainImage = document.getElementById('modal-main-image');
+        const modalBreadcrumbCat = document.getElementById('modal-breadcrumb-cat');
+        const modalProductDesc = document.getElementById('modal-product-desc');
+        const modalVendorName = document.getElementById('modal-vendor-name');
+        const modalReviewsCount = document.getElementById('modal-reviews-count');
+        const modalProductPrice = document.getElementById('modal-product-price');
+        const modalProductOriginalPrice = document.getElementById('modal-product-original-price');
+        const modalStockStatus = document.getElementById('modal-stock-status');
+        const modalStarsContainer = document.getElementById('modal-stars-container');
+        const modalDiscountTag = document.getElementById('modal-discount-tag');
+        const modalSavingsTag = document.getElementById('modal-savings-tag');
+
+        if (modalProductName) modalProductName.textContent = productData.name;
+        if (modalMainImage) {
+            modalMainImage.src = productData.image || productData.primary_image_url || '';
+            modalMainImage.alt = productData.name;
+        }
+        if (modalBreadcrumbCat) modalBreadcrumbCat.textContent = productData.category || productData.category_name || '';
+        if (modalProductDesc) modalProductDesc.textContent = productData.desc || productData.description || '';
+        if (modalVendorName) modalVendorName.textContent = productData.vendor || productData.vendor_name || '';
+        if (modalReviewsCount) modalReviewsCount.textContent = productData.reviews || productData.reviews_count || '0';
+
+        // Pricing
+        const price = parseFloat(productData.price || 0);
+        const originalPrice = parseFloat(productData.originalPrice || productData.original_price || price);
+        const hasDiscount = productData.discount === 'true' || (productData.discount_price && productData.discount_price < productData.price) || (originalPrice > price);
+        
+        if (modalProductPrice) modalProductPrice.textContent = `Rs. ${price.toLocaleString()}`;
+        
+        if (hasDiscount && modalProductOriginalPrice) {
+            modalProductOriginalPrice.textContent = `Rs. ${originalPrice.toLocaleString()}`;
+            modalProductOriginalPrice.classList.remove('hidden');
+            
+            const savings = originalPrice - price;
+            const discountPercentage = Math.round((savings / originalPrice) * 100);
+            
+            if (modalDiscountTag) {
+                modalDiscountTag.textContent = `-${discountPercentage}% OFF`;
+                modalDiscountTag.classList.remove('hidden');
+            }
+            if (modalSavingsTag) {
+                modalSavingsTag.textContent = `Save Rs. ${savings.toLocaleString()}`;
+                modalSavingsTag.classList.remove('hidden');
+            }
+        } else {
+            if (modalProductOriginalPrice) modalProductOriginalPrice.classList.add('hidden');
+            if (modalDiscountTag) modalDiscountTag.classList.add('hidden');
+            if (modalSavingsTag) modalSavingsTag.classList.add('hidden');
+        }
+
+        // Stock status
+        const stock = parseInt(productData.stock || 10);
+        if (modalStockStatus) {
+            if (stock > 0) {
+                modalStockStatus.textContent = 'In Stock';
+                modalStockStatus.className = 'text-xs text-emerald-700 font-bold';
+            } else {
+                modalStockStatus.textContent = 'Out of Stock';
+                modalStockStatus.className = 'text-xs text-red-500 font-bold';
+            }
+        }
+
+        // Stars
+        if (modalStarsContainer) {
+            modalStarsContainer.innerHTML = '';
+            const rating = parseFloat(productData.rating || 5);
+            for (let i = 1; i <= 5; i++) {
+                const star = document.createElement('i');
+                star.style.marginRight = '2px';
+                if (i <= rating) {
+                    star.className = 'fas fa-star text-yellow-500';
+                } else if (i - rating < 1) {
+                    star.className = 'fas fa-star-half-alt text-yellow-500';
+                } else {
+                    star.className = 'far fa-star text-yellow-500';
+                }
+                modalStarsContainer.appendChild(star);
+            }
+        }
+
+        if (qtyInput) qtyInput.value = 1;
+
+        productModal.classList.remove('hidden');
+        productModal.classList.add('block');
+        setTimeout(() => {
+            productModal.classList.remove('opacity-0');
+            productModal.classList.add('opacity-100');
+            productContainer.classList.remove('scale-95', 'opacity-0');
+            productContainer.classList.add('scale-100', 'opacity-100');
+        }, 10);
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeProductDetailsModal() {
+        if (!productModal || !productContainer) return;
+        
+        restoreProductUrlState();
+
+        productModal.classList.remove('opacity-100');
+        productModal.classList.add('opacity-0');
+        productContainer.classList.remove('scale-100', 'opacity-100');
+        productContainer.classList.add('scale-95', 'opacity-0');
+        
+        setTimeout(() => {
+            productModal.classList.remove('block');
+            productModal.classList.add('hidden');
+        }, 300);
+        document.body.style.overflow = '';
+    }
+
+    window.closeProductDetailsModal = closeProductDetailsModal;
+
+    // Listeners for view details buttons
+    document.addEventListener('click', function(e) {
+        const btn = e.target.closest('.view-details-btn');
+        if (btn) {
+            e.preventDefault();
+            
+            const productData = {
+                id: btn.getAttribute('data-id'),
+                name: btn.getAttribute('data-name'),
+                price: btn.getAttribute('data-price'),
+                originalPrice: btn.getAttribute('data-original-price'),
+                discount: btn.getAttribute('data-discount'),
+                image: btn.getAttribute('data-image'),
+                category: btn.getAttribute('data-category'),
+                vendor: btn.getAttribute('data-vendor'),
+                desc: btn.getAttribute('data-desc'),
+                rating: btn.getAttribute('data-rating'),
+                reviews: btn.getAttribute('data-reviews'),
+                stock: btn.getAttribute('data-stock')
+            };
+
+            populateAndShowProductModal(productData);
+            updateProductUrlState(productData.id);
+        }
+    });
+
+    if (closeProductBtn) closeProductBtn.addEventListener('click', closeProductDetailsModal);
+    if (productModal) {
+        productModal.addEventListener('click', function(e) {
+            if (e.target === productModal) closeProductDetailsModal();
+        });
+    }
+
+    // Modal tabs
+    if (productModal) {
+        const tabBtns = productModal.querySelectorAll('.tab-btn');
+        const tabPanels = productModal.querySelectorAll('.tab-panel');
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                const target = btn.getAttribute('data-tab');
+                tabBtns.forEach(b => {
+                    b.classList.remove('text-[#C65A3A]', 'border-b-2', 'border-[#C65A3A]', 'font-bold');
+                    b.classList.add('text-[#3A2A1F]/60', 'font-semibold');
+                });
+                btn.classList.add('text-[#C65A3A]', 'border-b-2', 'border-[#C65A3A]', 'font-bold');
+                btn.classList.remove('text-[#3A2A1F]/60', 'font-semibold');
+
+                tabPanels.forEach(panel => {
+                    if (panel.getAttribute('data-panel') === target) {
+                        panel.classList.remove('hidden');
+                    } else {
+                        panel.classList.add('hidden');
+                    }
+                });
+            });
+        });
+
+        // Quantity controls
+        const qtyPlus = productModal.querySelector('.qty-plus-btn');
+        const qtyMinus = productModal.querySelector('.qty-minus-btn');
+        if (qtyPlus && qtyInput) {
+            qtyPlus.addEventListener('click', function() {
+                qtyInput.value = parseInt(qtyInput.value) + 1;
+            });
+        }
+        if (qtyMinus && qtyInput) {
+            qtyMinus.addEventListener('click', function() {
+                const val = parseInt(qtyInput.value);
+                if (val > 1) qtyInput.value = val - 1;
+            });
+        }
+        if (qtyInput) {
+            qtyInput.addEventListener('change', function() {
+                let val = parseInt(this.value) || 1;
+                if (val < 1) val = 1;
+                this.value = val;
+            });
+        }
+
+        // Add to Cart inside modal
+        const addToCartModalBtn = document.getElementById('modal-add-to-cart-btn');
+        const buyNowModalBtn = document.getElementById('modal-buy-now-btn');
+        
+        if (addToCartModalBtn) {
+            addToCartModalBtn.addEventListener('click', function() {
+                if (window.activeProduct && typeof window.addToCart === 'function') {
+                    const qty = parseInt(qtyInput.value) || 1;
+                    window.addToCart(window.activeProduct, qty);
+                    closeProductDetailsModal();
+                } else {
+                    const name = document.getElementById('modal-product-name').textContent;
+                    const qty = qtyInput.value;
+                    alert(`${name} (${qty}) added to cart!`);
+                }
+            });
+        }
+
+        if (buyNowModalBtn) {
+            buyNowModalBtn.addEventListener('click', function() {
+                if (window.activeProduct && typeof window.addToCart === 'function') {
+                    const qty = parseInt(qtyInput.value) || 1;
+                    window.addToCart(window.activeProduct, qty);
+                    window.location.href = "/cart";
+                } else {
+                    const name = document.getElementById('modal-product-name').textContent;
+                    const qty = qtyInput.value;
+                    alert(`Proceeding to checkout with ${qty}x ${name}!`);
+                }
+            });
+        }
+    }
+
+    // Handle direct loading and history state popped
+    window.addEventListener('popstate', function(e) {
+        const path = window.location.pathname;
+        if (path === '/userlogin') {
+            openLoginModal(null, 'login');
+        } else if (path === '/userregister') {
+            openLoginModal(null, 'register');
+        } else {
+            if (loginModal && !loginModal.classList.contains('hidden')) {
+                closeLoginModal();
+            }
+        }
+
+        const match = path.match(/^\/viewdetails\/(\d+)$/);
+        if (match) {
+            if (window.activeProductOnLoad && String(window.activeProductOnLoad.id) === match[1]) {
+                populateAndShowProductModal(window.activeProductOnLoad);
+            } else {
+                const btn = document.querySelector(`.view-details-btn[data-id="${match[1]}"], .wishlist-btn[data-product-id="${match[1]}"]`);
+                if (btn) {
+                    btn.click();
+                }
+            }
+        } else {
+            if (productModal && !productModal.classList.contains('hidden')) {
+                closeProductDetailsModal();
+            }
+        }
+    });
+
+    if (window.activeProductOnLoad) {
+        populateAndShowProductModal(window.activeProductOnLoad);
+    }
+
     // Initial setups
     updateWishlistBadge();
+    updateCartBadge();
     syncWishlistIcons();
     renderWishlistPage();
-})();
+    renderCartPage();
+});
 
