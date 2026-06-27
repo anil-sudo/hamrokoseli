@@ -66,7 +66,6 @@ Route::get('test-email', [TestEmailControlelr::class, 'index'])->name('test.emai
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::redirect('/login.php', '/login');
 
-
 Route::get('/user-dashboard', [UserController::class, 'dashboard'])->name('Userdashboard');
 Route::get('/user-orders', [UserController::class, 'orders'])->name('User-orders');
 Route::get('/user-order-details', [UserController::class, 'orderDetail'])->name('order-detail');

@@ -193,7 +193,7 @@ class SellerController extends Controller
         // Determine main product price and stock
         $productStock = 0;
         $productPrice = 0;
-        if (!$isVariantMode) {
+        if (! $isVariantMode) {
             $productPrice = $validated['base_price'];
             $productStock = $validated['stock'] ?? 0;
         } else {
@@ -201,13 +201,13 @@ class SellerController extends Controller
             $productPrice = $prices->min() ?? 0;
 
             $productStock = collect($validated['variants'] ?? [])
-                ->sum(fn($v) => (int)($v['stock'] ?? 0));
+                ->sum(fn ($v) => (int) ($v['stock'] ?? 0));
         }
 
         // Generate SKU for main product when using variants
         $mainSku = $validated['sku'] ?? null;
         if ($isVariantMode && empty($mainSku)) {
-            $mainSku = strtoupper(Str::slug($validated['product_name'], '-')) . '-' . strtoupper(Str::random(6));
+            $mainSku = strtoupper(Str::slug($validated['product_name'], '-')).'-'.strtoupper(Str::random(6));
         }
 
         // Create Product
@@ -215,10 +215,10 @@ class SellerController extends Controller
             'vendor_id' => auth()->user()->vendor->id,
             'category_id' => $validated['category'],
             'name' => $validated['product_name'],
-            'slug' => Str::slug($validated['product_name']) . '-' . Str::lower(Str::random(5)),
+            'slug' => Str::slug($validated['product_name']).'-'.Str::lower(Str::random(5)),
             'product_type' => $validated['product_type'] ?? null,
             'description' => $validated['description'],
-            'specifications' => !empty($validated['specifications'])
+            'specifications' => ! empty($validated['specifications'])
                 ? $this->filterSpecs($validated['specifications'])
                 : null,
             'price' => $productPrice,
@@ -231,17 +231,19 @@ class SellerController extends Controller
         ]);
 
         // Save Variants
-        if ($isVariantMode && !empty($validated['variants'])) {
+        if ($isVariantMode && ! empty($validated['variants'])) {
             foreach ($validated['variants'] as $variant) {
-                if (empty($variant['sku'])) continue;
+                if (empty($variant['sku'])) {
+                    continue;
+                }
 
                 ProductVariant::create([
                     'product_id' => $product->id,
                     'sku' => $variant['sku'],
                     'size' => $variant['size'] ?? null,
                     'color' => $variant['color'] ?? null,
-                    'price' => !empty($variant['price']) ? $variant['price'] : $productPrice,
-                    'discount_price' => !empty($variant['discounted_price']) ? $variant['discounted_price'] : null,
+                    'price' => ! empty($variant['price']) ? $variant['price'] : $productPrice,
+                    'discount_price' => ! empty($variant['discounted_price']) ? $variant['discounted_price'] : null,
                     'stock' => $variant['stock'] ?? 0,
                     'status' => 'active',
                 ]);
@@ -262,7 +264,7 @@ class SellerController extends Controller
 
         return redirect()
             ->route('product-management')
-            ->with('success', 'Product "' . $product->name . '" created successfully!');
+            ->with('success', 'Product "'.$product->name.'" created successfully!');
     }
 
     public function update(Request $request, $id)
@@ -307,7 +309,7 @@ class SellerController extends Controller
 
     public function sellerProfile()
     {
-        $user   = auth()->user();
+        $user = auth()->user();
         $vendor = $user?->vendor;
 
         return view('seller.profile', compact('user', 'vendor'));

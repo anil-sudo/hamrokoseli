@@ -110,6 +110,7 @@ class Product extends Model
         if ($this->variants->isNotEmpty()) {
             return $this->variants->min('price') ?? $this->price;
         }
+
         return $this->discount_price ?? $this->price;
     }
 
@@ -123,8 +124,10 @@ class Product extends Model
         if ($this->variants->isNotEmpty()) {
             // Get the cheapest variant's discount_price
             $minVariant = $this->variants->sortBy('price')->first();
+
             return $minVariant?->discount_price ? (float) $minVariant->discount_price : null;
         }
+
         return $this->discount_price ? (float) $this->discount_price : null;
     }
 
@@ -134,9 +137,10 @@ class Product extends Model
     public function hasDiscount(): bool
     {
         if ($this->variants->isNotEmpty()) {
-            return $this->variants->contains(fn($v) => !is_null($v->discount_price) && $v->discount_price > 0);
+            return $this->variants->contains(fn ($v) => ! is_null($v->discount_price) && $v->discount_price > 0);
         }
-        return !is_null($this->discount_price) && $this->discount_price > 0;
+
+        return ! is_null($this->discount_price) && $this->discount_price > 0;
     }
 
     public function isActive(): bool
