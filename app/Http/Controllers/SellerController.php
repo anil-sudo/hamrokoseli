@@ -22,33 +22,33 @@ class SellerController extends Controller
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
-       if (Auth::attempt($credentials)) {
+        if (Auth::attempt($credentials)) {
 
-    $request->session()->regenerate();
+            $request->session()->regenerate();
 
-    $user = Auth::user();
-    $vendor = $user->vendor;
+            $user = Auth::user();
+            $vendor = $user->vendor;
 
-    if (!$vendor) {
+            if (! $vendor) {
 
-        Auth::logout();
+                Auth::logout();
 
-        return redirect()
-            ->route('seller.login')
-            ->with('error', 'Vendor account not found.');
-    }
+                return redirect()
+                    ->route('seller.login')
+                    ->with('error', 'Vendor account not found.');
+            }
 
-    if ($vendor->status !== 'active') {
+            if ($vendor->status !== 'active') {
 
-        Auth::logout();
+                Auth::logout();
 
-        return redirect()
-            ->route('seller.login')
-            ->with('error', 'Your account is pending approval.');
-    }
+                return redirect()
+                    ->route('seller.login')
+                    ->with('error', 'Your account is pending approval.');
+            }
 
-    return redirect()->route('dashboard');
-}
+            return redirect()->route('dashboard');
+        }
         // Use 'vendor' guard instead of default
         // if (Auth::guard('vendor')->attempt($credentials, $request->boolean('remember'))) {
         //     $user = Auth::guard('vendor')->user();
