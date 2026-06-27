@@ -197,6 +197,14 @@ function handleFiles(files) {
         uploadedFiles.push(file);
         renderImagePreview(file);
     });
+
+    syncFileInput();
+}
+
+function syncFileInput() {
+    const dataTransfer = new DataTransfer();
+    uploadedFiles.forEach(file => dataTransfer.items.add(file));
+    mediaInput.files = dataTransfer.files;
 }
 
 function renderImagePreview(file) {
@@ -221,6 +229,7 @@ function removeImage(btn) {
     const index = Array.from(previewGrid.children).indexOf(btn.parentElement);
     uploadedFiles.splice(index, 1);
     btn.parentElement.remove();
+    syncFileInput();
 }
 
 

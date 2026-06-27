@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Product;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
@@ -60,5 +61,36 @@ class Image extends Model
     public function scopeOfType($query, string $type)
     {
         return $query->where('type', $type);
+    }
+
+    protected static function booted(): void
+    {
+        static::saved(function (Image $image) {
+            $image->syncProductImagePath();
+        });
+
+        static::deleted(function (Image $image) {
+            $image->syncProductImagePath();
+        });
+    }
+
+    protected function syncProductImagePath(): void
+    {
+        if ($this->imageable_type !== Product::class) {
+            return;
+        }
+
+        $product = Product::find($this->imageable_id);
+
+        if (! $product) {
+            return;
+        }
+
+        $path = $product->images->firstWhere('is_primary', true)?->path
+            ?? $product->images->first()?->path;
+
+        $product->withoutEvents(fn () => $product->update([
+            'image' => $path,
+        ]));
     }
 }

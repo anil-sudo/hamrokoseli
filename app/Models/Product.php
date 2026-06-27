@@ -137,4 +137,20 @@ class Product extends Model
             ? asset('storage/'.$image->path)
             : asset('images/placeholder.png');
     }
+
+    public function getImageAttribute(?string $value): ?string
+    {
+        if (filled($value)) {
+            return $value;
+        }
+
+        return $this->images->firstWhere('is_primary', true)?->path
+            ?? $this->images->first()?->path;
+    }
+
+    public function getPrimaryImagePathAttribute(): ?string
+    {
+        return $this->images->firstWhere('is_primary', true)?->path
+            ?? $this->images->first()?->path;
+    }
 }

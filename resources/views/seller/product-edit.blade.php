@@ -8,7 +8,7 @@
         </a>
     </div>
 
-    <form id="productForm" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <form id="productForm" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <!-- Left Side -->
         <div class="lg:col-span-8 space-y-6">
             <!-- General Information -->

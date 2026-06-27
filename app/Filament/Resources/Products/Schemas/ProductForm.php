@@ -42,6 +42,10 @@ class ProductForm
                     ->required()
                     ->unique(ignoreRecord: true)
                     ->alphaDash(),
+                TextInput::make('sku')
+                    ->required()
+                    ->unique(ignoreRecord: true)
+                    ->maxLength(100),
                 RichEditor::make('description')
                     ->toolbarButtons([
                         'bold',
@@ -87,7 +91,6 @@ class ProductForm
                             ->helperText('Shown in listings and as the default product image.')
                             ->inline(false),
                     ])
-                    ->orderColumn(null)
                     ->addActionLabel('Add image')
                     ->collapsible()
                     ->collapsed(fn (?array $state): bool => filled($state))
