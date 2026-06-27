@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\SellerController;
 use App\Http\Controllers\TestEmailControlelr;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserRegisterController;
 use App\Http\Controllers\VendorRegisterController;
 use Illuminate\Support\Facades\Route;
@@ -27,6 +28,8 @@ Route::middleware(['auth', 'role:vendor'])->group(function () {
     Route::delete('/product/{id}', [SellerController::class, 'destroy'])->name('product.destroy');
     Route::get('/orders', [SellerController::class, 'order'])->name('order');
     Route::get('/order-details', [SellerController::class, 'orderDetails'])->name('order-details');
+    Route::get('/return', [SellerController::class, 'returnProducts'])->name('seller.returns');
+    Route::get('/return-details', [SellerController::class, 'returnDetails'])->name('return-details');
     Route::get('/seller-review', [SellerController::class, 'sellerReview'])->name('seller.review');
     Route::get('/seller-payments', [SellerController::class, 'sellerPayment'])->name('seller.payment');
     Route::get('/seller-payments-details', [SellerController::class, 'paymentDetails'])->name('payment-details');
@@ -34,7 +37,6 @@ Route::middleware(['auth', 'role:vendor'])->group(function () {
     Route::get('/create-ticket', [SellerController::class, 'createTicket'])->name('create-ticket');
     Route::get('/tickets', [SellerController::class, 'sellerTicket'])->name('seller-ticket');
     Route::get('/seller-notification', [SellerController::class, 'sellerNotification'])->name('seller-notification');
-
 });
 
 // ─── Seller registration (public) ─────────────────────────────────────────────
@@ -51,6 +53,8 @@ Route::get('/top-sellers', [PageController::class, 'top_sellers'])->name('top-se
 Route::get('/about-us', [PageController::class, 'about_us'])->name('about-us');
 Route::get('/wishlist', [PageController::class, 'wishlist'])->name('wishlist');
 Route::get('/privacypolicy', [PageController::class, 'privacy'])->name('privacy');
+Route::get('/cart', [PageController::class, 'cart'])->name('cart');
+Route::get('/viewdetails/{id}', [PageController::class, 'viewProduct'])->name('viewdetails');
 
 // ─── User Auth routes (guest on web guard) ────────────────────────────────────
 Route::middleware('web')->group(function () {
@@ -75,4 +79,11 @@ Route::middleware('web')->group(function () {
 
 Route::get('test-email', [TestEmailControlelr::class, 'index'])->name('test.email');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::get('/user-dashboard', [UserController::class, 'dashboard'])->name('Userdashboard');
+Route::get('/user-orders', [UserController::class, 'orders'])->name('User-orders');
+Route::get('/user-order-details', [UserController::class, 'orderDetail'])->name('order-detail');
+Route::get('/return-product', [UserController::class, 'returnProduct'])->name('return-product');
+Route::get('/user-profile', [UserController::class, 'userProfile'])->name('user-profile');
+Route::get('/user-notification', [UserController::class, 'userNotification'])->name('user-notification');
 Route::redirect('/login.php', '/userlogin');

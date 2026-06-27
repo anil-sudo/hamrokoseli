@@ -35,8 +35,8 @@
 
                 <!-- Logo -->
                 <a href="{{ url('/') }}" class="flex items-center gap-2.5 group shrink-0">
-                    <img src="{{ asset('images/logo.jpeg') }}" alt="Hamro Koseli Logo"
-                        class="w-10 h-10 object-contain rounded-full shadow-md transform group-hover:scale-105 transition duration-300">
+                    <img src="{{ asset('images/logo.png') }}" alt="Hamro Koseli Logo"
+                        class="w-10 h-10 bg-white object-contain rounded-full shadow-md transform group-hover:scale-105 transition duration-300">
                     <div>
                         <div class="text-lg md:text-xl font-extrabold tracking-wide leading-none text-white">HAMRO KOSELI</div>
                         <span class="text-[9px] text-emerald-200/90 tracking-wide font-medium hidden sm:block">Special Koseli for Special People</span>
@@ -97,8 +97,9 @@
                         <span id="wishlist-badge" class="absolute -top-1.5 -right-1.5 bg-[#b55b3d] text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold border border-[#1f3d2e] hidden">0</span>
                     </a>
                     <!-- Cart -->
-                    <a href="cart.php" class="hover:text-emerald-200 transition-colors p-1 relative" title="Cart">
-                        <i class="fas fa-shopping-cart"></i>
+                    <a href="{{ route('cart') }}" class="hover:text-emerald-200 transition-colors p-1 relative flex items-center justify-center" title="Cart" id="cart-header-btn">
+                        <i class="fas fa-shopping-cart" id="cart-header-icon"></i>
+                        <span id="cart-badge" class="absolute -top-1.5 -right-1.5 bg-[#b55b3d] text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold border border-[#1f3d2e] hidden">0</span>
                     </a>
                     <!-- Logout icon (always visible, logged-in users only) -->
                     @auth
@@ -151,7 +152,7 @@
     <!-- Drawer header -->
     <div class="flex items-center justify-between px-5 py-4 border-b border-white/10">
         <div class="flex items-center gap-2.5">
-            <img src="{{ asset('images/logo.jpeg') }}" alt="Hamro Koseli" class="w-9 h-9 rounded-full object-contain">
+            <img src="{{ asset('images/logo.png') }}" alt="Hamro Koseli" class="w-9 h-9 bg-white rounded-full object-contain">
             <span class="font-extrabold text-white text-base">HAMRO KOSELI</span>
         </div>
         <!-- Close button -->

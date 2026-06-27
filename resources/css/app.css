@@ -17,7 +17,26 @@
     --color-surface-container: #ebeef0;
     --color-on-surface: #181c1e;
     --color-outline: #8f6f6d;
+
+    --color-brand-primary: #C65A3A;
+    --color-brand-cream: #FFF7EF;
+    --color-brand-dark: #1F3D2E;
+    --color-brand-dark-blue: #1E2A44;
+    --color-brand-gold: #D4A017;
 }
+
+:root {
+    --primary-color: #C65A3A;
+    --secondary-color: #585e6c;
+    --card-bg: #ffffff;
+    --card-dark: #f3f4f6;
+    --text-light: #FFF7EF;
+    --text-color: #374151;
+    --text-dark: #111827;
+    --bg-color: #FFF7EF;
+    --hover-color: #D4A017;
+}
+
 
 input,
 button,

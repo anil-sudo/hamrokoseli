@@ -31,7 +31,10 @@ class ProductsTable
                 TextColumn::make('stock')
                     ->numeric()
                     ->sortable(),
-                ImageColumn::make('image'),
+                ImageColumn::make('image')
+                    ->disk('public')
+                    ->imageHeight(48)
+                    ->imageWidth(48),
                 TextColumn::make('status')
                     ->badge(),
                 TextColumn::make('created_at')
