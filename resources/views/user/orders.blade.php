@@ -1,29 +1,14 @@
-<x-seller_layout title="Order Management" searchPlaceholder="Search by Order ID or Customer...">
+<x-user-layout title="Orders">
     <div class="space-y-10">
         <!-- Header Section with fade-in -->
         <div class="mb-6 animate-fadeIn">
             <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                 <div>
-                    <h1 class="text-3xl font-bold text-(--text-color)">Manage Orders</h1>
-                    <p class="text-sm text-(--text-color)/70 mt-1">Review and update processing for your customer
-                        transactions.</p>
+                    <h1 class="text-3xl font-bold text-(--text-color)">My Orders</h1>
+                    <p class="text-sm text-(--text-color)/70 mt-1">Track and manage your thoughtful gifts in one place.
+                    </p>
                 </div>
 
-                <!-- Action Buttons with hover effects -->
-                <div class="flex flex-wrap gap-3">
-                    <button onclick="exportCSV()"
-                        class="group flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 bg-(--card-bg) border border-(--text-color)/10 rounded-2xl text-sm font-medium hover:border-(--secondary-color) hover:shadow-md active:scale-95 transition-all duration-200">
-                        <i data-lucide="hard-drive-download"
-                            class="w-5 h-5 group-hover:-translate-y-0.5 transition-transform duration-200"></i>
-                        <span>Export CSV</span>
-                    </button>
-                    <button onclick="bulkPrint()"
-                        class="group flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 bg-(--secondary-color) text-(--text-light)/95 rounded-2xl text-sm font-medium hover:bg-[#B94E31] hover:shadow-lg active:scale-95 transition-all duration-200 shadow-md">
-                        <i data-lucide="printer"
-                            class=" w-5 h-5 group-hover:-rotate-3 transition-transform duration-200"></i>
-                        <span>Bulk Print</span>
-                    </button>
-                </div>
             </div>
         </div>
 
@@ -36,10 +21,6 @@
                 class="tab-btn relative z-10 px-5 py-3 sm:px-6 sm:py-3.5 rounded-3xl font-medium text-sm transition-all duration-200 whitespace-nowrap bg-(--secondary-color) text-(--text-light)">
                 All Orders (1,240)
             </button>
-            <button onclick="switchTab(1)" id="tab-1"
-                class="tab-btn relative z-10 px-5 py-3 sm:px-6 sm:py-3.5 rounded-3xl font-medium text-sm transition-all duration-200 whitespace-nowrap text-(--text-dark)">
-                New (12)
-            </button>
             <button onclick="switchTab(2)" id="tab-2"
                 class="tab-btn relative z-10 px-5 py-3 sm:px-6 sm:py-3.5 rounded-3xl font-medium text-sm transition-all duration-200 whitespace-nowrap text-(--text-dark)">
                 Processing (45)
@@ -50,7 +31,7 @@
             </button>
             <button onclick="switchTab(4)" id="tab-4"
                 class="tab-btn relative z-10 px-5 py-3 sm:px-6 sm:py-3.5 rounded-3xl font-medium text-sm transition-all duration-200 whitespace-nowrap text-(--text-dark)">
-                Cancelled (8)
+                Delivered (8)
             </button>
         </div>
 
@@ -66,16 +47,16 @@
                                 Order ID</th>
                             <th
                                 class="text-left py-4 px-4 md:px-6 lg:px-8 text-xs font-semibold text-(--text-color) uppercase tracking-wider">
-                                Customer Name</th>
+                                Product</th>
                             <th
                                 class="text-left py-4 px-4 md:px-6 lg:px-8 text-xs font-semibold text-(--text-color) uppercase tracking-wider">
                                 Date</th>
                             <th
                                 class="text-left py-4 px-4 md:px-6 lg:px-8 text-xs font-semibold text-(--text-color) uppercase tracking-wider">
-                                Amount</th>
+                                QTY</th>
                             <th
                                 class="text-left py-4 px-4 md:px-6 lg:px-8 text-xs font-semibold text-(--text-color) uppercase tracking-wider">
-                                Payment</th>
+                                Total</th>
                             <th
                                 class="text-left py-4 px-4 md:px-6 lg:px-8 text-xs font-semibold text-(--text-color) uppercase tracking-wider">
                                 Order Status</th>
@@ -89,20 +70,21 @@
                         <tr class="hover:bg-(--card-dark)/10 transition-all duration-200 cursor-pointer">
                             <td
                                 class="px-4 md:px-6 lg:px-8 py-5 text-(--text-color) text-sm font-medium transition-colors">
-                                #HK-89234</td>
+                                #HK-29401</td>
                             <td class="px-4 md:px-6 lg:px-8 py-5">
                                 <div class="flex items-center gap-3">
-                                    <div
-                                        class="w-12 h-8 sm:w-13 sm:h-9 bg-(--card-dark) rounded-full flex items-center justify-center font-semibold text-xs sm:text-sm transition-all duration-200">
-                                        RP</div>
-                                    <div class="font-medium text-(--text-color)">Ram Poudel</div>
+                                    <img src="{{ asset('images/backpack.png') }}" alt="Leather Bag"
+                                        class="w-10 h-10 object-cover rounded-xl">
+
+                                    <p class="font-medium text-(--text-color) line-clamp-2 md:truncate">
+                                        Handcrafted Leather Bag
+                                    </p>
                                 </div>
                             </td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5 text-(--text-color) text-sm">june 1, 2026</td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5 font-semibold text-(--text-color)">Rs. 7,550</td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5">
-                                <span
-                                    class="inline-block px-3 py-1.5 text-xs font-medium bg-(--card-dark) text-(--primary-color)/85 rounded-full">Paid</span>
+                            <td class="px-4 md:px-6 lg:px-8 py-5 text-(--text-color) text-sm">June 1, 2026</td>
+                            <td class="px-4 md:px-6 lg:px-8 py-5 font-semibold text-(--text-color)">1</td>
+                            <td class="px-4 md:px-6 lg:px-8 py-5 font-semibold text-(--text-color)">
+                                Rs. 7,550
                             </td>
                             <td class="px-4 md:px-6 lg:px-8 py-5">
                                 <span class="inline-flex items-center gap-2">
@@ -111,11 +93,10 @@
                                 </span>
                             </td>
                             <td class="px-4 md:px-6 lg:px-8 py-5 text-right">
-                                <a href="{{ route('order-details') }}"
-                                    class="text-(--secondary-color) hover:text-(--hover-color) font-medium flex items-center gap-1 ml-auto text-sm transition-all duration-200 group">
+                                <a href="{{ route('order-detail') }}"
+                                    class="text-(--secondary-color) hover:text-(--hover-color) font-medium flex items-center justify-end gap-1 text-sm transition-all duration-200 group">
                                     <span class="hover:underline">View Details</span>
                                     <i data-lucide="arrow-right" class="w-6 h-4"></i>
-
                                 </a>
                             </td>
                         </tr>
@@ -123,54 +104,21 @@
                         <tr class="hover:bg-(--card-dark)/10 transition-all duration-200 cursor-pointer">
                             <td
                                 class="px-4 md:px-6 lg:px-8 py-5 text-(--text-color) text-sm font-medium transition-colors">
-                                #HK-89235</td>
+                                #HK-29395</td>
                             <td class="px-4 md:px-6 lg:px-8 py-5">
                                 <div class="flex items-center gap-3">
-                                    <div
-                                        class="w-12 h-8 sm:w-13 sm:h-9 bg-(--card-dark) rounded-full flex items-center justify-center font-semibold text-xs sm:text-sm transition-all duration-200">
-                                        ST</div>
-                                    <div class="font-medium text-(--text-color)">Sita Tamang</div>
-                                </div>
-                            </td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5 text-(--text-color) text-sm">june 2, 2026</td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5 font-semibold text-(--text-color)">Rs. 3,500</td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5">
-                                <span
-                                    class="inline-block px-3 py-1.5 text-xs font-medium bg-(--hover-color)/50 text-(--secondary-color) rounded-full">Pending</span>
-                            </td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5">
-                                <span class="inline-flex items-center gap-2">
-                                    <span class="w-2.5 h-2.5 bg-(--hover-color) rounded-full"></span>
-                                    <span class="font-medium text-(--text-color)">New</span>
-                                </span>
-                            </td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5 text-right">
-                                <button
-                                    class="text-(--secondary-color) hover:text-(--hover-color) font-medium flex items-center gap-1 ml-auto text-sm transition-all duration-200 group">
-                                    <span class="hover:underline">View Details</span>
-                                    <i data-lucide="arrow-right" class="w-6 h-4"></i>
+                                    <img src="{{ asset('images/pottery.png') }}" alt="Ceramic Mug"
+                                        class="w-10 h-10 object-cover rounded-xl">
 
-                                </button>
-                            </td>
-                        </tr>
-                        <!-- Row 3 -->
-                        <tr class="hover:bg-(--card-dark)/10 transition-all duration-200 cursor-pointer">
-                            <td
-                                class="px-4 md:px-6 lg:px-8 py-5 text-(--text-color) text-sm font-medium transition-colors">
-                                #HK-89234</td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5">
-                                <div class="flex items-center gap-3">
-                                    <div
-                                        class="w-12 h-8 sm:w-13 sm:h-9 bg-(--card-dark) rounded-full flex items-center justify-center font-semibold text-xs sm:text-sm transition-all duration-200">
-                                        HB</div>
-                                    <div class="font-medium text-(--text-color)">Hari Basnet</div>
+                                    <p class="font-medium text-(--text-color)">
+                                        Handmade Ceramic Mug
+                                    </p>
                                 </div>
                             </td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5 text-(--text-color) text-sm">june 3, 2026</td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5 font-semibold text-(--text-color)">Rs. 5,500</td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5">
-                                <span
-                                    class="inline-block px-3 py-1.5 text-xs font-medium bg-(--card-dark) text-(--primary-color)/85 rounded-full">Paid</span>
+                            <td class="px-4 md:px-6 lg:px-8 py-5 text-(--text-color) text-sm">June 2, 2026</td>
+                            <td class="px-4 md:px-6 lg:px-8 py-5 font-semibold text-(--text-color)">2</td>
+                            <td class="px-4 md:px-6 lg:px-8 py-5 font-semibold text-(--text-color)">
+                                Rs. 8,550
                             </td>
                             <td class="px-4 md:px-6 lg:px-8 py-5">
                                 <span class="inline-flex items-center gap-2">
@@ -187,24 +135,60 @@
                                 </button>
                             </td>
                         </tr>
+                        <!-- Row 3 -->
+                        <tr class="hover:bg-(--card-dark)/10 transition-all duration-200 cursor-pointer">
+                            <td
+                                class="px-4 md:px-6 lg:px-8 py-5 text-(--text-color) text-sm font-medium transition-colors">
+                                #HK-29398</td>
+                            <td class="px-4 md:px-6 lg:px-8 py-5">
+                                <div class="flex items-center gap-3">
+                                    <img src="{{ asset('images/table.png') }}" alt="Scented Candle"
+                                        class="w-10 h-10 object-cover rounded-xl">
+
+                                    <p class="font-medium text-(--text-color)">
+                                        Aura Scented Candle
+                                    </p>
+                                </div>
+                            </td>
+                            <td class="px-4 md:px-6 lg:px-8 py-5 text-(--text-color) text-sm">June 3, 2026</td>
+                            <td class="px-4 md:px-6 lg:px-8 py-5 font-semibold text-(--text-color)">1</td>
+                            <td class="px-4 md:px-6 lg:px-8 py-5 font-semibold text-(--text-color)">
+                                Rs. 9,550
+                            </td>
+                            <td class="px-4 md:px-6 lg:px-8 py-5">
+                                <span class="inline-flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 bg-(--secondary-color) rounded-full"></span>
+                                    <span class="font-medium text-(--text-color)">processing</span>
+                                </span>
+                            </td>
+                            <td class="px-4 md:px-6 lg:px-8 py-5 text-right">
+                                <button
+                                    class="text-(--secondary-color) hover:text-(--hover-color) font-medium flex gap-1 ml-auto text-sm transition-all duration-200 group">
+                                    <span class="hover:underline">View Details</span>
+                                    <i data-lucide="arrow-right" class="w-6 h-4"></i>
+
+                                </button>
+                            </td>
+                        </tr>
                         <!-- Row 4 -->
                         <tr class="hover:bg-(--card-dark)/10 transition-all duration-200 cursor-pointer">
                             <td
                                 class="px-4 md:px-6 lg:px-8 py-5 text-(--text-color) text-sm font-medium transition-colors">
-                                #HK-89235</td>
+                                #HK-29392</td>
                             <td class="px-4 md:px-6 lg:px-8 py-5">
                                 <div class="flex items-center gap-3">
-                                    <div
-                                        class="w-12 h-8 sm:w-13 sm:h-9 bg-(--card-dark) rounded-full flex items-center justify-center font-semibold text-xs sm:text-sm transition-all duration-200">
-                                        SM</div>
-                                    <div class="font-medium text-(--text-color)">Subina Magar</div>
+                                    <img src="{{ asset('images/craft.png') }}" alt="Wall Art"
+                                        class="w-10 h-10 object-cover rounded-xl">
+
+                                    <p class="font-medium text-(--text-color)">
+                                        Boho Wall Art Frame
+                                    </p>
                                 </div>
                             </td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5 text-(--text-color) text-sm">june 7, 2026</td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5 font-semibold text-(--text-color)">Rs. 1,500</td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5">
-                                <span
-                                    class="inline-block px-3 py-1.5 text-xs font-medium bg-(--secondary-color)/20 text-(--secondary-color) rounded-full">Refunded</span>
+                            <td class="px-4 md:px-6 lg:px-8 py-5 text-(--text-color) text-sm">June 4, 2026</td>
+                            <td class="px-4 md:px-6 lg:px-8 py-5 font-semibold text-(--text-color)">2</td>
+                            <td class="px-4 md:px-6 lg:px-8 py-5 font-semibold text-(--text-color)">
+                                Rs. 8,550
                             </td>
                             <td class="px-4 md:px-6 lg:px-8 py-5">
                                 <span class="inline-flex items-center gap-2">
@@ -246,7 +230,7 @@
                 <button
                     class="pagination-btn w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center border border-gray-300 rounded-2xl hover:bg-[#1F3D2E] hover:text-white hover:border-[#1F3D2E] active:scale-95 transition-all duration-200 text-gray-700">
                     <i data-lucide="chevron-right" class="w-3 h-3"></i>
-                 </button>
+                </button>
             </div>
         </div>
     </div>
@@ -284,4 +268,4 @@
             display: none;
         }
     </style>
-</x-seller_layout>
+</x-user-layout>

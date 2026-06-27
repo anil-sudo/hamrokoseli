@@ -509,6 +509,7 @@
                       currentIndex++;
                   } else {
                       currentIndex = 0; // Wrap around
+                      updateTrendingCarousel();
                   }
                   updateTrendingCarousel();
               });

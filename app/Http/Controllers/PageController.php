@@ -18,7 +18,7 @@ class PageController extends Controller
 
     public function shop()
     {
-        $products = Product::with(['category', 'vendor', 'images'])
+        $products = Product::with(['category', 'vendor', 'images', 'variants'])
             ->where('status', 'active')
             ->latest()
             ->get();
@@ -329,10 +329,12 @@ class PageController extends Controller
 
     public function viewProduct($id)
     {
-        $product = Product::with(['category', 'vendor', 'images'])->findOrFail($id);
+        $product = Product::with(['category', 'vendor', 'images', 'variants'])->findOrFail($id);
 
         // Add computed properties for easy JSON serialization
         $product->effective_price = method_exists($product, 'effectivePrice') ? $product->effectivePrice() : $product->price;
+        $product->original_price = method_exists($product, 'originalPrice') ? $product->originalPrice() : $product->price;
+        $product->discount_price = method_exists($product, 'resolvedDiscountPrice') ? $product->resolvedDiscountPrice() : $product->discount_price;
         $product->primary_image_url = method_exists($product, 'primaryImageUrl') ? $product->primaryImageUrl() : asset($product->image);
         $product->category_name = $product->category?->cat_name ?? $product->category?->name ?? 'Crafts';
         $product->vendor_name = $product->vendor?->vendor_name ?? $product->vendor?->name ?? 'Local Artisan';

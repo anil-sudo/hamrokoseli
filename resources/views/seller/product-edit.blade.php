@@ -123,7 +123,7 @@
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-(--text-dark) mb-2">Discount Price</label>
+                            <label class="block text-sm font-medium text-(--text-dark) mb-2">Discount (Rs.)</label>
                             <input type="number" id="discounted_price" value="0" min="0"
                                 class="w-full px-5 py-4 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-base">
                         </div>
