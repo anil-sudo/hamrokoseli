@@ -422,7 +422,7 @@
 
           function sortProducts(criteria) {
               const cardsArray = Array.from(productCards);
-
+              
               cardsArray.sort((a, b) => {
                   if (criteria === 'discount') {
                       return parseInt(b.getAttribute('data-discount')) - parseInt(a.getAttribute('data-discount'));
@@ -453,13 +453,13 @@
           if (featuredCarousel && featuredPrev && featuredNext) {
               const cards = featuredCarousel.querySelectorAll('.featured-card');
               let currentIndex = 0;
-
+              
               function updateFeaturedCarousel() {
                   if (cards.length === 0) return;
                   const cardWidth = cards[0].getBoundingClientRect().width;
                   featuredCarousel.style.transform = `translateX(-${currentIndex * (cardWidth + 24)}px)`;
               }
-
+              
               featuredNext.addEventListener('click', () => {
                   if (currentIndex < cards.length - 1) {
                       currentIndex++;
@@ -469,7 +469,7 @@
                       updateFeaturedCarousel();
                   }
               });
-
+              
               featuredPrev.addEventListener('click', () => {
                   if (currentIndex > 0) {
                       currentIndex--;
@@ -491,33 +491,34 @@
           if (trendingCarousel && trendingPrev && trendingNext) {
               const cards = trendingCarousel.querySelectorAll('.trending-card');
               let currentIndex = 0;
-
+              
               function updateTrendingCarousel() {
                   if (cards.length === 0) return;
                   const cardWidth = cards[0].getBoundingClientRect().width;
                   trendingCarousel.style.transform = `translateX(-${currentIndex * (cardWidth + 24)}px)`;
               }
-
+              
               trendingNext.addEventListener('click', () => {
                   // Determine how many cards are visible
                   let visibleCount = 1;
                   if (window.innerWidth >= 1024) visibleCount = 4;
                   else if (window.innerWidth >= 768) visibleCount = 2;
-
+                  
                   const maxIndex = cards.length - visibleCount;
                   if (currentIndex < maxIndex) {
                       currentIndex++;
                   } else {
                       currentIndex = 0; // Wrap around
+                      updateTrendingCarousel();
                   }
                   updateTrendingCarousel();
               });
-
+              
               trendingPrev.addEventListener('click', () => {
                   let visibleCount = 1;
                   if (window.innerWidth >= 1024) visibleCount = 4;
                   else if (window.innerWidth >= 768) visibleCount = 2;
-
+                  
                   const maxIndex = cards.length - visibleCount;
                   if (currentIndex > 0) {
                       currentIndex--;

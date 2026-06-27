@@ -32,6 +32,7 @@ class ProductVariant extends Model
      */
     protected $casts = [
         'price' => 'decimal:2',
+        'discount_price' => 'decimal:2',
         'stock' => 'integer',
     ];
 
