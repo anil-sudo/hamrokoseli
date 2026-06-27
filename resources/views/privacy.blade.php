@@ -1,9 +1,9 @@
 <x-frontend-layout>
 
     <!-- Hero Section -->
-    <section class="bg-white border-b">
+    <section class="bg-[#FFF7EF] border-b">
         <div class="max-w-5xl mx-auto px-6 py-12">
-            <h1 class="text-4xl md:text-5xl font-bold text-gray-900">
+            <h1 class="text-4xl md:text-5xl font-bold text-[#1F3D2E]">
                 Privacy Policy
             </h1>
 
@@ -19,11 +19,11 @@
     </section>
 
     <!-- Content -->
-    <section class="py-12">
+    <section class="py-12 bg-[#F5E8D6]">
         <div class="max-w-4xl mx-auto px-6">
 
             <!-- Introduction -->
-            <div class="bg-white rounded-xl shadow-sm p-6 md:p-8">
+            <div class="bg-[#FFF7EF] rounded-xl shadow-sm p-6 md:p-8">
                 <p class="leading-8">
                     Welcome to Hamro Koseli. This Privacy Policy explains how we
                     collect, use, disclose, and protect your information when
@@ -35,8 +35,8 @@
             <!-- Sections -->
             <div class="space-y-8 mt-8">
 
-                <div class="bg-white rounded-xl shadow-sm p-6 md:p-8">
-                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">
+                <div class="bg-[#FFF7EF] rounded-xl shadow-sm p-6 md:p-8">
+                    <h2 class="text-2xl font-semibold text-[#1F3D2E] mb-4">
                         1. Information We Collect
                     </h2>
 
@@ -56,8 +56,8 @@
                     </ul>
                 </div>
 
-                <div class="bg-white rounded-xl shadow-sm p-6 md:p-8">
-                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">
+                <div class="bg-[#FFF7EF] rounded-xl shadow-sm p-6 md:p-8">
+                    <h2 class="text-2xl font-semibold text-[#1F3D2E] mb-4">
                         2. How We Use Your Information
                     </h2>
 
@@ -72,8 +72,8 @@
                     </ul>
                 </div>
 
-                <div class="bg-white rounded-xl shadow-sm p-6 md:p-8">
-                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">
+                <div class="bg-[#FFF7EF] rounded-xl shadow-sm p-6 md:p-8">
+                    <h2 class="text-2xl font-semibold text-[#1F3D2E] mb-4">
                         3. Payment Information
                     </h2>
 
@@ -85,8 +85,8 @@
                     </p>
                 </div>
 
-                <div class="bg-white rounded-xl shadow-sm p-6 md:p-8">
-                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">
+                <div class="bg-[#FFF7EF] rounded-xl shadow-sm p-6 md:p-8">
+                    <h2 class="text-2xl font-semibold text-[#1F3D2E] mb-4">
                         4. Seller Verification
                     </h2>
 
@@ -97,8 +97,8 @@
                     </p>
                 </div>
 
-                <div class="bg-white rounded-xl shadow-sm p-6 md:p-8">
-                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">
+                <div class="bg-[#FFF7EF] rounded-xl shadow-sm p-6 md:p-8">
+                    <h2 class="text-2xl font-semibold text-[#1F3D2E] mb-4">
                         5. Cookies & Analytics
                     </h2>
 
@@ -109,8 +109,8 @@
                     </p>
                 </div>
 
-                <div class="bg-white rounded-xl shadow-sm p-6 md:p-8">
-                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">
+                <div class="bg-[#FFF7EF] rounded-xl shadow-sm p-6 md:p-8">
+                    <h2 class="text-2xl font-semibold text-[#1F3D2E] mb-4">
                         6. Sharing of Information
                     </h2>
 
@@ -121,8 +121,8 @@
                     </p>
                 </div>
 
-                <div class="bg-white rounded-xl shadow-sm p-6 md:p-8">
-                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">
+                <div class="bg-[#FFF7EF] rounded-xl shadow-sm p-6 md:p-8">
+                    <h2 class="text-2xl font-semibold text-[#1F3D2E] mb-4">
                         7. Marketing Communications
                     </h2>
 
@@ -133,8 +133,8 @@
                     </p>
                 </div>
 
-                <div class="bg-white rounded-xl shadow-sm p-6 md:p-8">
-                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">
+                <div class="bg-[#FFF7EF] rounded-xl shadow-sm p-6 md:p-8">
+                    <h2 class="text-2xl font-semibold text-[#1F3D2E] mb-4">
                         8. Children's Privacy
                     </h2>
 
@@ -145,8 +145,8 @@
                     </p>
                 </div>
 
-                <div class="bg-white rounded-xl shadow-sm p-6 md:p-8">
-                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">
+                <div class="bg-[#FFF7EF] rounded-xl shadow-sm p-6 md:p-8">
+                    <h2 class="text-2xl font-semibold text-[#1F3D2E] mb-4">
                         9. Data Security
                     </h2>
 
@@ -157,12 +157,12 @@
                     </p>
                 </div>
 
-                <div class="bg-white rounded-xl shadow-sm p-6 md:p-8">
-                    <h2 class="text-2xl font-semibold text-gray-900 mb-4">
+                <div class="bg-[#FFF7EF] rounded-xl shadow-sm p-6 md:p-8">
+                    <h2 class="text-2xl font-semibold text-[#1F3D2E] mb-4">
                         10. Contact Us
                     </h2>
 
-                    <div class="space-y-2">
+                    <div class="space-y-2 text-[#1F3D2E]">
                         <p>
                             <strong>Hamro Koseli Pvt. Ltd.</strong>
                         </p>

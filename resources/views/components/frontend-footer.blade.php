@@ -26,7 +26,7 @@
                                 class="text-slate-300 hover:text-white transition-colors">Categories</a></li>
                         <li><a href="{{ url('about-us') }}"
                                 class="text-slate-300 hover:text-white transition-colors">About Us</a></li>
-                        <li><a href="{{ url('privacy-policy') }}"
+                        <li><a href="{{ url('privacypolicy') }}"
                                 class="text-slate-300 hover:text-white transition-colors">Privacy Policy</a></li>
                     </ul>
                 </div>
