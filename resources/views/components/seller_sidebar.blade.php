@@ -26,7 +26,8 @@
     <!-- Brand / Logo Section -->
     <div class="px-6 pb-2 border-b border-white/10">
         <div class="flex items-center gap-3 mt-3.5">
-            <img src="{{ asset('images/logo.png') }}" alt="HamroKoseli Logo" class="w-10 h-10 bg-white rounded-full object-cover">
+            <img src="{{ asset('images/logo.png') }}" alt="HamroKoseli Logo"
+                class="w-10 h-10 bg-white rounded-full object-cover">
 
             <div class="transition-all duration-300 hover:translate-x-1">
                 <h1 class="text-2xl font-bold tracking-tight text-[#FFF7EF] font-sans">
@@ -37,8 +38,7 @@
     </div>
 
     <!-- Navigation Menu -->
-    <nav
-        class="navbar flex-1 px-4 py-4 space-y-1.5 overflow-y-auto scroll-smooth">
+    <nav class="navbar flex-1 px-4 py-4 space-y-1.5 overflow-y-auto scroll-smooth">
         <!-- Dashboard -->
         <a href="{{ route('dashboard') }}"
             class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl  hover:bg-[#D4A017] group transition-all duration-300 ease-out active:scale-[0.98]
@@ -63,6 +63,15 @@
             <i data-lucide="shopping-cart"
                 class="w-5 text-lg transition-transform duration-300 group-hover:scale-110"></i>
             <span class="font-medium transition-all duration-300 group-hover:translate-x-1">Orders</span>
+        </a>
+
+        <!-- Returns -->
+        <a href="{{ route('seller.returns') }}"
+            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017] group transition-all duration-300 ease-out active:scale-[0.98]
+           {{ Request::routeIs('seller.returns') ? 'bg-(--hover-color)' : '' }}">
+            <i data-lucide="refresh-ccw"
+                class="w-5 text-lg transition-transform duration-300 group-hover:scale-110"></i>
+            <span class="font-medium transition-all duration-300 group-hover:translate-x-1">Returns</span>
         </a>
 
         <!-- Payments -->

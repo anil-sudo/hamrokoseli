@@ -18,13 +18,13 @@
                     {{-- Right Icons --}}
                     <div class="flex items-center gap-3">
                         {{-- Notification Bell --}}
-                        <a href="#"
+                        <a href="{{ route('seller-notification') }}"
                             class="relative p-3 text-(--text-color) cursor-pointer hover:scale-110 transition-transform">
                             <i data-lucide="bell" class="w-5 fill-current text-(--text-light)"></i>
                         </a>
 
                         {{-- Profile --}}
-                        <a href=""
+                        <a href="{{ route('seller.profile') }}"
                             class="w-8 h-8 bg-(--text-light) rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-transform">
                             <i data-lucide="user" class="w-5 fill-current text-(--text-color)"></i>
                         </a>

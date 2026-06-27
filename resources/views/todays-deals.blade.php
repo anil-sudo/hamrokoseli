@@ -28,7 +28,7 @@
                             @endforeach
                         </div>
                     </div>
-                    
+
                     <!-- Sorting -->
                     <div class="flex items-center gap-3 self-start lg:self-auto shrink-0">
                         <span class="text-xs font-bold uppercase tracking-wider text-[#3A2A1F]/60">Sort By:</span>
@@ -51,10 +51,13 @@
                 @foreach($products as $product)
                     @php
                         $price = $product->price;
-                        $discountPrice = $product->discount_price ?? null;
+                        // For Eloquent Product models use resolvedDiscountPrice() which handles variants;
+                        // plain stdClass objects (static data) fall back to ->discount_price directly.
+                        $discountPrice = method_exists($product, 'resolvedDiscountPrice')
+                            ? $product->resolvedDiscountPrice()
+                            : ($product->discount_price ?? null);
                         $hasDiscount = !is_null($discountPrice) && $discountPrice < $price;
                         $displayPrice = $hasDiscount ? $discountPrice : $price;
-                        
                         $discountPercentage = $hasDiscount ? round((($price - $discountPrice) / $price) * 100) : 0;
                         $savings = $hasDiscount ? ($price - $discountPrice) : 0;
                     @endphp
@@ -65,18 +68,18 @@
                          data-price="{{ $displayPrice }}"
                          data-category="{{ strtolower($product->category->cat_name ?? '') }}"
                          data-discount="{{ $discountPercentage }}">
-                         
+
                         <div class="relative w-full aspect-[4/5] overflow-hidden rounded-t-3xl bg-slate-100">
                             <!-- Image Zoom on Hover -->
                             <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                            
+
                             @if ($hasDiscount)
                                 <!-- Discount Badge -->
                                 <span class="absolute top-4 left-4 discount-badge text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-full z-10">
                                     -{{ $discountPercentage }}% OFF
                                 </span>
                             @endif
-                            
+
                             <!-- Wishlist button (integrated with app.js local storage logic) -->
                             <button class="wishlist-btn absolute top-4 right-4 bg-white/95 hover:bg-white text-[#C65A3A] transition duration-300 w-10 h-10 rounded-full flex items-center justify-center shadow-md focus:outline-none cursor-pointer"
                                     data-product-id="{{ $product->id }}"
@@ -89,7 +92,7 @@
                                 <i class="far fa-heart text-lg"></i>
                             </button>
                         </div>
-                        
+
                         <div class="p-5 flex-grow flex flex-col justify-between">
                             <div>
                                 <span class="text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-1">
@@ -101,7 +104,7 @@
                                 <p class="text-xs text-[#3A2A1F]/60 font-semibold mb-3">
                                     by <span class="text-[#1F3D2E]">{{ $product->vendor->vendor_name ?? 'Local Artisan' }}</span>
                                 </p>
-                                
+
                                 <div class="flex items-center gap-1.5 mb-4">
                                     <div class="flex text-amber-500 gap-0.5 text-xs">
                                         @for ($i = 1; $i <= 5; $i++)
@@ -117,7 +120,7 @@
                                     <span class="text-[10px] text-[#3A2A1F]/60 font-bold">({{ $product->reviews_count ?? 24 }})</span>
                                 </div>
                             </div>
-                            
+
                             <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
                                 <div class="flex flex-col">
                                     @if ($hasDiscount)
@@ -154,17 +157,17 @@
 
     <!-- Product Details Modal Overlay -->
     <div id="product-details-modal" class="fixed inset-0 z-[99999] hidden bg-black/60 backdrop-blur-sm overflow-y-auto p-4 sm:p-6 md:p-10 transition-opacity duration-300 opacity-0">
-        
+
         <!-- Modal Content Container -->
         <div class="relative bg-[#F4EAE1] max-w-5xl mx-auto rounded-3xl overflow-hidden shadow-2xl border border-[#ebd7be]/50 transform scale-95 opacity-0 transition-all duration-300 ease-out" id="product-details-container">
-            
+
             <!-- Close Button -->
             <button id="close-product-details" class="absolute top-4 right-4 z-50 bg-white/80 hover:bg-white text-slate-800 rounded-full w-10 h-10 flex items-center justify-center shadow-md transition hover:scale-105 active:scale-95 cursor-pointer focus:outline-none">
                 <i class="fas fa-times text-lg"></i>
             </button>
 
             <div class="p-6 sm:p-8 md:p-10 lg:p-12 space-y-8">
-                
+
                 <!-- Breadcrumbs -->
                 <div class="text-[#3A2A1F]/60 text-xs font-semibold">
                     Home &nbsp;&rsaquo;&nbsp; Today's Deals &nbsp;&rsaquo;&nbsp; <span class="text-[#C65A3A]" id="modal-breadcrumb-cat">Category</span>
@@ -172,7 +175,7 @@
 
                 <!-- Two Column Layout -->
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                    
+
                     <!-- Left: Images -->
                     <div class="lg:col-span-6 space-y-6">
                         <div class="flex gap-4">
@@ -200,7 +203,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <!-- Right: Info -->
                     <div class="lg:col-span-6 space-y-6">
                         <div class="space-y-3">
@@ -212,27 +215,27 @@
                                     -0% OFF
                                 </span>
                             </div>
-                            
+
                             <div class="flex items-center gap-2 text-xs">
                                 <div class="flex text-yellow-500 gap-0.5" id="modal-stars-container">
                                     <!-- Stars dynamically loaded -->
                                 </div>
                                 <span class="text-[#3A2A1F]/60 font-semibold">(<span id="modal-reviews-count">0</span> Reviews)</span>
                             </div>
-                            
+
                             <h1 class="text-2xl sm:text-3xl font-bold text-[#1F3D2E] leading-tight font-serif" id="modal-product-name">Product Name</h1>
-                            
+
                             <div class="flex items-baseline gap-3">
                                 <span class="text-[#C65A3A] font-extrabold text-2xl" id="modal-product-price">Rs 0</span>
                                 <span class="text-slate-400 text-sm line-through hidden" id="modal-product-original-price">Rs 0</span>
                                 <span class="text-xs text-emerald-700 font-bold hidden" id="modal-savings-tag">Save Rs 0</span>
                             </div>
                         </div>
-                        
+
                         <p class="text-[#3A2A1F]/80 text-sm leading-relaxed font-medium" id="modal-product-desc">
                             Product description goes here...
                         </p>
-                        
+
                         <!-- Vendor/Artist Card -->
                         <div class="bg-[#FFF7EF] border border-[#ebd7be]/40 rounded-2xl p-4 flex items-center justify-between shadow-sm">
                             <div class="flex items-center gap-3">
@@ -332,7 +335,7 @@
 
             function sortProducts(criteria) {
                 const cardsArray = Array.from(productCards);
-                
+
                 cardsArray.sort((a, b) => {
                     if (criteria === 'discount') {
                         return parseInt(b.getAttribute('data-discount')) - parseInt(a.getAttribute('data-discount'));
@@ -409,10 +412,10 @@
                     if (hasDiscount) {
                         modalProductOriginalPrice.textContent = `Rs. ${originalPrice.toLocaleString()}`;
                         modalProductOriginalPrice.classList.remove('hidden');
-                        
+
                         modalDiscountTag.textContent = `-${discountPercentage}% OFF`;
                         modalDiscountTag.classList.remove('hidden');
-                        
+
                         modalSavingsTag.textContent = `Save Rs. ${savings.toLocaleString()}`;
                         modalSavingsTag.classList.remove('hidden');
                     } else {
@@ -526,13 +529,13 @@
             document.getElementById('modal-add-to-cart-btn').addEventListener('click', function() {
                 const name = modalProductName.textContent;
                 const qty = qtyInput.value;
-                
+
                 // Try sending custom event to update top-level toast / logic if needed
                 let event = new CustomEvent('toast-message', {
                     detail: { message: `${name} (${qty}) added to cart!`, type: 'success' }
                 });
                 document.dispatchEvent(event);
-                
+
                 // Direct call fallback
                 const toastContainer = document.getElementById('toast-container');
                 if (toastContainer) {
