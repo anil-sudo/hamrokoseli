@@ -101,7 +101,7 @@ class SellerController extends Controller
 
         $vendorId = $vendor->id;
 
-        $query = Product::with(['category', 'images'])
+        $query = Product::with(['category', 'images', 'variants'])
             ->where('vendor_id', $vendorId);
 
         if ($request->filled('category')) {
@@ -129,8 +129,12 @@ class SellerController extends Controller
         $categories = Category::where('status', 'active')->get();
 
         return view('seller.product-management', compact(
-            'products', 'totalProducts', 'activeProducts',
-            'outOfStock', 'draftProducts', 'categories'
+            'products',
+            'totalProducts',
+            'activeProducts',
+            'outOfStock',
+            'draftProducts',
+            'categories'
         ));
     }
 
@@ -153,29 +157,60 @@ class SellerController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        // Conditional Validation Rules
+        $rules = [
             'product_name' => 'required|string|max:200',
             'category' => 'required|exists:categories,id',
             'product_type' => 'nullable|string|max:100',
             'description' => 'required|string|max:2000',
-            'base_price' => 'required|numeric|min:0',
-            'discounted_price' => 'nullable|numeric|min:0',
-            'sku' => 'required|string|max:100|unique:products,sku',
-            'stock' => 'required|integer|min:0',
             'specifications' => 'nullable|array',
             'specifications.*.key' => 'nullable|string|max:100',
             'specifications.*.value' => 'nullable|string|max:255',
-            'variants' => 'nullable|array',
-            'variants.*.sku' => 'required_with:variants|string|max:100|distinct|unique:product_variants,sku',
-            'variants.*.size' => 'nullable|string|max:50',
-            'variants.*.color' => 'nullable|string|max:50',
-            'variants.*.price' => 'nullable|numeric|min:0',
-            'variants.*.stock' => 'nullable|integer|min:0',
-            'images' => 'nullable|array|max:4',
+            'images' => 'required|array|max:4',
             'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:10240',
-        ]);
+        ];
 
-        // 1. Create the product
+        $isVariantMode = $request->has('variants') && is_array($request->variants) && count($request->variants) > 0;
+
+        if ($isVariantMode) {
+            // VARIANTS MODE
+            $rules['variants.*.sku'] = 'required|string|max:100|distinct|unique:product_variants,sku';
+            $rules['variants.*.size'] = 'nullable|string|max:50';
+            $rules['variants.*.color'] = 'nullable|string|max:50';
+            $rules['variants.*.price'] = 'nullable|numeric|min:0';
+            $rules['variants.*.stock'] = 'nullable|integer|min:0';
+            $rules['variants.*.discounted_price'] = 'nullable|numeric|min:0';
+        } else {
+            // NORMAL MODE
+            $rules['base_price'] = 'required|numeric|min:1';
+            $rules['discounted_price'] = 'nullable|numeric|min:0';
+            $rules['sku'] = 'required|string|max:100|unique:products,sku';
+            $rules['stock'] = 'required|integer|min:0';
+        }
+
+        $validated = $request->validate($rules);
+
+        // Determine main product price and stock
+        $productStock = 0;
+        $productPrice = 0;
+        if (! $isVariantMode) {
+            $productPrice = $validated['base_price'];
+            $productStock = $validated['stock'] ?? 0;
+        } else {
+            $prices = collect($validated['variants'] ?? [])->pluck('price')->filter();
+            $productPrice = $prices->min() ?? 0;
+
+            $productStock = collect($validated['variants'] ?? [])
+                ->sum(fn ($v) => (int) ($v['stock'] ?? 0));
+        }
+
+        // Generate SKU for main product when using variants
+        $mainSku = $validated['sku'] ?? null;
+        if ($isVariantMode && empty($mainSku)) {
+            $mainSku = strtoupper(Str::slug($validated['product_name'], '-')).'-'.strtoupper(Str::random(6));
+        }
+
+        // Create Product
         $product = Product::create([
             'vendor_id' => auth()->user()->vendor->id,
             'category_id' => $validated['category'],
@@ -184,19 +219,19 @@ class SellerController extends Controller
             'product_type' => $validated['product_type'] ?? null,
             'description' => $validated['description'],
             'specifications' => ! empty($validated['specifications'])
-                                    ? $this->filterSpecs($validated['specifications'])
-                                    : null,
-            'price' => $validated['base_price'],
-            'discount_price' => ($validated['discounted_price'] ?? 0) > 0
-                                    ? $validated['discounted_price']
-                                    : null,
-            'stock' => $validated['stock'],
-            'sku' => $validated['sku'],
+                ? $this->filterSpecs($validated['specifications'])
+                : null,
+            'price' => $productPrice,
+            'discount_price' => isset($validated['discounted_price']) && $validated['discounted_price'] > 0
+                ? $validated['discounted_price']
+                : null,
+            'stock' => $productStock,
+            'sku' => $mainSku,
             'status' => 'active',
         ]);
 
-        // 2. Save variants
-        if (! empty($validated['variants'])) {
+        // Save Variants
+        if ($isVariantMode && ! empty($validated['variants'])) {
             foreach ($validated['variants'] as $variant) {
                 if (empty($variant['sku'])) {
                     continue;
@@ -207,18 +242,18 @@ class SellerController extends Controller
                     'sku' => $variant['sku'],
                     'size' => $variant['size'] ?? null,
                     'color' => $variant['color'] ?? null,
-                    'price' => ! empty($variant['price']) ? $variant['price'] : null,
+                    'price' => ! empty($variant['price']) ? $variant['price'] : $productPrice,
+                    'discount_price' => ! empty($variant['discounted_price']) ? $variant['discounted_price'] : null,
                     'stock' => $variant['stock'] ?? 0,
                     'status' => 'active',
                 ]);
             }
         }
 
-        // 3. Save images
+        // Save Images
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $index => $file) {
                 $path = $file->store('products', 'public');
-
                 $product->images()->create([
                     'path' => $path,
                     'type' => 'gallery',
@@ -262,9 +297,22 @@ class SellerController extends Controller
         return view('seller.order-details');
     }
 
+    public function returnProducts()
+    {
+        return view('seller.return');
+    }
+
+    public function returnDetails()
+    {
+        return view('seller.return-details');
+    }
+
     public function sellerProfile()
     {
-        return view('seller.profile');
+        $user = auth()->user();
+        $vendor = $user?->vendor;
+
+        return view('seller.profile', compact('user', 'vendor'));
     }
 
     public function sellerReview()

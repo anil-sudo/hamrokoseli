@@ -58,7 +58,11 @@
                         elseif ($rank === 3) $rankClass = 'rank-3';
                         
                         $price = $product->price;
-                        $discountPrice = $product->discount_price ?? null;
+                        // For Eloquent Product models use resolvedDiscountPrice() which handles variants;
+                        // plain stdClass objects (static data) fall back to ->discount_price directly.
+                        $discountPrice = method_exists($product, 'resolvedDiscountPrice')
+                            ? $product->resolvedDiscountPrice()
+                            : ($product->discount_price ?? null);
                         $hasDiscount = !is_null($discountPrice) && $discountPrice < $price;
                         $displayPrice = $hasDiscount ? $discountPrice : $price;
                     @endphp

@@ -20,21 +20,18 @@
         </div>
     @endif
 
-<div id="toastContainer"
-     class="fixed top-5 right-5 z-50 space-y-3"></div>
+    <div id="toastContainer" class="fixed top-5 right-5 z-50 space-y-3"></div>
 
-    <form id="productForm"
-          method="POST"
-          action="{{ route('product.store') }}"
-          enctype="multipart/form-data"
-          class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <form id="productForm" method="POST" action="{{ route('product.store') }}" enctype="multipart/form-data"
+        class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         @csrf
 
         <!-- Left Side - Main Form -->
         <div class="lg:col-span-8 space-y-6">
 
             <!-- General Information -->
-            <div class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6 lg:p-8">
+            <div
+                class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6 lg:p-8">
                 <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
                     <i data-lucide="info" class="w-6 h-6 text-(--primary-color)"></i>
                     General Information
@@ -62,8 +59,9 @@
                             <select id="category" name="category" required
                                 class="w-full px-5 py-4 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-base focus:outline-none focus:border-(--secondary-color) transition duration-200">
                                 <option value="">Select category</option>
-                                @foreach($categories as $cat)
-                                    <option value="{{ $cat->id }}" {{ old('category') == $cat->id ? 'selected' : '' }}>
+                                @foreach ($categories as $cat)
+                                    <option value="{{ $cat->id }}"
+                                        {{ old('category') == $cat->id ? 'selected' : '' }}>
                                         {{ $cat->cat_name }}
                                     </option>
                                 @endforeach
@@ -97,7 +95,8 @@
             </div>
 
             <!-- Product Specifications -->
-            <div class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6 lg:p-8">
+            <div
+                class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6 lg:p-8">
                 <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
                     <i data-lucide="settings" class="w-6 h-6 text-(--primary-color)"></i>
                     Product Specifications <span class="text-(--secondary-color)">*</span>
@@ -105,17 +104,14 @@
                 <p class="text-sm text-(--text-color)/70 mb-4">Add specifications like Material, Weight, Size, etc.</p>
 
                 <div id="specifications" class="space-y-4">
-                    {{-- Repopulate specs on validation failure --}}
-                    @if(old('specifications'))
-                        @foreach(old('specifications') as $i => $spec)
+                    @if (old('specifications'))
+                        @foreach (old('specifications') as $i => $spec)
                             <div class="flex gap-3 items-center spec-row">
                                 <input type="text" name="specifications[{{ $i }}][key]"
-                                    value="{{ $spec['key'] ?? '' }}"
-                                    placeholder="e.g. Material"
+                                    value="{{ $spec['key'] ?? '' }}" placeholder="e.g. Material"
                                     class="flex-1 px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
                                 <input type="text" name="specifications[{{ $i }}][value]"
-                                    value="{{ $spec['value'] ?? '' }}"
-                                    placeholder="e.g. 100% Wool"
+                                    value="{{ $spec['value'] ?? '' }}" placeholder="e.g. 100% Wool"
                                     class="flex-1 px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
                                 <button type="button" onclick="this.closest('.spec-row').remove()"
                                     class="p-2 text-red-400 hover:text-red-600 transition">
@@ -133,55 +129,58 @@
                 </button>
             </div>
 
-            <!-- Variants -->
-            <div class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6 lg:p-8">
-                <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
-                    <i data-lucide="layers" class="w-6 h-6 text-(--primary-color)"></i>
-                    Variants <span class="text-(--secondary-color)">*</span>
-                </h2>
-                <p class="text-sm text-(--text-color)/70 mb-4">Add variants like Size, Color, etc.</p>
+            <!-- Variants Section -->
+            <div id="variantsSection" class="hidden">
+                <div
+                    class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6 lg:p-8">
+                    <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
+                        <i data-lucide="layers" class="w-6 h-6 text-(--primary-color)"></i>
+                        Product Variants <span class="text-(--secondary-color)">*</span>
+                    </h2>
+                    <p class="text-sm text-(--text-color)/70 mb-4">Add different combinations of size, color, etc.</p>
 
-                <div id="variants" class="space-y-4">
-                    {{-- Repopulate variants on validation failure --}}
-                    @if(old('variants'))
-                        @foreach(old('variants') as $i => $variant)
-                            <div class="variant-row border border-(--text-color)/10 rounded-2xl p-4 bg-(--card-dark)/40">
-                                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
-                                    <input type="text" name="variants[{{ $i }}][sku]"
-                                        value="{{ $variant['sku'] ?? '' }}"
-                                        placeholder="SKU *"
-                                        class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-                                    <input type="text" name="variants[{{ $i }}][size]"
-                                        value="{{ $variant['size'] ?? '' }}"
-                                        placeholder="Size (e.g. M, L, XL)"
-                                        class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-                                    <input type="text" name="variants[{{ $i }}][color]"
-                                        value="{{ $variant['color'] ?? '' }}"
-                                        placeholder="Color"
-                                        class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-                                    <input type="number" name="variants[{{ $i }}][price]"
-                                        value="{{ $variant['price'] ?? '' }}"
-                                        placeholder="Price override (Rs.)" min="0" step="1"
-                                        class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-                                    <input type="number" name="variants[{{ $i }}][stock]"
-                                        value="{{ $variant['stock'] ?? 0 }}"
-                                        placeholder="Stock" min="0"
-                                        class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
+                    <div id="variants" class="space-y-4">
+                        @if (old('variants'))
+                            @foreach (old('variants') as $i => $variant)
+                                <div
+                                    class="variant-row border border-(--text-color)/20 rounded-2xl p-5 bg-(--card-dark)/50">
+                                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
+                                        <input type="text" name="variants[{{ $i }}][sku]"
+                                            value="{{ $variant['sku'] ?? '' }}" placeholder="SKU *"
+                                            class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
+                                        <input type="text" name="variants[{{ $i }}][size]"
+                                            value="{{ $variant['size'] ?? '' }}" placeholder="Size (e.g. M, L, XL)"
+                                            class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
+                                        <input type="text" name="variants[{{ $i }}][color]"
+                                            value="{{ $variant['color'] ?? '' }}" placeholder="Color"
+                                            class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
+                                        <input type="number" name="variants[{{ $i }}][price]"
+                                            value="{{ $variant['price'] ?? '' }}" placeholder="Price"
+                                            min="0" step="1"
+                                            class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
+                                        <input type="number" name="variants[{{ $i }}][discounted_price]"
+                                            value="{{ $variant['discounted_price'] ?? '' }}" placeholder="Discount Price"
+                                            min="0" step="1"
+                                            class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
+                                        <input type="number" name="variants[{{ $i }}][stock]"
+                                            value="{{ $variant['stock'] ?? 0 }}" placeholder="Stock" min="0"
+                                            class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
+                                    </div>
+                                    <button type="button" onclick="this.closest('.variant-row').remove()"
+                                        class="text-sm text-red-400 hover:text-red-600 flex items-center gap-1">
+                                        <i data-lucide="trash-2" class="w-4 h-4"></i> Remove variant
+                                    </button>
                                 </div>
-                                <button type="button" onclick="this.closest('.variant-row').remove()"
-                                    class="text-sm text-red-400 hover:text-red-600 flex items-center gap-1">
-                                    <i data-lucide="trash-2" class="w-4 h-4"></i> Remove variant
-                                </button>
-                            </div>
-                        @endforeach
-                    @endif
-                </div>
+                            @endforeach
+                        @endif
+                    </div>
 
-                <button type="button" onclick="addVariant()"
-                    class="mt-6 inline-flex items-center gap-2 px-6 py-3 border border-(--secondary-color) hover:bg-(--card-dark) bg-(--card-dark)/80 text-(--text-color) rounded-2xl font-medium">
-                    <i data-lucide="plus" class="w-5 h-5"></i>
-                    Add New Variant
-                </button>
+                    <button type="button" onclick="addVariant()"
+                        class="mt-6 inline-flex items-center gap-2 px-6 py-3 border border-(--secondary-color) hover:bg-(--card-dark) bg-(--card-dark)/80 text-(--text-color) rounded-2xl font-medium">
+                        <i data-lucide="plus" class="w-5 h-5"></i>
+                        Add New Variant
+                    </button>
+                </div>
             </div>
 
         </div>
@@ -190,7 +189,8 @@
         <div class="lg:col-span-4 space-y-6">
 
             <!-- Product Media -->
-            <div class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6 lg:p-8">
+            <div
+                class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6 lg:p-8">
                 <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
                     <i data-lucide="image" class="w-6 h-6 text-(--primary-color)"></i>
                     Product Media <span class="text-(--secondary-color)">*</span>
@@ -212,8 +212,9 @@
                 @enderror
             </div>
 
-            <!-- Pricing & Inventory -->
-            <div class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6 lg:p-8">
+            <!-- Pricing & Inventory (Normal Product) -->
+            <div id="pricingSection"
+                class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6 lg:p-8">
                 <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
                     <i data-lucide="dollar-sign" class="w-6 h-6 text-(--primary-color)"></i>
                     Pricing & Inventory <span class="text-(--secondary-color)">*</span>
@@ -222,10 +223,10 @@
                 <div class="space-y-5">
                     <div>
                         <label class="block text-sm font-medium text-(--text-dark) mb-2">
-                            Base Price (Rs.) <span class="text-(--secondary-color)">*</span>
+                            Price (Rs.) <span class="text-(--secondary-color)">*</span>
                         </label>
-                        <input type="number" id="base_price" name="base_price"
-                            value="{{ old('base_price', 0) }}" step="1" min="0" required
+                        <input type="number" id="base_price" name="base_price" value="{{ old('base_price', 0) }}"
+                            step="1" min="0" required
                             class="w-full px-5 py-4 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-base focus:outline-none focus:border-(--secondary-color) transition duration-200">
                         @error('base_price')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -246,8 +247,7 @@
                             <label class="block text-sm font-medium text-(--text-dark) mb-2">
                                 SKU <span class="text-(--secondary-color)">*</span>
                             </label>
-                            <input type="text" id="sku" name="sku"
-                                value="{{ old('sku') }}"
+                            <input type="text" id="sku" name="sku" value="{{ old('sku') }}"
                                 placeholder="e.g. HK-001" required
                                 class="w-full px-3 py-4 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-base focus:outline-none focus:border-(--secondary-color) transition duration-200">
                             @error('sku')
@@ -260,14 +260,27 @@
                         <label class="block text-sm font-medium text-(--text-dark) mb-2">
                             Stock Quantity <span class="text-(--secondary-color)">*</span>
                         </label>
-                        <input type="number" id="stock" name="stock"
-                            value="{{ old('stock', 0) }}" min="0" required
+                        <input type="number" id="stock" name="stock" value="{{ old('stock', 0) }}"
+                            min="0" required
                             class="w-full px-5 py-4 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-base focus:outline-none focus:border-(--secondary-color) transition duration-200">
                         @error('stock')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                         @enderror
                     </div>
                 </div>
+            </div>
+            <!-- Variant Toggle -->
+            <div class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6">
+                <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
+                    <i data-lucide="layers" class="w-6 h-6 text-(--primary-color)"></i>
+                    Product Variants
+                </h2>
+                <p class="text-sm text-(--text-color)/70 mb-4">Add different combinations of size, color, etc.</p>
+                <button type="button" id="variantToggleBtn" onclick="toggleVariants()"
+                    class="w-full inline-flex items-center justify-center gap-2 px-6 py-4 border border-(--secondary-color) text-(--secondary-color) hover:bg-(--card-dark) rounded-2xl font-medium transition">
+                    <i data-lucide="toggle-left" class="w-5 h-5"></i>
+                    Add Variants
+                </button>
             </div>
         </div>
 
@@ -285,6 +298,5 @@
         </div>
     </form>
 
-
-@vite('resources/js/product-create.js')
+    @vite('resources/js/product-create.js')
 </x-seller_layout>

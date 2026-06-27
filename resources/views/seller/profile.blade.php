@@ -33,75 +33,60 @@
                     </div>
 
                     <!-- Form Fields -->
-<div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
 
-    <!-- Full Name -->
-    <div>
-        <label class="block text-sm font-medium text-brand-dark mb-2">
-            Full Name <span class="text-(--secondary-color)">*</span>
-        </label>
-        <input
-            type="text"
-            name="name"
-            value="{{ old('name', $user->name) }}"
-            placeholder="Enter your name"
-            class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
-    </div>
+                        <!-- Full Name -->
+                        <div>
+                            <label class="block text-sm font-medium text-brand-dark mb-2">
+                                Full Name <span class="text-(--secondary-color)">*</span>
+                            </label>
+                            <input type="text" name="name" value="{{ old('name', $user->name) }}"
+                                placeholder="Enter your name"
+                                class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
+                        </div>
 
-    <!-- Email -->
-    <div>
-        <label class="block text-sm font-medium text-brand-dark mb-1">
-            Email Address <span class="text-(--secondary-color)">*</span>
-        </label>
-        <input
-            type="email"
-            name="email"
-            value="{{ old('email', $user->email) }}"
-            placeholder="e.g. example22@gmail.com"
-            class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
-    </div>
+                        <!-- Email -->
+                        <div>
+                            <label class="block text-sm font-medium text-brand-dark mb-1">
+                                Email Address <span class="text-(--secondary-color)">*</span>
+                            </label>
+                            <input type="email" name="email" value="{{ old('email', $user->email) }}"
+                                placeholder="e.g. example22@gmail.com"
+                                class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
+                        </div>
 
-    <!-- Phone -->
-    <div>
-        <label class="block text-sm font-medium text-brand-dark mb-1">
-            Phone Number <span class="text-(--secondary-color)">*</span>
-        </label>
-        <input
-            type="tel"
-            name="phone"
-            value="{{ old('phone', $user->phone) }}"
-            placeholder="e.g. 1234567890"
-            class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
-    </div>
+                        <!-- Phone -->
+                        <div>
+                            <label class="block text-sm font-medium text-brand-dark mb-1">
+                                Phone Number <span class="text-(--secondary-color)">*</span>
+                            </label>
+                            <input type="tel" name="phone" value="{{ old('phone', $user->phone) }}"
+                                placeholder="e.g. 1234567890"
+                                class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
+                        </div>
 
-    <!-- Preferred Delivery Region -->
-    <div>
-        <label class="block text-sm font-medium text-brand-dark mb-1">
-            Preferred Delivery Region
-            <span class="text-(--secondary-color)">*</span>
-        </label>
-        <input
-            type="text"
-            name="delivery_region"
-            value="{{ old('delivery_region', $vendor?->delivery_region) }}"
-            placeholder="e.g. Kathmandu Valley"
-            class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
-    </div>
+                        <div>
+                            <label class="block text-sm font-medium text-brand-dark mb-2">Address <span
+                                    class="text-(--secondary-color)">*</span></label>
+                            <input type="text" name="address" value="{{ old('address', $vendor?->vendor_address) }}"
+                                class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
+                        </div>
 
-    <!-- Address -->
-    <div>
-        <label class="block text-sm font-medium text-brand-dark mb-1">
-            Default Delivery Address
-        </label>
-        <input
-            type="text"
-            name="address"
-            value="{{ old('address', $vendor?->address) }}"
-            placeholder="e.g. Ward 3, Jhamsikhel, Lalitpur, Nepal"
-            class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
-    </div>
+                        <div>
+                            <label class="block text-sm font-medium text-brand-dark mb-2">City <span
+                                    class="text-(--secondary-color)">*</span></label>
+                            <input type="text" name="city" value="{{ old('city', $vendor?->city) }}"
+                                class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
+                        </div>
 
-</div>
+                        <div>
+                            <label class="block text-sm font-medium text-brand-dark mb-2">Province <span
+                                    class="text-(--secondary-color)">*</span></label>
+                            <input type="text" name="province" value="{{ old('province', $vendor?->province) }}"
+                                class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
+                        </div>
+                    </div>
+                </div>
                 <!-- Buttons -->
                 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mt-8">
 
@@ -117,6 +102,58 @@
                 </div>
             </div>
 
+            <!-- Shop Details -->
+            <div class="bg-(--card-bg) rounded-2xl shadow-sm p-6">
+                    <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
+                        <i data-lucide="store"></i>
+                        Shop Details
+                    </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-brand-dark mb-2">Shop Name <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" name="vendor_name" value="{{ old('vendor_name', $vendor?->vendor_name) }}"
+                            required
+                            class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-brand-dark mb-2">Owner Name <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" name="owner_name" value="{{ old('owner_name', $vendor?->owner_name) }}"
+                            required
+                            class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-brand-dark mb-2">Shop Email <span
+                                class="text-(--secondary-color)">*</span></label>
+                        <input type="email" name="vendor_email" value="{{ old('vendor_email', $vendor?->email) }}"
+                            class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-brand-dark mb-2">Shop Phone <span
+                                class="text-(--secondary-color)">*</span></label>
+                        <input type="tel" name="vendor_phone" value="{{ old('vendor_phone', $vendor?->phone) }}"
+                            class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
+                    </div>
+
+                </div>
+                <!-- Buttons -->
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mt-8">
+
+                    <button type="submit" id="saveProfileBtn"
+                        class="order-1 sm:order-2 inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-(--secondary-color) hover:bg-[#B94E31] text-(--text-light) rounded-2xl font-medium transition">
+                        Save &nbsp; Profile
+                    </button>
+                    <a href="#"
+                        class="order-2 sm:order-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 border border-(--secondary-color) text-(--text-color)! hover:bg-[#FFFAF5] bg-(--text-light) rounded-2xl font-medium transition">
+                        Discard &nbsp; Changes
+                    </a>
+
+                </div>
+            </div>
             <!-- Security & Privacy -->
             <div class="bg-(--card-bg) rounded-2xl shadow-sm p-6 hover:shadow-md transition-all duration-300">
                 <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
@@ -232,7 +269,6 @@
             </div>
         </div>
     </div>
-
     @vite('resources/js/seller-profile.js')
 
 </x-seller_layout>
