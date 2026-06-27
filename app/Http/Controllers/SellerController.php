@@ -211,7 +211,7 @@ class SellerController extends Controller
                     $vPrice = ! empty($variant['price']) ? $variant['price'] : $productPrice;
                     if ($variant['discounted_price'] >= $vPrice) {
                         return back()->withErrors([
-                            "variants.{$index}.discounted_price" => "The variant discount amount must be less than its price."
+                            "variants.{$index}.discounted_price" => 'The variant discount amount must be less than its price.',
                         ])->withInput();
                     }
                 }

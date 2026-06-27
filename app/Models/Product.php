@@ -164,8 +164,7 @@ class Product extends Model
     public function hasDiscount(): bool
     {
         if ($this->variants->isNotEmpty()) {
-            return $this->variants->contains(fn ($variant) =>
-                ! is_null($variant->discount_price)
+            return $this->variants->contains(fn ($variant) => ! is_null($variant->discount_price)
                 && $variant->discount_price > 0
                 && $variant->discount_price < $variant->price
             );
