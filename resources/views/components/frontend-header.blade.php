@@ -61,27 +61,11 @@
                     </a>
                 @else
                     <div class="hidden md:flex items-center gap-2 relative" id="account-menu-wrap">
-                        <button id="account-menu-btn" type="button"
+                        <a href="{{ route('Userdashboard') }}" id="account-menu-btn"
                             class="inline-flex items-center gap-2 rounded-full border border-white/90 text-white font-semibold px-4 py-1.5 text-sm hover:bg-white hover:text-[#1f3d2e] transition-all duration-300 active:scale-95 shadow-sm">
                             <i class="far fa-user-circle"></i>
                             <span>Hello, {{ explode(' ', auth()->user()->name)[0] }}</span>
-                            <i class="fas fa-chevron-down text-[10px]"></i>
-                        </button>
-                        <div id="account-menu-dropdown"
-                            class="hidden absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-100 py-2 z-50">
-                            <div class="px-4 py-2 border-b border-slate-100">
-                                <p class="text-xs text-slate-400">Signed in as</p>
-                                <p class="text-sm font-semibold text-slate-800 truncate">{{ auth()->user()->name }}</p>
-                            </div>
-                            <form action="{{ route('logout') }}" method="POST">
-                                @csrf
-                                <button type="submit"
-                                    class="w-full text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 font-semibold">
-                                    <i class="fas fa-sign-out-alt"></i>
-                                    Logout
-                                </button>
-                            </form>
-                        </div>
+                        </a>
                     </div>
                 @endguest
 
@@ -176,9 +160,9 @@
                 Sign Up
             </a>
         @else
-            <div class="flex-1 text-center text-white font-semibold py-2 text-sm">
+            <a href="{{ route('Userdashboard') }}" class="flex-1 text-center text-white font-semibold py-2 text-sm hover:text-emerald-200 transition-colors">
                 <i class="far fa-user-circle mr-1.5"></i>Hello, {{ explode(' ', auth()->user()->name)[0] }}
-            </div>
+            </a>
             <form action="{{ route('logout') }}" method="POST" class="flex-1">
                 @csrf
                 <button type="submit"

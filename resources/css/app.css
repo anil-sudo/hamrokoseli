@@ -26,15 +26,29 @@
 }
 
 :root {
-    --primary-color: #C65A3A;
-    --secondary-color: #585e6c;
-    --card-bg: #ffffff;
-    --card-dark: #f3f4f6;
+    /* Brand Colors */
+    --primary-color: #1F3D2E;
+    /* sidebar, navbar, h1 */
+    --secondary-color: #C65A3A;
+    /* buttons, links */
+
+    /* Text Colors */
+    --text-color: #3A2A1F;
+    /* main text */
     --text-light: #FFF7EF;
-    --text-color: #374151;
-    --text-dark: #111827;
-    --bg-color: #FFF7EF;
+    /* dashboard text / light text */
+    --text-dark: #1F2A24;
+    /* dark text */
+    --bg-color: #F5E8D6;
+    /* background Colors*/
+    --card-bg: #FFF7EF;
+    /* normal card background */
+
+    /* Special */
+    --card-dark: rgba(31, 61, 46, 0.15);
+    /* big card background */
     --hover-color: #D4A017;
+    /* button hover */
 }
 
 
