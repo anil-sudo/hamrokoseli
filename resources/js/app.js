@@ -564,6 +564,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Add to cart
     function addToCart(productData, qty = 1) {
+        // Guests get sent to login instead of having anything added
+        if (!window.isLoggedIn) {
+            window.location.href = window.loginUrl || '/userlogin';
+            return;
+        }
+
         qty = parseInt(qty) || 1;
         const index = cart.findIndex(item => String(item.id) === String(productData.id));
         if (index > -1) {
@@ -1052,6 +1058,10 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (addToCartModalBtn) {
             addToCartModalBtn.addEventListener('click', function() {
+                if (!window.isLoggedIn) {
+                    window.location.href = window.loginUrl || '/userlogin';
+                    return;
+                }
                 if (window.activeProduct && typeof window.addToCart === 'function') {
                     const qty = parseInt(qtyInput.value) || 1;
                     window.addToCart(window.activeProduct, qty);
@@ -1066,6 +1076,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (buyNowModalBtn) {
             buyNowModalBtn.addEventListener('click', function() {
+                if (!window.isLoggedIn) {
+                    window.location.href = window.loginUrl || '/userlogin';
+                    return;
+                }
                 if (window.activeProduct && typeof window.addToCart === 'function') {
                     const qty = parseInt(qtyInput.value) || 1;
                     window.addToCart(window.activeProduct, qty);
@@ -1120,4 +1134,3 @@ document.addEventListener('DOMContentLoaded', () => {
     renderWishlistPage();
     renderCartPage();
 });
-

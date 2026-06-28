@@ -57,6 +57,12 @@ Route::get('/contact-us', [PageController::class, 'contactus'])->name('contact-u
 Route::get('/cart', [PageController::class, 'cart'])->name('cart');
 Route::get('/viewdetails/{id}', [PageController::class, 'viewProduct'])->name('viewdetails');
 
+// ─── Requires login (guests are redirected to /userlogin automatically) ───────
+Route::middleware('auth')->group(function () {
+    Route::get('/wishlist', [PageController::class, 'wishlist'])->name('wishlist');
+    Route::get('/cart', [PageController::class, 'cart'])->name('cart');
+});
+
 // ─── User Auth routes (guest on web guard) ────────────────────────────────────
 Route::middleware('web')->group(function () {
     Route::get('/userlogin', [AuthController::class, 'showLogin'])->name('userlogin');
