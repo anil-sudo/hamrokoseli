@@ -1,5 +1,5 @@
 <x-frontend-layout>
-    
+
     <style>
         /* Hide browser number-input spinner arrows */
         .qty-val-input::-webkit-outer-spin-button,
@@ -9,8 +9,9 @@
     <div class="bg-[#F4EAE1] text-[#3A2A1F] min-h-screen py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
         <div class="max-w-7xl mx-auto">
 
-            {{-- ==================== MAIN LAYOUT ==================== --}}
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+            {{-- ==================== MAIN LAYOUT (now a single GET form) ==================== --}}
+            <form id="filter-form" method="GET" action="{{ route('shop') }}"
+                  class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
 
                 {{-- ===== LEFT SIDEBAR ===== --}}
                 <aside class="md:col-span-4 lg:col-span-3">
@@ -29,9 +30,23 @@
                         </div>
 
                         <div id="filter-body" class="hidden md:block mt-5 space-y-5">
+
+                            {{-- Search --}}
+                            <div class="mb-5">
+                                <div class="relative">
+                                    <input type="text" name="search" value="{{ request('search') }}"
+                                        placeholder="Search products..."
+                                        class="w-full bg-[#ebd7be]/20 border border-[#ebd7be]/60 rounded-xl pl-4 pr-10 py-2.5 text-sm text-[#1F3D2E] focus:outline-none focus:ring-2 focus:ring-[#C65A3A]/30">
+                                    <button type="submit"
+                                        class="absolute inset-y-0 right-0 flex items-center pr-3 text-[#C65A3A]">
+                                        <i class="fas fa-magnifying-glass text-sm"></i>
+                                    </button>
+                                </div>
+                            </div>
+
                             {{-- Collections --}}
                             <div class="mb-5">
-                                <button class="w-full flex items-center justify-between text-left focus:outline-none py-1">
+                                <button type="button" class="w-full flex items-center justify-between text-left focus:outline-none py-1">
                                     <span
                                         class="text-xs font-bold uppercase tracking-wider text-[#1F3D2E]">Collections</span>
                                     <i class="fas fa-minus text-[10px] text-[#C65A3A]"></i>
@@ -50,9 +65,9 @@
                                 </div>
                             </div>
 
-                            {{-- Categories --}}
+                            {{-- Categories (now built from the real Category table) --}}
                             <div class="pt-5 border-t border-[#ebd7be]/40 mb-5">
-                                <button class="w-full flex items-center justify-between text-left focus:outline-none py-1">
+                                <button type="button" class="w-full flex items-center justify-between text-left focus:outline-none py-1">
                                     <span
                                         class="text-xs font-bold uppercase tracking-wider text-[#1F3D2E]">Categories</span>
                                     <i class="fas fa-minus text-[10px] text-[#C65A3A]"></i>
@@ -61,103 +76,72 @@
                                     <label class="flex items-center justify-between cursor-pointer group">
                                         <span
                                             class="flex items-center gap-2.5 text-sm text-[#3A2A1F]/80 group-hover:text-[#3A2A1F] transition-colors">
-                                            <input type="radio" name="category" value="all" checked
+                                            <input type="radio" name="category" value="all"
+                                                {{ request('category', 'all') === 'all' ? 'checked' : '' }}
                                                 class="category-radio w-4 h-4 border-[#ebd7be] accent-[#C65A3A] focus:ring-0 bg-[#FFF7EF]">
                                             All Categories
                                         </span>
                                     </label>
-                                    <label class="flex items-center justify-between cursor-pointer group">
-                                        <span
-                                            class="flex items-center gap-2.5 text-sm text-[#3A2A1F]/80 group-hover:text-[#3A2A1F] transition-colors">
-                                            <input type="radio" name="category" value="textiles"
-                                                class="category-radio w-4 h-4 border-[#ebd7be] accent-[#C65A3A] focus:ring-0 bg-[#FFF7EF]">
-                                            Clothing &amp; Textiles
-                                        </span>
-                                    </label>
-                                    <label class="flex items-center justify-between cursor-pointer group">
-                                        <span
-                                            class="flex items-center gap-2.5 text-sm text-[#3A2A1F]/80 group-hover:text-[#3A2A1F] transition-colors">
-                                            <input type="radio" name="category" value="woodcraft"
-                                                class="category-radio w-4 h-4 border-[#ebd7be] accent-[#C65A3A] focus:ring-0 bg-[#FFF7EF]">
-                                            Woodcraft
-                                        </span>
-                                    </label>
-                                    <label class="flex items-center justify-between cursor-pointer group">
-                                        <span
-                                            class="flex items-center gap-2.5 text-sm text-[#3A2A1F]/80 group-hover:text-[#3A2A1F] transition-colors">
-                                            <input type="radio" name="category" value="metalware"
-                                                class="category-radio w-4 h-4 border-[#ebd7be] accent-[#C65A3A] focus:ring-0 bg-[#FFF7EF]">
-                                            Metalware
-                                        </span>
-                                    </label>
-                                    <label class="flex items-center justify-between cursor-pointer group">
-                                        <span
-                                            class="flex items-center gap-2.5 text-sm text-[#3A2A1F]/80 group-hover:text-[#3A2A1F] transition-colors">
-                                            <input type="radio" name="category" value="pottery-ceramics"
-                                                class="category-radio w-4 h-4 border-[#ebd7be] accent-[#C65A3A] focus:ring-0 bg-[#FFF7EF]">
-                                            Pottery &amp; Ceramics
-                                        </span>
-                                    </label>
-                                    <label class="flex items-center justify-between cursor-pointer group">
-                                        <span
-                                            class="flex items-center gap-2.5 text-sm text-[#3A2A1F]/80 group-hover:text-[#3A2A1F] transition-colors">
-                                            <input type="radio" name="category" value="art-paint"
-                                                class="category-radio w-4 h-4 border-[#ebd7be] accent-[#C65A3A] focus:ring-0 bg-[#FFF7EF]">
-                                            Art &amp; Paint
-                                        </span>
-                                    </label>
-                                    <label class="flex items-center justify-between cursor-pointer group">
-                                        <span
-                                            class="flex items-center gap-2.5 text-sm text-[#3A2A1F]/80 group-hover:text-[#3A2A1F] transition-colors">
-                                            <input type="radio" name="category" value="pottery"
-                                                class="category-radio w-4 h-4 border-[#ebd7be] accent-[#C65A3A] focus:ring-0 bg-[#FFF7EF]">
-                                            Pottery
-                                        </span>
-                                    </label>
+
+                                    @foreach($categories as $cat)
+                                        <label class="flex items-center justify-between cursor-pointer group">
+                                            <span
+                                                class="flex items-center gap-2.5 text-sm text-[#3A2A1F]/80 group-hover:text-[#3A2A1F] transition-colors">
+                                                <input type="radio" name="category" value="{{ $cat->slug }}"
+                                                    {{ request('category') === $cat->slug ? 'checked' : '' }}
+                                                    class="category-radio w-4 h-4 border-[#ebd7be] accent-[#C65A3A] focus:ring-0 bg-[#FFF7EF]">
+                                                {{ $cat->cat_name }}
+                                            </span>
+                                        </label>
+                                    @endforeach
                                 </div>
                             </div>
 
                             {{-- Price Range --}}
                             <div class="pt-5 border-t border-[#ebd7be]/40 mb-5">
-                                <button class="w-full flex items-center justify-between text-left focus:outline-none py-1">
+                                <button type="button" class="w-full flex items-center justify-between text-left focus:outline-none py-1">
                                     <span class="text-xs font-bold uppercase tracking-wider text-[#1F3D2E]">Price
                                         Range</span>
                                     <i class="fas fa-minus text-[10px] text-[#C65A3A]"></i>
                                 </button>
                                 <div class="mt-4 px-1">
-                                    {{-- Dual range slider --}}
+                                    {{-- Dual range slider (UI only — drives the two number inputs below) --}}
                                     <div class="relative w-full h-1.5 mt-3 mb-6">
                                         <div class="absolute h-full w-full bg-[#ebd7be]/50 rounded-full"></div>
                                         <div id="slider-track-accent" class="absolute h-full bg-[#C65A3A] rounded-full"
                                             style="left:0%;right:0%;"></div>
-                                        <input type="range" id="price-min" min="0" max="5000" value="0"
+                                        <input type="range" id="price-min" min="0" max="5000"
+                                            value="{{ request('min_price', 0) }}"
                                             class="range-slider-input">
-                                        <input type="range" id="price-max" min="0" max="5000" value="5000"
+                                        <input type="range" id="price-max" min="0" max="5000"
+                                            value="{{ request('max_price', 5000) }}"
                                             class="range-slider-input">
                                     </div>
-                                    {{-- Min / Max inputs --}}
+                                    {{-- Min / Max inputs — these are the ones actually submitted --}}
                                     <div
                                         class="flex items-center justify-between gap-2 text-xs font-semibold text-[#3A2A1F]/70">
                                         <div
                                             class="flex items-center bg-[#ebd7be]/20 rounded-xl border border-[#ebd7be]/60 px-3 py-2 w-[45%]">
                                             <span class="mr-1 text-[#3A2A1F]/60">Rs.</span>
-                                            <input type="number" id="input-min" value="0" min="0" max="5000"
+                                            <input type="number" id="input-min" name="min_price"
+                                                value="{{ request('min_price', 0) }}" min="0" max="5000"
                                                 class="w-full bg-transparent border-none p-0 text-[#1F3D2E] font-bold focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                                         </div>
                                         <span class="text-[#3A2A1F]/50 font-bold">TO</span>
                                         <div
                                             class="flex items-center bg-[#ebd7be]/20 rounded-xl border border-[#ebd7be]/60 px-3 py-2 w-[45%]">
                                             <span class="mr-1 text-[#3A2A1F]/60">Rs.</span>
-                                            <input type="number" id="input-max" value="5000" min="0" max="5000"
+                                            <input type="number" id="input-max" name="max_price"
+                                                value="{{ request('max_price', 5000) }}" min="0" max="5000"
                                                 class="w-full bg-transparent border-none p-0 text-[#1F3D2E] font-bold focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            {{-- Region (collapsed) --}}
+                            {{-- Region (collapsed, no backing data yet) --}}
                             <div class="pt-5 border-t border-[#ebd7be]/40 mb-5">
-                                <button class="w-full flex items-center justify-between text-left focus:outline-none py-1">
+                                <button type="button" class="w-full flex items-center justify-between text-left focus:outline-none py-1">
                                     <span class="text-xs font-bold uppercase tracking-wider text-[#1F3D2E]">Region</span>
                                     <i class="fas fa-plus text-[10px] text-[#C65A3A]"></i>
                                 </button>
@@ -165,14 +149,15 @@
 
                             {{-- Availability --}}
                             <div class="pt-5 border-t border-[#ebd7be]/40">
-                                <button class="w-full flex items-center justify-between text-left focus:outline-none py-1">
+                                <button type="button" class="w-full flex items-center justify-between text-left focus:outline-none py-1">
                                     <span
                                         class="text-xs font-bold uppercase tracking-wider text-[#1F3D2E]">Availability</span>
                                     <i class="fas fa-minus text-[10px] text-[#C65A3A]"></i>
                                 </button>
                                 <div class="mt-4 flex items-center gap-3">
                                     <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" class="sr-only peer">
+                                        <input type="checkbox" name="in_stock" value="1" id="in-stock-toggle"
+                                            class="sr-only peer" {{ request('in_stock') ? 'checked' : '' }}>
                                         <div
                                             class="w-9 h-5 bg-[#ebd7be] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#C65A3A]">
                                         </div>
@@ -201,12 +186,12 @@
                             <span class="text-xs font-semibold uppercase tracking-wider text-[#3A2A1F]/60">Sort
                                 by:</span>
                             <div class="relative inline-block">
-                                <select id="sort-select"
+                                <select id="sort-select" name="sort"
                                     class="appearance-none bg-[#FFF7EF] border border-[#ebd7be] rounded-full px-5 py-2.5 pr-10 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#1F3D2E]/25 text-[#1F3D2E] cursor-pointer shadow-sm">
-                                    <option>Newest First</option>
-                                    <option>Price: Low to High</option>
-                                    <option>Price: High to Low</option>
-                                    <option>Popularity</option>
+                                    <option value="newest" {{ request('sort', 'newest') === 'newest' ? 'selected' : '' }}>Newest First</option>
+                                    <option value="price_asc" {{ request('sort') === 'price_asc' ? 'selected' : '' }}>Price: Low to High</option>
+                                    <option value="price_desc" {{ request('sort') === 'price_desc' ? 'selected' : '' }}>Price: High to Low</option>
+                                    <option value="popularity" {{ request('sort') === 'popularity' ? 'selected' : '' }}>Popularity</option>
                                 </select>
                                 <div
                                     class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-[#1F3D2E]/70">
@@ -220,7 +205,7 @@
 
     @forelse($products as $product)
         <div
-            data-category="{{ strtolower($product->category?->name ?? 'uncategorized') }}"
+            data-category="{{ $product->category?->slug ?? 'uncategorized' }}"
             class="product-card bg-white rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group">
 
             <div class="relative w-full aspect-[4/5] overflow-hidden rounded-t-3xl">
@@ -243,7 +228,7 @@
                     data-product-price="{{ $product->effectivePrice() }}"
                     data-product-image="{{ $product->primaryImageUrl() }}"
                     data-product-desc="{{ $product->description }}"
-                    data-product-category="{{ $product->category?->name }}">
+                    data-product-category="{{ $product->category?->cat_name }}">
                     <i class="far fa-heart"></i>
                 </button>
 
@@ -253,7 +238,7 @@
 
                 <div>
                     <span class="text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-1">
-                        {{ $product->category?->name ?? 'General' }}
+                        {{ $product->category?->cat_name ?? 'General' }}
                     </span>
 
                     <h3 class="text-lg font-bold text-[#1F3D2E] mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1">
@@ -274,7 +259,7 @@
                        data-discount="{{ $product->hasDiscount() ? 'true' : 'false' }}"
                        data-discount-price="{{ $product->resolvedDiscountPrice() ?? '' }}"
                        data-image="{{ $product->primaryImageUrl() }}"
-                       data-category="{{ $product->category?->name ?? 'Crafts' }}"
+                       data-category="{{ $product->category?->cat_name ?? 'Crafts' }}"
                        data-vendor="{{ $product->vendor->business_name ?? $product->vendor->name ?? 'Local Artisan' }}"
                        data-desc="{{ $product->description }}"
                        data-rating="{{ $product->rating ?? 5 }}"
@@ -294,42 +279,87 @@
 
 </div>
 
-                    {{-- ==================== PAGINATION ==================== --}}
-                    <div class="flex items-center justify-center gap-3 mt-12 pb-6">
-                        <a href="#"
-                            class="w-10 h-10 rounded-full border border-[#1F3D2E]/20 flex items-center justify-center text-[#1F3D2E] hover:border-[#1F3D2E] hover:bg-[#1F3D2E]/5 transition duration-300 shadow-sm">
-                            <i class="fas fa-chevron-left text-xs"></i>
-                        </a>
-                        <div class="flex items-center gap-1">
-                            <a href="#"
-                                class="w-10 h-10 flex flex-col items-center justify-center text-sm font-bold text-[#1F3D2E] relative">
-                                <span>1</span>
-                                <span class="absolute bottom-1 w-5 h-0.5 bg-[#1F3D2E] rounded-full"></span>
-                            </a>
-                            <a href="#"
-                                class="w-10 h-10 flex items-center justify-center text-sm font-semibold text-[#3A2A1F]/60 hover:text-[#1F3D2E] transition-colors">2</a>
-                            <a href="#"
-                                class="w-10 h-10 flex items-center justify-center text-sm font-semibold text-[#3A2A1F]/60 hover:text-[#1F3D2E] transition-colors">3</a>
-                            <span class="text-sm font-semibold text-[#3A2A1F]/40 px-2 select-none">...</span>
-                            <a href="#"
-                                class="w-10 h-10 flex items-center justify-center text-sm font-semibold text-[#3A2A1F]/60 hover:text-[#1F3D2E] transition-colors">12</a>
+                    {{-- ==================== PAGINATION (real, data-driven) ==================== --}}
+                    @if($products->hasPages())
+                        <div class="flex items-center justify-center gap-3 mt-12 pb-6">
+
+                            {{-- Previous --}}
+                            @if($products->onFirstPage())
+                                <span
+                                    class="w-10 h-10 rounded-full border border-[#1F3D2E]/10 flex items-center justify-center text-[#1F3D2E]/30 shadow-sm cursor-not-allowed">
+                                    <i class="fas fa-chevron-left text-xs"></i>
+                                </span>
+                            @else
+                                <a href="{{ $products->previousPageUrl() }}"
+                                    class="w-10 h-10 rounded-full border border-[#1F3D2E]/20 flex items-center justify-center text-[#1F3D2E] hover:border-[#1F3D2E] hover:bg-[#1F3D2E]/5 transition duration-300 shadow-sm">
+                                    <i class="fas fa-chevron-left text-xs"></i>
+                                </a>
+                            @endif
+
+                            {{-- Page numbers (windowed around the current page) --}}
+                            <div class="flex items-center gap-1">
+                                @php
+                                    $start = max(1, $products->currentPage() - 2);
+                                    $end = min($products->lastPage(), $products->currentPage() + 2);
+                                @endphp
+
+                                @if($start > 1)
+                                    <a href="{{ $products->url(1) }}"
+                                        class="w-10 h-10 flex items-center justify-center text-sm font-semibold text-[#3A2A1F]/60 hover:text-[#1F3D2E] transition-colors">1</a>
+                                    @if($start > 2)
+                                        <span class="text-sm font-semibold text-[#3A2A1F]/40 px-2 select-none">...</span>
+                                    @endif
+                                @endif
+
+                                @for($page = $start; $page <= $end; $page++)
+                                    @if($page == $products->currentPage())
+                                        <a href="{{ $products->url($page) }}"
+                                            class="w-10 h-10 flex flex-col items-center justify-center text-sm font-bold text-[#1F3D2E] relative">
+                                            <span>{{ $page }}</span>
+                                            <span class="absolute bottom-1 w-5 h-0.5 bg-[#1F3D2E] rounded-full"></span>
+                                        </a>
+                                    @else
+                                        <a href="{{ $products->url($page) }}"
+                                            class="w-10 h-10 flex items-center justify-center text-sm font-semibold text-[#3A2A1F]/60 hover:text-[#1F3D2E] transition-colors">{{ $page }}</a>
+                                    @endif
+                                @endfor
+
+                                @if($end < $products->lastPage())
+                                    @if($end < $products->lastPage() - 1)
+                                        <span class="text-sm font-semibold text-[#3A2A1F]/40 px-2 select-none">...</span>
+                                    @endif
+                                    <a href="{{ $products->url($products->lastPage()) }}"
+                                        class="w-10 h-10 flex items-center justify-center text-sm font-semibold text-[#3A2A1F]/60 hover:text-[#1F3D2E] transition-colors">{{ $products->lastPage() }}</a>
+                                @endif
+                            </div>
+
+                            {{-- Next --}}
+                            @if($products->hasMorePages())
+                                <a href="{{ $products->nextPageUrl() }}"
+                                    class="w-10 h-10 rounded-full border border-[#1F3D2E]/20 flex items-center justify-center text-[#1F3D2E] hover:border-[#1F3D2E] hover:bg-[#1F3D2E]/5 transition duration-300 shadow-sm">
+                                    <i class="fas fa-chevron-right text-xs"></i>
+                                </a>
+                            @else
+                                <span
+                                    class="w-10 h-10 rounded-full border border-[#1F3D2E]/10 flex items-center justify-center text-[#1F3D2E]/30 shadow-sm cursor-not-allowed">
+                                    <i class="fas fa-chevron-right text-xs"></i>
+                                </span>
+                            @endif
                         </div>
-                        <a href="#"
-                            class="w-10 h-10 rounded-full border border-[#1F3D2E]/20 flex items-center justify-center text-[#1F3D2E] hover:border-[#1F3D2E] hover:bg-[#1F3D2E]/5 transition duration-300 shadow-sm">
-                            <i class="fas fa-chevron-right text-xs"></i>
-                        </a>
-                    </div>
+                    @endif
 
                 </main>
                 {{-- END RIGHT PRODUCT GRID --}}
 
-            </div>{{-- end main layout grid --}}
+            </form>{{-- end filter form / main layout grid --}}
         </div>
     </div>
 
-    {{-- ==================== RANGE SLIDER & COLLECTION PILLS JS ==================== --}}
+    {{-- ==================== FILTER UI BEHAVIOUR JS ==================== --}}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            const filterForm = document.getElementById('filter-form');
+
             // Mobile filters toggle
             const filterToggle = document.getElementById('filter-mobile-toggle');
             const filterBody = document.getElementById('filter-body');
@@ -355,7 +385,7 @@
             }
 
             // Accordion toggles for filter subsections
-            const subsectionButtons = document.querySelectorAll('#filter-body > div > button');
+            const subsectionButtons = document.querySelectorAll('#filter-body > div > button[type="button"]');
             subsectionButtons.forEach(btn => {
                 btn.addEventListener('click', function () {
                     const content = btn.nextElementSibling;
@@ -434,10 +464,23 @@
             minInput.addEventListener('change', onInputChange);
             maxInput.addEventListener('change', onInputChange);
 
-            // Initialise slider accent
+            // Initialise slider accent on load
             updateTrack(parseInt(minSlider.value), parseInt(maxSlider.value));
 
-            // Collection Pills Selectable Logic
+            // Submit the form once the user lets go of either price handle
+            minSlider.addEventListener('change', () => filterForm.submit());
+            maxSlider.addEventListener('change', () => filterForm.submit());
+
+            // Debounce the number inputs so we don't submit on every keystroke
+            let priceTimeout;
+            [minInput, maxInput].forEach(el => {
+                el.addEventListener('input', () => {
+                    clearTimeout(priceTimeout);
+                    priceTimeout = setTimeout(() => filterForm.submit(), 600);
+                });
+            });
+
+            // Collection Pills — visual only for now (no backing data field yet)
             const pills = document.querySelectorAll('.collection-pill');
             pills.forEach(pill => {
                 pill.addEventListener('click', () => {
@@ -450,70 +493,17 @@
                 });
             });
 
-            // Category Filtering Logic
-            const productCards = document.querySelectorAll('.product-card');
-            const categoryRadios = document.querySelectorAll('.category-radio');
-
-            function applyCategoryFilter() {
-                const checkedRadio = document.querySelector('.category-radio:checked');
-                const categoryValue = checkedRadio ? checkedRadio.value : 'all';
-
-                productCards.forEach(card => {
-                    const cardCategory = card.getAttribute('data-category');
-                    if (categoryValue === 'all' || cardCategory === categoryValue) {
-                        card.style.display = '';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-            }
-
-            categoryRadios.forEach(radio => {
-                radio.addEventListener('change', applyCategoryFilter);
+            // Category radios + sort + in-stock toggle auto-submit the form
+            document.querySelectorAll('.category-radio').forEach(radio => {
+                radio.addEventListener('change', () => filterForm.submit());
             });
 
-            // Parse URL parameters on page load
-            const urlParams = new URLSearchParams(window.location.search);
-            const categoryParam = urlParams.get('category');
-            if (categoryParam) {
-                const radioToSelect = document.querySelector(`.category-radio[value="${categoryParam}"]`);
-                if (radioToSelect) {
-                    radioToSelect.checked = true;
-                }
-            }
-            applyCategoryFilter();
+            document.getElementById('sort-select').addEventListener('change', () => filterForm.submit());
+            document.getElementById('in-stock-toggle').addEventListener('change', () => filterForm.submit());
 
-            // Reset Button Logic
+            // Reset Button — just navigate back to the bare shop URL
             document.getElementById('reset-filters').addEventListener('click', function () {
-                // Reset collection pills — activate "All", deactivate others
-                pills.forEach((p, i) => {
-                    if (i === 0) {
-                        p.classList.remove('bg-transparent', 'text-[#1F3D2E]', 'hover:bg-[#C65A3A]/10');
-                        p.classList.add('bg-[#C65A3A]', 'text-white', 'shadow-sm', 'hover:bg-[#b04a2c]');
-                    } else {
-                        p.classList.remove('bg-[#C65A3A]', 'text-white', 'shadow-sm', 'hover:bg-[#b04a2c]');
-                        p.classList.add('bg-transparent', 'text-[#1F3D2E]', 'hover:bg-[#C65A3A]/10');
-                    }
-                });
-
-                // Reset category radio buttons
-                const allRadio = document.querySelector('.category-radio[value="all"]');
-                if (allRadio) {
-                    allRadio.checked = true;
-                }
-                applyCategoryFilter();
-
-                // Reset all checkboxes in the sidebar
-                document.querySelectorAll('aside input[type="checkbox"]').forEach(cb => {
-                    cb.checked = false;
-                });
-
-                // Reset price range slider to 0 – 5000
-                minSlider.value = 0;
-                maxSlider.value = 5000;
-                minInput.value = 0;
-                maxInput.value = 5000;
-                updateTrack(0, 5000);
+                window.location.href = "{{ route('shop') }}";
             });
         });
     </script>
