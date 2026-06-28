@@ -53,6 +53,7 @@ Route::get('/top-sellers', [PageController::class, 'top_sellers'])->name('top-se
 Route::get('/about-us', [PageController::class, 'about_us'])->name('about-us');
 Route::get('/wishlist', [PageController::class, 'wishlist'])->name('wishlist');
 Route::get('/privacypolicy', [PageController::class, 'privacy'])->name('privacy');
+Route::get('/contact-us', [PageController::class, 'contactus'])->name('contact-us');
 Route::get('/cart', [PageController::class, 'cart'])->name('cart');
 Route::get('/viewdetails/{id}', [PageController::class, 'viewProduct'])->name('viewdetails');
 

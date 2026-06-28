@@ -281,6 +281,13 @@ class PageController extends Controller
     public function privacy()
     {
         return view('privacy');
+    }
+
+    public function contactus()
+    {
+        return view('contact-us');
+    }
+
     public function cart()
     {
         return view('cart');
