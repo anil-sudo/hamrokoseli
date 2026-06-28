@@ -19,7 +19,8 @@
                     </button>
                     <button onclick="bulkPrint()"
                         class="group flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 bg-(--secondary-color) text-(--text-light)/95 rounded-2xl text-sm font-medium hover:bg-[#B94E31] hover:shadow-lg active:scale-95 transition-all duration-200 shadow-md">
-                        <i data-lucide="printer" class=" w-5 h-5 group-hover:-rotate-3 transition-transform duration-200"></i>
+                        <i data-lucide="printer"
+                            class=" w-5 h-5 group-hover:-rotate-3 transition-transform duration-200"></i>
                         <span>Bulk Print</span>
                     </button>
                 </div>
@@ -234,7 +235,7 @@
             <div class="flex items-center gap-2 flex-wrap justify-center">
                 <button
                     class="pagination-btn w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center border border-gray-300 rounded-2xl hover:bg-[#1F3D2E] hover:text-white hover:border-[#1F3D2E] active:scale-95 transition-all duration-200 text-gray-700">
-                    <i class="fas fa-chevron-left text-xs"></i>
+                    <i data-lucide="chevron-left" class="w-3 h-3"></i>
                 </button>
                 <button
                     class="pagination-btn w-9 h-9 sm:w-10 sm:h-10 bg-[#1F3D2E] text-white rounded-2xl font-medium text-sm transition-all duration-200 hover:bg-[#2a5040] hover:scale-105">1</button>
@@ -244,8 +245,8 @@
                     class="pagination-btn w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center border border-gray-300 rounded-2xl hover:bg-[#1F3D2E] hover:text-white hover:border-[#1F3D2E] active:scale-95 transition-all duration-200 text-gray-700">3</button>
                 <button
                     class="pagination-btn w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center border border-gray-300 rounded-2xl hover:bg-[#1F3D2E] hover:text-white hover:border-[#1F3D2E] active:scale-95 transition-all duration-200 text-gray-700">
-                    <i class="fas fa-chevron-right text-xs"></i>
-                </button>
+                    <i data-lucide="chevron-right" class="w-3 h-3"></i>
+                 </button>
             </div>
         </div>
     </div>
@@ -257,7 +258,7 @@
                 tab.classList.add('text-(--text-dark)');
             });
             document.getElementById(`tab-${n}`).classList.add('tab-active', 'bg-(--secondary-color)',
-            'text-(--text-light)');
+                'text-(--text-light)');
         }
 
         function exportCSV() {
@@ -269,7 +270,7 @@
         }
     </script>
 
-<style>
+    <style>
         .tab-btn {
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }

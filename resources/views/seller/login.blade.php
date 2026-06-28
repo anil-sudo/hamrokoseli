@@ -19,7 +19,7 @@
             <!-- Logo Header -->
             <div class="z-10">
                 <a href="{{ url('/') }}" class="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-5 py-2 hover:bg-white/20 transition-all duration-300">
-                    <img src="{{ asset('images/logo.jpeg') }}" alt="Hamro Koseli Logo" class="w-8 h-8 rounded-full object-cover">
+                    <img src="{{ asset('images/logo.png') }}" alt="Hamro Koseli Logo" class="w-8 h-8 bg-white rounded-full object-cover">
                     <span class="text-white font-serif tracking-widest font-bold text-sm uppercase">Hamro Koseli</span>
                 </a>
             </div>
@@ -191,7 +191,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 4000);
     }
 });
-</script> 
+</script>
 </script>
 
     <!-- Password Toggle Script -->

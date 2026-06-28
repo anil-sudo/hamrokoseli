@@ -1,561 +1,389 @@
 <x-frontend-layout>
 
-    <div class="bg-[#F4EAE1] text-[#3A2A1F] min-h-screen py-8 sm:py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <main class="bg-[#f7fafc] min-h-screen">
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-r from-[#d93537] to-[#ff6b5b] text-white py-16 px-4 md:px-8 lg:px-16">
+      <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+        <div>
+          <span class="inline-block bg-white bg-opacity-20 text-white text-xs font-bold px-3 py-1 rounded-full mb-4">LIMITED TIME OFFER</span>
+          <h1 class="text-[30px] md:text-[24px] font-bold leading-[38px] md:leading-[30px] tracking-[-0.02em] mb-4 font-['Plus_Jakarta_Sans']">Authentic Nepali Heritage</h1>
+          <p class="text-white text-opacity-90 text-base leading-6 mb-6">Experience the pinnacle of Nepalese craftsmanship with our exclusive artisanal collection. Today's deals refresh at midnight.</p>
 
-            <!-- Page Header -->
-            <div class="mb-8">
-                <h1 class="text-3xl md:text-4xl font-bold text-[#1F3D2E] tracking-tight">Today's Deals</h1>
+          <!-- Countdown Timer (real — counts down to midnight) -->
+          <div class="flex gap-6 mb-8 font-['Plus_Jakarta_Sans']">
+            <div class="text-center">
+              <div id="countdown-hours" class="text-3xl font-bold">--</div>
+              <div class="text-xs font-semibold text-white text-opacity-80 uppercase">Hours</div>
             </div>
+            <span class="text-2xl font-bold">:</span>
+            <div class="text-center">
+              <div id="countdown-mins" class="text-3xl font-bold">--</div>
+              <div class="text-xs font-semibold text-white text-opacity-80 uppercase">Mins</div>
+            </div>
+            <span class="text-2xl font-bold">:</span>
+            <div class="text-center">
+              <div id="countdown-secs" class="text-3xl font-bold">--</div>
+              <div class="text-xs font-semibold text-white text-opacity-80 uppercase">Secs</div>
+            </div>
+          </div>
 
-            <!-- Filter Controls -->
-            <div class="bg-[#FFF7EF] rounded-3xl p-6 sm:p-8 border border-[#ebd7be]/40 shadow-sm mb-10">
-                <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-                    <!-- Category Pills -->
-                    <div>
-                        <span class="text-xs font-bold uppercase tracking-wider text-[#3A2A1F]/60 block mb-3">Filter by Category</span>
-                        <div class="flex flex-wrap gap-2.5" id="category-filters">
-                            <button data-category="all" class="filter-pill px-4 py-2 border border-[#C65A3A]/30 text-[#1F3D2E] text-xs font-bold rounded-full hover:bg-[#C65A3A]/10 active:scale-95 transition cursor-pointer active">
-                                All Categories
-                            </button>
-                            @php
-                                $categories = $products->pluck('category.cat_name')->unique()->filter()->values();
-                            @endphp
-                            @foreach($categories as $cat)
-                                <button data-category="{{ strtolower($cat) }}" class="filter-pill px-4 py-2 border border-[#C65A3A]/30 text-[#1F3D2E] text-xs font-bold rounded-full hover:bg-[#C65A3A]/10 active:scale-95 transition cursor-pointer">
-                                    {{ $cat }}
-                                </button>
-                            @endforeach
-                        </div>
-                    </div>
-                    
-                    <!-- Sorting -->
-                    <div class="flex items-center gap-3 self-start lg:self-auto shrink-0">
-                        <span class="text-xs font-bold uppercase tracking-wider text-[#3A2A1F]/60">Sort By:</span>
-                        <div class="relative">
-                            <select id="sort-select" class="appearance-none bg-[#FFF7EF] border border-[#ebd7be] rounded-full px-5 py-2.5 pr-10 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-[#1F3D2E]/25 text-[#1F3D2E] cursor-pointer shadow-sm">
-                                <option value="discount">Biggest Discount</option>
-                                <option value="price-asc">Price: Low to High</option>
-                                <option value="price-desc">Price: High to Low</option>
-                            </select>
-                            <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-[#1F3D2E]/70">
-                                <i class="fas fa-chevron-down text-xs"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Product Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8" id="product-grid">
-                @foreach($products as $product)
-                    @php
-                        $price = $product->price;
-                        $discountPrice = $product->discount_price ?? null;
-                        $hasDiscount = !is_null($discountPrice) && $discountPrice < $price;
-                        $displayPrice = $hasDiscount ? $discountPrice : $price;
-                        
-                        $discountPercentage = $hasDiscount ? round((($price - $discountPrice) / $price) * 100) : 0;
-                        $savings = $hasDiscount ? ($price - $discountPrice) : 0;
-                    @endphp
-                    <!-- Product Card -->
-                    <div class="product-card bg-white rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm flex flex-col group"
-                         data-id="{{ $product->id }}"
-                         data-name="{{ $product->name }}"
-                         data-price="{{ $displayPrice }}"
-                         data-category="{{ strtolower($product->category->cat_name ?? '') }}"
-                         data-discount="{{ $discountPercentage }}">
-                         
-                        <div class="relative w-full aspect-[4/5] overflow-hidden rounded-t-3xl bg-slate-100">
-                            <!-- Image Zoom on Hover -->
-                            <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                            
-                            @if ($hasDiscount)
-                                <!-- Discount Badge -->
-                                <span class="absolute top-4 left-4 discount-badge text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-full z-10">
-                                    -{{ $discountPercentage }}% OFF
-                                </span>
-                            @endif
-                            
-                            <!-- Wishlist button (integrated with app.js local storage logic) -->
-                            <button class="wishlist-btn absolute top-4 right-4 bg-white/95 hover:bg-white text-[#C65A3A] transition duration-300 w-10 h-10 rounded-full flex items-center justify-center shadow-md focus:outline-none cursor-pointer"
-                                    data-product-id="{{ $product->id }}"
-                                    data-product-name="{{ $product->name }}"
-                                    data-product-price="{{ $displayPrice }}"
-                                    data-product-image="{{ asset($product->image) }}"
-                                    data-product-desc="{{ $product->description }}"
-                                    data-product-category="{{ $product->category->cat_name ?? '' }}"
-                                    data-product-tag="{{ $product->tag ?? '' }}">
-                                <i class="far fa-heart text-lg"></i>
-                            </button>
-                        </div>
-                        
-                        <div class="p-5 flex-grow flex flex-col justify-between">
-                            <div>
-                                <span class="text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-1">
-                                    {{ $product->category->cat_name ?? 'Crafts' }}
-                                </span>
-                                <h3 class="text-base font-bold text-[#1F3D2E] mb-1.5 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1">
-                                    {{ $product->name }}
-                                </h3>
-                                <p class="text-xs text-[#3A2A1F]/60 font-semibold mb-3">
-                                    by <span class="text-[#1F3D2E]">{{ $product->vendor->vendor_name ?? 'Local Artisan' }}</span>
-                                </p>
-                                
-                                <div class="flex items-center gap-1.5 mb-4">
-                                    <div class="flex text-amber-500 gap-0.5 text-xs">
-                                        @for ($i = 1; $i <= 5; $i++)
-                                            @if ($i <= ($product->rating ?? 5))
-                                                <i class="fas fa-star text-[10px] sm:text-xs"></i>
-                                            @elseif ($i - ($product->rating ?? 5) < 1)
-                                                <i class="fas fa-star-half-alt text-[10px] sm:text-xs"></i>
-                                            @else
-                                                <i class="far fa-star text-[10px] sm:text-xs"></i>
-                                            @endif
-                                        @endfor
-                                    </div>
-                                    <span class="text-[10px] text-[#3A2A1F]/60 font-bold">({{ $product->reviews_count ?? 24 }})</span>
-                                </div>
-                            </div>
-                            
-                            <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
-                                <div class="flex flex-col">
-                                    @if ($hasDiscount)
-                                        <span class="text-[#C65A3A] font-extrabold text-base leading-none">Rs. {{ number_format($discountPrice) }}</span>
-                                        <span class="text-slate-400 text-xs line-through mt-1">Rs. {{ number_format($price) }}</span>
-                                    @else
-                                        <span class="text-[#C65A3A] font-extrabold text-base leading-none">Rs. {{ number_format($price) }}</span>
-                                    @endif
-                                </div>
-                                <a href="#" class="view-details-btn inline-flex items-center justify-center gap-1.5 bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm hover:shadow transition duration-300 active:scale-95 cursor-pointer"
-                                   data-id="{{ $product->id }}"
-                                   data-name="{{ $product->name }}"
-                                   data-price="{{ $displayPrice }}"
-                                   data-original-price="{{ $price }}"
-                                   data-discount="{{ $hasDiscount ? 'true' : 'false' }}"
-                                   data-discount-percentage="{{ $discountPercentage }}"
-                                   data-savings="{{ $savings }}"
-                                   data-image="{{ asset($product->image) }}"
-                                   data-category="{{ $product->category->cat_name ?? '' }}"
-                                   data-vendor="{{ $product->vendor->vendor_name ?? '' }}"
-                                   data-desc="{{ $product->description }}"
-                                   data-rating="{{ $product->rating ?? 5 }}"
-                                   data-reviews="{{ $product->reviews_count ?? 24 }}"
-                                   data-stock="{{ $product->stock ?? 10 }}">
-                                    View Details
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
+          <a href="#deals-grid" class="bg-white text-[#d93537] font-bold px-8 py-3 rounded-full hover:bg-opacity-90 transition font-['Plus_Jakarta_Sans'] inline-block">Shop The Drop</a>
         </div>
-    </div>
 
-    <!-- Product Details Modal Overlay -->
-    <div id="product-details-modal" class="fixed inset-0 z-[99999] hidden bg-black/60 backdrop-blur-sm overflow-y-auto p-4 sm:p-6 md:p-10 transition-opacity duration-300 opacity-0">
-        
-        <!-- Modal Content Container -->
-        <div class="relative bg-[#F4EAE1] max-w-5xl mx-auto rounded-3xl overflow-hidden shadow-2xl border border-[#ebd7be]/50 transform scale-95 opacity-0 transition-all duration-300 ease-out" id="product-details-container">
-            
-            <!-- Close Button -->
-            <button id="close-product-details" class="absolute top-4 right-4 z-50 bg-white/80 hover:bg-white text-slate-800 rounded-full w-10 h-10 flex items-center justify-center shadow-md transition hover:scale-105 active:scale-95 cursor-pointer focus:outline-none">
-                <i class="fas fa-times text-lg"></i>
+        <div class="flex justify-center">
+          <img src="{{ asset('images/Pottery.png') }}" alt="Authentic Nepali Heritage" class="max-w-md rounded-2xl shadow-lg">
+        </div>
+      </div>
+    </section>
+
+    <!-- Lightning Deals Section -->
+    <section id="deals-grid" class="py-12 px-4 md:px-8 lg:px-16">
+      <div class="max-w-7xl mx-auto">
+        <div class="flex justify-between items-center mb-8">
+          <div class="flex items-center gap-3">
+            <span class="text-2xl">⚡</span>
+            <h2 class="text-2xl font-bold text-[#181c1e] font-['Plus_Jakarta_Sans']">Today's Deals</h2>
+          </div>
+        </div>
+
+        <form id="deals-filter-form" method="GET" action="{{ route('todays-deals') }}">
+
+          <!-- Filter Controls -->
+          <div class="bg-white rounded-lg border border-[#e0e3e5] p-6 mb-8">
+            <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+              <!-- Category Filter -->
+              <div>
+                <span class="text-xs font-bold uppercase tracking-wider text-[#181c1e] block mb-3">Filter by Category</span>
+                <div class="flex flex-wrap gap-2" id="category-filters">
+                  <button type="submit" name="category" value="all"
+                    class="filter-pill px-4 py-2 border text-xs font-bold rounded-full transition
+                    {{ request('category', 'all') === 'all' ? 'bg-[#b51822] text-white border-[#b51822]' : 'border-[#e0e3e5] text-[#181c1e] hover:border-[#b51822]' }}">
+                    All Categories
+                  </button>
+                  @foreach($categories as $cat)
+                    <button type="submit" name="category" value="{{ $cat->slug }}"
+                      class="filter-pill px-4 py-2 border text-xs font-bold rounded-full transition
+                      {{ request('category') === $cat->slug ? 'bg-[#b51822] text-white border-[#b51822]' : 'border-[#e0e3e5] text-[#181c1e] hover:border-[#b51822]' }}">
+                      {{ $cat->cat_name }}
+                    </button>
+                  @endforeach
+                </div>
+              </div>
+
+              <!-- Sort -->
+              <div class="flex items-center gap-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-[#181c1e]">Sort By:</span>
+                <select id="sort-select" name="sort" class="border border-[#e0e3e5] rounded-lg px-4 py-2 text-sm font-semibold text-[#181c1e] focus:outline-none focus:ring-2 focus:ring-[#b51822]">
+                  <option value="discount" {{ request('sort', 'discount') === 'discount' ? 'selected' : '' }}>Biggest Discount</option>
+                  <option value="price-asc" {{ request('sort') === 'price-asc' ? 'selected' : '' }}>Price: Low to High</option>
+                  <option value="price-desc" {{ request('sort') === 'price-desc' ? 'selected' : '' }}>Price: High to Low</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product Grid -->
+          <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6" id="product-grid">
+            @forelse($products as $product)
+              @php
+                $price = (float) $product->price;
+                $discountPrice = (float) $product->discount_price;
+                $discountPercentage = $price > 0 ? round((($price - $discountPrice) / $price) * 100) : 0;
+                $avgRating = $product->reviews_avg_rating ? round($product->reviews_avg_rating, 1) : null;
+                $reviewCount = $product->reviews_count ?? 0;
+              @endphp
+              <div class="bg-white rounded-[16px] border border-[#e0e3e5] overflow-hidden hover:shadow-lg transition-all product-card">
+                <div class="relative aspect-square bg-gray-200 overflow-hidden">
+                  <img src="{{ $product->primaryImageUrl() }}" alt="{{ $product->name }}" class="w-full h-full object-cover hover:scale-105 transition duration-300">
+                  <span class="absolute top-3 left-3 bg-[#b51822] text-white text-xs font-bold px-3 py-1 rounded-full">-{{ $discountPercentage }}% OFF</span>
+                </div>
+                <div class="p-4">
+                  <span class="text-xs font-bold text-[#b51822] uppercase tracking-widest">{{ $product->category?->cat_name ?? 'Crafts' }}</span>
+                  <h3 class="font-bold text-[16px] leading-6 text-[#181c1e] mb-2 mt-1 font-['Plus_Jakarta_Sans'] line-clamp-2">{{ $product->name }}</h3>
+                  <p class="text-[22px] font-bold text-[#b51822] mb-1 font-['Plus_Jakarta_Sans']">Rs. {{ number_format($discountPrice) }}</p>
+                  <p class="text-sm text-[#5b403e] line-through mb-2">Rs. {{ number_format($price) }}</p>
+                  <div class="flex items-center gap-1 mb-4">
+                    @if($avgRating)
+                      <span class="text-yellow-400">★</span>
+                      <span class="text-xs text-[#5b403e] font-semibold">{{ $avgRating }}</span>
+                      <span class="text-xs text-[#5b403e]">({{ $reviewCount }} {{ Str::plural('Review', $reviewCount) }})</span>
+                    @else
+                      <span class="text-xs text-[#5b403e]">No reviews yet</span>
+                    @endif
+                  </div>
+                  <div class="flex gap-2">
+                    <a href="{{ route('viewdetails', $product->id) }}"
+                       class="flex-1 bg-[#b51822] text-white py-2 rounded-lg font-semibold hover:bg-[#930013] transition text-sm view-details-btn text-center cursor-pointer"
+                       data-id="{{ $product->id }}"
+                       data-name="{{ $product->name }}"
+                       data-price="{{ $discountPrice }}"
+                       data-original-price="{{ $price }}"
+                       data-discount="true"
+                       data-discount-percentage="{{ $discountPercentage }}"
+                       data-savings="{{ $price - $discountPrice }}"
+                       data-image="{{ $product->primaryImageUrl() }}"
+                       data-category="{{ $product->category?->cat_name ?? 'Crafts' }}"
+                       data-vendor="{{ $product->vendor->vendor_name ?? 'Local Artisan' }}"
+                       data-desc="{{ $product->description }}"
+                       data-rating="{{ $avgRating ?? 0 }}"
+                       data-reviews="{{ $reviewCount }}"
+                       data-stock="{{ $product->stock }}">
+                      View Details
+                    </a>
+                  </div>
+                </div>
+              </div>
+            @empty
+              <div class="col-span-full text-center py-12">
+                <p class="text-[#5b403e] text-lg">No deals available right now — check back soon.</p>
+              </div>
+            @endforelse
+          </div>
+
+          {{-- Pagination --}}
+          @if($products->hasPages())
+            <div class="flex items-center justify-center gap-3 mt-10">
+              @if($products->onFirstPage())
+                <span class="w-10 h-10 rounded-full border border-[#e0e3e5] flex items-center justify-center text-[#181c1e]/30 cursor-not-allowed">
+                  <i class="fas fa-chevron-left text-xs"></i>
+                </span>
+              @else
+                <a href="{{ $products->previousPageUrl() }}" class="w-10 h-10 rounded-full border border-[#e0e3e5] flex items-center justify-center text-[#181c1e] hover:bg-[#ebeef0] transition">
+                  <i class="fas fa-chevron-left text-xs"></i>
+                </a>
+              @endif
+
+              <div class="flex items-center gap-1">
+                @php
+                  $start = max(1, $products->currentPage() - 2);
+                  $end = min($products->lastPage(), $products->currentPage() + 2);
+                @endphp
+
+                @if($start > 1)
+                  <a href="{{ $products->url(1) }}" class="w-10 h-10 flex items-center justify-center text-sm font-semibold text-[#181c1e]/60 hover:text-[#181c1e] transition-colors">1</a>
+                  @if($start > 2)<span class="text-sm font-semibold text-[#181c1e]/40 px-2">...</span>@endif
+                @endif
+
+                @for($page = $start; $page <= $end; $page++)
+                  @if($page == $products->currentPage())
+                    <a href="{{ $products->url($page) }}" class="w-10 h-10 flex flex-col items-center justify-center text-sm font-bold text-[#b51822] relative">
+                      <span>{{ $page }}</span>
+                      <span class="absolute bottom-1 w-5 h-0.5 bg-[#b51822] rounded-full"></span>
+                    </a>
+                  @else
+                    <a href="{{ $products->url($page) }}" class="w-10 h-10 flex items-center justify-center text-sm font-semibold text-[#181c1e]/60 hover:text-[#181c1e] transition-colors">{{ $page }}</a>
+                  @endif
+                @endfor
+
+                @if($end < $products->lastPage())
+                  @if($end < $products->lastPage() - 1)<span class="text-sm font-semibold text-[#181c1e]/40 px-2">...</span>@endif
+                  <a href="{{ $products->url($products->lastPage()) }}" class="w-10 h-10 flex items-center justify-center text-sm font-semibold text-[#181c1e]/60 hover:text-[#181c1e] transition-colors">{{ $products->lastPage() }}</a>
+                @endif
+              </div>
+
+              @if($products->hasMorePages())
+                <a href="{{ $products->nextPageUrl() }}" class="w-10 h-10 rounded-full border border-[#e0e3e5] flex items-center justify-center text-[#181c1e] hover:bg-[#ebeef0] transition">
+                  <i class="fas fa-chevron-right text-xs"></i>
+                </a>
+              @else
+                <span class="w-10 h-10 rounded-full border border-[#e0e3e5] flex items-center justify-center text-[#181c1e]/30 cursor-not-allowed">
+                  <i class="fas fa-chevron-right text-xs"></i>
+                </span>
+              @endif
+            </div>
+          @endif
+
+        </form>
+      </div>
+    </section>
+
+    @if($featuredDeals->isNotEmpty())
+    <!-- Featured Star Deal Carousel Section -->
+    <section class="bg-[#2d3133] text-white py-16 px-4 md:px-8 lg:px-16">
+      <div class="max-w-7xl mx-auto">
+        <div class="flex justify-between items-center mb-8">
+          <div class="flex items-center gap-2">
+            <span class="text-xl">⭐</span>
+            <h2 class="text-2xl font-bold font-['Plus_Jakarta_Sans']">Featured Star Deals</h2>
+          </div>
+          <div class="flex gap-3">
+            <button id="featured-prev" type="button" class="p-2 border border-white rounded-lg hover:bg-white hover:text-[#2d3133] transition">
+              <i class="fas fa-chevron-left"></i>
             </button>
-
-            <div class="p-6 sm:p-8 md:p-10 lg:p-12 space-y-8">
-                
-                <!-- Breadcrumbs -->
-                <div class="text-[#3A2A1F]/60 text-xs font-semibold">
-                    Home &nbsp;&rsaquo;&nbsp; Today's Deals &nbsp;&rsaquo;&nbsp; <span class="text-[#C65A3A]" id="modal-breadcrumb-cat">Category</span>
-                </div>
-
-                <!-- Two Column Layout -->
-                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                    
-                    <!-- Left: Images -->
-                    <div class="lg:col-span-6 space-y-6">
-                        <div class="flex gap-4">
-                            <!-- Main image -->
-                            <div class="flex-grow aspect-[4/3] rounded-3xl overflow-hidden border border-[#ebd7be]/30 shadow-md bg-white">
-                                <img src="" id="modal-main-image" alt="" class="w-full h-full object-cover">
-                            </div>
-                        </div>
-
-                        <!-- Shipping and Returns Badges -->
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-[#ebd7be]/30">
-                            <div class="flex items-start gap-3 bg-[#FFF7EF]/50 p-3 rounded-xl border border-[#ebd7be]/30">
-                                <i class="fas fa-truck text-[#C65A3A] text-lg mt-0.5"></i>
-                                <div>
-                                    <h4 class="text-xs font-bold text-[#1F3D2E] uppercase tracking-wide">Insured Shipping</h4>
-                                    <p class="text-[10px] text-[#3A2A1F]/60 font-semibold mt-0.5">3-5 days delivery across Nepal</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start gap-3 bg-[#FFF7EF]/50 p-3 rounded-xl border border-[#ebd7be]/30">
-                                <i class="fas fa-rotate-left text-[#C65A3A] text-lg mt-0.5"></i>
-                                <div>
-                                    <h4 class="text-xs font-bold text-[#1F3D2E] uppercase tracking-wide">15-Day Returns</h4>
-                                    <p class="text-[10px] text-[#3A2A1F]/60 font-semibold mt-0.5">Easy exchange if not satisfied</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Right: Info -->
-                    <div class="lg:col-span-6 space-y-6">
-                        <div class="space-y-3">
-                            <div class="flex items-center gap-2">
-                                <span class="inline-flex items-center gap-1.5 bg-[#E5DCD0]/70 text-[#1F3D2E] text-[10px] font-bold tracking-wider uppercase px-3 py-1 rounded-full">
-                                    Authentic Handmade
-                                </span>
-                                <span id="modal-discount-tag" class="inline-flex items-center gap-1.5 bg-amber-500 text-[#1A2A20] text-[10px] font-extrabold tracking-wider uppercase px-3 py-1 rounded-full shadow-sm">
-                                    -0% OFF
-                                </span>
-                            </div>
-                            
-                            <div class="flex items-center gap-2 text-xs">
-                                <div class="flex text-yellow-500 gap-0.5" id="modal-stars-container">
-                                    <!-- Stars dynamically loaded -->
-                                </div>
-                                <span class="text-[#3A2A1F]/60 font-semibold">(<span id="modal-reviews-count">0</span> Reviews)</span>
-                            </div>
-                            
-                            <h1 class="text-2xl sm:text-3xl font-bold text-[#1F3D2E] leading-tight font-serif" id="modal-product-name">Product Name</h1>
-                            
-                            <div class="flex items-baseline gap-3">
-                                <span class="text-[#C65A3A] font-extrabold text-2xl" id="modal-product-price">Rs 0</span>
-                                <span class="text-slate-400 text-sm line-through hidden" id="modal-product-original-price">Rs 0</span>
-                                <span class="text-xs text-emerald-700 font-bold hidden" id="modal-savings-tag">Save Rs 0</span>
-                            </div>
-                        </div>
-                        
-                        <p class="text-[#3A2A1F]/80 text-sm leading-relaxed font-medium" id="modal-product-desc">
-                            Product description goes here...
-                        </p>
-                        
-                        <!-- Vendor/Artist Card -->
-                        <div class="bg-[#FFF7EF] border border-[#ebd7be]/40 rounded-2xl p-4 flex items-center justify-between shadow-sm">
-                            <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-[#1F3D2E] text-white flex items-center justify-center font-bold text-lg border border-[#ebd7be]">
-                                    A
-                                </div>
-                                <div>
-                                    <h3 class="text-xs font-bold text-[#C65A3A] leading-tight" id="modal-vendor-name">Artist/Store Name</h3>
-                                    <p class="text-[10px] text-[#3A2A1F]/60 font-semibold mt-0.5">Master Artisan from Nepal</p>
-                                </div>
-                            </div>
-                            <span class="text-[11px] font-bold text-[#C65A3A] border border-[#C65A3A]/40 px-3 py-1 rounded-full bg-white/60 font-sans">
-                                Verified Studio
-                            </span>
-                        </div>
-
-                        <!-- Quantity Selector -->
-                        <div class="flex items-center gap-4">
-                            <span class="text-sm font-bold text-[#1F3D2E]">Quantity</span>
-                            <div class="flex items-center border border-[#ebd7be] rounded-full bg-white px-3 py-1.5 gap-4 shadow-sm">
-                                <button type="button" class="qty-minus-btn text-[#3A2A1F] hover:text-[#C65A3A] font-bold text-sm w-5 h-5 flex items-center justify-center focus:outline-none transition cursor-pointer">−</button>
-                                <input type="number" class="qty-val-input text-sm font-bold text-[#1F3D2E] w-10 text-center bg-transparent border-none outline-none" value="1" min="1" max="999">
-                                <button type="button" class="qty-plus-btn text-[#3A2A1F] hover:text-[#C65A3A] font-bold text-sm w-5 h-5 flex items-center justify-center focus:outline-none transition cursor-pointer">+</button>
-                            </div>
-                            <span class="text-xs text-emerald-700 font-bold" id="modal-stock-status">In Stock</span>
-                        </div>
-
-                        <!-- Buy Action Buttons -->
-                        <div class="flex gap-3 pt-2">
-                            <button id="modal-add-to-cart-btn" class="bg-[#C65A3A] hover:bg-[#b04a2c] text-white font-bold py-3 px-5 rounded-2xl flex-1 text-center shadow-md active:scale-[0.98] transition text-sm cursor-pointer">
-                                Add to Cart
-                            </button>
-                            <button id="modal-buy-now-btn" class="border-2 border-[#C65A3A] text-[#C65A3A] hover:bg-[#C65A3A]/10 font-bold py-3 px-5 rounded-2xl flex-1 text-center active:scale-[0.98] transition text-sm cursor-pointer">
-                                Buy Now
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Tabs Section -->
-                <div class="pt-8 border-t border-[#ebd7be]/40 space-y-6">
-                    <div class="flex border-b border-[#ebd7be]/40 gap-6">
-                        <button class="tab-btn pb-3 text-sm font-bold text-[#C65A3A] border-b-2 border-[#C65A3A] focus:outline-none transition cursor-pointer" data-tab="details">
-                            Product Specifications
-                        </button>
-                        <button class="tab-btn pb-3 text-sm font-semibold text-[#3A2A1F]/60 hover:text-[#3A2A1F] focus:outline-none transition cursor-pointer" data-tab="story">
-                            Craftsmanship Story
-                        </button>
-                    </div>
-
-                    <div class="tab-panel text-sm text-[#3A2A1F]/80 leading-relaxed font-medium space-y-3" data-panel="details">
-                        <p>Detailed material specifications and sizes for this hand-crafted masterpiece. Locally sourced materials, eco-friendly processing, and traditional furnace/kiln techniques.</p>
-                        <ul class="list-disc pl-5 space-y-1.5 text-xs text-[#3A2A1F]/70">
-                            <li><strong>Material:</strong> 100% Authentic Nepalese sourced raw materials</li>
-                            <li><strong>Origin:</strong> Hand-crafted by local families under fair trade standards</li>
-                            <li><strong>Certification:</strong> Handcrafted Artisan Registry Certified</li>
-                        </ul>
-                    </div>
-
-                    <div class="tab-panel text-sm text-[#3A2A1F]/80 leading-relaxed font-medium hidden" data-panel="story">
-                        <p>This product represents decades of cultural heritage, handed down through generations of craftspeople in Nepal. By purchasing this item, you directly support local artisan households, preservation of ancestral heritage, and micro-entrepreneurship in rural communities.</p>
-                    </div>
-                </div>
-            </div>
+            <button id="featured-next" type="button" class="p-2 border border-white rounded-lg hover:bg-white hover:text-[#2d3133] transition">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
         </div>
-    </div>
 
-    <!-- Client-Side Filter, Sort and Modal Script -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // ==================== FILTER LOGIC ====================
-            const categoryPills = document.querySelectorAll('.filter-pill');
-            const productCards = document.querySelectorAll('.product-card');
-            const gridContainer = document.getElementById('product-grid');
+        <!-- Carousel Container -->
+        <div class="relative overflow-hidden">
+          <div id="featured-carousel" class="flex gap-6 transition-transform duration-500 ease-out">
+            @foreach($featuredDeals as $deal)
+              @php
+                $dPrice = (float) $deal->price;
+                $dDiscount = (float) $deal->discount_price;
+              @endphp
+              <div class="featured-card flex-shrink-0 w-full">
+                <div class="grid md:grid-cols-2 gap-6 items-center bg-[#1a1a1a] rounded-2xl p-6">
+                  <div class="flex justify-center">
+                    <img src="{{ $deal->primaryImageUrl() }}" alt="{{ $deal->name }}" class="w-full max-w-xs rounded-lg">
+                  </div>
+                  <div>
+                    <span class="inline-block bg-white bg-opacity-20 text-white text-xs font-bold px-3 py-1 rounded-full mb-3">FEATURED</span>
+                    <h3 class="text-2xl font-bold mb-3 font-['Plus_Jakarta_Sans']">{{ $deal->name }}</h3>
+                    <p class="text-white text-opacity-80 text-sm leading-6 mb-4 line-clamp-3">{{ $deal->description }}</p>
+                    <p class="text-sm text-white text-opacity-70 mb-1">Regularly Rs. {{ number_format($dPrice) }}</p>
+                    <p class="text-4xl font-bold mb-4 font-['Plus_Jakarta_Sans']">Rs. {{ number_format($dDiscount) }}</p>
+                    <div class="flex gap-3">
+                      <a href="{{ route('viewdetails', $deal->id) }}" class="bg-[#d4a017] hover:bg-[#b38a0a] text-black font-bold px-6 py-2 rounded-full transition flex items-center gap-2 font-['Plus_Jakarta_Sans'] text-sm">
+                        Buy Now <span>→</span>
+                      </a>
+                      <a href="{{ route('viewdetails', $deal->id) }}" class="border border-white text-white font-bold px-6 py-2 rounded-full hover:bg-white hover:text-[#2d3133] transition text-sm">Details</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            @endforeach
+          </div>
+        </div>
+      </div>
+    </section>
+    @endif
 
-            function filterProducts(category) {
-                productCards.forEach(card => {
-                    const cardCategory = card.getAttribute('data-category');
-                    if (category === 'all' || cardCategory === category) {
-                        card.style.display = '';
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-            }
+    @if($trendingProducts->isNotEmpty())
+    <!-- Trending Now Section -->
+    <section class="py-16 px-4 md:px-8 lg:px-16">
+      <div class="max-w-7xl mx-auto">
+        <div class="flex justify-between items-center mb-8">
+          <h2 class="text-2xl font-bold text-[#181c1e] flex items-center gap-2 font-['Plus_Jakarta_Sans']">
+            <span class="text-2xl">📈</span> Trending Now
+          </h2>
+          <div class="flex gap-3">
+            <button id="trending-prev" type="button" class="p-2 border border-[#e0e3e5] rounded-lg hover:bg-[#ebeef0] transition">
+              <i class="fas fa-chevron-left text-[#181c1e]"></i>
+            </button>
+            <button id="trending-next" type="button" class="p-2 border border-[#e0e3e5] rounded-lg hover:bg-[#ebeef0] transition">
+              <i class="fas fa-chevron-right text-[#181c1e]"></i>
+            </button>
+          </div>
+        </div>
 
-            categoryPills.forEach(pill => {
-                pill.addEventListener('click', function() {
-                    categoryPills.forEach(p => p.classList.remove('active'));
-                    pill.classList.add('active');
-                    filterProducts(pill.getAttribute('data-category'));
-                });
-            });
+        <!-- Trending Carousel -->
+        <div class="relative overflow-hidden">
+          <div id="trending-carousel" class="flex gap-6 transition-transform duration-500 ease-out">
+            @foreach($trendingProducts as $trend)
+              <div class="trending-card flex-shrink-0 w-full md:w-1/2 lg:w-1/4">
+                <a href="{{ route('viewdetails', $trend->id) }}" class="block bg-white rounded-[16px] border border-[#e0e3e5] overflow-hidden hover:shadow-lg transition-all">
+                  <div class="aspect-square bg-gray-200 flex items-center justify-center">
+                    <img src="{{ $trend->primaryImageUrl() }}" alt="{{ $trend->name }}" class="w-full h-full object-cover">
+                  </div>
+                  <div class="p-4">
+                    <span class="text-xs font-bold text-[#b51822] uppercase tracking-widest">{{ $trend->category?->cat_name ?? 'Crafts' }}</span>
+                    <h3 class="font-bold text-[16px] text-[#181c1e] mb-2 font-['Plus_Jakarta_Sans'] line-clamp-1">{{ $trend->name }}</h3>
+                    <p class="text-[22px] font-bold text-[#181c1e] font-['Plus_Jakarta_Sans']">Rs. {{ number_format($trend->effectivePrice()) }}</p>
+                  </div>
+                </a>
+              </div>
+            @endforeach
+          </div>
+        </div>
+      </div>
+    </section>
+    @endif
 
-            // ==================== SORT LOGIC ====================
-            const sortSelect = document.getElementById('sort-select');
+  </main>
 
-            function sortProducts(criteria) {
-                const cardsArray = Array.from(productCards);
-                
-                cardsArray.sort((a, b) => {
-                    if (criteria === 'discount') {
-                        return parseInt(b.getAttribute('data-discount')) - parseInt(a.getAttribute('data-discount'));
-                    } else if (criteria === 'price-asc') {
-                        return parseFloat(a.getAttribute('data-price')) - parseFloat(b.getAttribute('data-price'));
-                    } else if (criteria === 'price-desc') {
-                        return parseFloat(b.getAttribute('data-price')) - parseFloat(a.getAttribute('data-price'));
-                    }
-                    return 0;
-                });
+  <!-- Countdown + Sort Auto-Submit + Carousel Script -->
+  <script>
+      document.addEventListener('DOMContentLoaded', function() {
 
-                // Clear and re-append sorted items (non-destructive)
-                cardsArray.forEach(card => gridContainer.appendChild(card));
-            }
+          // ==================== REAL COUNTDOWN TO MIDNIGHT ====================
+          function updateCountdown() {
+              const now = new Date();
+              const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+              const diff = Math.max(0, (endOfDay - now) / 1000);
 
-            sortSelect.addEventListener('change', function() {
-                sortProducts(sortSelect.value);
-            });
+              const hours = Math.floor(diff / 3600);
+              const mins = Math.floor((diff % 3600) / 60);
+              const secs = Math.floor(diff % 60);
 
-            // Sort products by discount on load
-            sortProducts('discount');
+              document.getElementById('countdown-hours').textContent = String(hours).padStart(2, '0');
+              document.getElementById('countdown-mins').textContent = String(mins).padStart(2, '0');
+              document.getElementById('countdown-secs').textContent = String(secs).padStart(2, '0');
+          }
+          updateCountdown();
+          setInterval(updateCountdown, 1000);
 
-            // ==================== PRODUCT DETAILS MODAL LOGIC ====================
-            const modal = document.getElementById('product-details-modal');
-            const container = document.getElementById('product-details-container');
-            const closeBtn = document.getElementById('close-product-details');
-            const qtyInput = modal.querySelector('.qty-val-input');
+          // ==================== SORT AUTO-SUBMIT ====================
+          const dealsForm = document.getElementById('deals-filter-form');
+          const sortSelect = document.getElementById('sort-select');
+          if (sortSelect && dealsForm) {
+              sortSelect.addEventListener('change', () => dealsForm.submit());
+          }
 
-            // Dynamic Modal Fields
-            const modalMainImage = document.getElementById('modal-main-image');
-            const modalBreadcrumbCat = document.getElementById('modal-breadcrumb-cat');
-            const modalProductName = document.getElementById('modal-product-name');
-            const modalProductPrice = document.getElementById('modal-product-price');
-            const modalProductOriginalPrice = document.getElementById('modal-product-original-price');
-            const modalProductDesc = document.getElementById('modal-product-desc');
-            const modalVendorName = document.getElementById('modal-vendor-name');
-            const modalStarsContainer = document.getElementById('modal-stars-container');
-            const modalReviewsCount = document.getElementById('modal-reviews-count');
-            const modalStockStatus = document.getElementById('modal-stock-status');
-            const modalDiscountTag = document.getElementById('modal-discount-tag');
-            const modalSavingsTag = document.getElementById('modal-savings-tag');
+          // ==================== CAROUSEL LOGIC ====================
+          // 1. Featured Star Deals Carousel (1 slide at a time)
+          const featuredCarousel = document.getElementById('featured-carousel');
+          const featuredPrev = document.getElementById('featured-prev');
+          const featuredNext = document.getElementById('featured-next');
+          if (featuredCarousel && featuredPrev && featuredNext) {
+              const cards = featuredCarousel.querySelectorAll('.featured-card');
+              let currentIndex = 0;
 
-            // Add Click Handlers on Product Cards "View Details"
-            document.querySelectorAll('.view-details-btn').forEach(btn => {
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
+              function updateFeaturedCarousel() {
+                  if (cards.length === 0) return;
+                  const cardWidth = cards[0].getBoundingClientRect().width;
+                  featuredCarousel.style.transform = `translateX(-${currentIndex * (cardWidth + 24)}px)`;
+              }
 
-                    // Read details
-                    const name = btn.getAttribute('data-name');
-                    const price = parseFloat(btn.getAttribute('data-price'));
-                    const originalPrice = parseFloat(btn.getAttribute('data-original-price'));
-                    const hasDiscount = btn.getAttribute('data-discount') === 'true';
-                    const discountPercentage = parseInt(btn.getAttribute('data-discount-percentage') || '0');
-                    const savings = parseFloat(btn.getAttribute('data-savings') || '0');
-                    const image = btn.getAttribute('data-image');
-                    const category = btn.getAttribute('data-category');
-                    const vendor = btn.getAttribute('data-vendor');
-                    const desc = btn.getAttribute('data-desc');
-                    const rating = parseFloat(btn.getAttribute('data-rating') || '5');
-                    const reviews = btn.getAttribute('data-reviews');
-                    const stock = parseInt(btn.getAttribute('data-stock') || '10');
+              featuredNext.addEventListener('click', () => {
+                  currentIndex = currentIndex < cards.length - 1 ? currentIndex + 1 : 0;
+                  updateFeaturedCarousel();
+              });
 
-                    // Set modal fields
-                    modalProductName.textContent = name;
-                    modalMainImage.src = image;
-                    modalMainImage.alt = name;
-                    modalBreadcrumbCat.textContent = category;
-                    modalProductDesc.textContent = desc;
-                    modalVendorName.textContent = vendor;
-                    modalReviewsCount.textContent = reviews;
+              featuredPrev.addEventListener('click', () => {
+                  currentIndex = currentIndex > 0 ? currentIndex - 1 : cards.length - 1;
+                  updateFeaturedCarousel();
+              });
 
-                    // Pricing
-                    modalProductPrice.textContent = `Rs. ${price.toLocaleString()}`;
-                    if (hasDiscount) {
-                        modalProductOriginalPrice.textContent = `Rs. ${originalPrice.toLocaleString()}`;
-                        modalProductOriginalPrice.classList.remove('hidden');
-                        
-                        modalDiscountTag.textContent = `-${discountPercentage}% OFF`;
-                        modalDiscountTag.classList.remove('hidden');
-                        
-                        modalSavingsTag.textContent = `Save Rs. ${savings.toLocaleString()}`;
-                        modalSavingsTag.classList.remove('hidden');
-                    } else {
-                        modalProductOriginalPrice.classList.add('hidden');
-                        modalDiscountTag.classList.add('hidden');
-                        modalSavingsTag.classList.add('hidden');
-                    }
+              window.addEventListener('resize', updateFeaturedCarousel);
+          }
 
-                    // Stock status
-                    if (stock > 0) {
-                        modalStockStatus.textContent = 'In Stock';
-                        modalStockStatus.className = 'text-xs text-emerald-700 font-bold';
-                    } else {
-                        modalStockStatus.textContent = 'Out of Stock';
-                        modalStockStatus.className = 'text-xs text-red-500 font-bold';
-                    }
+          // 2. Trending Now Carousel
+          const trendingCarousel = document.getElementById('trending-carousel');
+          const trendingPrev = document.getElementById('trending-prev');
+          const trendingNext = document.getElementById('trending-next');
+          if (trendingCarousel && trendingPrev && trendingNext) {
+              const cards = trendingCarousel.querySelectorAll('.trending-card');
+              let currentIndex = 0;
 
-                    // Stars
-                    modalStarsContainer.innerHTML = '';
-                    for (let i = 1; i <= 5; i++) {
-                        const star = document.createElement('i');
-                        star.style.marginRight = '2px';
-                        if (i <= rating) {
-                            star.className = 'fas fa-star text-yellow-500';
-                        } else if (i - rating < 1) {
-                            star.className = 'fas fa-star-half-alt text-yellow-500';
-                        } else {
-                            star.className = 'far fa-star text-yellow-500';
-                        }
-                        modalStarsContainer.appendChild(star);
-                    }
+              function visibleCount() {
+                  if (window.innerWidth >= 1024) return 4;
+                  if (window.innerWidth >= 768) return 2;
+                  return 1;
+              }
 
-                    // Reset quantity
-                    qtyInput.value = 1;
+              function updateTrendingCarousel() {
+                  if (cards.length === 0) return;
+                  const cardWidth = cards[0].getBoundingClientRect().width;
+                  trendingCarousel.style.transform = `translateX(-${currentIndex * (cardWidth + 24)}px)`;
+              }
 
-                    // Open animation
-                    modal.classList.remove('hidden');
-                    modal.classList.add('block');
-                    setTimeout(() => {
-                        modal.classList.remove('opacity-0');
-                        modal.classList.add('opacity-100');
-                        container.classList.remove('scale-95', 'opacity-0');
-                        container.classList.add('scale-100', 'opacity-100');
-                    }, 10);
-                    document.body.style.overflow = 'hidden';
-                });
-            });
+              trendingNext.addEventListener('click', () => {
+                  const maxIndex = Math.max(0, cards.length - visibleCount());
+                  currentIndex = currentIndex < maxIndex ? currentIndex + 1 : 0;
+                  updateTrendingCarousel();
+              });
 
-            function closeModal() {
-                modal.classList.remove('opacity-100');
-                modal.classList.add('opacity-0');
-                container.classList.remove('scale-100', 'opacity-100');
-                container.classList.add('scale-95', 'opacity-0');
-                setTimeout(() => {
-                    modal.classList.remove('block');
-                    modal.classList.add('hidden');
-                }, 300);
-                document.body.style.overflow = '';
-            }
+              trendingPrev.addEventListener('click', () => {
+                  const maxIndex = Math.max(0, cards.length - visibleCount());
+                  currentIndex = currentIndex > 0 ? currentIndex - 1 : maxIndex;
+                  updateTrendingCarousel();
+              });
 
-            if (closeBtn) closeBtn.addEventListener('click', closeModal);
-            modal.addEventListener('click', function(e) {
-                if (e.target === modal) closeModal();
-            });
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') closeModal();
-            });
-
-            // Quantity buttons inside Modal
-            const qtyPlus = modal.querySelector('.qty-plus-btn');
-            const qtyMinus = modal.querySelector('.qty-minus-btn');
-
-            qtyPlus.addEventListener('click', function() {
-                qtyInput.value = parseInt(qtyInput.value) + 1;
-            });
-            qtyMinus.addEventListener('click', function() {
-                const val = parseInt(qtyInput.value);
-                if (val > 1) qtyInput.value = val - 1;
-            });
-            qtyInput.addEventListener('change', function() {
-                let val = parseInt(this.value) || 1;
-                if (val < 1) val = 1;
-                this.value = val;
-            });
-
-            // Tab toggling inside Modal
-            const tabBtns = modal.querySelectorAll('.tab-btn');
-            const tabPanels = modal.querySelectorAll('.tab-panel');
-
-            tabBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const target = btn.getAttribute('data-tab');
-                    tabBtns.forEach(b => {
-                        b.classList.remove('text-[#C65A3A]', 'border-b-2', 'border-[#C65A3A]', 'font-bold');
-                        b.classList.add('text-[#3A2A1F]/60', 'font-semibold');
-                    });
-                    btn.classList.add('text-[#C65A3A]', 'border-b-2', 'border-[#C65A3A]', 'font-bold');
-                    btn.classList.remove('text-[#3A2A1F]/60', 'font-semibold');
-
-                    tabPanels.forEach(panel => {
-                        if (panel.getAttribute('data-panel') === target) {
-                            panel.classList.remove('hidden');
-                        } else {
-                            panel.classList.add('hidden');
-                        }
-                    });
-                });
-            });
-
-            // Add to Cart / Buy Now actions
-            document.getElementById('modal-add-to-cart-btn').addEventListener('click', function() {
-                const name = modalProductName.textContent;
-                const qty = qtyInput.value;
-                
-                // Try sending custom event to update top-level toast / logic if needed
-                let event = new CustomEvent('toast-message', {
-                    detail: { message: `${name} (${qty}) added to cart!`, type: 'success' }
-                });
-                document.dispatchEvent(event);
-                
-                // Direct call fallback
-                const toastContainer = document.getElementById('toast-container');
-                if (toastContainer) {
-                    const toast = document.createElement('div');
-                    toast.className = 'toast-item';
-                    toast.innerHTML = `<i class="fa-regular fa-circle-check text-emerald-500"></i><span>${name} (${qty}) added to cart!</span>`;
-                    toastContainer.appendChild(toast);
-                    setTimeout(() => toast.classList.add('show'), 50);
-                    setTimeout(() => {
-                        toast.classList.remove('show');
-                        toast.classList.add('hide');
-                        setTimeout(() => toast.remove(), 400);
-                    }, 3000);
-                } else {
-                    alert(`${name} (${qty}) added to cart!`);
-                }
-            });
-
-            document.getElementById('modal-buy-now-btn').addEventListener('click', function() {
-                const name = modalProductName.textContent;
-                const qty = qtyInput.value;
-                alert(`Proceeding to checkout with ${qty}x ${name}!`);
-            });
-        });
-    </script>
+              window.addEventListener('resize', updateTrendingCarousel);
+          }
+      });
+  </script>
 </x-frontend-layout>
