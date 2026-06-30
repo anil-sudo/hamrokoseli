@@ -6,6 +6,8 @@ use App\Mail\NewVendorRegistered;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class VendorRegisterController extends Controller
 {
@@ -42,7 +44,9 @@ class VendorRegisterController extends Controller
         ]);
 
         // Assign Spatie role
-        $user->assignRole('vendor');
+        app()[PermissionRegistrar::class]->forgetCachedPermissions();
+        $role = Role::findOrCreate('vendor', 'web');
+        $user->assignRole($role);
 
         // Auto-create vendor record
         $vendor = $user->vendor()->create([

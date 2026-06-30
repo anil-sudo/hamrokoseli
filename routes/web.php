@@ -54,6 +54,7 @@ Route::get('/about-us', [PageController::class, 'about_us'])->name('about-us');
 Route::get('/wishlist', [PageController::class, 'wishlist'])->name('wishlist');
 Route::get('/privacypolicy', [PageController::class, 'privacy'])->name('privacy');
 Route::get('/contact-us', [PageController::class, 'contactus'])->name('contact-us');
+Route::get('/terms_&_conditions', [PageController::class, 'terms_conditions'])->name('terms&conditions');
 Route::get('/cart', [PageController::class, 'cart'])->name('cart');
 Route::get('/viewdetails/{id}', [PageController::class, 'viewProduct'])->name('viewdetails');
 
@@ -84,7 +85,6 @@ Route::middleware('web')->group(function () {
     Route::post('/vendor/register', [VendorRegisterController::class, 'register'])->name('vendor.register.post');
 });
 
-Route::get('test-email', [TestEmailControlelr::class, 'index'])->name('test.email');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/user-dashboard', [UserController::class, 'dashboard'])->name('Userdashboard');

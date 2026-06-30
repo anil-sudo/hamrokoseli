@@ -288,6 +288,11 @@ class PageController extends Controller
         return view('contact-us');
     }
 
+    public function terms_conditions()
+    {
+        return view('terms-conditions');
+    }
+
     public function cart()
     {
         return view('cart');
