@@ -84,7 +84,6 @@ Route::middleware('web')->group(function () {
     Route::post('/vendor/register', [VendorRegisterController::class, 'register'])->name('vendor.register.post');
 });
 
-Route::get('test-email', [TestEmailControlelr::class, 'index'])->name('test.email');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/user-dashboard', [UserController::class, 'dashboard'])->name('Userdashboard');

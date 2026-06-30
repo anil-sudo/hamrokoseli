@@ -6,7 +6,10 @@ use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 
 class UserRegisterController extends Controller
 {
@@ -23,16 +26,26 @@ class UserRegisterController extends Controller
                 'password' => ['required', 'string', 'min:8', 'confirmed'],
             ]);
 
-            $user = User::create([
+            $userData = [
                 'name' => $data['name'],
                 'email' => $data['email'],
-                'phone' => $data['phone'] ?? null,
                 'password' => Hash::make($data['password']),
                 'role' => 'user',
-                'is_active' => true,
-            ]);
+            ];
 
-            $user->assignRole('user');
+            if (Schema::hasColumn('users', 'is_active')) {
+                $userData['is_active'] = true;
+            }
+
+            if (Schema::hasColumn('users', 'phone')) {
+                $userData['phone'] = $data['phone'] ?? null;
+            }
+
+            $user = User::create($userData);
+
+            app()[PermissionRegistrar::class]->forgetCachedPermissions();
+            $role = Role::findOrCreate('user', 'web');
+            $user->assignRole($role);
 
             return redirect()->route('userlogin')
                 ->with('success', 'Account created successfully! Please sign in to continue.');
