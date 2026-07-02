@@ -115,7 +115,7 @@
                     <div>
                         <div class="flex justify-between items-center mb-1.5">
                             <label for="modal-password" class="block text-[10px] font-bold uppercase text-[#3A2A1F]/80 tracking-wider">Password</label>
-                            <a href="#" class="text-[11px] font-bold text-[#1F3D2E] hover:text-[#C65A3A] transition">Forgot password?</a>
+                            <a href="#" id="modal-show-forgot" class="text-[11px] font-bold text-[#1F3D2E] hover:text-[#C65A3A] transition">Forgot password?</a>
                         </div>
                         <div class="flex items-center bg-[#F5E8D6]/50 border border-[#ebd7be]/80 rounded-xl px-4 py-2.5 lg:py-3 focus-within:ring-2 focus-within:ring-[#1F3D2E]/40 focus-within:border-transparent transition-all">
                             <i class="fas fa-lock text-slate-400 text-sm shrink-0 mr-3"></i>
@@ -163,6 +163,113 @@
                 <div class="text-center mt-5 text-[11px] font-semibold text-slate-500">
                     New to the neighborhood?
                     <a href="#" id="modal-show-register" class="text-[#1F3D2E] font-bold hover:underline ml-1">Create an account</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================ FORGOT PASSWORD VIEW ============================ -->
+        <div id="forgot-view" class="w-full h-full flex flex-col lg:flex-row hidden">
+
+            <!-- LEFT IMAGE PANEL — desktop only -->
+            <div class="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 xl:p-14 bg-cover bg-center overflow-hidden"
+                 style="background-image: linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.55)), url('{{ asset('images/LoginPageImage.png') }}');">
+                <div class="z-10">
+                    <div class="inline-flex items-center gap-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-5 py-2.5">
+                        <img src="{{ asset('images/logo.png') }}" alt="Hamro Koseli Logo" class="w-9 h-9 bg-white rounded-full object-cover">
+                        <span class="text-white font-serif tracking-widest font-bold text-sm uppercase">Hamro Koseli</span>
+                    </div>
+                </div>
+                <div class="z-10 flex flex-col gap-5 mt-auto">
+                    <div>
+                        <h2 class="text-4xl xl:text-5xl font-bold font-serif leading-none tracking-tight text-white mb-3">
+                            RESET YOUR <span class="text-[#9FC3AF] font-semibold">PASSWORD</span>.
+                        </h2>
+                        <p class="text-white/80 text-sm max-w-sm font-medium leading-relaxed">
+                            Enter your email and we'll send you a secure link to create a new password.
+                        </p>
+                    </div>
+                    <div class="flex items-start gap-3.5 bg-black/25 backdrop-blur-sm border border-white/10 p-3.5 rounded-xl max-w-sm">
+                        <div class="w-9 h-9 rounded-full bg-[#1F3D2E]/20 border border-[#9FC3AF]/30 flex items-center justify-center shrink-0">
+                            <i class="fas fa-envelope-open-text text-[#9FC3AF] text-base"></i>
+                        </div>
+                        <div><h3 class="text-white font-bold text-[11px] tracking-wider uppercase">Check Your Inbox</h3><p class="text-white/70 text-[10px] mt-0.5">The reset link expires in 60 minutes</p></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Forgot Password Form -->
+            <div class="w-full lg:w-1/2 flex flex-col justify-center overflow-y-auto bg-[#FFF7EF] p-6 sm:p-8 lg:p-10 xl:p-12">
+
+                <!-- Desktop heading -->
+                <div class="hidden lg:block text-center mb-7">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#1F3D2E]/10 mb-4">
+                        <i class="fas fa-key text-[#1F3D2E] text-2xl"></i>
+                    </div>
+                    <h2 class="text-3xl xl:text-4xl font-bold font-serif text-[#1F2A24] tracking-wide mb-1">FORGOT PASSWORD?</h2>
+                    <p class="text-slate-500 text-sm font-semibold tracking-wide">No worries — we'll send you a reset link.</p>
+                </div>
+
+                <!-- Mobile heading -->
+                <div class="lg:hidden text-center mb-5 pt-2">
+                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#1F3D2E]/10 mb-3">
+                        <i class="fas fa-key text-[#1F3D2E] text-lg"></i>
+                    </div>
+                    <h2 class="text-xl font-bold font-serif text-[#1F2A24] tracking-wide">FORGOT PASSWORD?</h2>
+                    <p class="text-slate-400 text-xs font-medium mt-1">We'll send you a reset link.</p>
+                </div>
+
+                <!-- Success state (shown after sending) -->
+                <div id="forgot-success" class="hidden text-center py-4">
+                    <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#E8F3EC] mb-4">
+                        <i class="fas fa-paper-plane text-[#1F3D2E] text-2xl"></i>
+                    </div>
+                    <h3 class="text-base font-bold text-[#1F3D2E] mb-2">Check your email!</h3>
+                    <p class="text-slate-500 text-xs leading-relaxed mb-4">We've sent a password reset link to <strong id="forgot-sent-email" class="text-[#1F3D2E]"></strong>. It expires in 60 minutes.</p>
+                    <p class="text-[11px] text-slate-400">Didn't receive it? Check your spam folder or
+                        <button type="button" id="forgot-resend" class="text-[#C65A3A] font-bold hover:underline">resend the email</button>.
+                    </p>
+                </div>
+
+                <!-- Form state -->
+                <div id="forgot-form-wrap">
+                    <!-- Flash messages from server -->
+                    @if (session('status'))
+                        <div class="mb-4 rounded-xl bg-[#E8F3EC] border border-[#9FC3AF]/50 text-[#1F3D2E] text-xs font-semibold px-4 py-3 flex items-center gap-2">
+                            <i class="fas fa-check-circle text-[#1F3D2E]"></i>
+                            {{ session('status') }}
+                        </div>
+                    @endif
+
+                    <form id="forgot-password-form" action="{{ route('password.email') }}" method="POST" class="space-y-4">
+                        @csrf
+                        <div>
+                            <label for="forgot-email" class="block text-[10px] font-bold uppercase text-[#3A2A1F]/80 mb-1.5 tracking-wider">Email Address</label>
+                            <div class="flex items-center bg-[#F5E8D6]/50 border border-[#ebd7be]/80 rounded-xl px-4 py-2.5 lg:py-3 focus-within:ring-2 focus-within:ring-[#1F3D2E]/40 focus-within:border-transparent transition-all">
+                                <i class="far fa-envelope text-slate-400 text-sm shrink-0 mr-3"></i>
+                                <input type="email" id="forgot-email" name="email" required
+                                       placeholder="Enter your registered email"
+                                       value="{{ old('email') }}"
+                                       class="bg-transparent border-0 outline-none w-full text-slate-800 text-sm placeholder-slate-400 font-medium p-0 focus:ring-0">
+                            </div>
+                            @error('email')
+                                <p class="text-red-500 text-xs mt-1 font-medium flex items-center gap-1">
+                                    <i class="fas fa-exclamation-circle text-[10px]"></i>
+                                    {{ $message }}
+                                </p>
+                            @enderror
+                        </div>
+
+                        <button type="submit" id="forgot-submit-btn"
+                                class="bg-[#1F3D2E] hover:bg-[#13261d] text-white font-bold py-3 lg:py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 transition duration-300 w-full shadow-md shadow-emerald-950/20 active:scale-[0.98]">
+                            <i class="fas fa-paper-plane text-xs"></i>
+                            <span id="forgot-btn-text">SEND RESET LINK</span>
+                        </button>
+                    </form>
+                </div>
+
+                <div class="text-center mt-6 text-[11px] font-semibold text-slate-500">
+                    Remember your password?
+                    <a href="#" id="forgot-back-to-login" class="text-[#1F3D2E] font-bold hover:underline ml-1">Back to Sign In</a>
                 </div>
             </div>
         </div>
@@ -329,25 +436,21 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // === AUTO-SHOW REGISTER VIEW IF THERE ARE REGISTRATION ERRORS ===
+        // Auto-show correct panel based on server-side session state
+        @if (session('status'))
+            if (window.openLoginModal) window.openLoginModal(null, 'forgot');
+        @endif
+
         @if (session('show_register') || ($errors->any() && old('name')))
-            if (window.openLoginModal) {
-                window.openLoginModal(null, 'register');
-            }
+            if (window.openLoginModal) window.openLoginModal(null, 'register');
         @endif
 
-        // === AUTO-SHOW LOGIN VIEW IF THERE ARE LOGIN ERRORS ===
         @if ($errors->any() && !session('show_register') && !old('name'))
-            if (window.openLoginModal) {
-                window.openLoginModal(null, 'login');
-            }
+            if (window.openLoginModal) window.openLoginModal(null, 'login');
         @endif
 
-        // === SUCCESS MESSAGE - Auto open modal if success message exists ===
         @if (session('success'))
-            if (window.openLoginModal) {
-                window.openLoginModal(null, 'login');
-            }
+            if (window.openLoginModal) window.openLoginModal(null, 'login');
         @endif
     });
 </script>

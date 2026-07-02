@@ -6,6 +6,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\EsewaPaymentController;
 use App\Http\Controllers\KhaltiPaymentController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\SellerController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserRegisterController;
@@ -107,6 +108,23 @@ Route::middleware('web')->group(function () {
 
     Route::get('/vendor/register', [VendorRegisterController::class, 'show'])->name('vendor.register');
     Route::post('/vendor/register', [VendorRegisterController::class, 'register'])->name('vendor.register.post');
+
+    // ─── Forgot / Reset Password ──────────────────────────────────────────────
+    // GET  /forgot-password        → show the "enter your email" form (standalone page)
+    Route::get('/forgot-password', [PasswordResetController::class, 'showForgotForm'])
+        ->name('password.request');
+
+    // POST /forgot-password        → send the reset link email
+    Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink'])
+        ->name('password.email');
+
+    // GET  /reset-password/{token} → show the "choose new password" form
+    Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetForm'])
+        ->name('password.reset');
+
+    // POST /reset-password         → save the new password
+    Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])
+        ->name('password.update');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

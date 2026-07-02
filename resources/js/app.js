@@ -60,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const loginView = document.getElementById('login-view');
     const registerView = document.getElementById('register-view');
+    const forgotView = document.getElementById('forgot-view');
     const modalShowRegisterBtn = document.getElementById('modal-show-register');
     const modalShowLoginBtn = document.getElementById('modal-show-login');
 
@@ -84,6 +85,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Helper: hide all views, show only the requested one
+    function switchModalView(view) {
+        [loginView, registerView, forgotView].forEach(v => v && v.classList.add('hidden'));
+        if (view === 'register' && registerView) registerView.classList.remove('hidden');
+        else if (view === 'forgot' && forgotView) forgotView.classList.remove('hidden');
+        else if (loginView) loginView.classList.remove('hidden');
+    }
+
     function openLoginModal(e, view = 'login') {
         if (e) e.preventDefault();
         closeDrawer(); // Close mobile drawer if open
@@ -97,19 +106,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (loginModal && loginModalContainer) {
-            if (view === 'register') {
-                if (loginView && registerView) {
-                    loginView.classList.add('hidden');
-                    registerView.classList.remove('hidden');
-                }
-                updateUrlState('register');
-            } else {
-                if (loginView && registerView) {
-                    loginView.classList.remove('hidden');
-                    registerView.classList.add('hidden');
-                }
-                updateUrlState('login');
-            }
+            switchModalView(view);
+
+            // Only update URL for login / register (not forgot)
+            if (view === 'register') updateUrlState('register');
+            else if (view === 'login') updateUrlState('login');
 
             loginModal.classList.remove('hidden');
             loginModal.classList.add('flex');
@@ -139,11 +140,8 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 loginModal.classList.remove('flex');
                 loginModal.classList.add('hidden');
-                // Reset to login view on close
-                if (loginView && registerView) {
-                    loginView.classList.remove('hidden');
-                    registerView.classList.add('hidden');
-                }
+                // Reset to login view on close — hide all, show login
+                switchModalView('login');
             }, 300);
 
             document.body.style.overflow = '';
@@ -160,21 +158,38 @@ document.addEventListener('DOMContentLoaded', () => {
     if (closeLoginModalBtn) closeLoginModalBtn.addEventListener('click', closeLoginModal);
 
     // Switch to Register View
-    if (modalShowRegisterBtn && loginView && registerView) {
+    if (modalShowRegisterBtn) {
         modalShowRegisterBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            loginView.classList.add('hidden');
-            registerView.classList.remove('hidden');
+            switchModalView('register');
             updateUrlState('register');
         });
     }
 
     // Switch to Login View
-    if (modalShowLoginBtn && loginView && registerView) {
+    if (modalShowLoginBtn) {
         modalShowLoginBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            registerView.classList.add('hidden');
-            loginView.classList.remove('hidden');
+            switchModalView('login');
+            updateUrlState('login');
+        });
+    }
+
+    // Switch to Forgot Password View
+    const modalShowForgotBtn   = document.getElementById('modal-show-forgot');
+    const forgotBackToLoginBtn = document.getElementById('forgot-back-to-login');
+
+    if (modalShowForgotBtn) {
+        modalShowForgotBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            switchModalView('forgot');
+        });
+    }
+
+    if (forgotBackToLoginBtn) {
+        forgotBackToLoginBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            switchModalView('login');
             updateUrlState('login');
         });
     }
@@ -1221,4 +1236,71 @@ document.addEventListener('DOMContentLoaded', () => {
     syncWishlistIcons();
     renderWishlistPage();
     renderCartPage();
+
+    // ─── Forgot Password: AJAX form submit ────────────────────────────────────
+    const forgotForm    = document.getElementById('forgot-password-form');
+    const forgotResend  = document.getElementById('forgot-resend');
+
+    if (forgotResend) {
+        forgotResend.addEventListener('click', function() {
+            document.getElementById('forgot-success')?.classList.add('hidden');
+            document.getElementById('forgot-form-wrap')?.classList.remove('hidden');
+        });
+    }
+
+    if (forgotForm) {
+        forgotForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const btn     = document.getElementById('forgot-submit-btn');
+            const btnText = document.getElementById('forgot-btn-text');
+            const email   = document.getElementById('forgot-email').value;
+
+            // Loading state
+            btn.disabled = true;
+            btnText.textContent = 'Sending…';
+            const iconEl = btn.querySelector('i');
+            if (iconEl) iconEl.className = 'fas fa-spinner fa-spin text-xs';
+
+            // Clear previous inline errors
+            forgotForm.querySelectorAll('.forgot-error').forEach(el => el.remove());
+
+            try {
+                const res  = await fetch(forgotForm.action, {
+                    method : 'POST',
+                    headers: {
+                        'Content-Type' : 'application/json',
+                        'Accept'       : 'application/json',
+                        'X-CSRF-TOKEN' : document.querySelector('meta[name="csrf-token"]')?.content ?? '',
+                    },
+                    body: JSON.stringify({ email }),
+                });
+
+                const json = await res.json();
+
+                if (res.ok && (json.status || json.status === true)) {
+                    // Success: swap form for confirmation message
+                    document.getElementById('forgot-form-wrap')?.classList.add('hidden');
+                    const sentEl = document.getElementById('forgot-sent-email');
+                    if (sentEl) sentEl.textContent = email;
+                    document.getElementById('forgot-success')?.classList.remove('hidden');
+                } else {
+                    // Show inline error under the email input
+                    const errMsg = json.errors?.email?.[0] ?? json.message ?? 'Something went wrong. Please try again.';
+                    const errEl  = document.createElement('p');
+                    errEl.className = 'forgot-error text-red-500 text-xs mt-1.5 font-medium flex items-center gap-1';
+                    errEl.innerHTML = '<i class="fas fa-exclamation-circle text-[10px]"></i> ' + errMsg;
+                    document.getElementById('forgot-email')?.closest('div[class*="flex"]')?.after(errEl);
+
+                    btn.disabled = false;
+                    btnText.textContent = 'SEND RESET LINK';
+                    if (iconEl) iconEl.className = 'fas fa-paper-plane text-xs';
+                }
+            } catch {
+                btn.disabled = false;
+                btnText.textContent = 'SEND RESET LINK';
+                if (iconEl) iconEl.className = 'fas fa-paper-plane text-xs';
+            }
+        });
+    }
 });
