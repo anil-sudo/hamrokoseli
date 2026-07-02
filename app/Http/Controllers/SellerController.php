@@ -22,58 +22,52 @@ class SellerController extends Controller
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
-        if (Auth::attempt($credentials)) {
 
+        if (Auth::attempt($credentials, $request->boolean('remember'))) {
             $user = Auth::user();
 
-            if ($user->vendor->status === 'active') {
-                // $request->session()->regenerate();
-                return redirect()->route('dashboard');
-            } else {
+            // Block if not vendor or not active
+            if ($user->role !== 'vendor' || ! $user->is_active) {
                 Auth::logout();
-                $request->session()->invalidate();
 
-                return redirect()->intended('seller-login');
+                return back()
+                    ->withInput($request->only('email'))
+                    ->withErrors([
+                        'email' => 'You do not have a seller account.',
+                    ]);
             }
+
+            // Sync Spatie role if missing
+            if (! $user->hasRole('vendor')) {
+                $user->assignRole('vendor');
+            }
+
+            // Auto-create vendor record if missing
+            if (! $user->vendor) {
+                $user->vendor()->create([
+                    'vendor_name' => $user->name,
+                    'owner_name' => $user->name,
+                    'email' => $user->email,
+                    'phone' => $user->phone ?? '0000000000',
+                    'status' => 'pending',
+                ]);
+            }
+
+            $request->session()->regenerate();
+
+            return redirect()->route('dashboard');
         }
 
-        // Use 'vendor' guard instead of default
-        // if (Auth::guard('vendor')->attempt($credentials, $request->boolean('remember'))) {
-        //     $user = Auth::guard('vendor')->user();
-
-        //     if ($user->role !== 'vendor' || ! $user->is_active) {
-        //         Auth::guard('vendor')->logout();
-
-        //         return back()->withInput($request->only('email'))
-        //             ->withErrors(['email' => 'You do not have a seller account.']);
-        //     }
-
-        //     if (! $user->hasRole('vendor')) {
-        //         $user->assignRole('vendor');
-        //     }
-
-        //     if (! $user->vendor) {
-        //         $user->vendor()->create([
-        //             'vendor_name' => $user->name,
-        //             'owner_name' => $user->name,
-        //             'email' => $user->email,
-        //             'phone' => $user->phone ?? '0000000000',
-        //             'status' => 'pending',
-        //         ]);
-        //     }
-
-        //     $request->session()->regenerate();
-
-        //     return redirect()->route('dashboard');
-        // }
-
-        return back()->withInput($request->only('email'))
-            ->withErrors(['email' => 'These credentials do not match our records.']);
+        return back()
+            ->withInput($request->only('email'))
+            ->withErrors([
+                'email' => 'These credentials do not match our records.',
+            ]);
     }
 
     public function logout(Request $request)
     {
-        Auth::guard('vendor')->logout();
+        Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
@@ -101,7 +95,7 @@ class SellerController extends Controller
 
         $vendorId = $vendor->id;
 
-        $query = Product::with(['category', 'images', 'variants'])
+        $query = Product::with(['category', 'images'])
             ->where('vendor_id', $vendorId);
 
         if ($request->filled('category')) {
@@ -129,12 +123,8 @@ class SellerController extends Controller
         $categories = Category::where('status', 'active')->get();
 
         return view('seller.product-management', compact(
-            'products',
-            'totalProducts',
-            'activeProducts',
-            'outOfStock',
-            'draftProducts',
-            'categories'
+            'products', 'totalProducts', 'activeProducts',
+            'outOfStock', 'draftProducts', 'categories'
         ));
     }
 
@@ -157,78 +147,29 @@ class SellerController extends Controller
 
     public function store(Request $request)
     {
-        // Conditional Validation Rules
-        $rules = [
+        $validated = $request->validate([
             'product_name' => 'required|string|max:200',
             'category' => 'required|exists:categories,id',
             'product_type' => 'nullable|string|max:100',
             'description' => 'required|string|max:2000',
+            'base_price' => 'required|numeric|min:0',
+            'discounted_price' => 'nullable|numeric|min:0',
+            'sku' => 'required|string|max:100|unique:products,sku',
+            'stock' => 'required|integer|min:0',
             'specifications' => 'nullable|array',
             'specifications.*.key' => 'nullable|string|max:100',
             'specifications.*.value' => 'nullable|string|max:255',
-            'images' => 'required|array|max:4',
+            'variants' => 'nullable|array',
+            'variants.*.sku' => 'required_with:variants|string|max:100|distinct|unique:product_variants,sku',
+            'variants.*.size' => 'nullable|string|max:50',
+            'variants.*.color' => 'nullable|string|max:50',
+            'variants.*.price' => 'nullable|numeric|min:0',
+            'variants.*.stock' => 'nullable|integer|min:0',
+            'images' => 'nullable|array|max:4',
             'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:10240',
-        ];
+        ]);
 
-        $isVariantMode = $request->has('variants') && is_array($request->variants) && count($request->variants) > 0;
-
-        if ($isVariantMode) {
-            // VARIANTS MODE
-            $rules['variants.*.sku'] = 'required|string|max:100|distinct|unique:product_variants,sku';
-            $rules['variants.*.size'] = 'nullable|string|max:50';
-            $rules['variants.*.color'] = 'nullable|string|max:50';
-            $rules['variants.*.price'] = 'nullable|numeric|min:0';
-            $rules['variants.*.stock'] = 'nullable|integer|min:0';
-            $rules['variants.*.discounted_price'] = 'nullable|numeric|min:0';
-        } else {
-            // NORMAL MODE
-            $rules['base_price'] = 'required|numeric|min:1';
-            $rules['discounted_price'] = 'nullable|numeric|min:0|lt:base_price';
-            $rules['sku'] = 'required|string|max:100|unique:products,sku';
-            $rules['stock'] = 'required|integer|min:0';
-        }
-
-        $validated = $request->validate($rules);
-
-        // Determine main product price and stock
-        $productStock = 0;
-        $productPrice = 0;
-        if (! $isVariantMode) {
-            $productPrice = $validated['base_price'];
-            $productStock = $validated['stock'] ?? 0;
-        } else {
-            $prices = collect($validated['variants'] ?? [])->pluck('price')->filter();
-            $productPrice = $prices->min() ?? 0;
-
-            $productStock = collect($validated['variants'] ?? [])
-                ->sum(fn ($v) => (int) ($v['stock'] ?? 0));
-        }
-
-        // Custom validation for variant discount amount
-        if ($isVariantMode && ! empty($validated['variants'])) {
-            foreach ($validated['variants'] as $index => $variant) {
-                if (isset($variant['discounted_price']) && $variant['discounted_price'] !== '') {
-                    $vPrice = ! empty($variant['price']) ? $variant['price'] : $productPrice;
-                    if ($variant['discounted_price'] >= $vPrice) {
-                        return back()->withErrors([
-                            "variants.{$index}.discounted_price" => 'The variant discount amount must be less than its price.',
-                        ])->withInput();
-                    }
-                }
-            }
-        }
-
-        // Generate SKU for main product when using variants
-        $mainSku = $validated['sku'] ?? null;
-        if ($isVariantMode && empty($mainSku)) {
-            $mainSku = strtoupper(Str::slug($validated['product_name'], '-')).'-'.strtoupper(Str::random(6));
-        }
-
-        // Create Product
-        $productDiscountAmount = isset($validated['discounted_price'])
-            ? floatval($validated['discounted_price'])
-            : 0;
-
+        // 1. Create the product
         $product = Product::create([
             'vendor_id' => auth()->user()->vendor->id,
             'category_id' => $validated['category'],
@@ -237,50 +178,41 @@ class SellerController extends Controller
             'product_type' => $validated['product_type'] ?? null,
             'description' => $validated['description'],
             'specifications' => ! empty($validated['specifications'])
-                ? $this->filterSpecs($validated['specifications'])
-                : null,
-            'price' => $productPrice,
-            'discount_price' => $productDiscountAmount > 0
-                && $productDiscountAmount < $productPrice
-                ? ($productPrice - $productDiscountAmount)
-                : null,
-            'stock' => $productStock,
-            'sku' => $mainSku,
-            'status' => 'active',
+                                    ? $this->filterSpecs($validated['specifications'])
+                                    : null,
+            'price' => $validated['base_price'],
+            'discount_price' => ($validated['discounted_price'] ?? 0) > 0
+                                    ? $validated['discounted_price']
+                                    : null,
+            'stock' => $validated['stock'],
+            'sku' => $validated['sku'],
+            'status' => 'draft',
         ]);
 
-        // Save Variants
-        if ($isVariantMode && ! empty($validated['variants'])) {
+        // 2. Save variants
+        if (! empty($validated['variants'])) {
             foreach ($validated['variants'] as $variant) {
                 if (empty($variant['sku'])) {
                     continue;
                 }
-
-                $vPrice = ! empty($variant['price']) ? floatval($variant['price']) : $productPrice;
-                $vDiscountAmount = isset($variant['discounted_price']) && $variant['discounted_price'] !== ''
-                    ? floatval($variant['discounted_price'])
-                    : 0;
 
                 ProductVariant::create([
                     'product_id' => $product->id,
                     'sku' => $variant['sku'],
                     'size' => $variant['size'] ?? null,
                     'color' => $variant['color'] ?? null,
-                    'price' => $vPrice,
-                    'discount_price' => $vDiscountAmount > 0
-                        && $vDiscountAmount < $vPrice
-                        ? ($vPrice - $vDiscountAmount)
-                        : null,
+                    'price' => ! empty($variant['price']) ? $variant['price'] : null,
                     'stock' => $variant['stock'] ?? 0,
                     'status' => 'active',
                 ]);
             }
         }
 
-        // Save Images
+        // 3. Save images
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $index => $file) {
                 $path = $file->store('products', 'public');
+
                 $product->images()->create([
                     'path' => $path,
                     'type' => 'gallery',
@@ -324,58 +256,6 @@ class SellerController extends Controller
         return view('seller.order-details');
     }
 
-    public function returnProducts()
-    {
-        return view('seller.return');
-    }
-
-    public function returnDetails()
-    {
-        return view('seller.return-details');
-    }
-
-    public function sellerProfile()
-    {
-        $user = auth()->user();
-        $vendor = $user?->vendor;
-
-        return view('seller.profile', compact('user', 'vendor'));
-    }
-
-    public function sellerReview()
-    {
-        return view('seller.review');
-    }
-
-    public function sellerPayment()
-    {
-        return view('seller.payment');
-    }
-
-    public function paymentDetails()
-    {
-        return view('seller.payment-details');
-    }
-
-    public function sellerNotification()
-    {
-        return view('seller.notification');
-    }
-
-    public function sellerSupport()
-    {
-        return view('seller.support');
-    }
-
-    public function createTicket()
-    {
-        return view('seller.create-ticket');
-    }
-
-    public function sellerTicket()
-    {
-        return view('seller.tickets');
-    }
     // ─── Helpers ──────────────────────────────────────────────────────────────
 
     private function filterSpecs(array $specs): array

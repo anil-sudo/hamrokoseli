@@ -18,12 +18,7 @@ class PageController extends Controller
 
     public function shop()
     {
-        $products = Product::with(['category', 'vendor', 'images', 'variants'])
-            ->where('status', 'active')
-            ->latest()
-            ->get();
-
-        return view('shop', compact('products'));
+        return view('shop');
     }
 
     public function new_arrival()
@@ -44,14 +39,14 @@ class PageController extends Controller
         if ($products->isEmpty()) {
             // High fidelity mock discounted products matching database schema fields
             $products = collect([
-                (object) [
+                (object)[
                     'id' => 8,
                     'name' => 'Handwoven Wool Sweater',
                     'price' => 1899.00,
                     'discount_price' => 1299.00,
                     'image' => 'images/Sweaters.png',
-                    'category' => (object) ['cat_name' => 'Textiles'],
-                    'vendor' => (object) ['vendor_name' => 'The Wool Studio'],
+                    'category' => (object)['cat_name' => 'Textiles'],
+                    'vendor' => (object)['vendor_name' => 'The Wool Studio'],
                     'description' => 'Warm and cozy handwoven merino wool sweater from the Himalayas, perfect for cold weather.',
                     'rating' => 4.5,
                     'reviews_count' => 134,
@@ -59,14 +54,14 @@ class PageController extends Controller
                     'tag' => 'Helambu',
                     'stock' => 10,
                 ],
-                (object) [
+                (object)[
                     'id' => 106,
                     'name' => 'Bamboo Sunglasses',
                     'price' => 1299.00,
                     'discount_price' => 899.00,
                     'image' => 'images/SunGlass.png',
-                    'category' => (object) ['cat_name' => 'Accessories'],
-                    'vendor' => (object) ['vendor_name' => 'Eco Eyewear'],
+                    'category' => (object)['cat_name' => 'Accessories'],
+                    'vendor' => (object)['vendor_name' => 'Eco Eyewear'],
                     'description' => 'Eco-friendly and stylish hand-crafted wooden sunglasses made from sustainable bamboo.',
                     'rating' => 4.5,
                     'reviews_count' => 89,
@@ -74,14 +69,14 @@ class PageController extends Controller
                     'tag' => 'Handmade',
                     'stock' => 15,
                 ],
-                (object) [
+                (object)[
                     'id' => 103,
                     'name' => 'Solid Wood Coffee Table',
                     'price' => 15999.00,
                     'discount_price' => 12999.00,
                     'image' => 'images/Table.png',
-                    'category' => (object) ['cat_name' => 'Woodcraft'],
-                    'vendor' => (object) ['vendor_name' => 'Patan Woodcrafts'],
+                    'category' => (object)['cat_name' => 'Woodcraft'],
+                    'vendor' => (object)['vendor_name' => 'Patan Woodcrafts'],
                     'description' => 'Durable coffee table hand-crafted from solid Nepalese Shorea wood, featuring traditional floral lattices.',
                     'rating' => 5,
                     'reviews_count' => 56,
@@ -89,14 +84,14 @@ class PageController extends Controller
                     'tag' => 'Artisan Made',
                     'stock' => 5,
                 ],
-                (object) [
+                (object)[
                     'id' => 7,
                     'name' => 'Bhaktapur Clay Pot',
                     'price' => 1800.00,
                     'discount_price' => 1500.00,
                     'image' => 'images/pot.png',
-                    'category' => (object) ['cat_name' => 'Pottery'],
-                    'vendor' => (object) ['vendor_name' => 'Praiapati Clay Art'],
+                    'category' => (object)['cat_name' => 'Pottery'],
+                    'vendor' => (object)['vendor_name' => 'Praiapati Clay Art'],
                     'description' => 'Traditional clay pot, perfect for cooking or decoration, fired in Bhaktapur kiln.',
                     'rating' => 4.5,
                     'reviews_count' => 110,
@@ -104,14 +99,14 @@ class PageController extends Controller
                     'tag' => 'Bhaktapur',
                     'stock' => 18,
                 ],
-                (object) [
+                (object)[
                     'id' => 4,
                     'name' => 'Hand-Woven Dhankuta Dhaka',
                     'price' => 2500.00,
                     'discount_price' => 2200.00,
                     'image' => 'images/4th-image.png',
-                    'category' => (object) ['cat_name' => 'Textiles'],
-                    'vendor' => (object) ['vendor_name' => 'Dhankuta Weavers'],
+                    'category' => (object)['cat_name' => 'Textiles'],
+                    'vendor' => (object)['vendor_name' => 'Dhankuta Weavers'],
                     'description' => 'Intricately woven traditional Dhaka fabric, handmade by women artisans in Dhankuta.',
                     'rating' => 4.5,
                     'reviews_count' => 84,
@@ -119,14 +114,14 @@ class PageController extends Controller
                     'tag' => 'Dhankuta',
                     'stock' => 8,
                 ],
-                (object) [
+                (object)[
                     'id' => 5,
                     'name' => 'Himalayan Lokta Journal',
                     'price' => 1500.00,
                     'discount_price' => 1200.00,
                     'image' => 'images/aboutus.jpg',
-                    'category' => (object) ['cat_name' => 'Paper'],
-                    'vendor' => (object) ['vendor_name' => 'Himalayan Paper St.'],
+                    'category' => (object)['cat_name' => 'Paper'],
+                    'vendor' => (object)['vendor_name' => 'Himalayan Paper St.'],
                     'description' => 'Eco-friendly journal made from traditional hand-pressed Lokta paper in Mustang.',
                     'rating' => 4,
                     'reviews_count' => 45,
@@ -134,14 +129,14 @@ class PageController extends Controller
                     'tag' => 'Mustang',
                     'stock' => 20,
                 ],
-                (object) [
+                (object)[
                     'id' => 1,
                     'name' => 'Copper Singing Bowl',
                     'price' => 5500.00,
                     'discount_price' => 4500.00,
                     'image' => 'images/1st-image.png',
-                    'category' => (object) ['cat_name' => 'Metalware'],
-                    'vendor' => (object) ['vendor_name' => 'Patan Crafts'],
+                    'category' => (object)['cat_name' => 'Metalware'],
+                    'vendor' => (object)['vendor_name' => 'Patan Crafts'],
                     'description' => 'Experience the meditative resonance of ancient Patan copper singing bowls, hand-hammered with care.',
                     'rating' => 5,
                     'reviews_count' => 124,
@@ -149,14 +144,14 @@ class PageController extends Controller
                     'tag' => 'Terai Plains',
                     'stock' => 10,
                 ],
-                (object) [
+                (object)[
                     'id' => 2,
                     'name' => 'Thimi Crackle Bowl',
                     'price' => 4200.00,
                     'discount_price' => 3500.00,
                     'image' => 'images/2nd-image.png',
-                    'category' => (object) ['cat_name' => 'Pottery'],
-                    'vendor' => (object) ['vendor_name' => 'Kancha\'s Pottery'],
+                    'category' => (object)['cat_name' => 'Pottery'],
+                    'vendor' => (object)['vendor_name' => 'Kancha\'s Pottery'],
                     'description' => 'Authentic ceramic crackle bowl handmade by master artisans in Bhaktapur.',
                     'rating' => 4.5,
                     'reviews_count' => 92,
@@ -186,14 +181,14 @@ class PageController extends Controller
         if ($products->isEmpty()) {
             // High fidelity mock data for frontend demonstration matching standard database schema fields
             $products = collect([
-                (object) [
+                (object)[
                     'id' => 1,
                     'name' => 'Copper Singing Bowl',
                     'price' => 4500.00,
                     'discount_price' => null,
                     'image' => 'images/1st-image.png',
-                    'category' => (object) ['cat_name' => 'Metalware'],
-                    'vendor' => (object) ['vendor_name' => 'Patan Crafts'],
+                    'category' => (object)['cat_name' => 'Metalware'],
+                    'vendor' => (object)['vendor_name' => 'Patan Crafts'],
                     'description' => 'Experience the meditative resonance of ancient Patan copper singing bowls, hand-hammered with care.',
                     'rating' => 5,
                     'reviews_count' => 124,
@@ -201,14 +196,14 @@ class PageController extends Controller
                     'tag' => 'Terai Plains',
                     'stock' => 10,
                 ],
-                (object) [
+                (object)[
                     'id' => 2,
                     'name' => 'Thimi Crackle Bowl',
                     'price' => 3500.00,
                     'discount_price' => null,
                     'image' => 'images/2nd-image.png',
-                    'category' => (object) ['cat_name' => 'Pottery'],
-                    'vendor' => (object) ['vendor_name' => 'Kancha\'s Pottery'],
+                    'category' => (object)['cat_name' => 'Pottery'],
+                    'vendor' => (object)['vendor_name' => 'Kancha\'s Pottery'],
                     'description' => 'Authentic ceramic crackle bowl handmade by master artisans in Bhaktapur.',
                     'rating' => 4.5,
                     'reviews_count' => 92,
@@ -216,14 +211,14 @@ class PageController extends Controller
                     'tag' => 'Bhaktapur',
                     'stock' => 15,
                 ],
-                (object) [
+                (object)[
                     'id' => 3,
                     'name' => 'Patan Floral Lattice',
                     'price' => 2500.00,
                     'discount_price' => null,
                     'image' => 'images/Table.png',
-                    'category' => (object) ['cat_name' => 'Woodcraft'],
-                    'vendor' => (object) ['vendor_name' => 'Patan Woodcrafts'],
+                    'category' => (object)['cat_name' => 'Woodcraft'],
+                    'vendor' => (object)['vendor_name' => 'Patan Woodcrafts'],
                     'description' => 'Beautifully hand-carved floral lattice wooden wall art panel.',
                     'rating' => 5,
                     'reviews_count' => 56,
@@ -231,14 +226,14 @@ class PageController extends Controller
                     'tag' => 'Artisan Made',
                     'stock' => 5,
                 ],
-                (object) [
+                (object)[
                     'id' => 4,
                     'name' => 'Hand-Woven Dhankuta Dhaka',
                     'price' => 2500.00,
                     'discount_price' => 2200.00,
                     'image' => 'images/4th-image.png',
-                    'category' => (object) ['cat_name' => 'Textiles'],
-                    'vendor' => (object) ['vendor_name' => 'Dhankuta Weavers'],
+                    'category' => (object)['cat_name' => 'Textiles'],
+                    'vendor' => (object)['vendor_name' => 'Dhankuta Weavers'],
                     'description' => 'Intricately woven traditional Dhaka fabric, handmade in Dhankuta.',
                     'rating' => 4.5,
                     'reviews_count' => 84,
@@ -246,14 +241,14 @@ class PageController extends Controller
                     'tag' => 'Dhankuta',
                     'stock' => 8,
                 ],
-                (object) [
+                (object)[
                     'id' => 5,
                     'name' => 'Himalayan Lokta Journal',
                     'price' => 1500.00,
                     'discount_price' => 1200.00,
                     'image' => 'images/aboutus.jpg',
-                    'category' => (object) ['cat_name' => 'Paper'],
-                    'vendor' => (object) ['vendor_name' => 'Himalayan Paper St.'],
+                    'category' => (object)['cat_name' => 'Paper'],
+                    'vendor' => (object)['vendor_name' => 'Himalayan Paper St.'],
                     'description' => 'Eco-friendly journal made from traditional hand-pressed Lokta paper in Mustang.',
                     'rating' => 4,
                     'reviews_count' => 45,
@@ -261,14 +256,14 @@ class PageController extends Controller
                     'tag' => 'Mustang',
                     'stock' => 20,
                 ],
-                (object) [
+                (object)[
                     'id' => 6,
                     'name' => 'Silver Filigree Pendant',
                     'price' => 4500.00,
                     'discount_price' => null,
                     'image' => 'images/Jewlery and Accessory.png',
-                    'category' => (object) ['cat_name' => 'Jewelry'],
-                    'vendor' => (object) ['vendor_name' => 'Newar Silversmiths'],
+                    'category' => (object)['cat_name' => 'Jewelry'],
+                    'vendor' => (object)['vendor_name' => 'Newar Silversmiths'],
                     'description' => 'Stunning handmade silver filigree pendant crafted in Kathmandu Valley.',
                     'rating' => 5,
                     'reviews_count' => 78,
@@ -276,14 +271,14 @@ class PageController extends Controller
                     'tag' => 'Kathmandu Valley',
                     'stock' => 12,
                 ],
-                (object) [
+                (object)[
                     'id' => 7,
                     'name' => 'Bhaktapur Clay Pot',
                     'price' => 1800.00,
                     'discount_price' => 1500.00,
                     'image' => 'images/pot.png',
-                    'category' => (object) ['cat_name' => 'Pottery'],
-                    'vendor' => (object) ['vendor_name' => 'Praiapati Clay Art'],
+                    'category' => (object)['cat_name' => 'Pottery'],
+                    'vendor' => (object)['vendor_name' => 'Praiapati Clay Art'],
                     'description' => 'Traditional clay pot, perfect for cooking or decoration, fired in Bhaktapur.',
                     'rating' => 4.5,
                     'reviews_count' => 110,
@@ -291,14 +286,14 @@ class PageController extends Controller
                     'tag' => 'Bhaktapur',
                     'stock' => 18,
                 ],
-                (object) [
+                (object)[
                     'id' => 8,
                     'name' => 'Handwoven Wool Sweater',
                     'price' => 1899.00,
                     'discount_price' => 1299.00,
                     'image' => 'images/Sweaters.png',
-                    'category' => (object) ['cat_name' => 'Textiles'],
-                    'vendor' => (object) ['vendor_name' => 'The Wool Studio'],
+                    'category' => (object)['cat_name' => 'Textiles'],
+                    'vendor' => (object)['vendor_name' => 'The Wool Studio'],
                     'description' => 'Warm and cozy handwoven wool sweater made by artisans in Helambu.',
                     'rating' => 4.5,
                     'reviews_count' => 134,
@@ -320,33 +315,5 @@ class PageController extends Controller
     public function wishlist()
     {
         return view('wishlist');
-    }
-
-    public function cart()
-    {
-        return view('cart');
-    }
-
-    public function viewProduct($id)
-    {
-        $product = Product::with(['category', 'vendor', 'images', 'variants'])->findOrFail($id);
-
-        // Add computed properties for easy JSON serialization
-        $product->effective_price = method_exists($product, 'effectivePrice') ? $product->effectivePrice() : $product->price;
-        $product->original_price = method_exists($product, 'originalPrice') ? $product->originalPrice() : $product->price;
-        $product->discount_price = method_exists($product, 'resolvedDiscountPrice') ? $product->resolvedDiscountPrice() : $product->discount_price;
-        $product->primary_image_url = method_exists($product, 'primaryImageUrl') ? $product->primaryImageUrl() : asset($product->image);
-        $product->category_name = $product->category?->cat_name ?? $product->category?->name ?? 'Crafts';
-        $product->vendor_name = $product->vendor?->vendor_name ?? $product->vendor?->name ?? 'Local Artisan';
-
-        $products = Product::with(['category', 'vendor', 'images'])
-            ->where('status', 'active')
-            ->latest()
-            ->get();
-
-        return view('shop', [
-            'products' => $products,
-            'activeProduct' => $product,
-        ]);
     }
 }
