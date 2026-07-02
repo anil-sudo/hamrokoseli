@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\EsewaPaymentController;
 use App\Http\Controllers\KhaltiPaymentController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\SellerController;
@@ -77,6 +78,12 @@ Route::middleware('auth')->group(function () {
     // checkout, callback is where Khalti redirects them back to afterward.
     Route::get('/payment/khalti/{order}/initiate', [KhaltiPaymentController::class, 'initiate'])->name('khalti.initiate');
     Route::get('/payment/khalti/callback', [KhaltiPaymentController::class, 'callback'])->name('khalti.callback');
+
+    // eSewa ePay: initiate shows an auto-submitting form that posts to
+    // eSewa's hosted checkout, callback is where eSewa sends the customer
+    // back afterward (used as both its success_url and failure_url).
+    Route::get('/payment/esewa/{order}/initiate', [EsewaPaymentController::class, 'initiate'])->name('esewa.initiate');
+    Route::get('/payment/esewa/callback', [EsewaPaymentController::class, 'callback'])->name('esewa.callback');
 });
 
 // ─── User Auth routes (guest on web guard) ────────────────────────────────────

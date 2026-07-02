@@ -47,4 +47,14 @@ return [
         'base_url' => env('KHALTI_BASE_URL', 'https://dev.khalti.com/api/v2'),
     ],
 
+    'esewa' => [
+        // "EPAYTEST" + this test secret key are eSewa's public sandbox
+        // credentials — safe defaults for local testing, swap for your
+        // real merchant code/secret key in .env when going live.
+        'product_code' => env('ESEWA_PRODUCT_CODE', 'EPAYTEST'),
+        'secret_key' => env('ESEWA_SECRET_KEY', '8gBm/:&EnhH.1/q('),
+        'form_url' => env('ESEWA_FORM_URL', 'https://rc-epay.esewa.com.np/api/epay/main/v2/form'),
+        'status_url' => env('ESEWA_STATUS_URL', 'https://rc.esewa.com.np/api/epay/transaction/status/'),
+    ],
+
 ];
