@@ -49,7 +49,7 @@
                              data-original-price="{{ intval($product->price) }}"
                              data-discount="{{ $hasDiscount ? 'true' : 'false' }}"
                              data-image="{{ $imageUrl }}"
-                             data-category="{{ $product->category?->name ?? 'Uncategorized' }}"
+                             data-category="{{ $product->category?->cat_name ?? 'Uncategorized' }}"
                              data-vendor="{{ $product->vendor?->vendor_name ?? 'Unknown' }}"
                              data-desc="{{ Str::limit($product->description, 100) }}"
                              data-stock="{{ $product->stock }}">
@@ -60,12 +60,12 @@
                                     data-product-price="{{ intval($discountPrice) }}"
                                     data-product-image="{{ $imageUrl }}"
                                     data-product-desc="{{ Str::limit($product->description, 100) }}"
-                                    data-product-category="{{ $product->category?->name ?? 'Uncategorized' }}">
+                                    data-product-category="{{ $product->category?->cat_name ?? 'Uncategorized' }}">
                                 <i class="far fa-heart"></i>
                             </button>
                         </div>
                         <div class="p-1.5 sm:p-2 md:p-3 lg:p-4">
-                            <h4 class="text-slate-500 font-semibold text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-wider mb-0.5 sm:mb-1 truncate">{{ $product->category?->name ?? 'Uncategorized' }}</h4>
+                            <h4 class="text-slate-500 font-semibold text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-wider mb-0.5 sm:mb-1 truncate">{{ $product->category?->cat_name ?? 'Uncategorized' }}</h4>
                             <h3 class="text-[10px] sm:text-xs md:text-sm lg:text-base font-bold text-brand-dark mb-1 sm:mb-2 line-clamp-2 cursor-pointer hover:text-brand-primary transition-colors view-details-btn"
                                 data-id="{{ $product->id }}"
                                 data-name="{{ $product->name }}"
@@ -73,7 +73,7 @@
                                 data-original-price="{{ intval($product->price) }}"
                                 data-discount="{{ $hasDiscount ? 'true' : 'false' }}"
                                 data-image="{{ $imageUrl }}"
-                                data-category="{{ $product->category?->name ?? 'Uncategorized' }}"
+                                data-category="{{ $product->category?->cat_name ?? 'Uncategorized' }}"
                                 data-vendor="{{ $product->vendor?->vendor_name ?? 'Unknown' }}"
                                 data-desc="{{ Str::limit($product->description, 100) }}"
                                 data-stock="{{ $product->stock }}">
@@ -92,7 +92,7 @@
                                         data-product-price="{{ intval($discountPrice) }}"
                                         data-product-image="{{ $imageUrl }}"
                                         data-product-desc="{{ Str::limit($product->description, 100) }}"
-                                        data-product-category="{{ $product->category?->name ?? 'Uncategorized' }}">
+                                        data-product-category="{{ $product->category?->cat_name ?? 'Uncategorized' }}">
                                     Add
                                 </button>
                             </div>

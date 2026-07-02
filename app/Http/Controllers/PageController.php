@@ -21,12 +21,13 @@ class PageController extends Controller
         // Fallback: Get featured active products if no vendor data
         $featuredProducts = Product::where('status', 'active')
             ->with(['category', 'vendor', 'images', 'variants'])
+            ->inRandomOrder()
             ->limit(4)
             ->get();
 
         return view('welcome', [
             'vendors' => $vendors,
-            'featuredProducts' => $featuredProducts
+            'featuredProducts' => $featuredProducts,
         ]);
     }
 
@@ -294,6 +295,11 @@ class PageController extends Controller
     public function privacy()
     {
         return view('privacy');
+    }
+
+    public function contactus()
+    {
+        return view('contact-us');
     }
 
     public function cart()
