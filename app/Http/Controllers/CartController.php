@@ -36,7 +36,7 @@ class CartController extends Controller
      * If the same product+variant combo already exists, bump the quantity
      * instead of creating a duplicate row.
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request): RedirectResponse|\Illuminate\Http\JsonResponse
     {
         $data = $request->validate([
             'product_id' => ['required', 'exists:products,id'],
@@ -48,7 +48,11 @@ class CartController extends Controller
         $product = Product::findOrFail($data['product_id']);
 
         if (! $product->isActive()) {
-            return back()->withErrors(['product' => 'This product is not currently available.']);
+            $message = 'This product is not currently available.';
+
+            return $request->wantsJson()
+                ? response()->json(['success' => false, 'message' => $message], 422)
+                : back()->withErrors(['product' => $message]);
         }
 
         $variant = null;
@@ -71,9 +75,11 @@ class CartController extends Controller
         $desiredQuantity = $quantity + ($cartItem->quantity ?? 0);
 
         if ($desiredQuantity > $availableStock) {
-            return back()->withErrors([
-                'quantity' => "Only {$availableStock} left in stock for {$product->name}.",
-            ]);
+            $message = "Only {$availableStock} left in stock for {$product->name}.";
+
+            return $request->wantsJson()
+                ? response()->json(['success' => false, 'message' => $message], 422)
+                : back()->withErrors(['quantity' => $message]);
         }
 
         if ($cartItem) {
@@ -87,7 +93,17 @@ class CartController extends Controller
             ]);
         }
 
-        return back()->with('success', $product->name.' added to cart.');
+        $message = $product->name.' added to cart.';
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+                'cart_count' => (int) Cart::where('user_id', auth()->id())->sum('quantity'),
+            ]);
+        }
+
+        return back()->with('success', $message);
     }
 
     /**

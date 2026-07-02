@@ -538,15 +538,26 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==================== CART FEATURE LOGIC ====================
+    // `cart` (localStorage) still backs the demo/mock product pages that
+    // don't have real database rows (e.g. static New Arrivals cards).
+    // `dbCartCount` tracks the real, database-backed cart (see CartController)
+    // and is what actually persists — it's what /cart shows on reload.
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    let dbCartCount = parseInt(window.initialCartCount) || 0;
     const cartItemsContainer = document.getElementById('cart-items-container');
+
+    function getCsrfToken() {
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        return meta ? meta.getAttribute('content') : '';
+    }
 
     // Update Header Badge Count
     function updateCartBadge() {
         const badge = document.getElementById('cart-badge');
         const headerIcon = document.getElementById('cart-header-icon');
         if (badge) {
-            const count = cart.reduce((sum, item) => sum + parseInt(item.qty || 1), 0);
+            const localCount = cart.reduce((sum, item) => sum + parseInt(item.qty || 1), 0);
+            const count = localCount + dbCartCount;
             badge.textContent = count;
             if (count > 0) {
                 badge.classList.remove('hidden');
@@ -562,15 +573,81 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Add to cart
-    function addToCart(productData, qty = 1) {
+    // Persist a real product to the database via the existing /cart/add route.
+    // Returns a promise resolving true/false depending on success.
+    function addToCartOnServer(productData, qty) {
+        const url = window.cartAddUrl || '/cart/add';
+
+        return fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': getCsrfToken(),
+            },
+            body: JSON.stringify({
+                product_id: productData.id,
+                variant_id: productData.variantId || null,
+                quantity: qty,
+            }),
+        })
+            .then(async (response) => {
+                const data = await response.json().catch(() => ({}));
+
+                if (!response.ok || !data.success) {
+                    showToast(data.message || 'Could not add this item to your cart.', 'error');
+                    return false;
+                }
+
+                if (typeof data.cart_count === 'number') {
+                    dbCartCount = data.cart_count;
+                } else {
+                    dbCartCount += qty;
+                }
+
+                showToast(data.message || `${productData.name} added to cart!`, 'success');
+                updateCartBadge();
+
+                // The /cart page is rendered server-side from the database,
+                // so refresh it if the user is currently looking at it.
+                if (cartItemsContainer) {
+                    window.location.reload();
+                }
+
+                return true;
+            })
+            .catch(() => {
+                showToast('Something went wrong adding this item to your cart.', 'error');
+                return false;
+            });
+    }
+
+    // Add to cart. Returns a Promise that resolves once the item has been
+    // added (to the database for real products, or to localStorage for
+    // demo/mock cards), so callers that need to navigate afterward (e.g.
+    // "Buy Now") can wait for it via addToCartAsync below.
+    function addToCartAsync(productData, qty = 1) {
         // Guests get sent to login instead of having anything added
         if (!window.isLoggedIn) {
             window.location.href = window.loginUrl || '/userlogin';
-            return;
+            return Promise.resolve(false);
         }
 
         qty = parseInt(qty) || 1;
+
+        // Real products carry a numeric database id — persist those to the
+        // database. Demo/mock cards (e.g. static New Arrivals) use string
+        // ids like "new-arrival-1" and only exist in localStorage.
+        const isRealProduct = productData.id !== undefined
+            && productData.id !== null
+            && String(productData.id).trim() !== ''
+            && !isNaN(Number(productData.id));
+
+        if (isRealProduct) {
+            return addToCartOnServer(productData, qty);
+        }
+
         const index = cart.findIndex(item => String(item.id) === String(productData.id));
         if (index > -1) {
             cart[index].qty = parseInt(cart[index].qty) + qty;
@@ -595,6 +672,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (cartItemsContainer) {
             renderCartPage();
         }
+
+        return Promise.resolve(true);
+    }
+
+    // Fire-and-forget wrapper kept for existing callers that don't await.
+    function addToCart(productData, qty = 1) {
+        addToCartAsync(productData, qty);
     }
 
     // Remove from cart
@@ -660,6 +744,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Export functions globally
     window.addToCart = addToCart;
+    window.addToCartAsync = addToCartAsync;
     window.updateCartBadge = updateCartBadge;
     window.removeFromCart = removeFromCart;
     window.updateCartQuantity = updateCartQuantity;
@@ -1080,10 +1165,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     window.location.href = window.loginUrl || '/userlogin';
                     return;
                 }
-                if (window.activeProduct && typeof window.addToCart === 'function') {
+                if (window.activeProduct && typeof window.addToCartAsync === 'function') {
                     const qty = parseInt(qtyInput.value) || 1;
-                    window.addToCart(window.activeProduct, qty);
-                    window.location.href = "/cart";
+                    // Wait for the database write to finish before navigating,
+                    // otherwise the cart page can load before the row exists.
+                    window.addToCartAsync(window.activeProduct, qty).then(function () {
+                        window.location.href = "/cart";
+                    });
                 } else {
                     const name = document.getElementById('modal-product-name').textContent;
                     const qty = qtyInput.value;
