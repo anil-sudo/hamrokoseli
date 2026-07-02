@@ -134,7 +134,6 @@
                     <li><a href="{{ url('categories') }}" class="subnav-link {{ Request::is('categories*') ? 'active' : '' }}"><i class="fas fa-th-large"></i> Category</a></li>
                     <li><a href="{{ url('shop') }}" class="subnav-link {{ Request::is('shop*') ? 'active' : '' }}"><i class="fas fa-store"></i> Shop</a></li>
                     <li><a href="{{ url('todays-deals') }}" class="subnav-link {{ Request::is('todays-deals*') ? 'active' : '' }}"><i class="fas fa-tag"></i> Today's Deals</a></li>
-                    <li><a href="{{ url('featured-products') }}" class="subnav-link {{ Request::is('featured-products*') ? 'active' : '' }}"><i class="fas fa-star"></i> Featured</a></li>
                     <li><a href="{{ url('top-sellers') }}" class="subnav-link {{ Request::is('top-sellers*') ? 'active' : '' }}"><i class="fas fa-trophy"></i> Top Sellers</a></li>
                     <li><a href="{{ url('new-arrivals') }}" class="subnav-link {{ Request::is('new-arrivals*') ? 'active' : '' }}"><i class="fa-solid fa-mobile-screen-button"></i> New Arrivals</a></li>
                 </ul>
@@ -196,7 +195,6 @@
         <a href="{{ url('categories') }}"     class="mob-nav-link {{ Request::is('categories*') ? 'active' : '' }}"><i class="fas fa-th-large"></i>Category</a>
         <a href="{{ url('shop') }}"           class="mob-nav-link {{ Request::is('shop*') ? 'active' : '' }}"><i class="fas fa-store"></i>Shop</a>
         <a href="{{ url('todays-deals') }}"      class="mob-nav-link {{ Request::is('todays-deals*') ? 'active' : '' }}"><i class="fas fa-tag"></i>Today's Deals</a>
-        <a href="{{ url('featured-products') }}" class="mob-nav-link {{ Request::is('featured-products*') ? 'active' : '' }}"><i class="fas fa-star"></i>Featured Products</a>
         <a href="{{ url('top-sellers') }}"       class="mob-nav-link {{ Request::is('top-sellers*') ? 'active' : '' }}"><i class="fas fa-trophy"></i>Top Sellers</a>
         <a href="{{ url('new-arrivals') }}"   class="mob-nav-link {{ Request::is('new-arrivals*') ? 'active' : '' }}"><i class="fa-solid fa-mobile-screen-button"></i>New Arrivals</a>
         @auth
