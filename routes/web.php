@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\KhaltiPaymentController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\SellerController;
 use App\Http\Controllers\UserController;
@@ -71,6 +72,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/checkout/{cart}', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::post('/checkout/{cart}/save-user-info', [CheckoutController::class, 'saveUserInfo'])->name('checkout.save-user-info');
     Route::get('/order/{order}/confirmation', [CheckoutController::class, 'confirmation'])->name('order.confirmation');
+
+    // Khalti ePayment: initiate sends the customer to Khalti's hosted
+    // checkout, callback is where Khalti redirects them back to afterward.
+    Route::get('/payment/khalti/{order}/initiate', [KhaltiPaymentController::class, 'initiate'])->name('khalti.initiate');
+    Route::get('/payment/khalti/callback', [KhaltiPaymentController::class, 'callback'])->name('khalti.callback');
 });
 
 // ─── User Auth routes (guest on web guard) ────────────────────────────────────

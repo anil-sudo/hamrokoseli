@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\ShippingAddress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -20,6 +21,9 @@ class CheckoutController extends Controller
             'cartItem' => $cart,
             'unitPrice' => $cart->unitPrice(),
             'subtotal' => $cart->subtotal(),
+            // The checkout form is pre-filled straight from the user's
+            // profile — no separate saved-address book to manage.
+            'user' => auth()->user(),
         ]);
     }
 
@@ -43,10 +47,13 @@ class CheckoutController extends Controller
     {
         $this->authorizeCartItem($cart);
 
-        // ✅ VALIDATION
+        // ✅ VALIDATION — phone & address are taken directly from the
+        // checkout form (pre-filled from the user's profile), not from a
+        // separate shipping-address-book selection.
         $data = $request->validate([
             'payment_method' => ['required', 'in:cod,esewa,khalti'],
-            'shipping_address_id' => ['required', 'integer'], // adjust if you have table
+            'phone' => ['required', 'string', 'max:20'],
+            'address' => ['required', 'string', 'max:255'],
         ]);
 
         $cart->load(['product', 'variant']);
@@ -64,14 +71,38 @@ class CheckoutController extends Controller
 
         $unitPrice = $cart->unitPrice();
         $subtotal = $cart->subtotal();
+        $user = auth()->user();
 
         // ✅ TRANSACTION
-        $order = DB::transaction(function () use ($cart, $product, $variant, $data, $unitPrice, $subtotal) {
+        $order = DB::transaction(function () use ($cart, $product, $variant, $data, $unitPrice, $subtotal, $user) {
+
+            // Keep the user's profile in sync with whatever they confirmed
+            // at checkout, so next time it's already pre-filled correctly.
+            $user->update([
+                'phone' => $data['phone'],
+                'address' => $data['address'],
+            ]);
+
+            // Orders still need a row in `shipping_addresses` (that's what
+            // the `shipping_address_id` column points to). We pull it
+            // straight from the user table instead of asking the shopper
+            // to manage a separate address book.
+            $shippingAddress = ShippingAddress::updateOrCreate(
+                ['user_id' => $user->id, 'is_default' => 1],
+                [
+                    'address' => $data['address'],
+                    'phone' => $data['phone'],
+                    'city' => 'N/A',
+                    'province' => 'N/A',
+                    'country' => 'Nepal',
+                    'is_default' => 1,
+                ]
+            );
 
             // 1. CREATE ORDER
             $order = Order::create([
-                'user_id' => auth()->id(),
-                'shipping_address_id' => $data['shipping_address_id'],
+                'user_id' => $user->id,
+                'shipping_address_id' => $shippingAddress->id,
                 'total_amount' => $subtotal,
                 'discount' => 0,
                 'payment_method' => $data['payment_method'],
@@ -103,6 +134,13 @@ class CheckoutController extends Controller
             return $order;
         });
 
+        // COD is complete the moment the order is created. Khalti still
+        // needs the customer to actually pay — send them to Khalti's
+        // hosted checkout instead of the confirmation page.
+        if ($data['payment_method'] === 'khalti') {
+            return redirect()->route('khalti.initiate', $order);
+        }
+
         return redirect()
             ->route('order.confirmation', $order)
             ->with('success', 'Order placed successfully!');
@@ -114,7 +152,7 @@ class CheckoutController extends Controller
 
         $order->load(['orderItems.product', 'orderItems.vendor']);
 
-        return view('order-confirmation', compact('order'));
+        return view('orderconfirmation', compact('order'));
     }
 
     private function authorizeCartItem(Cart $cart): void

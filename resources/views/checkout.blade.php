@@ -45,31 +45,25 @@
                 <!-- Shipping address -->
                 <div class="bg-white rounded-3xl p-6 border border-[#ebd7be]/40 shadow-sm">
                     <h2 class="text-lg font-bold text-[#1F3D2E] mb-4">Shipping Address</h2>
+                    <p class="text-xs text-[#3A2A1F]/60 font-semibold mb-4">
+                        Pulled from your account — update it here if anything's changed.
+                    </p>
 
-                    @if ($addresses->isEmpty())
-                        <p class="text-sm text-[#3A2A1F]/70 font-semibold">
-                            You don't have a saved address yet. Please add one before placing this order.
-                        </p>
-                    @else
-                        <div class="space-y-3">
-                            @foreach ($addresses as $address)
-                                <label class="flex items-start gap-3 p-4 border border-[#ebd7be] rounded-2xl cursor-pointer hover:border-[#C65A3A] transition">
-                                    <input type="radio" name="shipping_address_id" value="{{ $address->id }}"
-                                           {{ $address->is_default ? 'checked' : '' }} required
-                                           class="mt-1 accent-[#1F3D2E]">
-                                    <span class="text-sm font-semibold text-[#3A2A1F]">
-                                        @if ($address->label)
-                                            <span class="text-[#1F3D2E] font-bold">{{ $address->label }}</span> &mdash;
-                                        @endif
-                                        {{ $address->full_address }}
-                                        @if ($address->phone)
-                                            <br><span class="text-[#3A2A1F]/60">{{ $address->phone }}</span>
-                                        @endif
-                                    </span>
-                                </label>
-                            @endforeach
+                    <div class="space-y-4">
+                        <div>
+                            <label for="phone" class="block text-xs font-bold text-[#1F3D2E] mb-1.5">Phone Number</label>
+                            <input type="tel" id="phone" name="phone" required maxlength="20"
+                                   value="{{ old('phone', $user->phone) }}"
+                                   placeholder="98XXXXXXXX"
+                                   class="w-full px-4 py-3 rounded-xl border border-[#ebd7be] bg-[#FFF7EF] text-sm font-semibold text-[#3A2A1F] focus:outline-none focus:ring-2 focus:ring-[#1F3D2E]/25">
                         </div>
-                    @endif
+                        <div>
+                            <label for="address" class="block text-xs font-bold text-[#1F3D2E] mb-1.5">Delivery Address</label>
+                            <textarea id="address" name="address" required maxlength="255" rows="3"
+                                      placeholder="Street, city, landmark..."
+                                      class="w-full px-4 py-3 rounded-xl border border-[#ebd7be] bg-[#FFF7EF] text-sm font-semibold text-[#3A2A1F] focus:outline-none focus:ring-2 focus:ring-[#1F3D2E]/25">{{ old('address', $user->address) }}</textarea>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Payment method -->

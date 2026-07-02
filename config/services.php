@@ -41,4 +41,10 @@ return [
         'redirect' => env('GOOGLE_CALLBACK_URI'),
     ],
 
+    'khalti' => [
+        'secret_key' => env('KHALTI_SECRET_KEY'),
+        // dev.khalti.com for sandbox/testing, khalti.com for live.
+        'base_url' => env('KHALTI_BASE_URL', 'https://dev.khalti.com/api/v2'),
+    ],
+
 ];
