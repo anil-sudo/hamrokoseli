@@ -7,7 +7,6 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserRegisterController;
 use App\Http\Controllers\VendorRegisterController;
 use Illuminate\Support\Facades\Route;
-use Laravel\Socialite\Socialite;
 
 // ─── Seller Auth (guest on vendor guard only) ─────────────────────────────────
 Route::middleware('guest:vendor')->group(function () {
@@ -95,5 +94,3 @@ Route::get('/return-product', [UserController::class, 'returnProduct'])->name('r
 Route::get('/user-profile', [UserController::class, 'userProfile'])->name('user-profile');
 Route::get('/user-notification', [UserController::class, 'userNotification'])->name('user-notification');
 Route::redirect('/login.php', '/userlogin');
-
-
