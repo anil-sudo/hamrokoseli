@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\SellerController;
 use App\Http\Controllers\UserController;
@@ -53,13 +55,21 @@ Route::get('/about-us', [PageController::class, 'about_us'])->name('about-us');
 Route::get('/wishlist', [PageController::class, 'wishlist'])->name('wishlist');
 Route::get('/privacypolicy', [PageController::class, 'privacy'])->name('privacy');
 Route::get('/contact-us', [PageController::class, 'contactus'])->name('contact-us');
-Route::get('/cart', [PageController::class, 'cart'])->name('cart');
 Route::get('/viewdetails/{id}', [PageController::class, 'viewProduct'])->name('viewdetails');
 
 // ─── Requires login (guests are redirected to /userlogin automatically) ───────
 Route::middleware('auth')->group(function () {
     Route::get('/wishlist', [PageController::class, 'wishlist'])->name('wishlist');
-    Route::get('/cart', [PageController::class, 'cart'])->name('cart');
+
+    Route::get('/cart', [CartController::class, 'index'])->name('cart');
+    Route::post('/cart/add', [CartController::class, 'store'])->name('cart.add');
+    Route::patch('/cart/{cart}', [CartController::class, 'update'])->name('cart.update');
+    Route::delete('/cart/{cart}', [CartController::class, 'destroy'])->name('cart.remove');
+
+    // Checkout is always per cart line — one product = one order = one vendor.
+    Route::get('/checkout/{cart}', [CheckoutController::class, 'show'])->name('checkout.show');
+    Route::post('/checkout/{cart}', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('/order/{order}/confirmation', [CheckoutController::class, 'confirmation'])->name('order.confirmation');
 });
 
 // ─── User Auth routes (guest on web guard) ────────────────────────────────────

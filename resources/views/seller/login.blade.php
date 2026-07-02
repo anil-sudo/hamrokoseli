@@ -161,6 +161,10 @@
      class="hidden fixed top-5 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-6 py-4 rounded-xl shadow-lg z-50 transition-all duration-300 opacity-0">
     <span id="toast-message"></span>
 </div>
+<div id="error-toast"
+     class="hidden fixed top-5 left-1/2 transform -translate-x-1/2 bg-red-600 text-white px-6 py-4 rounded-xl shadow-lg z-50 transition-all duration-300 opacity-0">
+    <span id="error-toast-message"></span>
+</div>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const toast = document.getElementById('toast');
@@ -178,8 +182,23 @@ document.addEventListener('DOMContentLoaded', function () {
             toast.classList.add('hidden');
         }, 4000);
     }
+
+    const errorToast = document.getElementById('error-toast');
+    const errorMsg = document.getElementById('error-toast-message');
+
+    const errorMessage = @json(session('error'));
+
+    if (errorMessage) {
+        errorMsg.innerText = errorMessage;
+
+        errorToast.classList.remove('hidden', 'opacity-0', 'translate-y-[-10px]');
+        errorToast.classList.add('opacity-100', 'translate-y-0');
+
+        setTimeout(() => {
+            errorToast.classList.add('hidden');
+        }, 6000);
+    }
 });
-</script>
 </script>
 
     <!-- Password Toggle Script -->
