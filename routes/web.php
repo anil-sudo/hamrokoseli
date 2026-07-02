@@ -3,11 +3,11 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\SellerController;
-use App\Http\Controllers\TestEmailControlelr;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserRegisterController;
 use App\Http\Controllers\VendorRegisterController;
 use Illuminate\Support\Facades\Route;
+use Laravel\Socialite\Socialite;
 
 // ─── Seller Auth (guest on vendor guard only) ─────────────────────────────────
 Route::middleware('guest:vendor')->group(function () {
@@ -65,6 +65,8 @@ Route::middleware('auth')->group(function () {
 
 // ─── User Auth routes (guest on web guard) ────────────────────────────────────
 Route::middleware('web')->group(function () {
+    Route::get('/google/redirect', [AuthController::class, 'redirect'])->name('google.redirect');
+    Route::get('/google/callback', [AuthController::class, 'callback'])->name('google.callback');
     Route::get('/userlogin', [AuthController::class, 'showLogin'])->name('userlogin');
     Route::post('/userlogin', [AuthController::class, 'login']);
 
@@ -84,7 +86,6 @@ Route::middleware('web')->group(function () {
     Route::post('/vendor/register', [VendorRegisterController::class, 'register'])->name('vendor.register.post');
 });
 
-Route::get('test-email', [TestEmailControlelr::class, 'index'])->name('test.email');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/user-dashboard', [UserController::class, 'dashboard'])->name('Userdashboard');
@@ -94,3 +95,5 @@ Route::get('/return-product', [UserController::class, 'returnProduct'])->name('r
 Route::get('/user-profile', [UserController::class, 'userProfile'])->name('user-profile');
 Route::get('/user-notification', [UserController::class, 'userNotification'])->name('user-notification');
 Route::redirect('/login.php', '/userlogin');
+
+
