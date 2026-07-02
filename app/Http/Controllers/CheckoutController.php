@@ -5,17 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
-use App\Models\ShippingAddress;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class CheckoutController extends Controller
 {
-    /**
-     * Show the checkout page for ONE cart line. Every product checks out
-     * on its own — this is intentional, so a cart with items from two
-     * different vendors always results in two separate orders.
-     */
     public function show(Cart $cart)
     {
         $this->authorizeCartItem($cart);
@@ -24,34 +18,42 @@ class CheckoutController extends Controller
 
         return view('checkout', [
             'cartItem' => $cart,
-            'addresses' => auth()->user()->shippingAddresses,
             'unitPrice' => $cart->unitPrice(),
             'subtotal' => $cart->subtotal(),
         ]);
     }
 
-    /**
-     * Place the order for this single cart line.
-     */
+    public function saveUserInfo(Request $request, Cart $cart)
+    {
+        $this->authorizeCartItem($cart);
+
+        $validated = $request->validate([
+            'phone' => ['required', 'string', 'max:20'],
+            'address' => ['required', 'string', 'max:255'],
+        ]);
+
+        auth()->user()->update($validated);
+
+        return redirect()
+            ->route('checkout.show', $cart)
+            ->with('success', 'Delivery information saved successfully!');
+    }
+
     public function store(Request $request, Cart $cart)
     {
         $this->authorizeCartItem($cart);
 
+        // ✅ VALIDATION
         $data = $request->validate([
-            'shipping_address_id' => ['required', 'exists:shipping_addresses,id'],
-            'payment_method' => ['required', 'string', 'in:cod,esewa,khalti'],
+            'payment_method' => ['required', 'in:cod,esewa,khalti'],
+            'shipping_address_id' => ['required', 'integer'], // adjust if you have table
         ]);
 
-        $address = ShippingAddress::where('id', $data['shipping_address_id'])
-            ->where('user_id', auth()->id())
-            ->firstOrFail();
-
         $cart->load(['product', 'variant']);
+
         $product = $cart->product;
         $variant = $cart->variant;
 
-        // Re-check stock right before placing the order — it may have
-        // changed since the item was added to the cart.
         $availableStock = $variant?->stock ?? $product->stock;
 
         if ($cart->quantity > $availableStock) {
@@ -63,16 +65,20 @@ class CheckoutController extends Controller
         $unitPrice = $cart->unitPrice();
         $subtotal = $cart->subtotal();
 
-        $order = DB::transaction(function () use ($cart, $product, $variant, $address, $data, $unitPrice, $subtotal) {
+        // ✅ TRANSACTION
+        $order = DB::transaction(function () use ($cart, $product, $variant, $data, $unitPrice, $subtotal) {
+
+            // 1. CREATE ORDER
             $order = Order::create([
                 'user_id' => auth()->id(),
-                'shipping_address_id' => $address->id,
+                'shipping_address_id' => $data['shipping_address_id'],
                 'total_amount' => $subtotal,
                 'discount' => 0,
                 'payment_method' => $data['payment_method'],
                 'status' => 'pending',
             ]);
 
+            // 2. CREATE ORDER ITEM
             OrderItem::create([
                 'order_id' => $order->id,
                 'product_id' => $product->id,
@@ -84,13 +90,14 @@ class CheckoutController extends Controller
                 'status' => 'pending',
             ]);
 
+            // 3. DECREASE STOCK
             if ($variant) {
                 $variant->decrement('stock', $cart->quantity);
             } else {
                 $product->decrement('stock', $cart->quantity);
             }
 
-            // This item has been ordered — take it out of the cart.
+            // 4. REMOVE CART ITEM
             $cart->delete();
 
             return $order;
@@ -101,14 +108,11 @@ class CheckoutController extends Controller
             ->with('success', 'Order placed successfully!');
     }
 
-    /**
-     * Simple confirmation page for a single placed order.
-     */
     public function confirmation(Order $order)
     {
         abort_if($order->user_id !== auth()->id(), 403);
 
-        $order->load(['orderItems.product', 'orderItems.vendor', 'shippingAddress']);
+        $order->load(['orderItems.product', 'orderItems.vendor']);
 
         return view('order-confirmation', compact('order'));
     }

@@ -16,9 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')
                 ->constrained('users')
                 ->cascadeOnDelete();
-            $table->foreignId('shipping_address_id')
-                ->constrained('shipping_addresses')
-                ->restrictOnDelete();
+            $table->foreignId('shipping_address_id');
             $table->foreignId('coupon_id')
                 ->nullable()
                 ->constrained('coupons')

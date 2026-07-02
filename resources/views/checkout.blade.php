@@ -91,9 +91,9 @@
                     </div>
                 </div>
 
-                <button type="submit" {{ $addresses->isEmpty() ? 'disabled' : '' }}
+                <button type="submit"
                         class="w-full flex items-center justify-center gap-2 bg-[#C65A3A] hover:bg-[#b04a2c] disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3.5 px-4 rounded-xl shadow-md transition duration-300">
-                    Place Order &mdash; रू {{ number_format($subtotal, 2) }} <i class="fas fa-arrow-right text-xs"></i>
+                    Place Order &mdash; Rs. {{ number_format($subtotal, 2) }} <i class="fas fa-arrow-right text-xs"></i>
                 </button>
             </form>
 

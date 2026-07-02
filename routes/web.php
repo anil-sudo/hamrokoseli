@@ -69,6 +69,7 @@ Route::middleware('auth')->group(function () {
     // Checkout is always per cart line — one product = one order = one vendor.
     Route::get('/checkout/{cart}', [CheckoutController::class, 'show'])->name('checkout.show');
     Route::post('/checkout/{cart}', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::post('/checkout/{cart}/save-user-info', [CheckoutController::class, 'saveUserInfo'])->name('checkout.save-user-info');
     Route::get('/order/{order}/confirmation', [CheckoutController::class, 'confirmation'])->name('order.confirmation');
 });
 
