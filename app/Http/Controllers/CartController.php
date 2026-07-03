@@ -136,7 +136,6 @@ class CartController extends Controller
             : back()->with('success', 'Cart updated.');
     }
 
-
     /**
      * Remove a single line from the cart.
      */

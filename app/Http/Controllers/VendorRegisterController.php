@@ -88,7 +88,7 @@ class VendorRegisterController extends Controller
                 Mail::to($adminEmail)->send(new NewVendorRegistered($vendor));
             } catch (\Throwable $e) {
                 // Log the error but don't crash the registration flow
-                \Log::error("Failed to send vendor notification to {$adminEmail}: " . $e->getMessage());
+                \Log::error("Failed to send vendor notification to {$adminEmail}: ".$e->getMessage());
             }
         }
     }
