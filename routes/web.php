@@ -76,10 +76,16 @@ Route::middleware('auth')->group(function () {
     Route::patch('/cart/{cart}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/{cart}', [CartController::class, 'destroy'])->name('cart.remove');
 
-    // Checkout is always per cart line -one product = one order = one vendor.
+    // Checkout is per cart line by default — one product = one order.
     Route::get('/checkout/{cart}', [CheckoutController::class, 'show'])->name('checkout.show');
     Route::post('/checkout/{cart}', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::post('/checkout/{cart}/save-user-info', [CheckoutController::class, 'saveUserInfo'])->name('checkout.save-user-info');
+
+    // Bulk checkout — combines every cart line from one vendor into a single order.
+    Route::get('/checkout/vendor/{vendor}', [CheckoutController::class, 'showVendor'])->name('checkout.show.vendor');
+    Route::post('/checkout/vendor/{vendor}', [CheckoutController::class, 'storeVendor'])->name('checkout.store.vendor');
+    Route::post('/checkout/vendor/{vendor}/save-user-info', [CheckoutController::class, 'saveVendorUserInfo'])->name('checkout.save-user-info.vendor');
+
     Route::get('/order/{order}/confirmation', [CheckoutController::class, 'confirmation'])->name('order.confirmation');
 
     // Khalti ePayment: initiate sends the customer to Khalti's hosted

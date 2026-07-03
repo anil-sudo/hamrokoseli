@@ -8,7 +8,7 @@
                 Your Handpicked Pieces
             </h1>
             <p class="text-[#3A2A1F]/70 font-semibold">
-                Each item checks out separately, so every artisan gets their own order.
+                Items are grouped by seller — check out one product or the whole box at once.
             </p>
         </div>
 
@@ -44,62 +44,88 @@
             <!-- LEFT -->
             <div class="lg:col-span-8 space-y-6">
 
-                @foreach ($groupedByVendor as $vendorName => $vendorItems)
+                @foreach ($groupedByVendor as $vendorId => $vendorItems)
+                    @php
+                        $vendor = $vendorItems->first()->product->vendor;
+                        $vendorName = $vendor->vendor_name ?? $vendor->name ?? 'Local Artisan';
+                        $vendorTotal = $vendorItems->sum(fn($i) => $i->subtotal());
+                    @endphp
 
-                    <div>
-                        <h2 class="font-bold text-[#1F3D2E] mb-4 uppercase">
-                            {{ $vendorName }}
-                        </h2>
+                    <div class="bg-white rounded-3xl border border-[#ebd7be]/60 shadow-sm overflow-hidden">
 
-                        @foreach ($vendorItems as $item)
-
-                            <div class="bg-white p-4 rounded-2xl flex justify-between items-center mb-4">
-
-                                <!-- Product -->
-                                <div class="flex gap-4 items-center">
-
-                                    <img src="{{ $item->product->primaryImageUrl() }}"
-                                         class="w-16 h-16 rounded-xl object-cover">
-
-                                    <div>
-                                        <h3 class="font-bold">{{ $item->product->name }}</h3>
-
-                                        @if ($item->variant)
-                                            <p class="text-xs text-gray-500">
-                                                {{ collect([$item->variant->size, $item->variant->color])->filter()->implode(' / ') }}
-                                            </p>
-                                        @endif
-
-                                        <p class="text-[#C65A3A] font-bold">
-                                            रू {{ number_format($item->subtotal(), 2) }}
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <!-- Actions -->
-                                <div class="flex gap-2 items-center">
-
-                                    <!-- Checkout -->
-                                    <button
-                                        onclick="openCheckoutModal('{{ route('checkout.save-user-info', $item->id) }}')"
-                                        class="bg-[#1F3D2E] text-white px-4 py-2 rounded-xl text-sm">
-                                        Checkout
-                                    </button>
-
-                                    <!-- Remove -->
-                                    <form action="{{ route('cart.remove', $item) }}" method="POST">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="text-red-500">
-                                            Remove
-                                        </button>
-                                    </form>
-
-                                </div>
-
+                        <!-- Vendor box header -->
+                        <div class="flex items-center justify-between gap-3 px-5 py-4 bg-[#FFF7EF] border-b border-[#ebd7be]/60">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-store text-[#C65A3A]"></i>
+                                <h2 class="font-bold text-[#1F3D2E] uppercase text-sm tracking-wide">
+                                    {{ $vendorName }}
+                                </h2>
+                                <span class="text-[10px] font-bold text-[#3A2A1F]/50">
+                                    ({{ $vendorItems->count() }} item{{ $vendorItems->count() > 1 ? 's' : '' }})
+                                </span>
                             </div>
 
-                        @endforeach
+                            @if ($vendorId && $vendorItems->count() > 1)
+                                <button
+                                    onclick="openCheckoutModal('{{ route('checkout.save-user-info.vendor', $vendorId) }}')"
+                                    class="bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-xs font-bold px-4 py-2 rounded-xl transition whitespace-nowrap">
+                                    Checkout All &mdash; रू {{ number_format($vendorTotal, 2) }}
+                                </button>
+                            @endif
+                        </div>
+
+                        <!-- Items in this vendor's box -->
+                        <div class="p-4 space-y-4">
+                            @foreach ($vendorItems as $item)
+
+                                <div class="flex justify-between items-center">
+
+                                    <!-- Product -->
+                                    <div class="flex gap-4 items-center">
+
+                                        <img src="{{ $item->product->primaryImageUrl() }}"
+                                             class="w-16 h-16 rounded-xl object-cover">
+
+                                        <div>
+                                            <h3 class="font-bold">{{ $item->product->name }}</h3>
+
+                                            @if ($item->variant)
+                                                <p class="text-xs text-gray-500">
+                                                    {{ collect([$item->variant->size, $item->variant->color])->filter()->implode(' / ') }}
+                                                </p>
+                                            @endif
+
+                                            <p class="text-[#C65A3A] font-bold">
+                                                रू {{ number_format($item->subtotal(), 2) }}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <!-- Actions -->
+                                    <div class="flex gap-2 items-center">
+
+                                        <!-- Checkout (single item) -->
+                                        <button
+                                            onclick="openCheckoutModal('{{ route('checkout.save-user-info', $item->id) }}')"
+                                            class="bg-[#1F3D2E] text-white px-4 py-2 rounded-xl text-sm">
+                                            Checkout
+                                        </button>
+
+                                        <!-- Remove -->
+                                        <form action="{{ route('cart.remove', $item) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="text-red-500">
+                                                Remove
+                                            </button>
+                                        </form>
+
+                                    </div>
+
+                                </div>
+
+                            @endforeach
+                        </div>
                     </div>
 
                 @endforeach

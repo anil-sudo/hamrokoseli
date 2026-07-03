@@ -1,4 +1,4 @@
-            <header
+<header
                 class="sticky top-0 z-30 w-full bg-[#1E2A44] border-b border-(--primary-color)/15 shadow-sm backdrop-blur-md">
                 <div class="flex items-center gap-3 w-full px-4 md:px-8 py-3 justify-between">
 
@@ -10,7 +10,9 @@
                     <div class="flex-1 min-w-0 md:max-w-md">
                         <div class="relative bg-(--text-light) rounded-full">
                             <i data-lucide="search" class="h-5 w-5 absolute left-3 top-1/2 -translate-y-1/2 text-(--text-color)"></i>
-                            <input type="text" placeholder="{{ $searchPlaceholder ?? 'Search...' }}"
+                            <input type="text" id="seller-search-input" value="{{ request('search') }}"
+                                placeholder="{{ $searchPlaceholder ?? 'Search...' }}"
+                                onkeydown="if(event.key==='Enter'){event.preventDefault(); if(window.sellerSearchHandler){window.sellerSearchHandler(this.value);}}"
                                 class="w-full py-2 pl-10 pr-4 text-sm rounded-full focus:outline-none">
                         </div>
                     </div>

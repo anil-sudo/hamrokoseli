@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use Illuminate\Http\Request;
@@ -326,14 +328,88 @@ class SellerController extends Controller
             ->with('success', 'Product deleted successfully.');
     }
 
-    public function order()
+    public function order(Request $request)
     {
-        return view('seller.order');
+        $vendor = auth()->user()->vendor;
+
+        if (! $vendor) {
+            return redirect()->route('dashboard')
+                ->with('error', 'Vendor profile not found. Please contact support.');
+        }
+
+        $vendorId = $vendor->id;
+
+        // ─── Tab → order_item status mapping ───────────────────────────────
+        $statusMap = [
+            'new' => ['pending'],
+            'processing' => ['confirmed'],
+            'shipped' => ['shipped', 'delivered'],
+            'cancelled' => ['cancelled', 'returned'],
+        ];
+
+        $activeTab = $request->query('status', 'all');
+
+        $query = OrderItem::with(['order.user', 'order.payment', 'product'])
+            ->where('vendor_id', $vendorId);
+
+        if ($activeTab !== 'all' && isset($statusMap[$activeTab])) {
+            $query->whereIn('status', $statusMap[$activeTab]);
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->query('search');
+
+            $query->where(function ($q) use ($search) {
+                $q->where('order_id', 'like', "%{$search}%")
+                    ->orWhereHas('order.user', function ($uq) use ($search) {
+                        $uq->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $orderItems = $query->latest()->paginate(10)->withQueryString();
+
+        // ─── Counts for the tab badges (unaffected by the active filter) ──
+        $baseCount = OrderItem::where('vendor_id', $vendorId);
+        $counts = [
+            'all' => (clone $baseCount)->count(),
+            'new' => (clone $baseCount)->whereIn('status', $statusMap['new'])->count(),
+            'processing' => (clone $baseCount)->whereIn('status', $statusMap['processing'])->count(),
+            'shipped' => (clone $baseCount)->whereIn('status', $statusMap['shipped'])->count(),
+            'cancelled' => (clone $baseCount)->whereIn('status', $statusMap['cancelled'])->count(),
+        ];
+
+        return view('seller.order', compact('orderItems', 'counts', 'activeTab'));
     }
 
-    public function orderDetails()
+    public function orderDetails(Request $request)
     {
-        return view('seller.order-details');
+        $vendor = auth()->user()->vendor;
+
+        if (! $vendor) {
+            return redirect()->route('dashboard')
+                ->with('error', 'Vendor profile not found. Please contact support.');
+        }
+
+        // Every order in this schema is already scoped to a single vendor
+        // (checkout groups cart lines by vendor before an Order is created),
+        // so we just need to confirm this order actually belongs to them.
+        $order = Order::with(['user', 'shippingAddress', 'payment'])
+            ->whereHas('orderItems', fn ($q) => $q->where('vendor_id', $vendor->id))
+            ->find($request->query('order'));
+
+        if (! $order) {
+            abort(404);
+        }
+
+        $items = $order->orderItems()
+            ->where('vendor_id', $vendor->id)
+            ->with(['product.images', 'variant'])
+            ->get();
+
+        $subtotal = $items->sum('subtotal');
+
+        return view('seller.order-details', compact('order', 'items', 'subtotal'));
     }
 
     public function returnProducts()
