@@ -116,7 +116,7 @@
                     <div>
                         <div class="flex justify-between items-center mb-2">
                             <label for="password" class="block text-xs font-bold uppercase text-[#3A2A1F]/80 tracking-wider">Password</label>
-                            <a href="#" class="text-xs font-bold text-[#1F3D2E] hover:text-[#C65A3A] transition">Forgot password?</a>
+                            <a href="{{ route('seller.password.request') }}" class="text-xs font-bold text-[#1F3D2E] hover:text-[#C65A3A] transition">Forgot password?</a>
                         </div>
                         <div class="flex items-center bg-[#F5E8D6]/40 border border-[#ebd7be]/80 rounded-xl px-4 py-3 focus-within:ring-2 focus-within:ring-[#1F3D2E]/40 focus-within:border-transparent transition-all">
                             <i class="fas fa-lock text-slate-400 text-base shrink-0 mr-3"></i>

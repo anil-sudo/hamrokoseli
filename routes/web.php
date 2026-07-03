@@ -10,6 +10,7 @@ use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\SellerController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserRegisterController;
+use App\Http\Controllers\VendorPasswordResetController;
 use App\Http\Controllers\VendorRegisterController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,6 +18,12 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('guest:vendor')->group(function () {
     Route::get('/seller-login', [SellerController::class, 'login'])->name('seller.login');
     Route::post('/seller-login', [SellerController::class, 'loginSubmit'])->name('seller.login.submit');
+
+    // ─── Seller Forgot / Reset Password ──────────────────────────────────────
+    Route::get('/seller/forgot-password', [VendorPasswordResetController::class, 'showForgotForm'])->name('seller.password.request');
+    Route::post('/seller/forgot-password', [VendorPasswordResetController::class, 'sendResetLink'])->name('seller.password.email');
+    Route::get('/seller/reset-password/{token}', [VendorPasswordResetController::class, 'showResetForm'])->name('seller.password.reset');
+    Route::post('/seller/reset-password', [VendorPasswordResetController::class, 'resetPassword'])->name('seller.password.update');
 });
 
 Route::post('/seller-logout', [SellerController::class, 'logout'])->name('seller.logout');
