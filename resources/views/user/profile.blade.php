@@ -37,19 +37,22 @@
                         <div>
                             <label class="block text-sm font-medium text-brand-dark mb-2">Full Name <span
                                     class="text-(--secondary-color)">*</span></label>
-                            <input type="text" placeholder="Enter your name"
+                            <input type="text" name="name" value="{{ old('name', $user->name) }}"
+                            placeholder="Enter your name"
                                 class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-brand-dark mb-1">Email Address <span
                                     class="text-(--secondary-color)">*</span></label>
-                            <input type="email" placeholder="e.g. example22@gmail.com"
+                            <input type="email" name="email" value="{{ old('email', $user->email) }}"
+                            placeholder="e.g. example22@gmail.com"
                                 class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-brand-dark mb-1">Phone Number <span
                                     class="text-(--secondary-color)">*</span></label>
-                            <input type="tel" placeholder="e.g. 1234567890"
+                            <input type="tel" name="phone" value="{{ old('phone', $user->phone) }}"
+                            placeholder="e.g. 1234567890"
                                 class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
                         </div>
                         <div>

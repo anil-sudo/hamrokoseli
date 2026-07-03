@@ -11,11 +11,10 @@
                     telling a story of ancient traditions and skilled hands.
                 </p>
                 <div class="mt-8 max-w-xl mx-auto relative">
-                    <span
-                        class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#3A2A1F]/50">
+                    <span class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#3A2A1F]/50">
                         <i class="fas fa-search text-sm"></i>
                     </span>
-                    <input type="text" id="category-search" placeholder="Search for crafts (e.g. Bhaktapur Pottery)..."
+                    <input type="text" id="category-search" placeholder="Explore our categories..."
                         class="w-full bg-white border border-[#ebd7be]/80 rounded-full py-4 pl-12 pr-6 text-sm focus:outline-none focus:ring-2 focus:ring-[#C65A3A]/25 text-[#1F3D2E] placeholder-[#3A2A1F]/40 shadow-sm transition-all duration-300">
                 </div>
             </div>
@@ -24,7 +23,7 @@
             <div class="relative rounded-3xl overflow-hidden mb-16 border border-[#ebd7be]/40 shadow-sm group">
                 <!-- Background Image -->
                 <div class="absolute inset-0 w-full h-full bg-[#1F3D2E]">
-                    <img src="{{ asset('images/pot.png') }}" alt="Bhaktapur Pottery"
+                    <img src="{{ asset('images/Categories.jpg') }}" alt="Bhaktapur Pottery"
                         class="w-full h-full object-cover opacity-80 group-hover:scale-[1.02] transition duration-700">
                     <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent"></div>
                 </div>
@@ -33,12 +32,11 @@
                 <div
                     class="relative z-10 max-w-2xl py-12 px-6 sm:px-12 md:py-20 md:px-16 flex flex-col items-start justify-center min-h-[360px]">
                     <span
-                        class="bg-[#C65A3A] text-white text-[10px] font-bold tracking-widest uppercase px-3.5 py-1.5 rounded-full shadow-sm mb-4">Spotlight
-                        Craft</span>
-                    <h2 class="text-3xl md:text-4xl font-bold text-white tracking-tight mb-3">Bhaktapur Pottery</h2>
+                        class="bg-[#C65A3A] text-white text-[10px] font-bold tracking-widest uppercase px-3.5 py-1.5 rounded-full shadow-sm mb-4">Our Heritage</span>
+                    <h2 class="text-3xl md:text-4xl font-bold text-white tracking-tight mb-3">Handcrafted Treasures of Nepal</h2>
                     <p class="text-white/80 text-sm md:text-base leading-relaxed mb-8">
-                        Known as the 'City of Devotees', Bhaktapur preserves the millennia-old art of clay crafting.
-                        Every piece carries the warmth of the sun and the spirit of Newari tradition.
+                        From vibrant paintings to intricate wood carvings, traditional textiles to authentic spices —
+                        explore the rich diversity of Nepali craftsmanship and culture.
                     </p>
                     <a href="{{ route('shop', ['category' => 'pottery']) }}"
                         class="flex items-center gap-2 bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-sm font-semibold py-3.5 px-6 rounded-xl shadow-sm hover:shadow transition duration-300">
@@ -56,78 +54,49 @@
                             <span class="absolute bottom-[-13px] left-0 w-full h-[3px] bg-[#C65A3A]"></span>
                         </h2>
                     </div>
-                    <span class="text-xs font-semibold text-[#3A2A1F]/60" id="category-counter">Showing 5 Heritage
-                        Categories</span>
+                    <span class="text-xs font-semibold text-[#3A2A1F]/60" id="category-counter">Showing
+                        {{ $categories->count() }} Heritage Categories</span>
                 </div>
 
                 <!-- Categories Grid -->
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-                    <!-- Row 1: Textiles (wide - 7 cols) & Woodcraft (narrow - 5 cols) -->
-                    <div
-                        class="md:col-span-7 h-72 sm:h-80 md:h-[350px] relative rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm group cursor-pointer category-card">
-                        <a href="{{ route('shop', ['category' => 'textiles']) }}" class="block w-full h-full">
-                            <img src="{{ asset('images/Textile and Fabrics.png') }}" alt="Textiles"
-                                class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent">
-                            </div>
-                            <div class="absolute bottom-6 left-6 text-white z-10">
-                                <h3 class="text-xl md:text-2xl font-bold">Textiles</h3>
-                            </div>
-                        </a>
-                    </div>
+                    @foreach ($categories as $category)
+                        @php
+                            $remainder = $loop->index;
+                            $colSpanClass = '';
+                            $heightClass = '';
+                            $titleSizeClass = '';
 
-                    <div
-                        class="md:col-span-5 h-72 sm:h-80 md:h-[350px] relative rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm group cursor-pointer category-card">
-                        <a href="{{ route('shop', ['category' => 'woodcraft']) }}" class="block w-full h-full">
-                            <img src="{{ asset('images/Table.png') }}" alt="Woodcraft"
-                                class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent">
-                            </div>
-                            <div class="absolute bottom-6 left-6 text-white z-10">
-                                <h3 class="text-xl md:text-2xl font-bold">Woodcraft</h3>
-                            </div>
-                        </a>
-                    </div>
+                            if ($remainder === 0) {
+                                $colSpanClass = 'md:col-span-7';
+                                $heightClass = 'h-72 sm:h-80 md:h-[350px]';
+                                $titleSizeClass = 'text-xl md:text-2xl';
+                            } elseif ($remainder === 1) {
+                                $colSpanClass = 'md:col-span-5';
+                                $heightClass = 'h-72 sm:h-80 md:h-[350px]';
+                                $titleSizeClass = 'text-xl md:text-2xl';
+                            } else {
+                                $colSpanClass = 'md:col-span-4';
+                                $heightClass = 'h-64 sm:h-72 md:h-[280px]';
+                                $titleSizeClass = 'text-lg md:text-xl';
+                            }
+                        @endphp
 
-                    <!-- Row 2: Metalware (4 cols), Pottery & Ceramics (4 cols), Art & Paint (4 cols) -->
-                    <div
-                        class="md:col-span-4 h-64 sm:h-72 md:h-[280px] relative rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm group cursor-pointer category-card">
-                        <a href="{{ route('shop', ['category' => 'metalware']) }}" class="block w-full h-full">
-                            <img src="{{ asset('images/1st-image.png') }}" alt="Metalware"
-                                class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent">
-                            </div>
-                            <div class="absolute bottom-6 left-6 text-white z-10">
-                                <h3 class="text-lg md:text-xl font-bold">Metalware</h3>
-                            </div>
-                        </a>
-                    </div>
-
-                    <div
-                        class="md:col-span-4 h-64 sm:h-72 md:h-[280px] relative rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm group cursor-pointer category-card">
-                        <a href="{{ route('shop', ['category' => 'pottery-ceramics']) }}" class="block w-full h-full">
-                            <img src="{{ asset('images/Pottery and Ceramics.png') }}" alt="Pottery & Ceramics"
-                                class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent">
-                            </div>
-                            <div class="absolute bottom-6 left-6 text-white z-10">
-                                <h3 class="text-lg md:text-xl font-bold">Pottery &amp; Ceramics</h3>
-                            </div>
-                        </a>
-                    </div>
-
-                    <div
-                        class="md:col-span-4 h-64 sm:h-72 md:h-[280px] relative rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm group cursor-pointer category-card">
-                        <a href="{{ route('shop', ['category' => 'art-paint']) }}" class="block w-full h-full">
-                            <img src="{{ asset('images/2nd-image.png') }}" alt="Art & Paint"
-                                class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent">
-                            </div>
-                            <div class="absolute bottom-6 left-6 text-white z-10">
-                                <h3 class="text-lg md:text-xl font-bold">Art & Paint</h3>
-                            </div>
-                        </a>
-                    </div>
+                        <div
+                            class="{{ $colSpanClass }} {{ $heightClass }} relative rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm group cursor-pointer category-card">
+                            <a href="{{ route('shop', ['category' => $category->slug]) }}" class="block w-full h-full">
+                                <img src="{{ $category->image ? asset('storage/' . $category->image) : asset('images/pot.png') }}"
+                                    alt="{{ $category->cat_name }}"
+                                    class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                <div
+                                    class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent">
+                                </div>
+                                <div class="absolute bottom-6 left-6 text-white z-10">
+                                    <h3 class="{{ $titleSizeClass }} font-bold">{{ $category->cat_name }}</h3>
+                                </div>
+                            </a>
+                        </div>
+                    @endforeach
                 </div>
             </div>
 
@@ -161,13 +130,13 @@
 
     {{-- ==================== SEARCH SCRIPT ==================== --}}
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.getElementById('category-search');
             const categoryCards = document.querySelectorAll('.category-card');
             const counter = document.getElementById('category-counter');
 
             if (searchInput) {
-                searchInput.addEventListener('input', function (e) {
+                searchInput.addEventListener('input', function(e) {
                     const query = e.target.value.toLowerCase().trim();
                     let visibleCount = 0;
 

@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Categories\Schemas;
 
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
@@ -26,6 +27,10 @@ class CategoryForm
                 TextInput::make('parent_cat_id')
                     ->numeric()
                     ->default(null),
+                FileUpload::make('image')
+                    ->image()
+                    ->directory('categories')
+                    ->disk('public'),
                 Select::make('status')
                     ->options(['active' => 'Active', 'inactive' => 'Inactive'])
                     ->default('active')

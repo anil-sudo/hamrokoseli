@@ -64,7 +64,7 @@
                         <a href="{{ route('Userdashboard') }}" id="account-menu-btn"
                             class="inline-flex items-center gap-2 rounded-full border border-white/90 text-white font-semibold px-4 py-1.5 text-sm hover:bg-white hover:text-[#1f3d2e] transition-all duration-300 active:scale-95 shadow-sm">
                             <i class="far fa-user-circle"></i>
-                            <span>Hello, {{ explode(' ', auth()->user()->name)[0] }}</span>
+                            <span>Hello, {{ explode(' ', auth()->user()->name)[0] }}</span><i class="fa-solid fa-chevron-down"></i>
                         </a>
                     </div>
                 @endguest
