@@ -338,6 +338,11 @@ class PageController extends Controller
         return view('terms-conditions');
     }
 
+    public function return_policy()
+    {
+        return view('return-policy');
+    }
+
     public function viewProduct($id)
     {
         $product = Product::with(['category', 'vendor', 'images', 'variants'])->findOrFail($id);

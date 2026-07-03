@@ -67,6 +67,7 @@ Route::get('/privacypolicy', [PageController::class, 'privacy'])->name('privacy'
 Route::get('/contact-us', [PageController::class, 'contactus'])->name('contact-us');
 Route::get('/viewdetails/{id}', [PageController::class, 'viewProduct'])->name('viewdetails');
 Route::get('/terms_&_conditions', [PageController::class, 'terms_conditions'])->name('terms&conditions');
+Route::get('/return_&_refund', [PageController::class, 'return_policy'])->name('return&refund');
 
 // ─── Requires login (guests are redirected to /userlogin automatically) ───────
 Route::middleware('auth')->group(function () {
