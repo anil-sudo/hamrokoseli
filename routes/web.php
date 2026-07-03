@@ -39,6 +39,7 @@ Route::middleware(['auth', 'role:vendor'])->group(function () {
     Route::delete('/product/{id}', [SellerController::class, 'destroy'])->name('product.destroy');
     Route::get('/orders', [SellerController::class, 'order'])->name('order');
     Route::get('/order-details', [SellerController::class, 'orderDetails'])->name('order-details');
+    Route::post('/order-details/{order}/payment-status', [SellerController::class, 'updatePaymentStatus'])->name('order-details.payment-status');
     Route::get('/return', [SellerController::class, 'returnProducts'])->name('seller.returns');
     Route::get('/return-details', [SellerController::class, 'returnDetails'])->name('return-details');
     Route::get('/seller-review', [SellerController::class, 'sellerReview'])->name('seller.review');

@@ -3,10 +3,15 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\Payment;
+use App\Models\Payout;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class SellerController extends Controller
@@ -100,7 +105,56 @@ class SellerController extends Controller
 
     public function dashboard()
     {
-        return view('seller.dashboard');
+        $vendor = auth()->user()->vendor;
+
+        if (! $vendor) {
+            return redirect()->route('seller.login')
+                ->with('error', 'Vendor profile not found. Please contact support.');
+        }
+
+        $vendorId = $vendor->id;
+
+        // Items that actually count as sales (exclude cancelled/returned lines).
+        $soldItems = OrderItem::where('vendor_id', $vendorId)
+            ->whereNotIn('status', ['cancelled', 'returned']);
+
+        $stats = [
+            'total_sales' => (clone $soldItems)->sum('subtotal'),
+            'total_orders' => (clone $soldItems)->select('order_id')->distinct()->count('order_id'),
+            'active_products' => Product::where('vendor_id', $vendorId)->where('status', 'active')->count(),
+            'avg_rating' => (float) ($vendor->rating ?? 0),
+            'review_count' => $vendor->reviews()->count(),
+        ];
+
+        // ─── Sales trend for the last 7 days ───────────────────────────────
+        $days = collect(range(6, 0))->map(fn ($daysAgo) => now()->subDays($daysAgo)->startOfDay());
+
+        $dailyTotals = (clone $soldItems)
+            ->where('created_at', '>=', now()->subDays(6)->startOfDay())
+            ->selectRaw('DATE(created_at) as day, SUM(subtotal) as total')
+            ->groupBy('day')
+            ->pluck('total', 'day');
+
+        $maxDailyTotal = max(1, $dailyTotals->max() ?? 0);
+
+        $salesTrend = $days->map(function ($date) use ($dailyTotals, $maxDailyTotal) {
+            $total = (float) ($dailyTotals[$date->toDateString()] ?? 0);
+
+            return [
+                'label' => $date->format('D'),
+                'total' => $total,
+                'height' => $total > 0 ? max(8, (int) round(($total / $maxDailyTotal) * 140)) : 4,
+            ];
+        });
+
+        // ─── Recent orders (latest 5 order lines for this vendor) ─────────
+        $recentItems = OrderItem::with(['order.user', 'order.payment'])
+            ->where('vendor_id', $vendorId)
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return view('seller.dashboard', compact('vendor', 'stats', 'salesTrend', 'recentItems'));
     }
 
     public function product_management(Request $request)
@@ -265,16 +319,311 @@ class SellerController extends Controller
             ->with('success', 'Product deleted successfully.');
     }
 
-    public function order()
+    public function order(Request $request)
     {
-        return view('seller.order');
+        $vendor = auth()->user()->vendor;
+
+        if (! $vendor) {
+            return redirect()->route('dashboard')
+                ->with('error', 'Vendor profile not found. Please contact support.');
+        }
+
+        $vendorId = $vendor->id;
+
+        // ─── Tab → order_item status mapping (fulfillment tabs) ───────────
+        $statusMap = [
+            'new' => ['pending'],
+            'cancelled' => ['cancelled', 'returned'],
+        ];
+
+        // ─── Tab → payment status mapping (payment tabs) ───────────────────
+        $paymentMap = [
+            'paid' => ['completed'],
+            'pending_payment' => ['pending'],
+        ];
+
+        $activeTab = $request->query('status', 'all');
+
+        $applyTabFilter = function ($query) use ($activeTab, $statusMap, $paymentMap) {
+            if (isset($statusMap[$activeTab])) {
+                $query->whereIn('status', $statusMap[$activeTab]);
+            } elseif ($activeTab === 'paid') {
+                $query->whereHas('order.payment', fn ($pq) => $pq->whereIn('status', $paymentMap['paid']));
+            } elseif ($activeTab === 'pending_payment') {
+                // Orders paid via COD (or otherwise missing a payment row) are
+                // treated as "payment pending" too, same as the badge shown
+                // on the order details page.
+                $query->where(function ($pq) use ($paymentMap) {
+                    $pq->whereHas('order.payment', fn ($ppq) => $ppq->whereIn('status', $paymentMap['pending_payment']))
+                        ->orWhereDoesntHave('order.payment');
+                });
+            }
+        };
+
+        $query = OrderItem::with(['order.user', 'order.payment', 'product'])
+            ->where('vendor_id', $vendorId);
+
+        if ($activeTab !== 'all') {
+            $applyTabFilter($query);
+        }
+
+        if ($request->filled('search')) {
+            $search = $request->query('search');
+
+            $query->where(function ($q) use ($search) {
+                $q->where('order_id', 'like', "%{$search}%")
+                    ->orWhereHas('order.user', function ($uq) use ($search) {
+                        $uq->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $orderItems = $query->latest()->paginate(10)->withQueryString();
+
+        // ─── Counts for the tab badges (unaffected by the active filter) ──
+        $baseCount = fn () => OrderItem::where('vendor_id', $vendorId);
+
+        $counts = [
+            'all' => $baseCount()->count(),
+            'new' => $baseCount()->whereIn('status', $statusMap['new'])->count(),
+            'paid' => $baseCount()->whereHas('order.payment', fn ($pq) => $pq->whereIn('status', $paymentMap['paid']))->count(),
+            'pending_payment' => $baseCount()->where(function ($pq) use ($paymentMap) {
+                $pq->whereHas('order.payment', fn ($ppq) => $ppq->whereIn('status', $paymentMap['pending_payment']))
+                    ->orWhereDoesntHave('order.payment');
+            })->count(),
+            'cancelled' => $baseCount()->whereIn('status', $statusMap['cancelled'])->count(),
+        ];
+
+        return view('seller.order', compact('orderItems', 'counts', 'activeTab'));
     }
 
-    public function orderDetails()
+    public function orderDetails(Request $request)
     {
-        return view('seller.order-details');
+        $vendor = auth()->user()->vendor;
+
+        if (! $vendor) {
+            return redirect()->route('dashboard')
+                ->with('error', 'Vendor profile not found. Please contact support.');
+        }
+
+        // Every order in this schema is already scoped to a single vendor
+        // (checkout groups cart lines by vendor before an Order is created),
+        // so we just need to confirm this order actually belongs to them.
+        $order = Order::with(['user', 'shippingAddress', 'payment'])
+            ->whereHas('orderItems', fn ($q) => $q->where('vendor_id', $vendor->id))
+            ->find($request->query('order'));
+
+        if (! $order) {
+            abort(404);
+        }
+
+        $items = $order->orderItems()
+            ->where('vendor_id', $vendor->id)
+            ->with(['product.images', 'variant'])
+            ->get();
+
+        $subtotal = $items->sum('subtotal');
+
+        return view('seller.order-details', compact('order', 'items', 'subtotal'));
     }
 
+    public function updatePaymentStatus(Request $request, Order $order)
+    {
+        $vendor = auth()->user()->vendor;
+
+        if (! $vendor) {
+            return redirect()->route('dashboard')
+                ->with('error', 'Vendor profile not found. Please contact support.');
+        }
+
+        // Make sure this order actually belongs to the current vendor.
+        $belongsToVendor = $order->orderItems()->where('vendor_id', $vendor->id)->exists();
+
+        if (! $belongsToVendor) {
+            abort(404);
+        }
+
+        $validated = $request->validate([
+            'payment_status' => 'required|in:pending,completed,failed,refunded',
+        ]);
+
+        $payment = $order->payment;
+
+        if (! $payment) {
+            return redirect()
+                ->route('order-details', ['order' => $order->id])
+                ->with('error', 'No payment record found for this order.');
+        }
+
+        // Vendors mainly need to confirm they have received the money
+        // (pending -> paid), but we also allow flagging failed/refunded.
+        if ($payment->status !== $validated['payment_status']) {
+            if ($validated['payment_status'] === 'completed') {
+                $payment->markAsCompleted($payment->transaction_id ?? ('MANUAL-'.Str::upper(Str::random(10))));
+            } elseif ($validated['payment_status'] === 'failed') {
+                $payment->markAsFailed();
+            } elseif ($validated['payment_status'] === 'refunded') {
+                $payment->markAsRefunded();
+            } else {
+                $payment->update(['status' => 'pending']);
+            }
+        }
+
+        $labels = [
+            'pending' => 'Pending',
+            'completed' => 'Paid',
+            'failed' => 'Failed',
+            'refunded' => 'Refunded',
+        ];
+
+        return redirect()
+            ->route('order-details', ['order' => $order->id])
+            ->with('success', 'Payment status updated to '.$labels[$validated['payment_status']].'.');
+    }
+
+    public function returnProducts()
+    {
+        return view('seller.return');
+    }
+
+    public function returnDetails()
+    {
+        return view('seller.return-details');
+    }
+
+    public function sellerProfile()
+    {
+        $user = auth()->user();
+        $vendor = $user?->vendor;
+
+        return view('seller.profile', compact('user', 'vendor'));
+    }
+
+    public function sellerReview()
+    {
+        return view('seller.review');
+    }
+
+    public function sellerPayment(Request $request)
+    {
+        $vendor = auth()->user()->vendor;
+
+        if (! $vendor) {
+            return redirect()->route('dashboard')
+                ->with('error', 'Vendor profile not found. Please contact support.');
+        }
+
+        $vendorId = $vendor->id;
+
+        // ─── Base query: vendor's order items that have a completed payment ──
+        // We join order_items → orders → payments to find items the vendor
+        // has actually been paid for (payment.status = 'completed').
+        // Cancelled / returned items are excluded from earnings.
+        $paidItemsBase = OrderItem::where('order_items.vendor_id', $vendorId)
+            ->whereNotIn('order_items.status', ['cancelled', 'returned'])
+            ->join('orders', 'orders.id', '=', 'order_items.order_id')
+            ->join('payments', 'payments.order_id', '=', 'orders.id')
+            ->where('payments.status', 'completed');
+
+        // ─── Total Earnings: sum of subtotals from paid, non-cancelled items ─
+        $totalEarnings = (clone $paidItemsBase)->sum('order_items.subtotal');
+
+        // ─── Total Payouts: sum of completed payouts for this vendor ─────────
+        $totalPayouts = Payout::where('vendor_id', $vendorId)
+            ->where('status', 'completed')
+            ->sum('amount');
+
+        // ─── Pending Settlement: orders confirmed/shipped but not yet paid ───
+        // These are items on orders that exist but payment is still pending.
+        $pendingSettlement = OrderItem::where('order_items.vendor_id', $vendorId)
+            ->whereNotIn('order_items.status', ['cancelled', 'returned'])
+            ->join('orders', 'orders.id', '=', 'order_items.order_id')
+            ->join('payments', 'payments.order_id', '=', 'orders.id')
+            ->where('payments.status', 'pending')
+            ->sum('order_items.subtotal');
+
+        // ─── Current Balance: total earned minus total paid out ───────────────
+        $currentBalance = max(0, $totalEarnings - $totalPayouts);
+
+        // ─── Payment transaction history (from the payments table) ───────────
+        // Each row here represents a customer payment for an order containing
+        // this vendor's items. We show these as the "payout history" since
+        // the payouts table may still be empty for new setups.
+        $period = $request->query('period', '30');
+
+        $paymentHistoryQuery = Payment::select(
+            'payments.id',
+            'payments.gateway',
+            'payments.total_amount',
+            'payments.status',
+            'payments.transaction_id',
+            'payments.reference_id',
+            'payments.paid_at',
+            'payments.created_at',
+            DB::raw('SUM(order_items.subtotal) as vendor_subtotal')
+        )
+            ->join('orders', 'orders.id', '=', 'payments.order_id')
+            ->join('order_items', 'order_items.order_id', '=', 'orders.id')
+            ->where('order_items.vendor_id', $vendorId)
+            ->whereNotIn('order_items.status', ['cancelled', 'returned'])
+            ->where('payments.status', 'completed')
+            ->groupBy(
+                'payments.id',
+                'payments.gateway',
+                'payments.total_amount',
+                'payments.status',
+                'payments.transaction_id',
+                'payments.reference_id',
+                'payments.paid_at',
+                'payments.created_at'
+            )
+            ->latest('payments.created_at');
+
+        if ($period !== 'all') {
+            $paymentHistoryQuery->where('payments.created_at', '>=', now()->subDays((int) $period));
+        }
+
+        $paymentHistory = $paymentHistoryQuery->paginate(10)->withQueryString();
+
+        // ─── Payout requests (admin-initiated payouts to the vendor) ─────────
+        $payouts = Payout::where('vendor_id', $vendorId)->latest()->get();
+
+        return view('seller.payment', compact(
+            'vendor',
+            'totalEarnings',
+            'totalPayouts',
+            'pendingSettlement',
+            'currentBalance',
+            'paymentHistory',
+            'payouts',
+            'period'
+        ));
+    }
+
+    public function paymentDetails()
+    {
+        return view('seller.payment-details');
+    }
+
+    public function sellerNotification()
+    {
+        return view('seller.notification');
+    }
+
+    public function sellerSupport()
+    {
+        return view('seller.support');
+    }
+
+    public function createTicket()
+    {
+        return view('seller.create-ticket');
+    }
+
+    public function sellerTicket()
+    {
+        return view('seller.tickets');
+    }
     // ─── Helpers ──────────────────────────────────────────────────────────────
 
     private function filterSpecs(array $specs): array
