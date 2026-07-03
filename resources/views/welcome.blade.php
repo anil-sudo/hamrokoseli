@@ -118,45 +118,34 @@
 
             <!-- Grid: 3 columns on mobile, 2 on tablet, 4 on desktop -->
             <div class="grid grid-cols-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
-                <!-- Category 1 -->
-                <div class="bg-[#FDFBF7] rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-amber-900/5 hover:shadow-md transition group cursor-pointer">
-                    <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-56 overflow-hidden bg-slate-100">
-                        <img src="{{ asset('images/Pottery and Ceramics.png') }}" alt="Pottery & Ceramics" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                @forelse($categories as $category)
+                    <a href="{{ route('shop', ['category' => $category->slug]) }}" class="bg-[#FDFBF7] rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-amber-900/5 hover:shadow-md transition group block">
+                        <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-56 overflow-hidden bg-slate-100 relative flex items-center justify-center">
+                            @if($category->image)
+                                <img src="{{ Storage::disk('public')->url($category->image) }}" 
+                                     alt="{{ $category->cat_name }}" 
+                                     class="w-full h-full object-cover group-hover:scale-105 transition duration-500 relative z-10"
+                                     onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+                                <div class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 bg-slate-100 p-2 text-center z-0 hidden">
+                                    <i class="fa-solid fa-folder-open text-xl sm:text-2xl md:text-3xl mb-1"></i>
+                                    <span class="text-[8px] sm:text-[10px] text-slate-400 mt-1">No Image</span>
+                                </div>
+                            @else
+                                <div class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 bg-slate-100 p-2 text-center">
+                                    <i class="fa-solid fa-folder-open text-xl sm:text-2xl md:text-3xl mb-1"></i>
+                                    <span class="text-[8px] sm:text-[10px] text-slate-400 mt-1">No Image</span>
+                                </div>
+                            @endif
+                        </div>
+                        <div class="p-1.5 sm:p-2 md:p-3 text-center">
+                            <h4 class="text-[10px] sm:text-xs md:text-sm lg:text-base font-bold text-brand-dark group-hover:text-brand-primary transition-colors line-clamp-1">{{ $category->cat_name }}</h4>
+                        </div>
+                    </a>
+                @empty
+                    <div class="col-span-full text-center py-8">
+                        <p class="text-slate-500">No categories available at this time.</p>
                     </div>
-                    <div class="p-1.5 sm:p-2 md:p-3 text-center">
-                        <h4 class="text-[10px] sm:text-xs md:text-sm lg:text-base font-bold text-brand-dark group-hover:text-brand-primary transition-colors line-clamp-1">Pottery & Ceramics</h4>
-                    </div>
-                </div>
-
-                <!-- Category 2 -->
-                <div class="bg-[#FDFBF7] rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-amber-900/5 hover:shadow-md transition group cursor-pointer">
-                    <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-56 overflow-hidden bg-slate-100">
-                        <img src="{{ asset('images/Textile and Fabrics.png') }}" alt="Textile & Fabric" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                    </div>
-                    <div class="p-1.5 sm:p-2 md:p-3 text-center">
-                        <h4 class="text-[10px] sm:text-xs md:text-sm lg:text-base font-bold text-brand-dark group-hover:text-brand-primary transition-colors line-clamp-1">Textile & Fabric</h4>
-                    </div>
-                </div>
-
-                <!-- Category 3 -->
-                <div class="bg-[#FDFBF7] rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-amber-900/5 hover:shadow-md transition group cursor-pointer">
-                    <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-56 overflow-hidden bg-slate-100">
-                        <img src="{{ asset('images/Jewlery and Accessory.png') }}" alt="Jewelry & Accessories" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                    </div>
-                    <div class="p-1.5 sm:p-2 md:p-3 text-center">
-                        <h4 class="text-[10px] sm:text-xs md:text-sm lg:text-base font-bold text-brand-dark group-hover:text-brand-primary transition-colors line-clamp-1">Jewelry & Accessories</h4>
-                    </div>
-                </div>
-
-                <!-- Category 4 -->
-                <div class="bg-[#FDFBF7] rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-amber-900/5 hover:shadow-md transition group cursor-pointer">
-                    <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-56 overflow-hidden bg-slate-100">
-                        <img src="{{ asset('images/Home Decor.png') }}" alt="Home Decor" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                    </div>
-                    <div class="p-1.5 sm:p-2 md:p-3 text-center">
-                        <h4 class="text-[10px] sm:text-xs md:text-sm lg:text-base font-bold text-brand-dark group-hover:text-brand-primary transition-colors line-clamp-1">Home Decor</h4>
-                    </div>
-                </div>
+                @endforelse
             </div>
         </section>
 
@@ -616,266 +605,100 @@
 
                 <!-- Grid: 3 columns on mobile, 2 on tablet, 4 on desktop -->
                 <div class="grid grid-cols-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
-                    <!-- Seller Card 1 -->
-                    <div class="bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-[#ebd7be]/40 relative hover:shadow-md transition group">
-                        <span class="absolute top-1 left-1 sm:top-2 sm:left-2 bg-[#e5b842] text-brand-dark text-[8px] sm:text-[9px] md:text-[10px] font-extrabold uppercase px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full z-10 shadow-sm">
-                            Best
-                        </span>
-                        <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-48 overflow-hidden bg-slate-100 relative cursor-pointer view-details-btn"
-                             data-id="116"
-                             data-name="Heritage Wool Blanket"
-                             data-price="6999"
-                             data-original-price="6999"
-                             data-image="{{ asset('images/Sweaters.png') }}"
-                             data-category="The Wool Studio"
-                             data-vendor="The Wool Studio"
-                             data-desc="Beautiful heritage wool blanket woven with traditional motifs."
-                             data-rating="4"
-                             data-reviews="892"
-                             data-stock="15">
-                            <img src="{{ asset('images/Sweaters.png') }}" alt="Seller 1" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                            <button class="wishlist-btn absolute top-2 right-2 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-base drop-shadow focus:outline-none"
-                                    data-product-id="116"
-                                    data-product-name="Heritage Wool Blanket"
-                                    data-product-price="6999"
-                                    data-product-image="{{ asset('images/Sweaters.png') }}"
-                                    data-product-desc="Beautiful heritage wool blanket woven with traditional motifs."
-                                    data-product-category="The Wool Studio"
-                                    data-product-tag="Best">
-                                <i class="far fa-heart"></i>
-                            </button>
-                        </div>
-                        <div class="p-1.5 sm:p-2 md:p-3 lg:p-4">
-                            <span class="text-slate-400 font-semibold text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] uppercase tracking-wider truncate block">The Wool Studio</span>
-                            <h4 class="text-[9px] sm:text-[10px] md:text-xs lg:text-sm font-bold text-brand-dark my-0.5 sm:my-1 line-clamp-2 cursor-pointer hover:text-brand-primary transition-colors view-details-btn"
-                                data-id="116"
-                                data-name="Heritage Wool Blanket"
-                                data-price="6999"
-                                data-original-price="6999"
-                                data-image="{{ asset('images/Sweaters.png') }}"
-                                data-category="The Wool Studio"
-                                data-vendor="The Wool Studio"
-                                data-desc="Beautiful heritage wool blanket woven with traditional motifs."
-                                data-rating="4"
-                                data-reviews="892"
-                                data-stock="15">Heritage Wool Blanket</h4>
-                            <div class="flex items-center gap-0.5 sm:gap-1 text-[8px] sm:text-[9px] md:text-[10px] lg:text-[11px] mb-1 sm:mb-2 text-slate-500">
-                                <span class="flex text-amber-500 gap-0.5">
-                                    <i class="fa-solid fa-star text-[6px] sm:text-[8px]"></i>
-                                    <i class="fa-solid fa-star text-[6px] sm:text-[8px]"></i>
-                                    <i class="fa-solid fa-star text-[6px] sm:text-[8px]"></i>
-                                    <i class="fa-solid fa-star text-[6px] sm:text-[8px]"></i>
-                                    <i class="fa-regular fa-star text-[6px] sm:text-[8px]"></i>
+                    @forelse($topSellers as $index => $product)
+                        @php
+                            $rank = $index + 1;
+                            $rankBg = match(true) {
+                                $rank === 1 => 'bg-yellow-400 text-yellow-900',
+                                $rank === 2 => 'bg-slate-300 text-slate-800',
+                                $rank === 3 => 'bg-amber-600 text-white',
+                                default     => 'bg-[#1F3D2E] text-white',
+                            };
+                            $imageUrl = $product->primaryImageUrl();
+                            $dDiscount = $product->resolvedDiscountPrice();
+                            $hasDiscount = !is_null($dDiscount) && $dDiscount > 0 && $dDiscount < $product->price;
+                            $discountPrice = $hasDiscount ? $dDiscount : $product->price;
+                        @endphp
+                        <div class="product-card bg-white rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group">
+                            <div class="relative w-full aspect-[4/5] overflow-hidden rounded-t-3xl bg-slate-100">
+                                <img src="{{ $imageUrl }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                                
+                                <span class="absolute top-4 left-4 {{ $rankBg }} text-[8px] sm:text-[9px] md:text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-full z-10 shadow">
+                                    #{{ $rank }} {{ $rank <= 3 ? 'Best Seller' : 'Seller' }}
                                 </span>
-                                <span class="hidden xs:inline">(892)</span>
-                            </div>
-                            <div class="flex items-center justify-between mt-1 sm:mt-1.5 md:mt-2 pt-1 sm:pt-1.5 border-t border-slate-100">
-                                <span class="text-brand-primary font-bold text-[9px] sm:text-[10px] md:text-xs lg:text-sm">Rs. 6,999</span>
-                                <button class="add-to-cart-btn bg-[#b55b3d] hover:bg-[#a04f33] text-white text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs font-semibold px-1.5 sm:px-2 py-0.5 sm:py-1 md:px-2.5 md:py-1 rounded-lg transition"
-                                        data-product-id="116"
-                                        data-product-name="Heritage Wool Blanket"
-                                        data-product-price="6999"
-                                        data-product-image="{{ asset('images/Sweaters.png') }}"
-                                        data-product-desc="Beautiful heritage wool blanket woven with traditional motifs."
-                                        data-product-category="The Wool Studio"
-                                        data-product-tag="Best">
-                                    Add
-                                </button>
-                            </div>
-                        </div>
-                    </div>
 
-                    <!-- Seller Card 2 -->
-                    <div class="bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-[#ebd7be]/40 hover:shadow-md transition group">
-                        <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-48 overflow-hidden bg-slate-100 relative cursor-pointer view-details-btn"
-                             data-id="117"
-                             data-name="Labradorite Pendant"
-                             data-price="3299"
-                             data-original-price="3299"
-                             data-image="{{ asset('images/SunGlass.png') }}"
-                             data-category="Gem & Co."
-                             data-vendor="Gem & Co."
-                             data-desc="Stunning handcrafted labradorite gemstone pendant set in sterling silver."
-                             data-rating="4"
-                             data-reviews="654"
-                             data-stock="22">
-                            <img src="{{ asset('images/SunGlass.png') }}" alt="Seller 2" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                            <button class="wishlist-btn absolute top-2 right-2 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-base drop-shadow focus:outline-none"
-                                    data-product-id="117"
-                                    data-product-name="Labradorite Pendant"
-                                    data-product-price="3299"
-                                    data-product-image="{{ asset('images/SunGlass.png') }}"
-                                    data-product-desc="Stunning handcrafted labradorite gemstone pendant set in sterling silver."
-                                    data-product-category="Gem & Co.">
-                                <i class="far fa-heart"></i>
-                            </button>
-                        </div>
-                        <div class="p-1.5 sm:p-2 md:p-3 lg:p-4">
-                            <span class="text-slate-400 font-semibold text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] uppercase tracking-wider truncate block">Gem &amp; Co.</span>
-                            <h4 class="text-[9px] sm:text-[10px] md:text-xs lg:text-sm font-bold text-brand-dark my-0.5 sm:my-1 line-clamp-2 cursor-pointer hover:text-brand-primary transition-colors view-details-btn"
-                                data-id="117"
-                                data-name="Labradorite Pendant"
-                                data-price="3299"
-                                data-original-price="3299"
-                                data-image="{{ asset('images/SunGlass.png') }}"
-                                data-category="Gem & Co."
-                                data-vendor="Gem & Co."
-                                data-desc="Stunning handcrafted labradorite gemstone pendant set in sterling silver."
-                                data-rating="4"
-                                data-reviews="654"
-                                data-stock="22">Labradorite Pendant</h4>
-                            <div class="flex items-center gap-0.5 sm:gap-1 text-[8px] sm:text-[9px] md:text-[10px] lg:text-[11px] mb-1 sm:mb-2 text-slate-500">
-                                <span class="flex text-amber-500 gap-0.5">
-                                    <i class="fa-solid fa-star text-[6px] sm:text-[8px]"></i>
-                                    <i class="fa-solid fa-star text-[6px] sm:text-[8px]"></i>
-                                    <i class="fa-solid fa-star text-[6px] sm:text-[8px]"></i>
-                                    <i class="fa-solid fa-star text-[6px] sm:text-[8px]"></i>
-                                    <i class="fa-regular fa-star text-[6px] sm:text-[8px]"></i>
-                                </span>
-                                <span class="hidden xs:inline">(654)</span>
-                            </div>
-                            <div class="flex items-center justify-between mt-1 sm:mt-1.5 md:mt-2 pt-1 sm:pt-1.5 border-t border-slate-100">
-                                <span class="text-brand-primary font-bold text-[9px] sm:text-[10px] md:text-xs lg:text-sm">Rs. 3,299</span>
-                                <button class="add-to-cart-btn bg-[#b55b3d] hover:bg-[#a04f33] text-white text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs font-semibold px-1.5 sm:px-2 py-0.5 sm:py-1 md:px-2.5 md:py-1 rounded-lg transition"
-                                        data-product-id="117"
-                                        data-product-name="Labradorite Pendant"
-                                        data-product-price="3299"
-                                        data-product-image="{{ asset('images/SunGlass.png') }}"
-                                        data-product-desc="Stunning handcrafted labradorite gemstone pendant set in sterling silver."
-                                        data-product-category="Gem & Co.">
-                                    Add
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                                @if($product->vendor)
+                                    <div class="absolute top-4 right-4 bg-white/95 text-[#1F3D2E] text-[10px] font-bold tracking-wider uppercase px-3 py-1.5 rounded-full shadow-sm z-10">
+                                        {{ $product->vendor->business_name ?? $product->vendor->name }}
+                                    </div>
+                                @endif
 
-                    <!-- Seller Card 3 -->
-                    <div class="bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-[#ebd7be]/40 hover:shadow-md transition group">
-                        <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-48 overflow-hidden bg-slate-100 relative cursor-pointer view-details-btn"
-                             data-id="118"
-                             data-name="Reclaimed Wood Shelf"
-                             data-price="15999"
-                             data-original-price="15999"
-                             data-image="{{ asset('images/Table.png') }}"
-                             data-category="Urban Rustic"
-                             data-vendor="Urban Rustic"
-                             data-desc="Sturdy, rustic wooden wall shelf hand-made from reclaimed Nepalese timber."
-                             data-rating="4"
-                             data-reviews="423"
-                             data-stock="7">
-                            <img src="{{ asset('images/Table.png') }}" alt="Seller 3" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                            <button class="wishlist-btn absolute top-2 right-2 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-base drop-shadow focus:outline-none"
-                                    data-product-id="118"
-                                    data-product-name="Reclaimed Wood Shelf"
-                                    data-product-price="15999"
-                                    data-product-image="{{ asset('images/Table.png') }}"
-                                    data-product-desc="Sturdy, rustic wooden wall shelf hand-made from reclaimed Nepalese timber."
-                                    data-product-category="Urban Rustic">
-                                <i class="far fa-heart"></i>
-                            </button>
-                        </div>
-                        <div class="p-1.5 sm:p-2 md:p-3 lg:p-4">
-                            <span class="text-slate-400 font-semibold text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] uppercase tracking-wider truncate block">Urban Rustic</span>
-                            <h4 class="text-[9px] sm:text-[10px] md:text-xs lg:text-sm font-bold text-brand-dark my-0.5 sm:my-1 line-clamp-2 cursor-pointer hover:text-brand-primary transition-colors view-details-btn"
-                                data-id="118"
-                                data-name="Reclaimed Wood Shelf"
-                                data-price="15999"
-                                data-original-price="15999"
-                                data-image="{{ asset('images/Table.png') }}"
-                                data-category="Urban Rustic"
-                                data-vendor="Urban Rustic"
-                                data-desc="Sturdy, rustic wooden wall shelf hand-made from reclaimed Nepalese timber."
-                                data-rating="4"
-                                data-reviews="423"
-                                data-stock="7">Reclaimed Wood Shelf</h4>
-                            <div class="flex items-center gap-0.5 sm:gap-1 text-[8px] sm:text-[9px] md:text-[10px] lg:text-[11px] mb-1 sm:mb-2 text-slate-500">
-                                <span class="flex text-amber-500 gap-0.5">
-                                    <i class="fa-solid fa-star text-[6px] sm:text-[8px]"></i>
-                                    <i class="fa-solid fa-star text-[6px] sm:text-[8px]"></i>
-                                    <i class="fa-solid fa-star text-[6px] sm:text-[8px]"></i>
-                                    <i class="fa-solid fa-star text-[6px] sm:text-[8px]"></i>
-                                    <i class="fa-regular fa-star text-[6px] sm:text-[8px]"></i>
-                                </span>
-                                <span class="hidden xs:inline">(423)</span>
-                            </div>
-                            <div class="flex items-center justify-between mt-1 sm:mt-1.5 md:mt-2 pt-1 sm:pt-1.5 border-t border-slate-100">
-                                <span class="text-brand-primary font-bold text-[9px] sm:text-[10px] md:text-xs lg:text-sm">Rs. 15,999</span>
-                                <button class="add-to-cart-btn bg-[#b55b3d] hover:bg-[#a04f33] text-white text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs font-semibold px-1.5 sm:px-2 py-0.5 sm:py-1 md:px-2.5 md:py-1 rounded-lg transition"
-                                        data-product-id="118"
-                                        data-product-name="Reclaimed Wood Shelf"
-                                        data-product-price="15999"
-                                        data-product-image="{{ asset('images/Table.png') }}"
-                                        data-product-desc="Sturdy, rustic wooden wall shelf hand-made from reclaimed Nepalese timber."
-                                        data-product-category="Urban Rustic">
-                                    Add
+                                <button
+                                    class="wishlist-btn absolute bottom-4 right-4 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-xl drop-shadow z-10"
+                                    data-product-id="{{ $product->id }}"
+                                    data-product-name="{{ $product->name }}"
+                                    data-product-price="{{ $discountPrice }}"
+                                    data-product-image="{{ $imageUrl }}"
+                                    data-product-desc="{{ $product->description }}"
+                                    data-product-category="{{ $product->category?->cat_name }}">
+                                    <i class="far fa-heart"></i>
                                 </button>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Seller Card 4 -->
-                    <div class="bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-[#ebd7be]/40 hover:shadow-md transition group">
-                        <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-48 overflow-hidden bg-slate-100 relative cursor-pointer view-details-btn"
-                             data-id="119"
-                             data-name="Raku Fired Vase"
-                             data-price="4499"
-                             data-original-price="4499"
-                             data-image="{{ asset('images/Pottery.png') }}"
-                             data-category="Earth & Clay"
-                             data-vendor="Earth & Clay"
-                             data-desc="Exquisite raku-fired pottery vase with metallic glaze finish."
-                             data-rating="4"
-                             data-reviews="567"
-                             data-stock="18">
-                            <img src="{{ asset('images/Pottery.png') }}" alt="Seller 4" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                            <button class="wishlist-btn absolute top-2 right-2 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-base drop-shadow focus:outline-none"
-                                    data-product-id="119"
-                                    data-product-name="Raku Fired Vase"
-                                    data-product-price="4499"
-                                    data-product-image="{{ asset('images/Pottery.png') }}"
-                                    data-product-desc="Exquisite raku-fired pottery vase with metallic glaze finish."
-                                    data-product-category="Earth & Clay">
-                                <i class="far fa-heart"></i>
-                            </button>
-                        </div>
-                        <div class="p-1.5 sm:p-2 md:p-3 lg:p-4">
-                            <span class="text-slate-400 font-semibold text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] uppercase tracking-wider truncate block">Earth &amp; Clay</span>
-                            <h4 class="text-[9px] sm:text-[10px] md:text-xs lg:text-sm font-bold text-brand-dark my-0.5 sm:my-1 line-clamp-2 cursor-pointer hover:text-brand-primary transition-colors view-details-btn"
-                                data-id="119"
-                                data-name="Raku Fired Vase"
-                                data-price="4499"
-                                data-original-price="4499"
-                                data-image="{{ asset('images/Pottery.png') }}"
-                                data-category="Earth & Clay"
-                                data-vendor="Earth & Clay"
-                                data-desc="Exquisite raku-fired pottery vase with metallic glaze finish."
-                                data-rating="4"
-                                data-reviews="567"
-                                data-stock="18">Raku Fired Vase</h4>
-                            <div class="flex items-center gap-0.5 sm:gap-1 text-[8px] sm:text-[9px] md:text-[10px] lg:text-[11px] mb-1 sm:mb-2 text-slate-500">
-                                <span class="flex text-amber-500 gap-0.5">
-                                    <i class="fa-solid fa-star text-[6px] sm:text-[8px]"></i>
-                                    <i class="fa-solid fa-star text-[6px] sm:text-[8px]"></i>
-                                    <i class="fa-solid fa-star text-[6px] sm:text-[8px]"></i>
-                                    <i class="fa-solid fa-star text-[6px] sm:text-[8px]"></i>
-                                    <i class="fa-regular fa-star text-[6px] sm:text-[8px]"></i>
-                                </span>
-                                <span class="hidden xs:inline">(567)</span>
-                            </div>
-                            <div class="flex items-center justify-between mt-1 sm:mt-1.5 md:mt-2 pt-1 sm:pt-1.5 border-t border-slate-100">
-                                <span class="text-brand-primary font-bold text-[9px] sm:text-[10px] md:text-xs lg:text-sm">Rs. 4,499</span>
-                                <button class="add-to-cart-btn bg-[#b55b3d] hover:bg-[#a04f33] text-white text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs font-semibold px-1.5 sm:px-2 py-0.5 sm:py-1 md:px-2.5 md:py-1 rounded-lg transition"
-                                        data-product-id="119"
-                                        data-product-name="Raku Fired Vase"
-                                        data-product-price="4499"
-                                        data-product-image="{{ asset('images/Pottery.png') }}"
-                                        data-product-desc="Exquisite raku-fired pottery vase with metallic glaze finish."
-                                        data-product-category="Earth & Clay">
-                                    Add
-                                </button>
+                            <div class="p-5 flex-grow flex flex-col justify-between">
+                                <div>
+                                    <span class="text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-1">
+                                        {{ $product->category?->cat_name ?? 'General' }}
+                                    </span>
+                                    <h3 class="text-lg font-bold text-[#1F3D2E] mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1">
+                                        {{ $product->name }}
+                                    </h3>
+                                    <div class="flex items-baseline gap-2 mb-4">
+                                        <span class="text-[#C65A3A] font-bold text-base">
+                                            Rs {{ number_format($discountPrice, 2) }}
+                                        </span>
+                                        @if($hasDiscount)
+                                            <span class="text-slate-400 text-xs line-through font-semibold">
+                                                Rs {{ number_format($product->price, 2) }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <div class="flex gap-2 mt-auto">
+                                    <a href="{{ route('viewdetails', $product->id) }}"
+                                       class="view-details-btn flex-1 flex items-center justify-center gap-2 bg-[#1F3D2E] hover:bg-[#16301f] text-white text-sm font-semibold py-3 px-3 rounded-xl shadow-sm hover:shadow transition duration-300"
+                                       data-id="{{ $product->id }}"
+                                       data-name="{{ $product->name }}"
+                                       data-price="{{ $discountPrice }}"
+                                       data-original-price="{{ $product->price }}"
+                                       data-discount="{{ $hasDiscount ? 'true' : 'false' }}"
+                                       data-discount-price="{{ $dDiscount ?? '' }}"
+                                       data-image="{{ $imageUrl }}"
+                                       data-category="{{ $product->category?->cat_name ?? 'Crafts' }}"
+                                       data-vendor="{{ $product->vendor->business_name ?? $product->vendor->name ?? 'Local Artisan' }}"
+                                       data-desc="{{ $product->description }}"
+                                       data-rating="{{ $product->rating ?? 5 }}"
+                                       data-reviews="{{ $product->reviews_count ?? 24 }}"
+                                       data-stock="{{ $product->stock ?? 10 }}">
+                                        <i class="fa-solid fa-circle-info text-xs"></i>
+                                        Details
+                                    </a>
+                                    <button
+                                        type="button"
+                                        class="add-to-cart-btn flex-1 flex items-center justify-center gap-2 bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-sm font-semibold py-3 px-3 rounded-xl shadow-sm hover:shadow transition duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
+                                        data-product-id="{{ $product->id }}"
+                                        data-product-name="{{ $product->name }}"
+                                        {{ ($product->stock ?? 0) < 1 ? 'disabled' : '' }}>
+                                        <i class="fa-solid fa-cart-plus text-xs"></i>
+                                        {{ ($product->stock ?? 0) < 1 ? 'Sold Out' : 'Add' }}
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    @empty
+                        <div class="col-span-full text-center py-8">
+                            <p class="text-slate-500">No top sellers available at this time.</p>
+                        </div>
+                    @endforelse
                 </div>
             </div>
         </section>
