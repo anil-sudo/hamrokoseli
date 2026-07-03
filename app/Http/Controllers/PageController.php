@@ -33,7 +33,9 @@ class PageController extends Controller
 
     public function categories()
     {
-        return view('categories');
+        $categories = Category::where('status', 'active')->get();
+
+        return view('categories', compact('categories'));
     }
 
     // Shared query logic for shop() and viewProduct()
@@ -341,6 +343,16 @@ class PageController extends Controller
         $product->primary_image_url = method_exists($product, 'primaryImageUrl') ? $product->primaryImageUrl() : asset($product->image);
         $product->category_name = $product->category?->cat_name ?? $product->category?->name ?? 'Crafts';
         $product->vendor_name = $product->vendor?->vendor_name ?? $product->vendor?->name ?? 'Local Artisan';
+
+        // Track recently viewed products in session (store product IDs)
+        $recentlyViewed = session()->get('recently_viewed', []);
+        // Remove if already exists to avoid duplicates
+        $recentlyViewed = array_filter($recentlyViewed, fn ($pid) => $pid != $id);
+        // Prepend current product
+        array_unshift($recentlyViewed, (int) $id);
+        // Keep only last 20
+        $recentlyViewed = array_slice($recentlyViewed, 0, 20);
+        session()->put('recently_viewed', $recentlyViewed);
 
         return view('shop', array_merge($this->buildShopData(), [
             'activeProduct' => $product,

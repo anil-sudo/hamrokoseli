@@ -29,9 +29,9 @@
             <img src="{{ asset('images/logo.png') }}" alt="HamroKoseli Logo" class="w-10 h-10 bg-white rounded-full object-cover">
 
             <div class="transition-all duration-300 hover:translate-x-1">
-                <h1 class="text-2xl font-bold tracking-tight text-[#FFF7EF] font-sans">
+                <h1 class="text-2xl font-bold tracking-tight text-brand-cream font-sans">
                     HamroKoseli</h1>
-                <p class="text-xs text-[#FFF7EF] font-medium mt-0.5">User Portal</p>
+                <p class="text-xs text-brand-cream font-medium mt-0.5">User Portal</p>
             </div>
         </div>
     </div>
@@ -41,7 +41,7 @@
         class="navbar flex-1 px-4 py-4 space-y-1.5 overflow-y-auto scroll-smooth">
         <!-- Dashboard -->
         <a href="{{ route('Userdashboard') }}"
-            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl  hover:bg-[#D4A017] group transition-all duration-300 ease-out active:scale-[0.98]
+            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl  hover:bg-[#D4A017]  group transition-all duration-300 ease-out active:scale-[0.98]
             {{ Request::routeIs('Userdashboard') ? 'bg-(--hover-color)' : '' }}">
             <i data-lucide="layout-dashboard"
                 class="w-5 text-lg transition-transform duration-300 group-hover:scale-110"></i>
@@ -50,7 +50,7 @@
 
         <!-- Orders -->
         <a href="{{ route('User-orders') }}"
-            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl  hover:bg-[#D4A017]  group transition-all duration-300 ease-out active:scale-[0.98]
+            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017]  group transition-all duration-300 ease-out active:scale-[0.98]
             {{ Request::routeIs('User-orders') ? 'bg-(--hover-color)' : '' }}">
             <i data-lucide="shopping-cart" class="w-5 text-lg transition-transform duration-300 group-hover:scale-110"></i>
             <span class="font-medium transition-all duration-300 group-hover:translate-x-1">Orders</span>
@@ -58,7 +58,7 @@
 
         <!-- profile -->
         <a href="{{ route('user-profile') }}"
-            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017] group transition-all duration-300 ease-out active:scale-[0.98]
+            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017]  group transition-all duration-300 ease-out active:scale-[0.98]
             {{ Request::routeIs('user-profile') ? 'bg-(--hover-color)' : '' }}">
             <i data-lucide="user-round" class="w-5 transition-transform duration-300 group-hover:scale-110"></i>
             <span class="font-medium transition-all duration-300 group-hover:translate-x-1">Profile</span>
@@ -66,7 +66,7 @@
 
         <!-- notification -->
         <a href="{{ route('user-notification') }}"
-            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017] group transition-all duration-300 ease-out active:scale-[0.98]
+            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017]  group transition-all duration-300 ease-out active:scale-[0.98]
             {{ Request::routeIs('user-notification') ? 'bg-(--hover-color)' : '' }}">
             <i data-lucide="bell" class="w-5 transition-transform duration-300 group-hover:scale-110"></i>
             <span class="font-medium transition-all duration-300 group-hover:translate-x-1">Notification</span>
@@ -76,9 +76,9 @@
     <div class=" px-4 pb-8 mt-auto border-t border-white/10 pt-4 space-y-4">
         <!-- buy now -->
         <a href="{{ route('shop') }}"
-            class="flex items-center gap-4 px-4 py-3 rounded-xl bg-[#C65A3A]  hover:bg-[#B14E32] text-[#FFF7EF]  transition-all duration-300 active:scale-[0.98] group">
+            class="flex items-center gap-4 px-4 py-3 rounded-xl bg-brand-primary  hover:bg-[#B14E32] text-brand-cream  transition-all duration-300 active:scale-[0.98] group">
             <i data-lucide="shopping-bag"
-                class="w-5 text-[#FFF7EF] text-lg transition-transform duration-300 group-hover:rotate-9"></i>
+                class="w-5 text-brand-cream text-lg transition-transform duration-300 group-hover:rotate-9"></i>
             <span class="font-semibold group-hover:translate-x-1 transition">Back to Shop Now</span>
         </a>
     </div>

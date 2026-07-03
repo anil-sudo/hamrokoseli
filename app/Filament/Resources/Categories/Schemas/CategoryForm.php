@@ -22,17 +22,16 @@ class CategoryForm
                             $set('slug', Str::slug($state));
                         }
                     }),
-                FileUpload::make('cat_image')
-                    ->image()
-                    ->maxSize(2048)
-                    ->directory('categories')
-                    ->disk('public')
-                    ->nullable(),
                 TextInput::make('slug')
                     ->required(),
                 TextInput::make('parent_cat_id')
                     ->numeric()
                     ->default(null),
+                FileUpload::make('image')
+                    ->image()
+                    ->maxSize(2048)
+                    ->directory('categories')
+                    ->disk('public'),
                 Select::make('status')
                     ->options(['active' => 'Active', 'inactive' => 'Inactive'])
                     ->default('active')

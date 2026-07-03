@@ -15,12 +15,12 @@ class CategoriesTable
     {
         return $table
             ->columns([
-                TextColumn::make('cat_name')
-                    ->searchable(),
-                ImageColumn::make('cat_image')
+                ImageColumn::make('image')
                     ->disk('public')
                     ->imageHeight(48)
                     ->imageWidth(48),
+                TextColumn::make('cat_name')
+                    ->searchable(),
                 TextColumn::make('slug')
                     ->searchable(),
                 TextColumn::make('parent_cat_id')
