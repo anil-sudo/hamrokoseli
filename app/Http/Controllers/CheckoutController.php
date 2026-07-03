@@ -141,10 +141,10 @@ class CheckoutController extends Controller
             if ($data['payment_method'] === 'cod') {
                 Payment::create([
                     'order_id' => $order->id,
-                    'user_id'  => $user->id,
-                    'gateway'  => 'cod',
+                    'user_id' => $user->id,
+                    'gateway' => 'cod',
                     'total_amount' => $subtotal,
-                    'status'   => 'pending',
+                    'status' => 'pending',
                 ]);
             }
 
@@ -299,10 +299,10 @@ class CheckoutController extends Controller
             if ($data['payment_method'] === 'cod') {
                 Payment::create([
                     'order_id' => $order->id,
-                    'user_id'  => $user->id,
-                    'gateway'  => 'cod',
+                    'user_id' => $user->id,
+                    'gateway' => 'cod',
                     'total_amount' => $total,
-                    'status'   => 'pending',
+                    'status' => 'pending',
                 ]);
             }
 
