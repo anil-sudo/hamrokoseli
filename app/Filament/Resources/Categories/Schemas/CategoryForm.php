@@ -24,6 +24,7 @@ class CategoryForm
                     }),
                 FileUpload::make('cat_image')
                     ->image()
+                    ->imageEditor()
                     ->maxSize(2048)
                     ->directory('categories')
                     ->disk('public')

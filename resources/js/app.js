@@ -559,6 +559,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // and is what actually persists — it's what /cart shows on reload.
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
     let dbCartCount = parseInt(window.initialCartCount) || 0;
+
+    // Clear local storage cart if logged in to prevent count mismatches
+    if (window.isLoggedIn) {
+        localStorage.removeItem('cart');
+        cart = [];
+    }
+
     const cartItemsContainer = document.getElementById('cart-items-container');
 
     function getCsrfToken() {
@@ -571,8 +578,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const badge = document.getElementById('cart-badge');
         const headerIcon = document.getElementById('cart-header-icon');
         if (badge) {
-            const localCount = cart.reduce((sum, item) => sum + parseInt(item.qty || 1), 0);
-            const count = localCount + dbCartCount;
+            const count = window.isLoggedIn ? dbCartCount : cart.reduce((sum, item) => sum + parseInt(item.qty || 1), 0);
             badge.textContent = count;
             if (count > 0) {
                 badge.classList.remove('hidden');

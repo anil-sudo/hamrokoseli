@@ -25,9 +25,25 @@ class PageController extends Controller
             ->limit(4)
             ->get();
 
+        // Fetch 4 random active categories
+        $categories = Category::where('status', 'active')
+            ->inRandomOrder()
+            ->limit(4)
+            ->get();
+
+        // Fetch top sellers dynamically
+        $topSellers = Product::where('status', 'active')
+            ->with(['category', 'vendor', 'images', 'variants'])
+            ->withCount('orderItems')
+            ->orderByDesc('order_items_count')
+            ->take(4)
+            ->get();
+
         return view('welcome', [
             'vendors' => $vendors,
             'featuredProducts' => $featuredProducts,
+            'categories' => $categories,
+            'topSellers' => $topSellers,
         ]);
     }
 

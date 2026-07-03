@@ -267,18 +267,31 @@ function formatRs(amount) {
 
 function recalcTotals() {
     let grandTotal = 0;
+    let totalItems = 0;
     document.querySelectorAll('.cart-item').forEach(row => {
         const unitPrice = parseFloat(row.dataset.unitPrice) || 0;
         const qty       = parseInt(row.querySelector('.qty-display').textContent) || 1;
         const subtotal  = unitPrice * qty;
         row.querySelector('.item-subtotal').textContent = formatRs(subtotal);
         grandTotal += subtotal;
+        totalItems += qty;
     });
 
     const summarySubtotal = document.getElementById('summary-subtotal');
     const summaryTotal    = document.getElementById('summary-total');
     if (summarySubtotal) summarySubtotal.textContent = formatRs(grandTotal);
     if (summaryTotal)    summaryTotal.textContent    = formatRs(grandTotal);
+
+    // Update cart badge dynamically
+    const badge = document.getElementById('cart-badge');
+    if (badge) {
+        badge.textContent = totalItems;
+        if (totalItems > 0) {
+            badge.classList.remove('hidden');
+        } else {
+            badge.classList.add('hidden');
+        }
+    }
 
     // Update each vendor-checkout-all button total
     const vendorTotals = {};
