@@ -84,7 +84,14 @@ class PageController extends Controller
 
     public function new_arrival()
     {
-        return view('new_arrival');
+        $products = Product::with(['category', 'vendor', 'images'])
+            ->where('status', 'active')
+            ->latest()
+            ->paginate(8)
+            ->withQueryString();
+
+        return view('new_arrival', compact('products'));
+
     }
 
     public function todays_deals()

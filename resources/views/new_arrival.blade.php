@@ -8,154 +8,112 @@
                     New Arrivals
                 </h1>
                 <p class="text-[#3A2A1F]/70 text-sm md:text-base leading-relaxed">
-                    Check Out What's New ???
+                    The newest handmade pieces added to Hamro Koseli.
                 </p>
             </div>
 
             <!-- Products Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
 
-                <!-- Product Card 1 -->
-                <div
-                    class="bg-[#FDFBF7] rounded-xl sm:rounded-2xl border border-amber-900/5 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group">
-                    <div class="relative">
-                        <img src="{{ asset('images/pot.png') }}" alt="Patan Bronze Bowl"
-                            class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300">
-                        <span
-                            class="absolute top-3 left-3 bg- bg-[#e5b842] text-black text-xs font-bold px-3 py-1 rounded-full">
-                            New !!!
-                        </span>
-                    </div>
-                    <div class="p-5">
-                        <h3 class="font-semibold text-lg mb-1">Patan Bronze Bowl</h3>
-                        <p class="text-sm text-gray-600 mb-3 line-clamp-2">
-                            Hand-hammered ritual vessel by local metalsmiths.
-                        </p>
-                        <div class="flex items-center justify-between mb-4">
-                            <span class="text-2xl font-bold text-[#1a3c34]">Rs. 4,500</span>
-                        </div>
-                        <a href="#"
-                            class="add-to-cart-btn w-full bg-[#C65A3A] hover:bg-[#b04a2c] text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2 transition-colors"
-                            data-product-id="new-arrival-1"
-                            data-product-name="Patan Bronze Bowl"
-                            data-product-price="4500"
-                            data-product-image="/images/pot.png"
-                            data-product-desc="Hand-hammered ritual vessel by local metalsmiths."
-                            data-product-category="Metalware"
-                            data-product-tag="Authentic"
-                            data-product-specs="Type: Bronze Alloy | Origin: Patan Industrial Estate">
-                            <span> <i class="fas fa-shopping-cart"></i>
-                            </span> Add to Cart
-                        </a>
-                    </div>
-                </div>
+                @forelse ($products as $product)
+                    <div
+                        data-category="{{ $product->category?->slug ?? 'uncategorized' }}"
+                        class="product-card bg-[#FDFBF7] rounded-xl sm:rounded-2xl border border-amber-900/5 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group flex flex-col">
 
-                <!-- Product Card 2 -->
-                <div
-                    class="bg-[#FDFBF7] rounded-xl sm:rounded-2xl border border-amber-900/5 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group">
-                    <div class="relative">
-                        <img src="{{ asset('images/Sweaters.png') }}" alt="Yak Wool Scarf"
-                            class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300">
-                        <span
-                            class="absolute top-3 left-3 bg- bg-[#e5b842] text-black text-xs font-bold px-3 py-1 rounded-full">
-                            New !!!
-                        </span>
-                    </div>
-                    <div class="p-5">
-                        <h3 class="font-semibold text-lg mb-1">Yak Wool Scarf</h3>
-                        <p class="text-sm text-gray-600 mb-3 line-clamp-2">
-                            100% pure Himalayan wool, naturally dyed.
-                        </p>
-                        <div class="flex items-center justify-between mb-4">
-                            <span class="text-2xl font-bold text-[#1a3c34]">Rs. 3,200</span>
-                        </div>
-                        <a href="#"
-                            class="add-to-cart-btn w-full bg-[#C65A3A] hover:bg-[#b04a2c] text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2 transition-colors"
-                            data-product-id="new-arrival-2"
-                            data-product-name="Yak Wool Scarf"
-                            data-product-price="3200"
-                            data-product-image="/images/Sweaters.png"
-                            data-product-desc="100% pure Himalayan wool, naturally dyed."
-                            data-product-category="Textiles"
-                            data-product-tag="Artisan Made"
-                            data-product-specs="Material: 100% Yak Wool | Style: Hand-woven Pattern">
-                            <span> <i class="fas fa-shopping-cart"></i>
-                            </span> Add to Cart
-                        </a>
-                    </div>
-                </div>
+                        <div class="relative">
+                            <img src="{{ $product->primaryImageUrl() }}" alt="{{ $product->name }}"
+                                class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300">
 
-                <!-- Product Card 3 -->
-                <div
-                    class="bg-[#FDFBF7] rounded-xl sm:rounded-2xl border border-amber-900/5 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group">
-                    <div class="relative">
-                        <img src="{{ asset('images/topi.png') }}" alt="Traditional Dhaka Topi"
-                            class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300">
-                        <span
-                            class="absolute top-3 left-3 bg- bg-[#e5b842] text-black text-xs font-bold px-3 py-1 rounded-full">
-                            New !!!
-                        </span>
-                    </div>
-                    <div class="p-5">
-                        <h3 class="font-semibold text-lg mb-1">Traditional Dhaka Topi</h3>
-                        <p class="text-sm text-gray-600 mb-3 line-clamp-2">
-                            Hand-woven patterns from the Palpa region.
-                        </p>
-                        <div class="flex items-center justify-between mb-4">
-                            <span class="text-2xl font-bold text-[#1a3c34]">Rs. 1,800</span>
-                        </div>
-                        <a href="#"
-                            class="add-to-cart-btn w-full bg-[#C65A3A] hover:bg-[#b04a2c] text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2 transition-colors"
-                            data-product-id="new-arrival-3"
-                            data-product-name="Traditional Dhaka Topi"
-                            data-product-price="1800"
-                            data-product-image="/images/topi.png"
-                            data-product-desc="Hand-woven patterns from the Palpa region."
-                            data-product-category="Textiles"
-                            data-product-tag="Dhaka"
-                            data-product-specs="Pattern: Palpali Dhaka | Material: Pure Cotton">
-                            <span> <i class="fas fa-shopping-cart"></i>
-                            </span> Add to Cart
-                        </a>
-                    </div>
-                </div>
+                            <span class="absolute top-3 left-3 bg-[#e5b842] text-black text-xs font-bold px-3 py-1 rounded-full">
+                                New !!!
+                            </span>
 
-                <!-- Product Card 4 -->
-                <div
-                    class="bg-[#FDFBF7] rounded-xl sm:rounded-2xl border border-amber-900/5 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 group">
-                    <div class="relative">
-                        <img src="{{ asset('images/backpack.png') }}" alt="Wild Hemp Backpack"
-                            class="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-300">
-                        <span
-                            class="absolute top-3 left-3 bg- bg-[#e5b842] text-black text-xs font-bold px-3 py-1 rounded-full">
-                            New !!!
-                        </span>
-                    </div>
-                    <div class="p-5">
-                        <h3 class="font-semibold text-lg mb-1">Wild Hemp Backpack</h3>
-                        <p class="text-sm text-gray-600 mb-3 line-clamp-2">
-                            Durable, sustainable, and 100% biodegradable.
-                        </p>
-                        <div class="flex items-center justify-between mb-4">
-                            <span class="text-2xl font-bold text-[#1a3c34]">Rs. 5,600</span>
+                            <button
+                                class="wishlist-btn absolute bottom-3 right-3 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-xl drop-shadow"
+                                data-product-id="{{ $product->id }}"
+                                data-product-name="{{ $product->name }}"
+                                data-product-price="{{ $product->effectivePrice() }}"
+                                data-product-image="{{ $product->primaryImageUrl() }}"
+                                data-product-desc="{{ $product->description }}"
+                                data-product-category="{{ $product->category?->cat_name }}">
+                                <i class="far fa-heart"></i>
+                            </button>
                         </div>
-                        <a href="#"
-                            class="add-to-cart-btn w-full bg-[#C65A3A] hover:bg-[#b04a2c] text-white font-medium py-3 rounded-xl flex items-center justify-center gap-2 transition-colors"
-                            data-product-id="new-arrival-4"
-                            data-product-name="Wild Hemp Backpack"
-                            data-product-price="5600"
-                            data-product-image="/images/backpack.png"
-                            data-product-desc="Durable, sustainable, and 100% biodegradable."
-                            data-product-category="Accessories"
-                            data-product-tag="Eco-friendly"
-                            data-product-specs="Material: 100% Himalayan Hemp | Pockets: 3 Utility Compartments">
-                            <span> <i class="fas fa-shopping-cart"></i>
-                            </span> Add to Cart
+
+                        <div class="p-5 flex-grow flex flex-col justify-between">
+                            <div>
+                                <span class="text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-1">
+                                    {{ $product->category?->cat_name ?? 'General' }}
+                                </span>
+
+                                <h3 class="font-semibold text-lg mb-1 leading-tight line-clamp-1">
+                                    {{ $product->name }}
+                                </h3>
+                                <p class="text-sm text-gray-600 mb-3 line-clamp-2">
+                                    {{ $product->description }}
+                                </p>
+
+                                <div class="flex items-center justify-between mb-4">
+                                    <span class="text-2xl font-bold text-[#1a3c34]">
+                                        Rs. {{ number_format($product->effectivePrice(), 2) }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-2 mt-auto">
+                                <a href="{{ route('viewdetails', $product->id) }}"
+                                   class="view-details-btn flex-1 flex items-center justify-center gap-2 bg-[#1F3D2E] hover:bg-[#16301f] text-white text-sm font-semibold py-3 px-3 rounded-xl shadow-sm hover:shadow transition duration-300"
+                                   data-id="{{ $product->id }}"
+                                   data-name="{{ $product->name }}"
+                                   data-price="{{ $product->effectivePrice() }}"
+                                   data-original-price="{{ $product->originalPrice() }}"
+                                   data-discount="{{ $product->hasDiscount() ? 'true' : 'false' }}"
+                                   data-discount-price="{{ $product->resolvedDiscountPrice() ?? '' }}"
+                                   data-image="{{ $product->primaryImageUrl() }}"
+                                   data-category="{{ $product->category?->cat_name ?? 'Crafts' }}"
+                                   data-vendor="{{ $product->vendor->business_name ?? $product->vendor->vendor_name ?? 'Local Artisan' }}"
+                                   data-desc="{{ $product->description }}"
+                                   data-rating="{{ $product->rating ?? 5 }}"
+                                   data-reviews="{{ $product->reviews_count ?? 0 }}"
+                                   data-stock="{{ $product->stock ?? 0 }}">
+                                    <i class="fa-solid fa-circle-info text-xs"></i>
+                                    Details
+                                </a>
+
+                                <button
+                                    type="button"
+                                    class="add-to-cart-btn flex-1 flex items-center justify-center gap-2 bg-[#C65A3A] hover:bg-[#b04a2c] text-white font-medium py-3 rounded-xl disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+                                    data-product-id="{{ $product->id }}"
+                                    data-product-name="{{ $product->name }}"
+                                    data-product-price="{{ $product->effectivePrice() }}"
+                                    data-product-image="{{ $product->primaryImageUrl() }}"
+                                    data-product-desc="{{ $product->description }}"
+                                    data-product-category="{{ $product->category?->cat_name ?? 'Crafts' }}"
+                                    {{ ($product->stock ?? 0) < 1 ? 'disabled' : '' }}>
+                                    <i class="fas fa-shopping-cart"></i>
+                                    {{ ($product->stock ?? 0) < 1 ? 'Sold Out' : 'Add to Cart' }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="col-span-full text-center py-20 bg-white/40 rounded-3xl">
+                        <h2 class="text-xl font-bold text-[#1F3D2E]">No new arrivals just yet</h2>
+                        <p class="text-[#3A2A1F]/60 text-sm mt-2">Check back soon — artisans add new pieces all the time.</p>
+                        <a href="{{ route('shop') }}" class="text-[#C65A3A] font-bold mt-4 inline-block">
+                            Browse the Shop
                         </a>
                     </div>
-                </div>
+                @endforelse
 
             </div>
+
+            @if ($products->hasPages())
+                <div class="mt-10">
+                    {{ $products->links() }}
+                </div>
+            @endif
+
         </div>
     </div>
 </x-frontend-layout>

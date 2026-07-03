@@ -6,6 +6,7 @@ use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\ShippingAddress;
+use App\Models\Vendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -22,7 +23,7 @@ class CheckoutController extends Controller
             'unitPrice' => $cart->unitPrice(),
             'subtotal' => $cart->subtotal(),
             // The checkout form is pre-filled straight from the user's
-            // profile -no separate saved-address book to manage.
+            // profile — no separate saved-address book to manage.
             'user' => auth()->user(),
         ]);
     }
@@ -47,7 +48,7 @@ class CheckoutController extends Controller
     {
         $this->authorizeCartItem($cart);
 
-        // ✅ VALIDATION -phone & address are taken directly from the
+        // ✅ VALIDATION — phone & address are taken directly from the
         // checkout form (pre-filled from the user's profile), not from a
         // separate shipping-address-book selection.
         $data = $request->validate([
@@ -135,7 +136,7 @@ class CheckoutController extends Controller
         });
 
         // COD is complete the moment the order is created. Khalti and eSewa
-        // still need the customer to actually pay -send them to the
+        // still need the customer to actually pay — send them to the
         // gateway's hosted checkout instead of the confirmation page.
         if ($data['payment_method'] === 'khalti') {
             return redirect()->route('khalti.initiate', $order);
@@ -157,6 +158,155 @@ class CheckoutController extends Controller
         $order->load(['orderItems.product', 'orderItems.vendor']);
 
         return view('orderconfirmation', compact('order'));
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Bulk (per-vendor) checkout — combines every cart line the user has
+    | from one vendor into a single order with multiple order items.
+    |--------------------------------------------------------------------------
+    */
+
+    public function showVendor(Vendor $vendor)
+    {
+        $cartItems = $this->vendorCartItems($vendor);
+
+        return view('checkout-vendor', [
+            'vendor' => $vendor,
+            'cartItems' => $cartItems,
+            'total' => $cartItems->sum(fn (Cart $item) => $item->subtotal()),
+            'user' => auth()->user(),
+        ]);
+    }
+
+    public function saveVendorUserInfo(Request $request, Vendor $vendor)
+    {
+        // Make sure this vendor actually has cart items for this user before
+        // bothering to save anything.
+        $this->vendorCartItems($vendor);
+
+        $validated = $request->validate([
+            'phone' => ['required', 'string', 'max:20'],
+            'address' => ['required', 'string', 'max:255'],
+        ]);
+
+        auth()->user()->update($validated);
+
+        return redirect()
+            ->route('checkout.show.vendor', $vendor)
+            ->with('success', 'Delivery information saved successfully!');
+    }
+
+    public function storeVendor(Request $request, Vendor $vendor)
+    {
+        $cartItems = $this->vendorCartItems($vendor);
+
+        $data = $request->validate([
+            'payment_method' => ['required', 'in:cod,esewa,khalti'],
+            'phone' => ['required', 'string', 'max:20'],
+            'address' => ['required', 'string', 'max:255'],
+        ]);
+
+        $cartItems->load(['product', 'variant']);
+
+        // Validate stock for every line before touching the database.
+        foreach ($cartItems as $cartItem) {
+            $availableStock = $cartItem->variant?->stock ?? $cartItem->product->stock;
+
+            if ($cartItem->quantity > $availableStock) {
+                return back()->withErrors([
+                    'quantity' => "Sorry, only {$availableStock} left in stock for {$cartItem->product->name}.",
+                ]);
+            }
+        }
+
+        $total = $cartItems->sum(fn (Cart $item) => $item->subtotal());
+        $user = auth()->user();
+
+        $order = DB::transaction(function () use ($cartItems, $data, $total, $user) {
+
+            $user->update([
+                'phone' => $data['phone'],
+                'address' => $data['address'],
+            ]);
+
+            $shippingAddress = ShippingAddress::updateOrCreate(
+                ['user_id' => $user->id, 'is_default' => 1],
+                [
+                    'address' => $data['address'],
+                    'phone' => $data['phone'],
+                    'city' => 'N/A',
+                    'province' => 'N/A',
+                    'country' => 'Nepal',
+                    'is_default' => 1,
+                ]
+            );
+
+            $order = Order::create([
+                'user_id' => $user->id,
+                'shipping_address_id' => $shippingAddress->id,
+                'total_amount' => $total,
+                'discount' => 0,
+                'payment_method' => $data['payment_method'],
+                'status' => 'pending',
+            ]);
+
+            foreach ($cartItems as $cartItem) {
+                $product = $cartItem->product;
+                $variant = $cartItem->variant;
+                $unitPrice = $cartItem->unitPrice();
+                $subtotal = $cartItem->subtotal();
+
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $product->id,
+                    'variant_id' => $variant?->id,
+                    'vendor_id' => $product->vendor_id,
+                    'quantity' => $cartItem->quantity,
+                    'price' => $unitPrice,
+                    'subtotal' => $subtotal,
+                    'status' => 'pending',
+                ]);
+
+                if ($variant) {
+                    $variant->decrement('stock', $cartItem->quantity);
+                } else {
+                    $product->decrement('stock', $cartItem->quantity);
+                }
+
+                $cartItem->delete();
+            }
+
+            return $order;
+        });
+
+        if ($data['payment_method'] === 'khalti') {
+            return redirect()->route('khalti.initiate', $order);
+        }
+
+        if ($data['payment_method'] === 'esewa') {
+            return redirect()->route('esewa.initiate', $order);
+        }
+
+        return redirect()
+            ->route('order.confirmation', $order)
+            ->with('success', 'Order placed successfully!');
+    }
+
+    /**
+     * All of the current user's cart lines for a given vendor. Aborts with
+     * a 404 if there aren't any — there's nothing to check out.
+     */
+    private function vendorCartItems(Vendor $vendor)
+    {
+        $cartItems = Cart::with(['product.vendor', 'variant'])
+            ->where('user_id', auth()->id())
+            ->whereHas('product', fn ($q) => $q->where('vendor_id', $vendor->id))
+            ->get();
+
+        abort_if($cartItems->isEmpty(), 404);
+
+        return $cartItems;
     }
 
     private function authorizeCartItem(Cart $cart): void

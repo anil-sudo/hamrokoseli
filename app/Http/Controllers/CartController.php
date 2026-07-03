@@ -23,7 +23,7 @@ class CartController extends Controller
             ->get();
 
         $groupedByVendor = $items->groupBy(
-            fn (Cart $item) => $item->product->vendor->vendor_name ?? 'Unknown Vendor'
+            fn (Cart $item) => $item->product->vendor->id ?? 0
         );
 
         return view('cart', [
