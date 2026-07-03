@@ -333,6 +333,11 @@ class PageController extends Controller
         return view('cart');
     }
 
+    public function terms_conditions()
+    {
+        return view('terms-conditions');
+    }
+
     public function viewProduct($id)
     {
         $product = Product::with(['category', 'vendor', 'images', 'variants'])->findOrFail($id);
