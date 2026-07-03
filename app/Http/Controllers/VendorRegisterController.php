@@ -76,14 +76,20 @@ class VendorRegisterController extends Controller
     }
 
     /**
-     * Queue a notification email to every admin about the new vendor.
+     * Send a notification email to every admin about the new vendor.
+     * Uses synchronous send (no queue worker required).
      */
     private function notifyAdmins(Vendor $vendor): void
     {
         $adminEmails = User::where('role', 'admin')->pluck('email');
 
         foreach ($adminEmails as $adminEmail) {
-            Mail::to($adminEmail)->queue(new NewVendorRegistered($vendor));
+            try {
+                Mail::to($adminEmail)->send(new NewVendorRegistered($vendor));
+            } catch (\Throwable $e) {
+                // Log the error but don't crash the registration flow
+                \Log::error("Failed to send vendor notification to {$adminEmail}: ".$e->getMessage());
+            }
         }
     }
 }

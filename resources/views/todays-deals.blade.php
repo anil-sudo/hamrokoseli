@@ -9,7 +9,7 @@
           <h1 class="text-[30px] md:text-[24px] font-bold leading-[38px] md:leading-[30px] tracking-[-0.02em] mb-4 font-['Plus_Jakarta_Sans']">Authentic Nepali Heritage</h1>
           <p class="text-white text-opacity-90 text-base leading-6 mb-6">Experience the pinnacle of Nepalese craftsmanship with our exclusive artisanal collection. Today's deals refresh at midnight.</p>
 
-          <!-- Countdown Timer (real -counts down to midnight) -->
+          <!-- Countdown Timer (real — counts down to midnight) -->
           <div class="flex gap-6 mb-8 font-['Plus_Jakarta_Sans']">
             <div class="text-center">
               <div id="countdown-hours" class="text-3xl font-bold">--</div>
@@ -87,21 +87,29 @@
             @forelse($products as $product)
               @php
                 $price = (float) $product->price;
-                $discountPrice = (float) $product->discount_price;
-                $discountPercentage = $price > 0 ? round((($price - $discountPrice) / $price) * 100) : 0;
+                $discountPrice = $product->resolvedDiscountPrice();
+                $hasDiscount = !is_null($discountPrice) && $discountPrice > 0 && $discountPrice < $price;
+                $displayPrice = $hasDiscount ? $discountPrice : $price;
+                $discountPercentage = ($price > 0 && $hasDiscount) ? round((($price - $discountPrice) / $price) * 100) : 0;
                 $avgRating = $product->reviews_avg_rating ? round($product->reviews_avg_rating, 1) : null;
                 $reviewCount = $product->reviews_count ?? 0;
               @endphp
               <div class="bg-white rounded-[16px] border border-[#e0e3e5] overflow-hidden hover:shadow-lg transition-all product-card">
                 <div class="relative aspect-square bg-gray-200 overflow-hidden">
                   <img src="{{ $product->primaryImageUrl() }}" alt="{{ $product->name }}" class="w-full h-full object-cover hover:scale-105 transition duration-300">
-                  <span class="absolute top-3 left-3 bg-[#b51822] text-white text-xs font-bold px-3 py-1 rounded-full">-{{ $discountPercentage }}% OFF</span>
+                  @if($hasDiscount)
+                    <span class="absolute top-3 left-3 bg-[#b51822] text-white text-xs font-bold px-3 py-1 rounded-full">-{{ $discountPercentage }}% OFF</span>
+                  @endif
                 </div>
                 <div class="p-4">
                   <span class="text-xs font-bold text-[#b51822] uppercase tracking-widest">{{ $product->category?->cat_name ?? 'Crafts' }}</span>
                   <h3 class="font-bold text-[16px] leading-6 text-[#181c1e] mb-2 mt-1 font-['Plus_Jakarta_Sans'] line-clamp-2">{{ $product->name }}</h3>
-                  <p class="text-[22px] font-bold text-[#b51822] mb-1 font-['Plus_Jakarta_Sans']">Rs. {{ number_format($discountPrice) }}</p>
-                  <p class="text-sm text-[#5b403e] line-through mb-2">Rs. {{ number_format($price) }}</p>
+                  <p class="text-[22px] font-bold text-[#b51822] mb-1 font-['Plus_Jakarta_Sans']">Rs. {{ number_format($displayPrice) }}</p>
+                  @if($hasDiscount)
+                    <p class="text-sm text-[#5b403e] line-through mb-2">Rs. {{ number_format($price) }}</p>
+                  @else
+                    <p class="text-sm text-transparent mb-2">Placeholder</p>
+                  @endif
                   <div class="flex items-center gap-1 mb-4">
                     @if($avgRating)
                       <span class="text-yellow-400">★</span>
@@ -120,7 +128,7 @@
                        data-original-price="{{ $price }}"
                        data-discount="true"
                        data-discount-percentage="{{ $discountPercentage }}"
-                       data-savings="{{ $price - $discountPrice }}"
+                       data-savings="{{ $hasDiscount ? ($price - $discountPrice) : 0 }}"
                        data-image="{{ $product->primaryImageUrl() }}"
                        data-category="{{ $product->category?->cat_name ?? 'Crafts' }}"
                        data-vendor="{{ $product->vendor->vendor_name ?? 'Local Artisan' }}"
@@ -135,7 +143,7 @@
               </div>
             @empty
               <div class="col-span-full text-center py-12">
-                <p class="text-[#5b403e] text-lg">No deals available right now -check back soon.</p>
+                <p class="text-[#5b403e] text-lg">No deals available right now — check back soon.</p>
               </div>
             @endforelse
           </div>
@@ -222,7 +230,9 @@
             @foreach($featuredDeals as $deal)
               @php
                 $dPrice = (float) $deal->price;
-                $dDiscount = (float) $deal->discount_price;
+                $dDiscount = $deal->resolvedDiscountPrice();
+                $dHasDiscount = !is_null($dDiscount) && $dDiscount > 0 && $dDiscount < $dPrice;
+                $dDisplayPrice = $dHasDiscount ? $dDiscount : $dPrice;
               @endphp
               <div class="featured-card flex-shrink-0 w-full">
                 <div class="grid md:grid-cols-2 gap-6 items-center bg-[#1a1a1a] rounded-2xl p-6">
@@ -233,8 +243,10 @@
                     <span class="inline-block bg-white bg-opacity-20 text-white text-xs font-bold px-3 py-1 rounded-full mb-3">FEATURED</span>
                     <h3 class="text-2xl font-bold mb-3 font-['Plus_Jakarta_Sans']">{{ $deal->name }}</h3>
                     <p class="text-white text-opacity-80 text-sm leading-6 mb-4 line-clamp-3">{{ $deal->description }}</p>
-                    <p class="text-sm text-white text-opacity-70 mb-1">Regularly Rs. {{ number_format($dPrice) }}</p>
-                    <p class="text-4xl font-bold mb-4 font-['Plus_Jakarta_Sans']">Rs. {{ number_format($dDiscount) }}</p>
+                    @if($dHasDiscount)
+                      <p class="text-sm text-white text-opacity-70 mb-1">Regularly Rs. {{ number_format($dPrice) }}</p>
+                    @endif
+                    <p class="text-4xl font-bold mb-4 font-['Plus_Jakarta_Sans']">Rs. {{ number_format($dDisplayPrice) }}</p>
                     <div class="flex gap-3">
                       <a href="{{ route('viewdetails', $deal->id) }}" class="bg-[#d4a017] hover:bg-[#b38a0a] text-black font-bold px-6 py-2 rounded-full transition flex items-center gap-2 font-['Plus_Jakarta_Sans'] text-sm">
                         Buy Now <span>→</span>

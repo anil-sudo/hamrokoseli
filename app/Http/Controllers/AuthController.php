@@ -16,7 +16,7 @@ class AuthController extends Controller
      */
     public function showLogin()
     {
-        return view('welcome');
+        return app(PageController::class)->home();
     }
 
     public function redirect()

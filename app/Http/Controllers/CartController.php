@@ -109,8 +109,9 @@ class CartController extends Controller
 
     /**
      * Update the quantity of a single cart line.
+     * Accepts both AJAX (JSON) and regular form submissions.
      */
-    public function update(Request $request, Cart $cart): RedirectResponse
+    public function update(Request $request, Cart $cart): RedirectResponse|JsonResponse
     {
         abort_if($cart->user_id !== auth()->id(), 403);
 
@@ -121,14 +122,18 @@ class CartController extends Controller
         $availableStock = $cart->variant?->stock ?? $cart->product->stock;
 
         if ($data['quantity'] > $availableStock) {
-            return back()->withErrors([
-                'quantity' => "Only {$availableStock} left in stock.",
-            ]);
+            $message = "Only {$availableStock} left in stock.";
+
+            return $request->wantsJson()
+                ? response()->json(['success' => false, 'errors' => ['quantity' => [$message]]], 422)
+                : back()->withErrors(['quantity' => $message]);
         }
 
         $cart->update(['quantity' => $data['quantity']]);
 
-        return back()->with('success', 'Cart updated.');
+        return $request->wantsJson()
+            ? response()->json(['success' => true, 'message' => 'Cart updated.'])
+            : back()->with('success', 'Cart updated.');
     }
 
     /**

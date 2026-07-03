@@ -34,8 +34,8 @@
                 $tabs = [
                     'all' => 'All Orders',
                     'new' => 'New',
-                    'processing' => 'Processing',
-                    'shipped' => 'Shipped',
+                    'paid' => 'Paid',
+                    'pending_payment' => 'Pending',
                     'cancelled' => 'Cancelled',
                 ];
             @endphp
