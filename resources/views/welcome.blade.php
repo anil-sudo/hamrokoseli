@@ -121,8 +121,8 @@
                 @forelse($categories as $category)
                     <a href="{{ route('shop', ['category' => $category->slug]) }}" class="bg-[#FDFBF7] rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-amber-900/5 hover:shadow-md transition group block">
                         <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-56 overflow-hidden bg-slate-100 relative flex items-center justify-center">
-                            @if($category->cat_image)
-                                <img src="{{ Storage::disk('public')->url($category->cat_image) }}" 
+                            @if($category->image)
+                                <img src="{{ Storage::disk('public')->url($category->image) }}" 
                                      alt="{{ $category->cat_name }}" 
                                      class="w-full h-full object-cover group-hover:scale-105 transition duration-500 relative z-10"
                                      onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
