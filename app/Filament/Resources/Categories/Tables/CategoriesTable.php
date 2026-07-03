@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Categories\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -16,6 +17,10 @@ class CategoriesTable
             ->columns([
                 TextColumn::make('cat_name')
                     ->searchable(),
+                ImageColumn::make('cat_image')
+                    ->disk('public')
+                    ->imageHeight(48)
+                    ->imageWidth(48),
                 TextColumn::make('slug')
                     ->searchable(),
                 TextColumn::make('parent_cat_id')

@@ -107,9 +107,7 @@ Route::middleware('web')->group(function () {
     Route::get('/userlogin', [AuthController::class, 'showLogin'])->name('userlogin');
     Route::post('/userlogin', [AuthController::class, 'login']);
 
-    Route::get('/userregister', function () {
-        return view('welcome');
-    })->name('userregister');
+    Route::get('/userregister', [PageController::class, 'home'])->name('userregister');
     Route::post('/userregister', [UserRegisterController::class, 'register']);
 
     // Fallback/compatibility routes
