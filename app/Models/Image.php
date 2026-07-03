@@ -35,7 +35,7 @@ class Image extends Model
     // -------------------------------------------------------------------------
 
     /**
-     * Polymorphic owner — can be a Product, Vendor, Category, etc.
+     * Polymorphic owner -can be a Product, Vendor, Category, etc.
      */
     public function imageable(): MorphTo
     {

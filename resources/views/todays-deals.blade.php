@@ -9,7 +9,7 @@
           <h1 class="text-[30px] md:text-[24px] font-bold leading-[38px] md:leading-[30px] tracking-[-0.02em] mb-4 font-['Plus_Jakarta_Sans']">Authentic Nepali Heritage</h1>
           <p class="text-white text-opacity-90 text-base leading-6 mb-6">Experience the pinnacle of Nepalese craftsmanship with our exclusive artisanal collection. Today's deals refresh at midnight.</p>
 
-          <!-- Countdown Timer (real — counts down to midnight) -->
+          <!-- Countdown Timer (real -counts down to midnight) -->
           <div class="flex gap-6 mb-8 font-['Plus_Jakarta_Sans']">
             <div class="text-center">
               <div id="countdown-hours" class="text-3xl font-bold">--</div>
@@ -135,7 +135,7 @@
               </div>
             @empty
               <div class="col-span-full text-center py-12">
-                <p class="text-[#5b403e] text-lg">No deals available right now — check back soon.</p>
+                <p class="text-[#5b403e] text-lg">No deals available right now -check back soon.</p>
               </div>
             @endforelse
           </div>

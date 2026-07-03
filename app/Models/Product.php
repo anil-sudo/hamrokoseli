@@ -189,7 +189,7 @@ class Product extends Model
      * Returns the URL of this product's primary image, falling back to the
      * first uploaded image, then to a placeholder if none exist.
      *
-     * NOTE: the `image` column on `products` is legacy/unused — vendor
+     * NOTE: the `image` column on `products` is legacy/unused -vendor
      * uploads are stored in the polymorphic `images` table instead. Make
      * sure to eager-load `images` (e.g. ->with('images')) before calling
      * this in a loop, or it will trigger an N+1 query per product.

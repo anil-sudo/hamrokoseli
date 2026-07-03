@@ -110,11 +110,11 @@
                                         <div class="absolute h-full w-full bg-[#ebd7be]/50 rounded-full"></div>
                                         <div id="slider-track-accent" class="absolute h-full bg-[#C65A3A] rounded-full"
                                             style="left:0%;right:0%;"></div>
-                                        <input type="range" id="price-min" min="0" max="5000"
-                                            value="{{ request('min_price', 0) }}"
+                                        <input type="range" id="price-min" min="{{ $priceFloor }}" max="{{ $priceCeil }}"
+                                            value="{{ request('min_price', $priceFloor) }}"
                                             class="range-slider-input">
-                                        <input type="range" id="price-max" min="0" max="5000"
-                                            value="{{ request('max_price', 5000) }}"
+                                        <input type="range" id="price-max" min="{{ $priceFloor }}" max="{{ $priceCeil }}"
+                                            value="{{ request('max_price', $priceCeil) }}"
                                             class="range-slider-input">
                                     </div>
                                     {{-- Min / Max inputs — these are the ones actually submitted --}}
@@ -124,7 +124,7 @@
                                             class="flex items-center bg-[#ebd7be]/20 rounded-xl border border-[#ebd7be]/60 px-3 py-2 w-[45%]">
                                             <span class="mr-1 text-[#3A2A1F]/60">Rs.</span>
                                             <input type="number" id="input-min" name="min_price"
-                                                value="{{ request('min_price', 0) }}" min="0" max="5000"
+                                                value="{{ request('min_price', $priceFloor) }}" min="{{ $priceFloor }}" max="{{ $priceCeil }}"
                                                 class="w-full bg-transparent border-none p-0 text-[#1F3D2E] font-bold focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                                         </div>
                                         <span class="text-[#3A2A1F]/50 font-bold">TO</span>
@@ -132,7 +132,7 @@
                                             class="flex items-center bg-[#ebd7be]/20 rounded-xl border border-[#ebd7be]/60 px-3 py-2 w-[45%]">
                                             <span class="mr-1 text-[#3A2A1F]/60">Rs.</span>
                                             <input type="number" id="input-max" name="max_price"
-                                                value="{{ request('max_price', 5000) }}" min="0" max="5000"
+                                                value="{{ request('max_price', $priceCeil) }}" min="{{ $priceFloor }}" max="{{ $priceCeil }}"
                                                 class="w-full bg-transparent border-none p-0 text-[#1F3D2E] font-bold focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                                         </div>
                                     </div>
@@ -250,24 +250,36 @@
                     </span>
                 </div>
 
-                    <a href="{{ route('viewdetails', $product->id) }}"
-                       class="view-details-btn w-full flex items-center justify-center gap-2 bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-sm font-semibold py-3 px-4 rounded-xl shadow-sm hover:shadow transition duration-300"
-                       data-id="{{ $product->id }}"
-                       data-name="{{ $product->name }}"
-                       data-price="{{ $product->effectivePrice() }}"
-                       data-original-price="{{ $product->originalPrice() }}"
-                       data-discount="{{ $product->hasDiscount() ? 'true' : 'false' }}"
-                       data-discount-price="{{ $product->resolvedDiscountPrice() ?? '' }}"
-                       data-image="{{ $product->primaryImageUrl() }}"
-                       data-category="{{ $product->category?->cat_name ?? 'Crafts' }}"
-                       data-vendor="{{ $product->vendor->business_name ?? $product->vendor->name ?? 'Local Artisan' }}"
-                       data-desc="{{ $product->description }}"
-                       data-rating="{{ $product->rating ?? 5 }}"
-                       data-reviews="{{ $product->reviews_count ?? 24 }}"
-                       data-stock="{{ $product->stock ?? 10 }}">
-                        <i class="fa-solid fa-circle-plus text-xs"></i>
-                        View Details
-                    </a>
+                    <div class="flex gap-2 mt-auto">
+                        <a href="{{ route('viewdetails', $product->id) }}"
+                           class="view-details-btn flex-1 flex items-center justify-center gap-2 bg-[#1F3D2E] hover:bg-[#16301f] text-white text-sm font-semibold py-3 px-3 rounded-xl shadow-sm hover:shadow transition duration-300"
+                           data-id="{{ $product->id }}"
+                           data-name="{{ $product->name }}"
+                           data-price="{{ $product->effectivePrice() }}"
+                           data-original-price="{{ $product->originalPrice() }}"
+                           data-discount="{{ $product->hasDiscount() ? 'true' : 'false' }}"
+                           data-discount-price="{{ $product->resolvedDiscountPrice() ?? '' }}"
+                           data-image="{{ $product->primaryImageUrl() }}"
+                           data-category="{{ $product->category?->cat_name ?? 'Crafts' }}"
+                           data-vendor="{{ $product->vendor->business_name ?? $product->vendor->name ?? 'Local Artisan' }}"
+                           data-desc="{{ $product->description }}"
+                           data-rating="{{ $product->rating ?? 5 }}"
+                           data-reviews="{{ $product->reviews_count ?? 24 }}"
+                           data-stock="{{ $product->stock ?? 10 }}">
+                            <i class="fa-solid fa-circle-info text-xs"></i>
+                            Details
+                        </a>
+
+                        <button
+                            type="button"
+                            class="add-to-cart-btn flex-1 flex items-center justify-center gap-2 bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-sm font-semibold py-3 px-3 rounded-xl shadow-sm hover:shadow transition duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
+                            data-product-id="{{ $product->id }}"
+                            data-product-name="{{ $product->name }}"
+                            {{ ($product->stock ?? 0) < 1 ? 'disabled' : '' }}>
+                            <i class="fa-solid fa-cart-plus text-xs"></i>
+                            {{ ($product->stock ?? 0) < 1 ? 'Sold Out' : 'Add' }}
+                        </button>
+                    </div>
 
             </div>
         </div>
@@ -355,6 +367,136 @@
         </div>
     </div>
 
+    {{-- ==================== ADD TO CART (AJAX) ==================== --}}
+    <script>
+    (function () {
+        // ── Toast helper ────────────────────────────────────────────────────
+        function showToast(message, type = 'success') {
+            const existing = document.getElementById('shop-cart-toast');
+            if (existing) existing.remove();
+
+            const colours = {
+                success : 'bg-[#1F3D2E] text-white',
+                error   : 'bg-red-600 text-white',
+                warning : 'bg-amber-500 text-white',
+                info    : 'bg-[#C65A3A] text-white',
+            };
+
+            const icons = {
+                success : 'fa-circle-check',
+                error   : 'fa-circle-xmark',
+                warning : 'fa-triangle-exclamation',
+                info    : 'fa-circle-info',
+            };
+
+            const toast = document.createElement('div');
+            toast.id = 'shop-cart-toast';
+            toast.className = [
+                'fixed bottom-6 right-6 z-[9999] flex items-center gap-3',
+                'px-5 py-3.5 rounded-2xl shadow-xl text-sm font-semibold',
+                'translate-y-4 opacity-0 transition-all duration-300',
+                colours[type] ?? colours.success,
+            ].join(' ');
+
+            toast.innerHTML = `
+                <i class="fas ${icons[type] ?? icons.success} text-base"></i>
+                <span>${message}</span>
+            `;
+
+            document.body.appendChild(toast);
+
+            // Animate in
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    toast.classList.remove('translate-y-4', 'opacity-0');
+                    toast.classList.add('translate-y-0', 'opacity-100');
+                });
+            });
+
+            // Animate out after 3 s
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-4', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // ── Update cart badge in the navbar (if one exists) ─────────────────
+        function updateCartBadge(count) {
+            document.querySelectorAll('[data-cart-count]').forEach(el => {
+                el.textContent = count;
+                el.classList.toggle('hidden', count === 0);
+            });
+        }
+
+        // ── Wire up every "Add to Cart" button ──────────────────────────────
+        document.addEventListener('DOMContentLoaded', function () {
+
+            document.querySelectorAll('.add-to-cart-btn').forEach(function (btn) {
+                btn.addEventListener('click', async function () {
+                    const productId   = btn.dataset.productId;
+                    const productName = btn.dataset.productName;
+
+                    // Prevent double-clicks while the request is in flight
+                    btn.disabled = true;
+                    const originalHtml = btn.innerHTML;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin text-xs"></i> Adding…';
+
+                    try {
+                        const response = await fetch('{{ route('cart.add') }}', {
+                            method  : 'POST',
+                            headers : {
+                                'Content-Type' : 'application/json',
+                                'Accept'       : 'application/json',
+                                // Laravel CSRF token — must be present in the page meta tag
+                                'X-CSRF-TOKEN' : document.querySelector('meta[name="csrf-token"]')?.content ?? '',
+                            },
+                            body: JSON.stringify({
+                                product_id : productId,
+                                quantity   : 1,
+                            }),
+                        });
+
+                        const json = await response.json();
+
+                        if (response.status === 401) {
+                            // Not logged in — send to login page
+                            showToast('Please log in to add items to your cart.', 'warning');
+                            setTimeout(() => {
+                                window.location.href = '{{ route('userlogin') }}';
+                            }, 1500);
+                            return;
+                        }
+
+                        if (json.success) {
+                            showToast(`${productName} added to cart!`, 'success');
+                            updateCartBadge(json.cart_count ?? 0);
+
+                            // Brief visual feedback on the button
+                            btn.innerHTML = '<i class="fas fa-check text-xs"></i> Added!';
+                            setTimeout(() => {
+                                btn.innerHTML = originalHtml;
+                                btn.disabled  = false;
+                            }, 1500);
+                        } else {
+                            showToast(json.message ?? 'Could not add to cart.', 'error');
+                            btn.innerHTML = originalHtml;
+                            btn.disabled  = false;
+                        }
+
+                    } catch (err) {
+                        console.error('Add-to-cart error:', err);
+                        showToast('Something went wrong. Please try again.', 'error');
+                        btn.innerHTML = originalHtml;
+                        btn.disabled  = false;
+                    }
+                });
+            });
+
+        });
+    })();
+    </script>
+
     {{-- ==================== FILTER UI BEHAVIOUR JS ==================== --}}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -416,11 +558,18 @@
             const minInput = document.getElementById('input-min');
             const maxInput = document.getElementById('input-max');
             const trackAccent = document.getElementById('slider-track-accent');
-            const MIN_GAP = 100;
+
+            const sliderFloor = parseInt(minSlider.min);
+            const sliderCeil = parseInt(maxSlider.max);
+            const sliderRange = Math.max(1, sliderCeil - sliderFloor);
+            // Keep the two handles from overlapping, but don't let the gap
+            // swallow a narrow price range (e.g. a shop where everything
+            // costs roughly the same).
+            const MIN_GAP = Math.min(100, Math.max(1, Math.floor(sliderRange * 0.05)));
 
             function updateTrack(minVal, maxVal) {
-                const minPct = (minVal / parseInt(minSlider.max)) * 100;
-                const maxPct = 100 - (maxVal / parseInt(maxSlider.max)) * 100;
+                const minPct = ((minVal - sliderFloor) / sliderRange) * 100;
+                const maxPct = 100 - ((maxVal - sliderFloor) / sliderRange) * 100;
                 trackAccent.style.left = minPct + '%';
                 trackAccent.style.right = maxPct + '%';
             }
@@ -443,13 +592,15 @@
             }
 
             function onInputChange() {
-                let minVal = Math.max(0, parseInt(minInput.value) || 0);
-                let maxVal = Math.min(5000, parseInt(maxInput.value) || 5000);
+                const sliderMin = parseInt(minSlider.min);
+                const sliderMax = parseInt(maxSlider.max);
+                let minVal = Math.max(sliderMin, parseInt(minInput.value) || sliderMin);
+                let maxVal = Math.min(sliderMax, parseInt(maxInput.value) || sliderMax);
                 if (maxVal - minVal < MIN_GAP) {
                     if (document.activeElement === minInput) {
-                        minVal = Math.max(0, maxVal - MIN_GAP);
+                        minVal = Math.max(sliderMin, maxVal - MIN_GAP);
                     } else {
-                        maxVal = Math.min(5000, minVal + MIN_GAP);
+                        maxVal = Math.min(sliderMax, minVal + MIN_GAP);
                     }
                 }
                 minSlider.value = minVal;

@@ -98,7 +98,7 @@ class ProductForm
                     ->defaultItems(0)
                     ->maxItems(5)
                     ->reorderable(false)
-                    ->helperText('Max 5 images, 2MB each. JPG, PNG, or WebP. Mark one as primary — it\'s used in listings and as the product\'s default image.')
+                    ->helperText('Max 5 images, 2MB each. JPG, PNG, or WebP. Mark one as primary -it\'s used in listings and as the product\'s default image.')
                     ->columnSpanFull(),
 
                 TextInput::make('price')

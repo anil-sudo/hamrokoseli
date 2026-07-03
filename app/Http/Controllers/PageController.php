@@ -22,6 +22,21 @@ class PageController extends Controller
     // Shared query logic for shop() and viewProduct()
     private function buildShopData(): array
     {
+        // The actual price range across all active products — drives the
+        // slider's min/max bounds so it's never a stale hardcoded number.
+        $priceBounds = Product::where('status', 'active')
+            ->selectRaw('MIN(price) as min_price, MAX(price) as max_price')
+            ->first();
+
+        $priceFloor = (int) floor($priceBounds->min_price ?? 0);
+        $priceCeil = (int) ceil($priceBounds->max_price ?? 0);
+
+        // Guard against a single-product / all-same-price catalogue, where
+        // floor === ceil would collapse the slider to a single point.
+        if ($priceCeil <= $priceFloor) {
+            $priceCeil = $priceFloor + 100;
+        }
+
         $query = Product::with(['category', 'vendor', 'images', 'variants'])
             ->where('status', 'active');
 
@@ -59,6 +74,8 @@ class PageController extends Controller
         return [
             'products' => $query->paginate(9)->withQueryString(),
             'categories' => Category::where('status', 'active')->get(),
+            'priceFloor' => $priceFloor,
+            'priceCeil' => $priceCeil,
         ];
     }
 

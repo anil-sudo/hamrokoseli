@@ -136,21 +136,36 @@
                                 @endif
                             </div>
                             <!-- View Details triggers modal -->
-                            <button class="view-details-btn inline-flex items-center justify-center gap-1.5 bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-xs font-bold px-4 py-2.5 rounded-xl shadow-sm hover:shadow transition duration-300 active:scale-95 cursor-pointer"
-                                    data-id="{{ $product->id }}"
-                                    data-name="{{ $product->name }}"
-                                    data-price="{{ $displayPrice }}"
-                                    data-original-price="{{ $price }}"
-                                    data-discount="{{ $hasDiscount ? 'true' : 'false' }}"
-                                    data-image="{{ $imageUrl }}"
-                                    data-category="{{ $catName }}"
-                                    data-vendor="{{ $vendorName }}"
-                                    data-desc="{{ $product->description }}"
-                                    data-rating="{{ $rating }}"
-                                    data-reviews="{{ $reviews }}"
-                                    data-stock="{{ $stock }}">
-                                View Details
-                            </button>
+                                                <div class="flex gap-2 mt-auto">
+                        <a href="{{ route('viewdetails', $product->id) }}"
+                           class="view-details-btn flex-1 flex items-center justify-center gap-2 bg-[#1F3D2E] hover:bg-[#16301f] text-white text-sm font-semibold py-3 px-3 rounded-xl shadow-sm hover:shadow transition duration-300"
+                           data-id="{{ $product->id }}"
+                           data-name="{{ $product->name }}"
+                           data-price="{{ $product->effectivePrice() }}"
+                           data-original-price="{{ $product->originalPrice() }}"
+                           data-discount="{{ $product->hasDiscount() ? 'true' : 'false' }}"
+                           data-discount-price="{{ $product->resolvedDiscountPrice() ?? '' }}"
+                           data-image="{{ $product->primaryImageUrl() }}"
+                           data-category="{{ $product->category?->cat_name ?? 'Crafts' }}"
+                           data-vendor="{{ $product->vendor->business_name ?? $product->vendor->name ?? 'Local Artisan' }}"
+                           data-desc="{{ $product->description }}"
+                           data-rating="{{ $product->rating ?? 5 }}"
+                           data-reviews="{{ $product->reviews_count ?? 24 }}"
+                           data-stock="{{ $product->stock ?? 10 }}">
+                            <i class="fa-solid fa-circle-info text-xs"></i>
+                            Details
+                        </a>
+
+                        <button
+                            type="button"
+                            class="add-to-cart-btn flex-1 flex items-center justify-center gap-2 bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-sm font-semibold py-3 px-3 rounded-xl shadow-sm hover:shadow transition duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
+                            data-product-id="{{ $product->id }}"
+                            data-product-name="{{ $product->name }}"
+                            {{ ($product->stock ?? 0) < 1 ? 'disabled' : '' }}>
+                            <i class="fa-solid fa-cart-plus text-xs"></i>
+                            {{ ($product->stock ?? 0) < 1 ? 'Sold Out' : 'Add' }}
+                        </button>
+                    </div>
                         </div>
                     </div>
                 </div>
@@ -340,5 +355,135 @@ document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 });
 </script>
+
+   {{-- ==================== ADD TO CART (AJAX) ==================== --}}
+    <script>
+    (function () {
+        // ── Toast helper ────────────────────────────────────────────────────
+        function showToast(message, type = 'success') {
+            const existing = document.getElementById('shop-cart-toast');
+            if (existing) existing.remove();
+
+            const colours = {
+                success : 'bg-[#1F3D2E] text-white',
+                error   : 'bg-red-600 text-white',
+                warning : 'bg-amber-500 text-white',
+                info    : 'bg-[#C65A3A] text-white',
+            };
+
+            const icons = {
+                success : 'fa-circle-check',
+                error   : 'fa-circle-xmark',
+                warning : 'fa-triangle-exclamation',
+                info    : 'fa-circle-info',
+            };
+
+            const toast = document.createElement('div');
+            toast.id = 'shop-cart-toast';
+            toast.className = [
+                'fixed bottom-6 right-6 z-[9999] flex items-center gap-3',
+                'px-5 py-3.5 rounded-2xl shadow-xl text-sm font-semibold',
+                'translate-y-4 opacity-0 transition-all duration-300',
+                colours[type] ?? colours.success,
+            ].join(' ');
+
+            toast.innerHTML = `
+                <i class="fas ${icons[type] ?? icons.success} text-base"></i>
+                <span>${message}</span>
+            `;
+
+            document.body.appendChild(toast);
+
+            // Animate in
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    toast.classList.remove('translate-y-4', 'opacity-0');
+                    toast.classList.add('translate-y-0', 'opacity-100');
+                });
+            });
+
+            // Animate out after 3 s
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-4', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // ── Update cart badge in the navbar (if one exists) ─────────────────
+        function updateCartBadge(count) {
+            document.querySelectorAll('[data-cart-count]').forEach(el => {
+                el.textContent = count;
+                el.classList.toggle('hidden', count === 0);
+            });
+        }
+
+        // ── Wire up every "Add to Cart" button ──────────────────────────────
+        document.addEventListener('DOMContentLoaded', function () {
+
+            document.querySelectorAll('.add-to-cart-btn').forEach(function (btn) {
+                btn.addEventListener('click', async function () {
+                    const productId   = btn.dataset.productId;
+                    const productName = btn.dataset.productName;
+
+                    // Prevent double-clicks while the request is in flight
+                    btn.disabled = true;
+                    const originalHtml = btn.innerHTML;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin text-xs"></i> Adding…';
+
+                    try {
+                        const response = await fetch('{{ route('cart.add') }}', {
+                            method  : 'POST',
+                            headers : {
+                                'Content-Type' : 'application/json',
+                                'Accept'       : 'application/json',
+                                // Laravel CSRF token -must be present in the page meta tag
+                                'X-CSRF-TOKEN' : document.querySelector('meta[name="csrf-token"]')?.content ?? '',
+                            },
+                            body: JSON.stringify({
+                                product_id : productId,
+                                quantity   : 1,
+                            }),
+                        });
+
+                        const json = await response.json();
+
+                        if (response.status === 401) {
+                            // Not logged in -send to login page
+                            showToast('Please log in to add items to your cart.', 'warning');
+                            setTimeout(() => {
+                                window.location.href = '{{ route('userlogin') }}';
+                            }, 1500);
+                            return;
+                        }
+
+                        if (json.success) {
+                            showToast(`${productName} added to cart!`, 'success');
+                            updateCartBadge(json.cart_count ?? 0);
+
+                            // Brief visual feedback on the button
+                            btn.innerHTML = '<i class="fas fa-check text-xs"></i> Added!';
+                            setTimeout(() => {
+                                btn.innerHTML = originalHtml;
+                                btn.disabled  = false;
+                            }, 1500);
+                        } else {
+                            showToast(json.message ?? 'Could not add to cart.', 'error');
+                            btn.innerHTML = originalHtml;
+                            btn.disabled  = false;
+                        }
+
+                    } catch (err) {
+                        console.error('Add-to-cart error:', err);
+                        showToast('Something went wrong. Please try again.', 'error');
+                        btn.innerHTML = originalHtml;
+                        btn.disabled  = false;
+                    }
+                });
+            });
+
+        });
+    })();
+    </script>
 
 </x-frontend-layout>
