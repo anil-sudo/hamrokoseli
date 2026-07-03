@@ -16,7 +16,7 @@ class CategoriesTable
         return $table
             ->columns([
                 ImageColumn::make('image')
-                   ->disk('public')
+                    ->disk('public')
                     ->imageHeight(48)
                     ->imageWidth(48),
                 TextColumn::make('cat_name')
