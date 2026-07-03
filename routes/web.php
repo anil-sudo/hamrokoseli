@@ -76,7 +76,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/cart/{cart}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/{cart}', [CartController::class, 'destroy'])->name('cart.remove');
 
-    // Checkout is always per cart line — one product = one order = one vendor.
+    // Checkout is always per cart line -one product = one order = one vendor.
     Route::get('/checkout/{cart}', [CheckoutController::class, 'show'])->name('checkout.show');
     Route::post('/checkout/{cart}', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::post('/checkout/{cart}/save-user-info', [CheckoutController::class, 'saveUserInfo'])->name('checkout.save-user-info');

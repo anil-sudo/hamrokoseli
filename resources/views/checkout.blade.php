@@ -46,7 +46,7 @@
                 <div class="bg-white rounded-3xl p-6 border border-[#ebd7be]/40 shadow-sm">
                     <h2 class="text-lg font-bold text-[#1F3D2E] mb-4">Shipping Address</h2>
                     <p class="text-xs text-[#3A2A1F]/60 font-semibold mb-4">
-                        Pulled from your account — update it here if anything's changed.
+                        Pulled from your account -update it here if anything's changed.
                     </p>
 
                     <div class="space-y-4">

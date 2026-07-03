@@ -1077,7 +1077,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const btn = e.target.closest('.view-details-btn');
         if (btn) {
             e.preventDefault();
-            
+
             const productData = {
                 id: btn.getAttribute('data-id'),
                 name: btn.getAttribute('data-name'),

@@ -52,7 +52,7 @@ class VendorRegisterController extends Controller
             $user->assignRole('vendor');
 
             // Auto-create vendor record. New vendors always start out
-            // "pending" — they cannot log in to the seller dashboard
+            // "pending" -they cannot log in to the seller dashboard
             // until an admin flips their status to "active" from the
             // admin panel (see Filament\Resources\Vendors\Pages\EditVendor).
             return $user->vendor()->create([

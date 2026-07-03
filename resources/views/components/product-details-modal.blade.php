@@ -20,7 +20,7 @@
         <!-- ============================ LOGIN VIEW ============================ -->
         <div id="login-view" class="w-full h-full flex flex-col lg:flex-row">
 
-            <!-- LEFT IMAGE PANEL — desktop only -->
+            <!-- LEFT IMAGE PANEL -desktop only -->
             <div class="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 xl:p-14 bg-cover bg-center overflow-hidden"
                  style="background-image: linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.55)), url('{{ asset('images/LoginPageImage.png') }}');">
                 <div class="z-10">
@@ -61,7 +61,7 @@
                 </div>
             </div>
 
-            <!-- RIGHT: Form — full width on mobile, half on desktop -->
+            <!-- RIGHT: Form -full width on mobile, half on desktop -->
             <div class="w-full lg:w-1/2 flex flex-col justify-center overflow-y-auto bg-[#FFF7EF] p-6 sm:p-8 lg:p-10 xl:p-12">
 
                 <!-- Desktop heading only -->
@@ -70,7 +70,7 @@
                     <p class="text-slate-500 text-sm font-semibold tracking-wide">Sign in to continue supporting local business.</p>
                 </div>
 
-                <!-- Mobile heading only — plain, no dark bg -->
+                <!-- Mobile heading only -plain, no dark bg -->
                 <div class="lg:hidden text-center mb-5 pt-2">
                     <h2 class="text-xl font-bold font-serif text-[#1F2A24] tracking-wide">WELCOME BACK</h2>
                     <p class="text-slate-400 text-xs font-medium mt-1">Sign in to continue supporting local business.</p>
@@ -170,7 +170,7 @@
         <!-- ============================ FORGOT PASSWORD VIEW ============================ -->
         <div id="forgot-view" class="w-full h-full flex flex-col lg:flex-row hidden">
 
-            <!-- LEFT IMAGE PANEL — desktop only -->
+            <!-- LEFT IMAGE PANEL -desktop only -->
             <div class="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 xl:p-14 bg-cover bg-center overflow-hidden"
                  style="background-image: linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.55)), url('{{ asset('images/LoginPageImage.png') }}');">
                 <div class="z-10">
@@ -206,7 +206,7 @@
                         <i class="fas fa-key text-[#1F3D2E] text-2xl"></i>
                     </div>
                     <h2 class="text-3xl xl:text-4xl font-bold font-serif text-[#1F2A24] tracking-wide mb-1">FORGOT PASSWORD?</h2>
-                    <p class="text-slate-500 text-sm font-semibold tracking-wide">No worries — we'll send you a reset link.</p>
+                    <p class="text-slate-500 text-sm font-semibold tracking-wide">No worries -we'll send you a reset link.</p>
                 </div>
 
                 <!-- Mobile heading -->
@@ -277,7 +277,7 @@
         <!-- ============================ REGISTER VIEW ============================ -->
         <div id="register-view" class="w-full h-full flex flex-col lg:flex-row hidden">
 
-            <!-- LEFT IMAGE PANEL — desktop only -->
+            <!-- LEFT IMAGE PANEL -desktop only -->
             <div class="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 xl:p-14 bg-cover bg-center overflow-hidden"
                  style="background-image: linear-gradient(rgba(0,0,0,0.45), rgba(0,0,0,0.55)), url('{{ asset('images/RegisterPageImage.png') }}');">
                 <div class="z-10">
@@ -318,7 +318,7 @@
                 </div>
             </div>
 
-            <!-- RIGHT: Register Form — full width on mobile, half on desktop -->
+            <!-- RIGHT: Register Form -full width on mobile, half on desktop -->
             <div class="w-full lg:w-1/2 flex flex-col justify-center overflow-y-auto bg-[#FFF7EF] p-6 sm:p-8 lg:p-10 xl:p-12">
 
                 <!-- Desktop heading only -->
@@ -327,7 +327,7 @@
                     <p class="text-slate-500 text-sm font-semibold tracking-wide">Register as a buyer to shop local crafts.</p>
                 </div>
 
-                <!-- Mobile heading only — plain, no dark bg -->
+                <!-- Mobile heading only -plain, no dark bg -->
                 <div class="lg:hidden text-center mb-5 pt-2">
                     <h2 class="text-xl font-bold font-serif text-[#1F2A24] tracking-wide">CREATE AN ACCOUNT</h2>
                     <p class="text-slate-400 text-xs font-medium mt-1">Register to shop local crafts.</p>

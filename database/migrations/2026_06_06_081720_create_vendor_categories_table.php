@@ -24,7 +24,7 @@ return new class extends Migration
                 ->constrained('categories')
                 ->cascadeOnDelete();                             // FK → categories.id, NOT NULL
 
-            // Timestamps — only created_at per schema
+            // Timestamps -only created_at per schema
             $table->timestamp('created_at')
                 ->useCurrent();
 

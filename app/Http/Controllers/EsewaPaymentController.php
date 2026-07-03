@@ -13,7 +13,7 @@ class EsewaPaymentController extends Controller
 {
     /**
      * eSewa doesn't have a "create session, get a URL back" API like
-     * Khalti — instead you build a signed HTML form and the customer's
+     * Khalti -instead you build a signed HTML form and the customer's
      * browser POSTs it straight to eSewa. This shows a tiny page that
      * auto-submits that form.
      */
@@ -67,7 +67,7 @@ class EsewaPaymentController extends Controller
     /**
      * eSewa redirects the customer's browser back here (both on success and
      * failure) with a base64-encoded `data` query param. We never trust
-     * that on its own — we re-verify with eSewa's status-check API first.
+     * that on its own -we re-verify with eSewa's status-check API first.
      */
     public function callback(Request $request)
     {
@@ -94,7 +94,7 @@ class EsewaPaymentController extends Controller
 
         $config = config('services.esewa');
 
-        // Server-to-server confirmation — this is the source of truth,
+        // Server-to-server confirmation -this is the source of truth,
         // not the query string the browser was redirected with.
         $response = Http::get($config['status_url'], [
             'product_code' => $config['product_code'],

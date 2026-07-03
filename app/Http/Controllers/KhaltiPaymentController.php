@@ -79,7 +79,7 @@ class KhaltiPaymentController extends Controller
 
     /**
      * Khalti redirects the customer's browser back here after they pay
-     * (or cancel). We never trust the query string on its own — we
+     * (or cancel). We never trust the query string on its own -we
      * re-verify the payment server-side via Khalti's lookup API first.
      */
     public function callback(Request $request): RedirectResponse

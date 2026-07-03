@@ -437,7 +437,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             headers : {
                                 'Content-Type' : 'application/json',
                                 'Accept'       : 'application/json',
-                                // Laravel CSRF token — must be present in the page meta tag
+                                // Laravel CSRF token -must be present in the page meta tag
                                 'X-CSRF-TOKEN' : document.querySelector('meta[name="csrf-token"]')?.content ?? '',
                             },
                             body: JSON.stringify({
@@ -449,7 +449,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         const json = await response.json();
 
                         if (response.status === 401) {
-                            // Not logged in — send to login page
+                            // Not logged in -send to login page
                             showToast('Please log in to add items to your cart.', 'warning');
                             setTimeout(() => {
                                 window.location.href = '{{ route('userlogin') }}';

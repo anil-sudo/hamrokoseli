@@ -110,11 +110,11 @@
                                         <div class="absolute h-full w-full bg-[#ebd7be]/50 rounded-full"></div>
                                         <div id="slider-track-accent" class="absolute h-full bg-[#C65A3A] rounded-full"
                                             style="left:0%;right:0%;"></div>
-                                        <input type="range" id="price-min" min="0" max="5000"
-                                            value="{{ request('min_price', 0) }}"
+                                        <input type="range" id="price-min" min="{{ $priceFloor }}" max="{{ $priceCeil }}"
+                                            value="{{ request('min_price', $priceFloor) }}"
                                             class="range-slider-input">
-                                        <input type="range" id="price-max" min="0" max="5000"
-                                            value="{{ request('max_price', 5000) }}"
+                                        <input type="range" id="price-max" min="{{ $priceFloor }}" max="{{ $priceCeil }}"
+                                            value="{{ request('max_price', $priceCeil) }}"
                                             class="range-slider-input">
                                     </div>
                                     {{-- Min / Max inputs — these are the ones actually submitted --}}
@@ -124,7 +124,7 @@
                                             class="flex items-center bg-[#ebd7be]/20 rounded-xl border border-[#ebd7be]/60 px-3 py-2 w-[45%]">
                                             <span class="mr-1 text-[#3A2A1F]/60">Rs.</span>
                                             <input type="number" id="input-min" name="min_price"
-                                                value="{{ request('min_price', 0) }}" min="0" max="5000"
+                                                value="{{ request('min_price', $priceFloor) }}" min="{{ $priceFloor }}" max="{{ $priceCeil }}"
                                                 class="w-full bg-transparent border-none p-0 text-[#1F3D2E] font-bold focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                                         </div>
                                         <span class="text-[#3A2A1F]/50 font-bold">TO</span>
@@ -132,7 +132,7 @@
                                             class="flex items-center bg-[#ebd7be]/20 rounded-xl border border-[#ebd7be]/60 px-3 py-2 w-[45%]">
                                             <span class="mr-1 text-[#3A2A1F]/60">Rs.</span>
                                             <input type="number" id="input-max" name="max_price"
-                                                value="{{ request('max_price', 5000) }}" min="0" max="5000"
+                                                value="{{ request('max_price', $priceCeil) }}" min="{{ $priceFloor }}" max="{{ $priceCeil }}"
                                                 class="w-full bg-transparent border-none p-0 text-[#1F3D2E] font-bold focus:outline-none [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                                         </div>
                                     </div>
@@ -558,11 +558,18 @@
             const minInput = document.getElementById('input-min');
             const maxInput = document.getElementById('input-max');
             const trackAccent = document.getElementById('slider-track-accent');
-            const MIN_GAP = 100;
+
+            const sliderFloor = parseInt(minSlider.min);
+            const sliderCeil = parseInt(maxSlider.max);
+            const sliderRange = Math.max(1, sliderCeil - sliderFloor);
+            // Keep the two handles from overlapping, but don't let the gap
+            // swallow a narrow price range (e.g. a shop where everything
+            // costs roughly the same).
+            const MIN_GAP = Math.min(100, Math.max(1, Math.floor(sliderRange * 0.05)));
 
             function updateTrack(minVal, maxVal) {
-                const minPct = (minVal / parseInt(minSlider.max)) * 100;
-                const maxPct = 100 - (maxVal / parseInt(maxSlider.max)) * 100;
+                const minPct = ((minVal - sliderFloor) / sliderRange) * 100;
+                const maxPct = 100 - ((maxVal - sliderFloor) / sliderRange) * 100;
                 trackAccent.style.left = minPct + '%';
                 trackAccent.style.right = maxPct + '%';
             }
@@ -585,13 +592,15 @@
             }
 
             function onInputChange() {
-                let minVal = Math.max(0, parseInt(minInput.value) || 0);
-                let maxVal = Math.min(5000, parseInt(maxInput.value) || 5000);
+                const sliderMin = parseInt(minSlider.min);
+                const sliderMax = parseInt(maxSlider.max);
+                let minVal = Math.max(sliderMin, parseInt(minInput.value) || sliderMin);
+                let maxVal = Math.min(sliderMax, parseInt(maxInput.value) || sliderMax);
                 if (maxVal - minVal < MIN_GAP) {
                     if (document.activeElement === minInput) {
-                        minVal = Math.max(0, maxVal - MIN_GAP);
+                        minVal = Math.max(sliderMin, maxVal - MIN_GAP);
                     } else {
-                        maxVal = Math.min(5000, minVal + MIN_GAP);
+                        maxVal = Math.min(sliderMax, minVal + MIN_GAP);
                     }
                 }
                 minSlider.value = minVal;

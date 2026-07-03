@@ -49,7 +49,7 @@ return [
 
     'esewa' => [
         // "EPAYTEST" + this test secret key are eSewa's public sandbox
-        // credentials — safe defaults for local testing, swap for your
+        // credentials -safe defaults for local testing, swap for your
         // real merchant code/secret key in .env when going live.
         'product_code' => env('ESEWA_PRODUCT_CODE', 'EPAYTEST'),
         'secret_key' => env('ESEWA_SECRET_KEY', '8gBm/:&EnhH.1/q('),

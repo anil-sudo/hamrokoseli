@@ -75,7 +75,7 @@ class Notification extends Model
     }
 
     /**
-     * Scope — only unread notifications.
+     * Scope -only unread notifications.
      */
     public function scopeUnread($query)
     {
@@ -83,7 +83,7 @@ class Notification extends Model
     }
 
     /**
-     * Scope — only read notifications.
+     * Scope -only read notifications.
      */
     public function scopeRead($query)
     {

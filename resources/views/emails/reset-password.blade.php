@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reset Your Password — Hamro Koseli</title>
+    <title>Reset Your Password -Hamro Koseli</title>
     <style>
         body { margin: 0; padding: 0; background: #FFF7EF; font-family: 'Georgia', serif; }
         .wrapper { max-width: 560px; margin: 40px auto; background: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 4px 24px rgba(0,0,0,0.07); border: 1px solid #ebd7be; }
@@ -57,7 +57,7 @@
             </div>
 
             <p class="text">
-                If you did not request a password reset, you can safely ignore this email — your password will not change.
+                If you did not request a password reset, you can safely ignore this email -your password will not change.
             </p>
 
             <hr class="divider">

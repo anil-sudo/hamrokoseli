@@ -22,7 +22,7 @@ class CheckoutController extends Controller
             'unitPrice' => $cart->unitPrice(),
             'subtotal' => $cart->subtotal(),
             // The checkout form is pre-filled straight from the user's
-            // profile — no separate saved-address book to manage.
+            // profile -no separate saved-address book to manage.
             'user' => auth()->user(),
         ]);
     }
@@ -47,7 +47,7 @@ class CheckoutController extends Controller
     {
         $this->authorizeCartItem($cart);
 
-        // ✅ VALIDATION — phone & address are taken directly from the
+        // ✅ VALIDATION -phone & address are taken directly from the
         // checkout form (pre-filled from the user's profile), not from a
         // separate shipping-address-book selection.
         $data = $request->validate([
@@ -135,7 +135,7 @@ class CheckoutController extends Controller
         });
 
         // COD is complete the moment the order is created. Khalti and eSewa
-        // still need the customer to actually pay — send them to the
+        // still need the customer to actually pay -send them to the
         // gateway's hosted checkout instead of the confirmation page.
         if ($data['payment_method'] === 'khalti') {
             return redirect()->route('khalti.initiate', $order);

@@ -18,7 +18,7 @@ class VendorPasswordResetController extends Controller
         return view('seller.forgot-password');
     }
 
-    // ─── 2. Send reset link — only if the email belongs to a vendor ──────────
+    // ─── 2. Send reset link -only if the email belongs to a vendor ──────────
     public function sendResetLink(Request $request)
     {
         $validator = Validator::make($request->all(), [

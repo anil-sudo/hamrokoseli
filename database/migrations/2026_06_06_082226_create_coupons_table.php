@@ -15,7 +15,7 @@ return new class extends Migration
             // Primary key
             $table->id();                                           // BIGINT UNSIGNED, PK, AUTO_INCREMENT
 
-            // Foreign key — nullable: NULL = platform-wide coupon
+            // Foreign key -nullable: NULL = platform-wide coupon
             $table->foreignId('vendor_id')
                 ->nullable()
                 ->constrained('vendors')
