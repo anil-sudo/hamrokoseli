@@ -5,10 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Payment;
+use App\Models\Payout;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class SellerController extends Controller
@@ -562,9 +565,100 @@ class SellerController extends Controller
         return view('seller.review');
     }
 
-    public function sellerPayment()
+    public function sellerPayment(Request $request)
     {
-        return view('seller.payment');
+        $vendor = auth()->user()->vendor;
+
+        if (! $vendor) {
+            return redirect()->route('dashboard')
+                ->with('error', 'Vendor profile not found. Please contact support.');
+        }
+
+        $vendorId = $vendor->id;
+
+        // ─── Base query: vendor's order items that have a completed payment ──
+        // We join order_items → orders → payments to find items the vendor
+        // has actually been paid for (payment.status = 'completed').
+        // Cancelled / returned items are excluded from earnings.
+        $paidItemsBase = OrderItem::where('order_items.vendor_id', $vendorId)
+            ->whereNotIn('order_items.status', ['cancelled', 'returned'])
+            ->join('orders', 'orders.id', '=', 'order_items.order_id')
+            ->join('payments', 'payments.order_id', '=', 'orders.id')
+            ->where('payments.status', 'completed');
+
+        // ─── Total Earnings: sum of subtotals from paid, non-cancelled items ─
+        $totalEarnings = (clone $paidItemsBase)->sum('order_items.subtotal');
+
+        // ─── Total Payouts: sum of completed payouts for this vendor ─────────
+        $totalPayouts = Payout::where('vendor_id', $vendorId)
+            ->where('status', 'completed')
+            ->sum('amount');
+
+        // ─── Pending Settlement: orders confirmed/shipped but not yet paid ───
+        // These are items on orders that exist but payment is still pending.
+        $pendingSettlement = OrderItem::where('order_items.vendor_id', $vendorId)
+            ->whereNotIn('order_items.status', ['cancelled', 'returned'])
+            ->join('orders', 'orders.id', '=', 'order_items.order_id')
+            ->join('payments', 'payments.order_id', '=', 'orders.id')
+            ->where('payments.status', 'pending')
+            ->sum('order_items.subtotal');
+
+        // ─── Current Balance: total earned minus total paid out ───────────────
+        $currentBalance = max(0, $totalEarnings - $totalPayouts);
+
+        // ─── Payment transaction history (from the payments table) ───────────
+        // Each row here represents a customer payment for an order containing
+        // this vendor's items. We show these as the "payout history" since
+        // the payouts table may still be empty for new setups.
+        $period = $request->query('period', '30');
+
+        $paymentHistoryQuery = Payment::select(
+            'payments.id',
+            'payments.gateway',
+            'payments.total_amount',
+            'payments.status',
+            'payments.transaction_id',
+            'payments.reference_id',
+            'payments.paid_at',
+            'payments.created_at',
+            DB::raw('SUM(order_items.subtotal) as vendor_subtotal')
+        )
+            ->join('orders', 'orders.id', '=', 'payments.order_id')
+            ->join('order_items', 'order_items.order_id', '=', 'orders.id')
+            ->where('order_items.vendor_id', $vendorId)
+            ->whereNotIn('order_items.status', ['cancelled', 'returned'])
+            ->where('payments.status', 'completed')
+            ->groupBy(
+                'payments.id',
+                'payments.gateway',
+                'payments.total_amount',
+                'payments.status',
+                'payments.transaction_id',
+                'payments.reference_id',
+                'payments.paid_at',
+                'payments.created_at'
+            )
+            ->latest('payments.created_at');
+
+        if ($period !== 'all') {
+            $paymentHistoryQuery->where('payments.created_at', '>=', now()->subDays((int) $period));
+        }
+
+        $paymentHistory = $paymentHistoryQuery->paginate(10)->withQueryString();
+
+        // ─── Payout requests (admin-initiated payouts to the vendor) ─────────
+        $payouts = Payout::where('vendor_id', $vendorId)->latest()->get();
+
+        return view('seller.payment', compact(
+            'vendor',
+            'totalEarnings',
+            'totalPayouts',
+            'pendingSettlement',
+            'currentBalance',
+            'paymentHistory',
+            'payouts',
+            'period'
+        ));
     }
 
     public function paymentDetails()
