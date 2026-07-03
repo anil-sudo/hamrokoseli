@@ -29,7 +29,7 @@ return new class extends Migration
             $table->tinyInteger('is_read')->default(0);            // 0 = unread, 1 = read
             $table->timestamp('read_at')->nullable();              // Time user read the notification
 
-            // Only created_at per schema — no updated_at
+            // Only created_at per schema -no updated_at
             $table->timestamp('created_at')->useCurrent();
 
             // Indexes for common queries

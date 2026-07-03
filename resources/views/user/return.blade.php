@@ -113,7 +113,7 @@
                             <div id="upload-preview" class="flex gap-2 mt-3 flex-wrap"></div>
                         </div>
 
-                        <!-- 4. Refund To — Original Payment Method ONLY -->
+                        <!-- 4. Refund To -Original Payment Method ONLY -->
                         <div
                             class="bg-(--card-bg) rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-200">
                             <h2 class="text-lg font-semibold text-(--text-color) mb-4">

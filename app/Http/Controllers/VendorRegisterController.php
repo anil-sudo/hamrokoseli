@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Mail\NewVendorRegistered;
 use App\Models\User;
+use App\Models\Vendor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 
 class VendorRegisterController extends Controller
@@ -31,39 +34,56 @@ class VendorRegisterController extends Controller
             'pan_number' => 'nullable|string|max:30|unique:vendors,pan_number',
         ]);
 
-        // Create user
-        $user = User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password']),
-            'phone' => $data['phone'],
-            'role' => 'vendor',
-            'is_active' => true,
-        ]);
+        // Create the user and vendor records atomically. If vendor creation
+        // fails for any reason (race-condition duplicate, DB error, etc.),
+        // the whole thing rolls back instead of leaving an orphaned user
+        // with a login but no vendor profile.
+        $vendor = DB::transaction(function () use ($data) {
+            $user = User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => Hash::make($data['password']),
+                'phone' => $data['phone'],
+                'role' => 'vendor',
+                'is_active' => true,
+            ]);
 
-        // Assign Spatie role
-        $user->assignRole('vendor');
+            // Assign Spatie role
+            $user->assignRole('vendor');
 
-        // Auto-create vendor record
-        $vendor = $user->vendor()->create([
-            'vendor_name' => $data['vendor_name'],
-            'owner_name' => $data['owner_name'],
-            'email' => $data['vendor_email'],
-            'phone' => $data['vendor_phone'],
-            'vendor_address' => $data['address'] ?? null,
-            'city' => $data['city'] ?? null,
-            'province' => $data['province'] ?? null,
-            'pan_number' => $data['pan_number'] ?? null,
-            'status' => 'pending',
-        ]);
+            // Auto-create vendor record. New vendors always start out
+            // "pending" -they cannot log in to the seller dashboard
+            // until an admin flips their status to "active" from the
+            // admin panel (see Filament\Resources\Vendors\Pages\EditVendor).
+            return $user->vendor()->create([
+                'vendor_name' => $data['vendor_name'],
+                'owner_name' => $data['owner_name'],
+                'email' => $data['vendor_email'],
+                'phone' => $data['vendor_phone'],
+                'vendor_address' => $data['address'] ?? null,
+                'city' => $data['city'] ?? null,
+                'province' => $data['province'] ?? null,
+                'pan_number' => $data['pan_number'] ?? null,
+                'status' => 'pending',
+            ]);
+        });
 
+        // Only notify admins once the registration has actually committed.
+        $this->notifyAdmins($vendor);
+
+        return redirect()->route('seller.login')
+            ->with('success', 'Registration successful! Wait for admin approval. You will receive an email after approval.');
+    }
+
+    /**
+     * Queue a notification email to every admin about the new vendor.
+     */
+    private function notifyAdmins(Vendor $vendor): void
+    {
         $adminEmails = User::where('role', 'admin')->pluck('email');
 
         foreach ($adminEmails as $adminEmail) {
             Mail::to($adminEmail)->queue(new NewVendorRegistered($vendor));
         }
-
-        return redirect()->route('seller.login')
-            ->with('success', 'Registration successful! Wait for admin approval. You will receive an email after approval.');
     }
 }
