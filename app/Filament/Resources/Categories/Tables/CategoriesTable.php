@@ -19,6 +19,10 @@ class CategoriesTable
                     ->disk('public'),
                 TextColumn::make('cat_name')
                     ->searchable(),
+                ImageColumn::make('cat_image')
+                    ->disk('public')
+                    ->imageHeight(48)
+                    ->imageWidth(48),
                 TextColumn::make('slug')
                     ->searchable(),
                 TextColumn::make('parent_cat_id')
