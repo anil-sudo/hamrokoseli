@@ -18,14 +18,14 @@
         <div class="flex items-center gap-2 md:gap-4">
 
             <!-- Notification -->
-            <a href="{{ route('seller-notification') }}"
+            <a href="{{ route('user-notification') }}"
                 class="relative p-3 text-[#FFF7EF] hover:bg-white/10 rounded-2xl transition-all">
                 <i data-lucide="bell" class="w-5 h-5"></i>
                 <span class="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full ring-2 ring-[#1E2A44]"></span>
             </a>
 
             <!-- Profile -->
-            <a href="{{ route('seller.profile') }}" class="flex items-center gap-3 pl-4 border-l border-white/10">
+            <a href="{{ route('user-profile') }}" class="flex items-center gap-3 pl-4 border-l border-white/10">
                 <div class="text-right hidden sm:block">
                     <p class="text-sm font-medium text-white">{{ Auth::user()->name ?? 'User' }}</p>
                 </div>

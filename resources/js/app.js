@@ -950,15 +950,19 @@ document.addEventListener('DOMContentLoaded', () => {
     function populateAndShowProductModal(productData) {
         if (!productModal || !productContainer) return;
 
+        let categoryName = typeof productData.category === 'string' ? productData.category : (productData.category?.cat_name || productData.category?.name || productData.category_name || 'Crafts');
+        let vendorName = typeof productData.vendor === 'string' ? productData.vendor : (productData.vendor?.vendor_name || productData.vendor?.business_name || productData.vendor?.name || productData.vendor_name || 'Local Artisan');
+        let imageUrl = productData.primary_image_url || (typeof productData.image === 'string' && productData.image.startsWith('http') ? productData.image : (productData.image ? '/' + productData.image.replace(/^\/+/, '') : ''));
+
         window.activeProduct = {
             id: productData.id,
             name: productData.name,
             price: parseFloat(productData.price),
-            image: productData.image || productData.primary_image_url || '',
-            category: productData.category || productData.category_name || '',
+            image: imageUrl,
+            category: categoryName,
             desc: productData.desc || productData.description || '',
-            vendor: productData.vendor || productData.vendor_name || '',
-            tag: productData.tag || (productData.category === 'Metalware' ? 'Authentic' : 'Handmade')
+            vendor: vendorName,
+            tag: productData.tag || (categoryName === 'Metalware' ? 'Authentic' : 'Handmade')
         };
 
         const modalProductName = document.getElementById('modal-product-name');
@@ -976,12 +980,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (modalProductName) modalProductName.textContent = productData.name;
         if (modalMainImage) {
-            modalMainImage.src = productData.image || productData.primary_image_url || '';
+            modalMainImage.src = imageUrl;
             modalMainImage.alt = productData.name;
         }
-        if (modalBreadcrumbCat) modalBreadcrumbCat.textContent = productData.category || productData.category_name || '';
+        if (modalBreadcrumbCat) modalBreadcrumbCat.textContent = categoryName;
         if (modalProductDesc) modalProductDesc.textContent = productData.desc || productData.description || '';
-        if (modalVendorName) modalVendorName.textContent = productData.vendor || productData.vendor_name || '';
+        if (modalVendorName) modalVendorName.textContent = vendorName;
         if (modalReviewsCount) modalReviewsCount.textContent = productData.reviews || productData.reviews_count || '0';
 
         // Pricing
