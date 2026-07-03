@@ -122,19 +122,15 @@
                     <a href="{{ route('shop', ['category' => $category->slug]) }}" class="bg-[#FDFBF7] rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-amber-900/5 hover:shadow-md transition group block">
                         <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-56 overflow-hidden bg-slate-100 relative flex items-center justify-center">
                             @if($category->cat_image)
-                                <!-- Loading / Fallback state -->
-                                <div class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 bg-slate-100 p-2 text-center z-0">
-                                    <i class="fa-solid fa-spinner fa-spin text-lg sm:text-xl md:text-2xl mb-1 loading-icon"></i>
-                                    <i class="fa-solid fa-folder-open text-xl sm:text-2xl md:text-3xl hidden fallback-icon"></i>
-                                    <span class="text-[8px] sm:text-[10px] text-slate-400 mt-1 hidden fallback-icon">No Image</span>
-                                </div>
-                                <img src="{{ asset('storage/' . $category->cat_image) }}" 
+                                <img src="{{ Storage::disk('public')->url($category->cat_image) }}" 
                                      alt="{{ $category->cat_name }}" 
-                                     class="w-full h-full object-cover group-hover:scale-105 transition duration-500 opacity-0 relative z-10"
-                                     onload="this.classList.remove('opacity-0'); this.previousElementSibling.querySelector('.loading-icon').classList.add('hidden');"
-                                     onerror="this.style.display='none'; this.previousElementSibling.querySelector('.loading-icon').classList.add('hidden'); Array.from(this.previousElementSibling.querySelectorAll('.fallback-icon')).forEach(el => el.classList.remove('hidden'));">
+                                     class="w-full h-full object-cover group-hover:scale-105 transition duration-500 relative z-10"
+                                     onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+                                <div class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 bg-slate-100 p-2 text-center z-0 hidden">
+                                    <i class="fa-solid fa-folder-open text-xl sm:text-2xl md:text-3xl mb-1"></i>
+                                    <span class="text-[8px] sm:text-[10px] text-slate-400 mt-1">No Image</span>
+                                </div>
                             @else
-                                <!-- No image fallback -->
                                 <div class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 bg-slate-100 p-2 text-center">
                                     <i class="fa-solid fa-folder-open text-xl sm:text-2xl md:text-3xl mb-1"></i>
                                     <span class="text-[8px] sm:text-[10px] text-slate-400 mt-1">No Image</span>
