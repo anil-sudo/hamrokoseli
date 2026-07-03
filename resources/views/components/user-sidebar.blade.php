@@ -41,7 +41,7 @@
         class="navbar flex-1 px-4 py-4 space-y-1.5 overflow-y-auto scroll-smooth">
         <!-- Dashboard -->
         <a href="{{ route('Userdashboard') }}"
-            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl  hover:bg-brand-gold group transition-all duration-300 ease-out active:scale-[0.98]
+            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl  hover:bg-[#D4A017]  group transition-all duration-300 ease-out active:scale-[0.98]
             {{ Request::routeIs('Userdashboard') ? 'bg-(--hover-color)' : '' }}">
             <i data-lucide="layout-dashboard"
                 class="w-5 text-lg transition-transform duration-300 group-hover:scale-110"></i>
@@ -50,7 +50,7 @@
 
         <!-- Orders -->
         <a href="{{ route('User-orders') }}"
-            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl  hover:bg-brand-gold  group transition-all duration-300 ease-out active:scale-[0.98]
+            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017]  group transition-all duration-300 ease-out active:scale-[0.98]
             {{ Request::routeIs('User-orders') ? 'bg-(--hover-color)' : '' }}">
             <i data-lucide="shopping-cart" class="w-5 text-lg transition-transform duration-300 group-hover:scale-110"></i>
             <span class="font-medium transition-all duration-300 group-hover:translate-x-1">Orders</span>
@@ -58,7 +58,7 @@
 
         <!-- profile -->
         <a href="{{ route('user-profile') }}"
-            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-brand-gold group transition-all duration-300 ease-out active:scale-[0.98]
+            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017]  group transition-all duration-300 ease-out active:scale-[0.98]
             {{ Request::routeIs('user-profile') ? 'bg-(--hover-color)' : '' }}">
             <i data-lucide="user-round" class="w-5 transition-transform duration-300 group-hover:scale-110"></i>
             <span class="font-medium transition-all duration-300 group-hover:translate-x-1">Profile</span>
@@ -66,7 +66,7 @@
 
         <!-- notification -->
         <a href="{{ route('user-notification') }}"
-            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-brand-gold group transition-all duration-300 ease-out active:scale-[0.98]
+            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017]  group transition-all duration-300 ease-out active:scale-[0.98]
             {{ Request::routeIs('user-notification') ? 'bg-(--hover-color)' : '' }}">
             <i data-lucide="bell" class="w-5 transition-transform duration-300 group-hover:scale-110"></i>
             <span class="font-medium transition-all duration-300 group-hover:translate-x-1">Notification</span>

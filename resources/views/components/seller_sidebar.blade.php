@@ -102,7 +102,7 @@
 
         <!-- profile -->
         <a href="{{ route('seller.profile') }}"
-            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-brand-gold group transition-all duration-300 ease-out active:scale-[0.98]
+            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017]  group transition-all duration-300 ease-out active:scale-[0.98]
             {{ Request::routeIs('seller.profile') ? 'bg-(--hover-color)' : '' }}">
             <i data-lucide="user-round" class="w-5 transition-transform duration-300 group-hover:scale-110"></i>
             <span class="font-medium transition-all duration-300 group-hover:translate-x-1">Profile</span>

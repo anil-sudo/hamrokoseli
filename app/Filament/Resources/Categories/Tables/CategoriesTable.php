@@ -16,13 +16,11 @@ class CategoriesTable
         return $table
             ->columns([
                 ImageColumn::make('image')
-                    ->disk('public'),
-                TextColumn::make('cat_name')
-                    ->searchable(),
-                ImageColumn::make('cat_image')
-                    ->disk('public')
+                   ->disk('public')
                     ->imageHeight(48)
                     ->imageWidth(48),
+                TextColumn::make('cat_name')
+                    ->searchable(),
                 TextColumn::make('slug')
                     ->searchable(),
                 TextColumn::make('parent_cat_id')
