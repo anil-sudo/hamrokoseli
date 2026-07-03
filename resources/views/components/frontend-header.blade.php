@@ -45,11 +45,12 @@
             </div>
 
             <!-- CENTER: Search bar (visible on md+; collapses on mobile) -->
-            <div class="search-wrap hidden md:flex flex-1 max-w-lg mx-4 items-center bg-[#FDFBF7] rounded-full px-4 py-2 border border-emerald-950/10 shadow-inner">
+            <form action="{{ route('shop') }}" method="GET"
+                class="search-wrap hidden md:flex flex-1 max-w-lg mx-4 items-center bg-[#FDFBF7] rounded-full px-4 py-2 border border-emerald-950/10 shadow-inner">
                 <i class="fas fa-search text-slate-400 mr-2"></i>
-                <input type="text" id="desktop-search" placeholder="Search Products....."
+                <input type="text" name="search" id="desktop-search" placeholder="Search Products....."
                     class="w-full bg-transparent border-0 focus:outline-none text-sm text-slate-800 placeholder-slate-400 font-medium">
-            </div>
+            </form>
 
             <!-- RIGHT: Actions -->
             <div class="flex items-center gap-3 shrink-0">
@@ -91,16 +92,18 @@
                     <button id="mobile-search-btn" class="md:hidden hover:text-emerald-200 transition-colors p-1" aria-label="Search">
                         <i class="fas fa-search"></i>
                     </button>
-                    <!-- Wishlist -->
-                    <a href="{{ route('wishlist') }}" class="hover:text-emerald-200 transition-colors p-1 relative flex items-center justify-center" title="Wishlist" id="wishlist-header-btn">
-                        <i class="far fa-heart" id="wishlist-header-icon"></i>
-                        <span id="wishlist-badge" class="absolute -top-1.5 -right-1.5 bg-[#b55b3d] text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold border border-[#1f3d2e] hidden">0</span>
-                    </a>
-                    <!-- Cart -->
-                    <a href="{{ route('cart') }}" class="hover:text-emerald-200 transition-colors p-1 relative flex items-center justify-center" title="Cart" id="cart-header-btn">
-                        <i class="fas fa-shopping-cart" id="cart-header-icon"></i>
-                        <span id="cart-badge" class="absolute -top-1.5 -right-1.5 bg-[#b55b3d] text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold border border-[#1f3d2e] hidden">0</span>
-                    </a>
+                    @auth
+                        <!-- Wishlist -->
+                        <a href="{{ route('wishlist') }}" class="hover:text-emerald-200 transition-colors p-1 relative flex items-center justify-center" title="Wishlist" id="wishlist-header-btn">
+                            <i class="far fa-heart" id="wishlist-header-icon"></i>
+                            <span id="wishlist-badge" class="absolute -top-1.5 -right-1.5 bg-[#b55b3d] text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold border border-[#1f3d2e] hidden">0</span>
+                        </a>
+                        <!-- Cart -->
+                        <a href="{{ route('cart') }}" class="hover:text-emerald-200 transition-colors p-1 relative flex items-center justify-center" title="Cart" id="cart-header-btn">
+                            <i class="fas fa-shopping-cart" id="cart-header-icon"></i>
+                            <span id="cart-badge" class="absolute -top-1.5 -right-1.5 bg-[#b55b3d] text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold border border-[#1f3d2e] hidden">0</span>
+                        </a>
+                    @endauth
                     <!-- Logout icon (always visible, logged-in users only) -->
                     @auth
                         <form action="{{ route('logout') }}" method="POST" class="m-0 p-0">
@@ -117,11 +120,12 @@
 
         <!-- Mobile search bar (slides down when toggled) -->
         <div id="mobile-search-bar" class="hidden md:hidden mt-2 max-w-full">
-            <div class="search-wrap flex items-center bg-[#FDFBF7] rounded-full px-4 py-2 border border-emerald-950/10 shadow-inner">
+            <form action="{{ route('shop') }}" method="GET"
+                class="search-wrap flex items-center bg-[#FDFBF7] rounded-full px-4 py-2 border border-emerald-950/10 shadow-inner">
                 <i class="fas fa-search text-slate-400 mr-2"></i>
-                <input type="text" id="mobile-search" placeholder="Search Products....."
+                <input type="text" name="search" id="mobile-search" placeholder="Search Products....."
                     class="w-full bg-transparent border-0 focus:outline-none text-sm text-slate-800 placeholder-slate-400 font-medium">
-            </div>
+            </form>
         </div>
     </div>
 

@@ -3,9 +3,11 @@
 namespace App\Filament\Resources\Products\Schemas;
 
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
 
@@ -40,6 +42,10 @@ class ProductForm
                     ->required()
                     ->unique(ignoreRecord: true)
                     ->alphaDash(),
+                TextInput::make('sku')
+                    ->required()
+                    ->unique(ignoreRecord: true)
+                    ->maxLength(100),
                 RichEditor::make('description')
                     ->toolbarButtons([
                         'bold',
@@ -57,19 +63,44 @@ class ProductForm
                     ->extraAttributes(['style' => 'min-height: 160px'])
                     ->default(null)
                     ->columnSpanFull(),
-                FileUpload::make('image')
-                    ->image()
-                    ->imageEditor()
-                    ->multiple()
-                    ->reorderable()
-                    ->maxFiles(5)
-                    ->maxSize(2048)
-                    ->directory('products')
-                    ->disk('public')
-                    ->helperText('Max 5 images, 2MB each. JPG, PNG, or WebP.')
-                    ->panelLayout('integrated')
-                    ->extraAttributes(['style' => 'min-height: 150px;'])
+                // Replaces the old FileUpload::make('image')->multiple(), which wrote
+                // multiple paths into a single plain string column on `products` that
+                // was never read anywhere (see Product::primaryImageUrl()). Images
+                // actually live in the polymorphic `images` table via Product::images().
+                Repeater::make('images')
+                    ->relationship('images')
+                    ->schema([
+                        FileUpload::make('path')
+                            ->image()
+                            ->imageEditor()
+                            ->maxSize(2048)
+                            ->directory('products')
+                            ->disk('public')
+                            ->required()
+                            ->columnSpanFull(),
+                        Select::make('type')
+                            ->options([
+                                'thumbnail' => 'Thumbnail',
+                                'gallery' => 'Gallery',
+                                'banner' => 'Banner',
+                            ])
+                            ->native(false)
+                            ->placeholder('None'),
+                        Toggle::make('is_primary')
+                            ->label('Primary image')
+                            ->helperText('Shown in listings and as the default product image.')
+                            ->inline(false),
+                    ])
+                    ->addActionLabel('Add image')
+                    ->collapsible()
+                    ->collapsed(fn (?array $state): bool => filled($state))
+                    ->itemLabel(fn (array $state): ?string => $state['type'] ?? 'Image')
+                    ->defaultItems(0)
+                    ->maxItems(5)
+                    ->reorderable(false)
+                    ->helperText('Max 5 images, 2MB each. JPG, PNG, or WebP. Mark one as primary -it\'s used in listings and as the product\'s default image.')
                     ->columnSpanFull(),
+
                 TextInput::make('price')
                     ->required()
                     ->numeric()

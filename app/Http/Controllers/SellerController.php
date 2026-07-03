@@ -24,6 +24,7 @@ class SellerController extends Controller
         ]);
 
         if (Auth::attempt($credentials, $request->boolean('remember'))) {
+            $request->session()->regenerate();
             $user = Auth::user();
 
             // Block if not vendor or not active
@@ -53,7 +54,25 @@ class SellerController extends Controller
                 ]);
             }
 
-            $request->session()->regenerate();
+            // Refresh user and vendor relation
+            $user->load('vendor');
+            $vendor = $user->vendor;
+
+            if (! $vendor) {
+                Auth::logout();
+
+                return redirect()
+                    ->route('seller.login')
+                    ->with('error', 'Vendor account not found.');
+            }
+
+            if ($vendor->status !== 'active') {
+                Auth::logout();
+
+                return redirect()
+                    ->route('seller.login')
+                    ->with('error', 'Your account is pending approval.');
+            }
 
             return redirect()->route('dashboard');
         }

@@ -9,7 +9,7 @@
 
         <div class="bg-(--card-bg) rounded-3xl shadow-sm border border-(--text-color)/20 p-8 md:p-10">
             <h1 class="text-3xl font-semibold text-(--text-color) text-center">Create New Ticket</h1>
-            <p class="text-(--text-color)/70 mt-3 text-base text-center">Describe your issue — we'll respond as soon as
+            <p class="text-(--text-color)/70 mt-3 text-base text-center">Describe your issue -we'll respond as soon as
                 possible.</p>
 
             <form id="ticketForm" class="mt-8 space-y-8">
