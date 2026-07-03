@@ -60,7 +60,6 @@ Route::get('/categories', [PageController::class, 'categories'])->name('categori
 Route::get('/shop', [PageController::class, 'shop'])->name('shop');
 Route::get('/new-arrivals', [PageController::class, 'new_arrival'])->name('new-arrivals');
 Route::get('/todays-deals', [PageController::class, 'todays_deals'])->name('todays-deals');
-Route::get('/featured-products', [PageController::class, 'featured_products'])->name('featured-products');
 Route::get('/top-sellers', [PageController::class, 'top_sellers'])->name('top-sellers');
 Route::get('/about-us', [PageController::class, 'about_us'])->name('about-us');
 Route::get('/wishlist', [PageController::class, 'wishlist'])->name('wishlist');
@@ -108,9 +107,7 @@ Route::middleware('web')->group(function () {
     Route::get('/userlogin', [AuthController::class, 'showLogin'])->name('userlogin');
     Route::post('/userlogin', [AuthController::class, 'login']);
 
-    Route::get('/userregister', function () {
-        return view('welcome');
-    })->name('userregister');
+    Route::get('/userregister', [PageController::class, 'home'])->name('userregister');
     Route::post('/userregister', [UserRegisterController::class, 'register']);
 
     // Fallback/compatibility routes

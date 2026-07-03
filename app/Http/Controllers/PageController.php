@@ -4,12 +4,31 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Vendor;
 
 class PageController extends Controller
 {
     public function home()
     {
-        return view('welcome');
+        // Fetch approved vendors with their active products
+        $vendors = Vendor::where('status', 'approved')
+            ->with(['products' => function ($query) {
+                $query->where('status', 'active')->limit(8);
+            }, 'products.category', 'products.images'])
+            ->limit(10)
+            ->get();
+
+        // Fallback: Get featured active products if no vendor data
+        $featuredProducts = Product::where('status', 'active')
+            ->with(['category', 'vendor', 'images', 'variants'])
+            ->inRandomOrder()
+            ->limit(4)
+            ->get();
+
+        return view('welcome', [
+            'vendors' => $vendors,
+            'featuredProducts' => $featuredProducts,
+        ]);
     }
 
     public function categories()
@@ -148,11 +167,6 @@ class PageController extends Controller
             ->get();
 
         return view('todays-deals', compact('products', 'categories', 'featuredDeals', 'trendingProducts'));
-    }
-
-    public function featured_products()
-    {
-        return view('featured-products');
     }
 
     public function top_sellers()
