@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\Payment;
 use App\Models\ShippingAddress;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
@@ -131,6 +132,21 @@ class CheckoutController extends Controller
 
             // 4. REMOVE CART ITEM
             $cart->delete();
+
+            // 5. CREATE PENDING PAYMENT FOR COD
+            // Esewa and Khalti create their own payment rows inside their
+            // respective controllers (EsewaPaymentController / KhaltiPaymentController).
+            // For COD we create the row here so every order always has a
+            // matching payment record with a pending amount.
+            if ($data['payment_method'] === 'cod') {
+                Payment::create([
+                    'order_id' => $order->id,
+                    'user_id'  => $user->id,
+                    'gateway'  => 'cod',
+                    'total_amount' => $subtotal,
+                    'status'   => 'pending',
+                ]);
+            }
 
             return $order;
         });
@@ -275,6 +291,19 @@ class CheckoutController extends Controller
                 }
 
                 $cartItem->delete();
+            }
+
+            // CREATE PENDING PAYMENT FOR COD (vendor bulk checkout)
+            // Same reasoning as store() above — Esewa/Khalti handle their
+            // own rows; COD needs one created here.
+            if ($data['payment_method'] === 'cod') {
+                Payment::create([
+                    'order_id' => $order->id,
+                    'user_id'  => $user->id,
+                    'gateway'  => 'cod',
+                    'total_amount' => $total,
+                    'status'   => 'pending',
+                ]);
             }
 
             return $order;
