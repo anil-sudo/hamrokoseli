@@ -22,7 +22,7 @@
     }
 </style>
 <aside id="sidebar"
-    class="fixed top-0 left-0 z-50 h-dvh w-72 bg-brand-dark-blue -translate-x-full md:translate-x-0 transition-transform duration-300 flex flex-col ">
+    class="fixed top-0 left-0 z-50 h-dvh w-72 bg-[#1E2A44] -translate-x-full md:translate-x-0 transition-transform duration-300 flex flex-col ">
     <!-- Brand / Logo Section -->
     <div class="px-6 pb-2 border-b border-white/10">
         <div class="flex items-center gap-3 mt-3.5">
