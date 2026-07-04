@@ -29,6 +29,7 @@ Route::middleware('guest:vendor')->group(function () {
 Route::post('/seller-logout', [SellerController::class, 'logout'])->name('seller.logout');
 Route::get('/seller-profile', [SellerController::class, 'sellerProfile'])->name('seller.profile');
 Route::post('/seller-profile', [SellerController::class, 'updateProfile'])->name('seller.profile.update');
+Route::post('/seller-password', [SellerController::class, 'updatePassword'])->name('seller.profile.password');
 
 // ─── Seller routes (protected by vendor guard) ────────────────────────────────
 Route::middleware(['auth', 'role:vendor'])->group(function () {

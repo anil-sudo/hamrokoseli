@@ -130,7 +130,7 @@ class SellerController extends Controller
         ];
 
         // ─── Sales trend for the last 7 days ───────────────────────────────
-        $days = collect(range(6, 0))->map(fn ($daysAgo) => now()->subDays($daysAgo)->startOfDay());
+        $days = collect(range(6, 0))->map(fn($daysAgo) => now()->subDays($daysAgo)->startOfDay());
 
         $dailyTotals = (clone $soldItems)
             ->where('created_at', '>=', now()->subDays(6)->startOfDay())
@@ -199,8 +199,12 @@ class SellerController extends Controller
         $categories = Category::where('status', 'active')->get();
 
         return view('seller.product-management', compact(
-            'products', 'totalProducts', 'activeProducts',
-            'outOfStock', 'draftProducts', 'categories'
+            'products',
+            'totalProducts',
+            'activeProducts',
+            'outOfStock',
+            'draftProducts',
+            'categories'
         ));
     }
 
@@ -232,7 +236,7 @@ class SellerController extends Controller
             'description' => 'required|string|max:2000',
             'base_price' => 'nullable|numeric|min:0',
             'discounted_price' => 'nullable|numeric|min:0',
-            'sku' => 'nullable|string|max:100|unique:products,sku,'.$product->id,
+            'sku' => 'nullable|string|max:100|unique:products,sku,' . $product->id,
             'stock' => 'nullable|integer|min:0',
             'specifications' => 'nullable|array',
             'specifications.*.key' => 'nullable|string|max:100',
@@ -253,7 +257,7 @@ class SellerController extends Controller
         $product->update([
             'category_id' => $validated['category'],
             'name' => $validated['product_name'],
-            'slug' => Str::slug($validated['product_name']).'-'.Str::lower(Str::random(5)),
+            'slug' => Str::slug($validated['product_name']) . '-' . Str::lower(Str::random(5)),
             'product_type' => $validated['product_type'] ?? null,
             'description' => $validated['description'],
             'specifications' => ! empty($validated['specifications']) ? $this->filterSpecs($validated['specifications']) : null,
@@ -360,16 +364,16 @@ class SellerController extends Controller
             'vendor_id' => auth()->user()->vendor->id,
             'category_id' => $validated['category'],
             'name' => $validated['product_name'],
-            'slug' => Str::slug($validated['product_name']).'-'.Str::lower(Str::random(5)),
+            'slug' => Str::slug($validated['product_name']) . '-' . Str::lower(Str::random(5)),
             'product_type' => $validated['product_type'] ?? null,
             'description' => $validated['description'],
             'specifications' => ! empty($validated['specifications'])
-                                    ? $this->filterSpecs($validated['specifications'])
-                                    : null,
+                ? $this->filterSpecs($validated['specifications'])
+                : null,
             'price' => $validated['base_price'],
             'discount_price' => ($validated['discounted_price'] ?? 0) > 0
-                                    ? $validated['discounted_price']
-                                    : null,
+                ? $validated['discounted_price']
+                : null,
             'stock' => $validated['stock'],
             'sku' => $validated['sku'],
             'status' => 'draft',
@@ -409,7 +413,7 @@ class SellerController extends Controller
 
         return redirect()
             ->route('product-management')
-            ->with('success', 'Product "'.$product->name.'" created successfully!');
+            ->with('success', 'Product "' . $product->name . '" created successfully!');
     }
 
     public function destroy($id)
@@ -455,13 +459,13 @@ class SellerController extends Controller
             if (isset($statusMap[$activeTab])) {
                 $query->whereIn('status', $statusMap[$activeTab]);
             } elseif ($activeTab === 'paid') {
-                $query->whereHas('order.payment', fn ($pq) => $pq->whereIn('status', $paymentMap['paid']));
+                $query->whereHas('order.payment', fn($pq) => $pq->whereIn('status', $paymentMap['paid']));
             } elseif ($activeTab === 'pending_payment') {
                 // Orders paid via COD (or otherwise missing a payment row) are
                 // treated as "payment pending" too, same as the badge shown
                 // on the order details page.
                 $query->where(function ($pq) use ($paymentMap) {
-                    $pq->whereHas('order.payment', fn ($ppq) => $ppq->whereIn('status', $paymentMap['pending_payment']))
+                    $pq->whereHas('order.payment', fn($ppq) => $ppq->whereIn('status', $paymentMap['pending_payment']))
                         ->orWhereDoesntHave('order.payment');
                 });
             }
@@ -488,14 +492,14 @@ class SellerController extends Controller
         $orderItems = $query->latest()->paginate(10)->withQueryString();
 
         // ─── Counts for the tab badges (unaffected by the active filter) ──
-        $baseCount = fn () => OrderItem::where('vendor_id', $vendorId);
+        $baseCount = fn() => OrderItem::where('vendor_id', $vendorId);
 
         $counts = [
             'all' => $baseCount()->count(),
             'new' => $baseCount()->whereIn('status', $statusMap['new'])->count(),
-            'paid' => $baseCount()->whereHas('order.payment', fn ($pq) => $pq->whereIn('status', $paymentMap['paid']))->count(),
+            'paid' => $baseCount()->whereHas('order.payment', fn($pq) => $pq->whereIn('status', $paymentMap['paid']))->count(),
             'pending_payment' => $baseCount()->where(function ($pq) use ($paymentMap) {
-                $pq->whereHas('order.payment', fn ($ppq) => $ppq->whereIn('status', $paymentMap['pending_payment']))
+                $pq->whereHas('order.payment', fn($ppq) => $ppq->whereIn('status', $paymentMap['pending_payment']))
                     ->orWhereDoesntHave('order.payment');
             })->count(),
             'cancelled' => $baseCount()->whereIn('status', $statusMap['cancelled'])->count(),
@@ -517,7 +521,7 @@ class SellerController extends Controller
         // (checkout groups cart lines by vendor before an Order is created),
         // so we just need to confirm this order actually belongs to them.
         $order = Order::with(['user', 'shippingAddress', 'payment'])
-            ->whereHas('orderItems', fn ($q) => $q->where('vendor_id', $vendor->id))
+            ->whereHas('orderItems', fn($q) => $q->where('vendor_id', $vendor->id))
             ->find($request->query('order'));
 
         if (! $order) {
@@ -566,7 +570,7 @@ class SellerController extends Controller
         // (pending -> paid), but we also allow flagging failed/refunded.
         if ($payment->status !== $validated['payment_status']) {
             if ($validated['payment_status'] === 'completed') {
-                $payment->markAsCompleted($payment->transaction_id ?? ('MANUAL-'.Str::upper(Str::random(10))));
+                $payment->markAsCompleted($payment->transaction_id ?? ('MANUAL-' . Str::upper(Str::random(10))));
             } elseif ($validated['payment_status'] === 'failed') {
                 $payment->markAsFailed();
             } elseif ($validated['payment_status'] === 'refunded') {
@@ -585,7 +589,7 @@ class SellerController extends Controller
 
         return redirect()
             ->route('order-details', ['order' => $order->id])
-            ->with('success', 'Payment status updated to '.$labels[$validated['payment_status']].'.');
+            ->with('success', 'Payment status updated to ' . $labels[$validated['payment_status']] . '.');
     }
 
     public function returnProducts()
@@ -612,7 +616,7 @@ class SellerController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:100',
-            'email' => 'required|email|max:150|unique:users,email,'.$user->id,
+            'email' => 'required|email|max:150|unique:users,email,' . $user->id,
             'phone' => 'nullable|string|max:20',
             'profile_pic' => 'nullable|image|max:2048',
         ]);
@@ -635,18 +639,20 @@ class SellerController extends Controller
     {
         $request->validate([
             'current_password' => 'required|current_password',
-            'new_password' => 'required|min:8',
+            'new_password' => 'required|min:8|confirmed',
         ]);
 
         $user = auth()->user();
-        $user->password = Hash::make($request->new_password);
+        if (! \Hash::check($request->current_password, $user->password)) {
+            return redirect()->back()
+                ->withErrors(['current_password' => 'Current password is incorrect.'])
+                ->withInput();
+        }
+
+        $user->password = \Hash::make($request->new_password);
         $user->save();
 
-        auth()->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect()->route('seller.login')->with('success', 'Password updated successfully. Please login again.');
+        return redirect()->back()->with('password_success', 'Password changed successfully.');
     }
 
     public function sellerReview()
@@ -785,7 +791,7 @@ class SellerController extends Controller
 
         SupportTicket::create([
             'vendor_id' => $vendor->id,
-            'ticket_number' => 'TK-'.mt_rand(10000, 99999),
+            'ticket_number' => 'TK-' . mt_rand(10000, 99999),
             'category' => $validated['category'],
             'subject' => $validated['subject'],
             'description' => $validated['description'],
