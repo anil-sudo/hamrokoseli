@@ -2,14 +2,14 @@
 <div id="product-details-modal" class="fixed inset-0 z-[99999] hidden bg-black/60 backdrop-blur-sm overflow-y-auto p-4 sm:p-6 md:p-10 transition-opacity duration-300 opacity-0">
     
     <!-- Modal Content Container -->
-    <div class="relative bg-[#F4EAE1] max-w-5xl mx-auto rounded-3xl overflow-hidden shadow-2xl border border-[#ebd7be]/50 transform scale-95 opacity-0 transition-all duration-300 ease-out" id="product-details-container">
+    <div class="relative bg-[#F4EAE1] max-w-5xl mx-auto rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-[#ebd7be]/50 transform scale-95 opacity-0 transition-all duration-300 ease-out" id="product-details-container">
         
         <!-- Close Button -->
         <button id="close-product-details" class="absolute top-4 right-4 z-50 bg-white/80 hover:bg-white text-slate-800 rounded-full w-10 h-10 flex items-center justify-center shadow-md transition hover:scale-105 active:scale-95 cursor-pointer focus:outline-none">
             <i class="fas fa-times text-lg"></i>
         </button>
 
-        <div class="p-6 sm:p-8 md:p-10 lg:p-12 space-y-8">
+        <div class="p-4 sm:p-6 md:p-10 lg:p-12 space-y-5 sm:space-y-8">
             
             <!-- Breadcrumbs -->
             <div class="text-[#3A2A1F]/60 text-xs font-semibold">
@@ -61,7 +61,7 @@
                             <span class="text-[#3A2A1F]/60 font-semibold">(<span id="modal-reviews-count">0</span> Reviews)</span>
                         </div>
                         
-                        <h1 class="text-2xl sm:text-3xl font-bold text-[#1F3D2E] leading-tight font-serif modal-product-title" id="modal-product-name">Product Name</h1>
+                        <h1 class="text-xl sm:text-2xl sm:text-3xl font-bold text-[#1F3D2E] leading-tight font-serif modal-product-title" id="modal-product-name">Product Name</h1>
                         
                         <div class="flex flex-wrap items-center gap-2">
                             <span class="text-[#C65A3A] font-extrabold text-2xl modal-product-price" id="modal-product-price">Rs 0</span>
@@ -103,7 +103,7 @@
                     </div>
 
                     <!-- Buy Action Buttons -->
-                    <div class="flex gap-3 pt-2">
+                    <div class="flex flex-col xs:flex-row gap-2 sm:gap-3 pt-2">
                         <button id="modal-add-to-cart-btn" class="modal-add-to-cart-btn bg-[#C65A3A] hover:bg-[#b04a2c] text-white font-bold py-3 px-5 rounded-2xl flex-1 text-center shadow-md active:scale-[0.98] transition text-sm cursor-pointer">
                             Add to Cart
                         </button>
@@ -116,7 +116,7 @@
 
             <!-- Tabs Section -->
             <div class="pt-8 border-t border-[#ebd7be]/40 space-y-6">
-                <div class="flex border-b border-[#ebd7be]/40 gap-6">
+                <div class="flex border-b border-[#ebd7be]/40 gap-3 sm:gap-6 overflow-x-auto">
                     <button class="tab-btn pb-3 text-sm font-bold text-[#C65A3A] border-b-2 border-[#C65A3A] focus:outline-none transition cursor-pointer" data-tab="details">
                         Product Specifications
                     </button>

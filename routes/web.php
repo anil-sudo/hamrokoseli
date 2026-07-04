@@ -36,6 +36,7 @@ Route::middleware(['auth', 'role:vendor'])->group(function () {
     Route::get('/create-product', [SellerController::class, 'productCreate'])->name('product-create');
     Route::post('/create-product', [SellerController::class, 'store'])->name('product.store');
     Route::get('/edit-product/{id}', [SellerController::class, 'productEdit'])->name('product-edit');
+    Route::post('/edit-product/{id}', [SellerController::class, 'update'])->name('product.update');
     Route::delete('/product/{id}', [SellerController::class, 'destroy'])->name('product.destroy');
     Route::get('/orders', [SellerController::class, 'order'])->name('order');
     Route::get('/order-details', [SellerController::class, 'orderDetails'])->name('order-details');

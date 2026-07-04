@@ -1,9 +1,9 @@
 <footer class="bg-[#1E2A44] text-slate-300 py-8 md:py-16 mt-auto">
-    <div class="container mx-auto px-6 max-w-7xl">
-        <div class="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-12">
+    <div class="container mx-auto px-4 sm:px-6 max-w-7xl">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-6 md:gap-8 lg:gap-12">
 
             <!-- Column 1: Brand Info -->
-            <div class="space-y-4">
+            <div class="col-span-2 sm:col-span-3 md:col-span-1 space-y-4">
                 <h3 class="text-3xl font-bold text-[#b55b3d] tracking-tight">HamroKoseli</h3>
                 <p class="text-slate-300 text-sm leading-relaxed">
                     Preserving Nepal's rich artistic heritage by connecting local master craftspeople with global
@@ -11,8 +11,8 @@
                 </p>
             </div>
 
-            <!-- Columns 2 & 3: Quick Link + Support (side-by-side on mobile, separate on md+) -->
-            <div class="grid grid-cols-2 md:contents gap-10">
+            <!-- Columns 2, 3, 4: Quick Link + Support + Legal (side-by-side grid) -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:contents gap-6 sm:gap-10 col-span-2 sm:col-span-3 md:col-span-3">
 
                 <!-- Column 2: Navigation Links -->
                 <div class="space-y-4">
@@ -62,7 +62,7 @@
             </div>
 
             <!-- Column 5: Newsletter -->
-            <div class="space-y-4">
+            <div class="col-span-2 sm:col-span-3 md:col-span-1 space-y-4">
                 <h4 class="text-xs font-bold uppercase tracking-widest text-[#b55b3d]">NEWSLETTER</h4>
                 <p class="text-slate-300 text-sm leading-relaxed">
                     Join our community for stories of craft and culture.

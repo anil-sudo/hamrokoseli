@@ -3,17 +3,17 @@
 
         <!-- Hero -->
         <div class="bg-[#1F3D2E] ">
-            <div class="max-w-7xl mx-auto px-6 py-20 text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-20 text-white">
 
                 <span class="text-[#d4a017] uppercase tracking-widest text-sm font-semibold">
                     Contact Hamro Koseli
                 </span>
 
-                <h1 class="mt-4 text-4xl md:text-6xl font-serif">
+                <h1 class="mt-4 text-2xl sm:text-4xl md:text-6xl font-serif">
                     We'd Love to Hear From You
                 </h1>
 
-                <p class="mt-6 text-lg text-gray-300 max-w-2xl">
+                <p class="mt-4 sm:mt-6 text-sm sm:text-lg text-gray-300 max-w-2xl">
                     Whether you're a customer, artisan, food producer, or future
                     seller, our team is ready to help.
                 </p>
@@ -22,9 +22,9 @@
         </div>
 
         <!-- Contact Cards -->
-        <div class="max-w-7xl mx-auto px-6 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-16">
 
-            <div class="grid md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
 
                 <div class="bg-white p-8 rounded-2xl shadow-sm">
                     <h3 class="text-xl font-semibold text-[#3A2A1F]">
@@ -61,9 +61,9 @@
         </div>
 
         <!-- Contact Form -->
-        <div class="max-w-7xl mx-auto px-6 pb-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 pb-10 sm:pb-20">
 
-            <div class="grid lg:grid-cols-2 gap-12">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12">
 
                 <!-- Left -->
                 <div>
@@ -72,7 +72,7 @@
                         GET IN TOUCH
                     </span>
 
-                    <h2 class="text-4xl font-serif mt-3 text-[#3A2A1F]">
+                    <h2 class="text-2xl sm:text-4xl font-serif mt-3 text-[#3A2A1F]">
                         Send us a Message
                     </h2>
 
@@ -85,9 +85,9 @@
                 </div>
 
                 <!-- Right -->
-                <form class="bg-white rounded-3xl shadow-sm p-8">
+                <form class="bg-white rounded-3xl shadow-sm p-5 sm:p-8">
 
-                    <div class="grid md:grid-cols-2 gap-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
 
                         <div>
                             <label class="block mb-2 font-medium">
@@ -150,13 +150,13 @@
         <!-- Seller CTA -->
         <div class="bg-[#1F3D2E] text-white">
 
-            <div class="max-w-7xl mx-auto px-6 py-20 text-center">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-20 text-center">
 
                 <span class="text-[#D4A017] uppercase tracking-widest text-sm">
                     Join Our Community
                 </span>
 
-                <h2 class="text-4xl font-serif mt-4">
+                <h2 class="text-2xl sm:text-4xl font-serif mt-4">
                     Are You a Local Artisan or Food Producer?
                 </h2>
 
@@ -174,13 +174,13 @@
         </div>
 
         <!-- FAQ Preview -->
-        <div class="max-w-7xl mx-auto px-6 py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-20">
 
-            <h2 class="text-4xl font-serif text-center text-[#3A2A1F]">
+            <h2 class="text-2xl sm:text-4xl font-serif text-center text-[#3A2A1F]">
                 Frequently Asked Questions
             </h2>
 
-            <div class="mt-12 grid md:grid-cols-3 gap-6">
+            <div class="mt-8 sm:mt-12 grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
 
                 <div class="bg-white p-6 rounded-2xl shadow-sm">
                     <h3 class="font-semibold">

@@ -226,7 +226,7 @@ class SellerController extends Controller
             'product_type' => 'nullable|string|max:100',
             'description' => 'required|string|max:2000',
             'base_price' => 'required|numeric|min:0',
-            'discounted_price' => 'nullable|numeric|min:0',
+            'discounted_price' => 'nullable|numeric|min:0|lt:base_price',
             'sku' => 'required|string|max:100|unique:products,sku',
             'stock' => 'required|integer|min:0',
             'specifications' => 'nullable|array',
@@ -255,7 +255,7 @@ class SellerController extends Controller
                                     : null,
             'price' => $validated['base_price'],
             'discount_price' => ($validated['discounted_price'] ?? 0) > 0
-                                    ? $validated['discounted_price']
+                                    ? ($validated['base_price'] - $validated['discounted_price'])
                                     : null,
             'stock' => $validated['stock'],
             'sku' => $validated['sku'],
