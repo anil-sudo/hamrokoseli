@@ -44,26 +44,7 @@
                                 </div>
                             </div>
 
-                            {{-- Collections --}}
-                            <div class="mb-5">
-                                <button type="button" class="w-full flex items-center justify-between text-left focus:outline-none py-1">
-                                    <span
-                                        class="text-xs font-bold uppercase tracking-wider text-[#1F3D2E]">Collections</span>
-                                    <i class="fas fa-minus text-[10px] text-[#C65A3A]"></i>
-                                </button>
-                                <div class="flex flex-wrap gap-2 mt-3" id="collections-container">
-                                    <button type="button"
-                                        class="collection-pill px-4 py-1.5 bg-[#C65A3A] text-white text-xs font-semibold rounded-full border border-[#C65A3A] hover:bg-[#b04a2c] transition-all shadow-sm cursor-pointer">All</button>
-                                    <button type="button"
-                                        class="collection-pill px-4 py-1.5 bg-transparent text-[#1F3D2E] text-xs font-semibold rounded-full border border-[#C65A3A] hover:bg-[#C65A3A]/10 transition-all cursor-pointer">Best
-                                        sellers</button>
-                                    <button type="button"
-                                        class="collection-pill px-4 py-1.5 bg-transparent text-[#1F3D2E] text-xs font-semibold rounded-full border border-[#C65A3A] hover:bg-[#C65A3A]/10 transition-all cursor-pointer">New
-                                        arrivals</button>
-                                    <button type="button"
-                                        class="collection-pill px-4 py-1.5 bg-transparent text-[#1F3D2E] text-xs font-semibold rounded-full border border-[#C65A3A] hover:bg-[#C65A3A]/10 transition-all cursor-pointer">Festive</button>
-                                </div>
-                            </div>
+
 
                             {{-- Categories (now built from the real Category table) --}}
                             <div class="pt-5 border-t border-[#ebd7be]/40 mb-5">
@@ -139,13 +120,6 @@
                                 </div>
                             </div>
 
-                            {{-- Region (collapsed, no backing data yet) --}}
-                            <div class="pt-5 border-t border-[#ebd7be]/40 mb-5">
-                                <button type="button" class="w-full flex items-center justify-between text-left focus:outline-none py-1">
-                                    <span class="text-xs font-bold uppercase tracking-wider text-[#1F3D2E]">Region</span>
-                                    <i class="fas fa-plus text-[10px] text-[#C65A3A]"></i>
-                                </button>
-                            </div>
 
                             {{-- Availability --}}
                             <div class="pt-5 border-t border-[#ebd7be]/40">

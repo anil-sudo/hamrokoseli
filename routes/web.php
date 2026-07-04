@@ -29,7 +29,6 @@ Route::middleware('guest:vendor')->group(function () {
 Route::post('/seller-logout', [SellerController::class, 'logout'])->name('seller.logout');
 Route::get('/seller-profile', [SellerController::class, 'sellerProfile'])->name('seller.profile');
 Route::post('/seller-profile', [SellerController::class, 'updateProfile'])->name('seller.profile.update');
-Route::post('/seller-password', [SellerController::class, 'updatePassword'])->name('seller.password.update');
 
 // ─── Seller routes (protected by vendor guard) ────────────────────────────────
 Route::middleware(['auth', 'role:vendor'])->group(function () {
@@ -151,9 +150,12 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/user-dashboard', [UserController::class, 'dashboard'])->name('Userdashboard');
 Route::get('/user-orders', [UserController::class, 'orders'])->name('User-orders');
 Route::get('/user-order-details', [UserController::class, 'orderDetail'])->name('order-detail');
+Route::patch('/user-orders/{order}/cancel', [UserController::class, 'cancelOrder'])->name('order.cancel');
 Route::get('/return-product', [UserController::class, 'returnProduct'])->name('return-product');
 Route::get('/user-profile', [UserController::class, 'userProfile'])->name('user-profile');
 Route::post('/user-profile', [UserController::class, 'updateProfile'])->name('user.profile.update');
 Route::post('/user-password', [UserController::class, 'updatePassword'])->name('user.password.update');
 Route::get('/user-notification', [UserController::class, 'userNotification'])->name('user-notification');
+Route::post('/user-notification/mark-all-read', [UserController::class, 'markAllNotificationsRead'])->name('user.notifications.markAllRead');
+Route::patch('/user-notification/{id}/read', [UserController::class, 'markNotificationRead'])->name('user.notifications.read');
 Route::redirect('/login.php', '/userlogin');
