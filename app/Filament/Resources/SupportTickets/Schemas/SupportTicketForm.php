@@ -13,7 +13,7 @@ class SupportTicketForm
     {
         return $schema
             ->components([
-                \Filament\Forms\Components\Select::make('vendor_id')
+                Select::make('vendor_id')
                     ->relationship('vendor', 'vendor_name')
                     ->label('Vendor')
                     ->searchable()
@@ -34,7 +34,7 @@ class SupportTicketForm
                 Textarea::make('description')
                     ->required()
                     ->columnSpanFull(),
-                \Filament\Forms\Components\Select::make('status')
+                Select::make('status')
                     ->options([
                         'Pending' => 'Pending',
                         'Open' => 'Open',

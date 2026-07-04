@@ -15,7 +15,6 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use UnitEnum;
 
-
 class SupportTicketResource extends Resource
 {
     protected static ?string $model = SupportTicket::class;

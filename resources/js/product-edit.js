@@ -319,10 +319,38 @@ const descriptionEl = document.getElementById('description');
 const charCountEl = document.getElementById('charCount');
 
 function updateCharCount() {
-    charCountEl.textContent = descriptionEl.value.length + '/2000';
+    if (descriptionEl && charCountEl) {
+        charCountEl.textContent = descriptionEl.value.length + '/2000';
+    }
 }
-descriptionEl.addEventListener('input', updateCharCount);
-updateCharCount(); // run on load (for old() repopulation)
+if (descriptionEl) {
+    descriptionEl.addEventListener('input', updateCharCount);
+    updateCharCount(); // run on load (for old() repopulation)
+}
+
+// ==================== LIVE DISCOUNT CALCULATION ====================
+function updateDiscountPreview() {
+    const basePriceInput = document.getElementById('base_price');
+    const discountInput = document.getElementById('discount_amount');
+    const previewEl = document.getElementById('pricePreview');
+
+    if (!basePriceInput || !discountInput || !previewEl) return;
+
+    const basePrice = parseFloat(basePriceInput.value) || 0;
+    const discountAmount = parseFloat(discountInput.value) || 0;
+
+    if (basePrice > 0 && discountAmount > 0) {
+        if (discountAmount >= basePrice) {
+            previewEl.innerHTML = '<span class="text-red-500">Discount must be less than the base price.</span>';
+        } else {
+            const sellingPrice = basePrice - discountAmount;
+            const percentage = Math.round((discountAmount / basePrice) * 100);
+            previewEl.innerHTML = `<span class="font-semibold text-green-600">Final Price: Rs.${sellingPrice.toLocaleString()}</span> <span class="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full ml-1">${percentage}% off</span>`;
+        }
+    } else {
+        previewEl.innerHTML = '<span class="text-gray-400">No discount applied</span>';
+    }
+}
 
 
 // ==================== FORM SUBMISSION ====================
@@ -336,15 +364,24 @@ document.getElementById('productForm').addEventListener('submit', function (e) {
 // ==================== INITIAL LOAD ====================
 document.addEventListener('DOMContentLoaded', () => {
     const specs = document.getElementById('specifications');
-    if (specs.children.length === 0) {
+    if (specs && specs.children.length === 0) {
         addSpecification();
     }
 
     // If old variants data exists, enable variants mode
-    // variantsEnabled starts false, so calling toggleVariants() will flip it to true
-    if (document.getElementById('variants').children.length > 0) {
-        variantsEnabled = false; // ensure it starts false so toggle flips to true
+    const variantsContainer = document.getElementById('variants');
+    if (variantsContainer && variantsContainer.children.length > 0) {
+        variantsEnabled = false;
         toggleVariants();
+    }
+
+    // Wire up live discount preview
+    const basePriceInput = document.getElementById('base_price');
+    const discountInput = document.getElementById('discount_amount');
+    if (basePriceInput && discountInput) {
+        basePriceInput.addEventListener('input', updateDiscountPreview);
+        discountInput.addEventListener('input', updateDiscountPreview);
+        updateDiscountPreview();
     }
 });
 
@@ -353,3 +390,4 @@ window.addVariant = addVariant;
 window.removeImage = removeImage;
 window.removeExistingImage = removeExistingImage;
 window.toggleVariants = toggleVariants;
+window.updateDiscountPreview = updateDiscountPreview;

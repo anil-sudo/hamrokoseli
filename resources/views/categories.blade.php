@@ -4,7 +4,7 @@
 
             {{-- ==================== HERO SECTION ==================== --}}
             <div class="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
-                <h1 class="text-4xl md:text-5xl font-extrabold text-[#1F3D2E] tracking-tight mb-4">Discover Our
+                <h1 class="text-2xl sm:text-4xl md:text-5xl font-extrabold text-[#1F3D2E] tracking-tight mb-4">Discover Our
                     Categories</h1>
                 <p class="text-[#3A2A1F]/70 text-sm md:text-base leading-relaxed">
                     Explore the soul of Nepal through our curated collection of masterfully crafted artifacts, each
@@ -30,10 +30,10 @@
 
                 <!-- Content Container -->
                 <div
-                    class="relative z-10 max-w-2xl py-12 px-6 sm:px-12 md:py-20 md:px-16 flex flex-col items-start justify-center min-h-[360px]">
+                    class="relative z-10 max-w-2xl py-8 px-4 sm:px-12 md:py-20 md:px-16 flex flex-col items-start justify-center min-h-[240px] sm:min-h-[360px]">
                     <span
                         class="bg-[#C65A3A] text-white text-[10px] font-bold tracking-widest uppercase px-3.5 py-1.5 rounded-full shadow-sm mb-4">Our Heritage</span>
-                    <h2 class="text-3xl md:text-4xl font-bold text-white tracking-tight mb-3">Handcrafted Treasures of Nepal</h2>
+                    <h2 class="text-xl sm:text-3xl md:text-4xl font-bold text-white tracking-tight mb-3">Handcrafted Treasures of Nepal</h2>
                     <p class="text-white/80 text-sm md:text-base leading-relaxed mb-8">
                         From vibrant paintings to intricate wood carvings, traditional textiles to authentic spices —
                         explore the rich diversity of Nepali craftsmanship and culture.
@@ -59,7 +59,7 @@
                 </div>
 
                 <!-- Categories Grid -->
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+                <div class="grid grid-cols-2 md:grid-cols-12 gap-3 sm:gap-6">
                     @foreach ($categories as $category)
                         @php
                             $remainder = $loop->index;
@@ -69,16 +69,16 @@
 
                             if ($remainder === 0) {
                                 $colSpanClass = 'md:col-span-7';
-                                $heightClass = 'h-72 sm:h-80 md:h-[350px]';
-                                $titleSizeClass = 'text-xl md:text-2xl';
+                                $heightClass = 'h-44 sm:h-72 sm:h-80 md:h-[350px]';
+                                $titleSizeClass = 'text-lg md:text-2xl';
                             } elseif ($remainder === 1) {
                                 $colSpanClass = 'md:col-span-5';
-                                $heightClass = 'h-72 sm:h-80 md:h-[350px]';
-                                $titleSizeClass = 'text-xl md:text-2xl';
+                                $heightClass = 'h-44 sm:h-72 sm:h-80 md:h-[350px]';
+                                $titleSizeClass = 'text-lg md:text-2xl';
                             } else {
-                                $colSpanClass = 'md:col-span-4';
-                                $heightClass = 'h-64 sm:h-72 md:h-[280px]';
-                                $titleSizeClass = 'text-lg md:text-xl';
+                                $colSpanClass = 'col-span-1 md:col-span-4';
+                                $heightClass = 'h-40 sm:h-64 sm:h-72 md:h-[280px]';
+                                $titleSizeClass = 'text-base md:text-xl';
                             }
                         @endphp
 
@@ -108,7 +108,7 @@
                     class="absolute left-1/3 bottom-0 w-96 h-96 bg-white/5 rounded-full -ml-48 -mb-48 blur-3xl pointer-events-none">
                 </div>
 
-                <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-8">
+                <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 sm:gap-8">
                     <div class="max-w-2xl">
                         <h3 class="text-2xl md:text-3xl font-bold text-white mb-3">Are you a guardian of heritage?</h3>
                         <p class="text-white/80 text-sm md:text-base leading-relaxed">

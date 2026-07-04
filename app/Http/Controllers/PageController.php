@@ -107,7 +107,7 @@ class PageController extends Controller
         }
 
         return [
-            'products' => $query->paginate(9)->withQueryString(),
+            'products' => $query->paginate(12)->withQueryString(),
             'categories' => Category::where('status', 'active')->get(),
             'priceFloor' => $priceFloor,
             'priceCeil' => $priceCeil,
@@ -124,7 +124,7 @@ class PageController extends Controller
         $products = Product::with(['category', 'vendor', 'images'])
             ->where('status', 'active')
             ->latest()
-            ->paginate(8)
+            ->paginate(12)
             ->withQueryString();
 
         return view('new_arrival', compact('products'));
@@ -193,8 +193,8 @@ class PageController extends Controller
             ->where('status', 'active')
             ->withCount('orderItems')
             ->orderByDesc('order_items_count')
-            ->take(12)
-            ->get();
+            ->paginate(12)
+            ->withQueryString();
 
         if ($products->isEmpty()) {
             $products = collect([

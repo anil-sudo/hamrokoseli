@@ -476,7 +476,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         const grid = document.createElement('div');
-        grid.className = 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8';
+        grid.className = 'grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 md:gap-8';
         
         const cardTemplate = document.getElementById('wishlist-card-template');
         if (!cardTemplate) return;
