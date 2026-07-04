@@ -126,7 +126,7 @@
                     </h3>
                     <div class="flex items-baseline gap-2 mb-4">
                       <span class="text-[#C65A3A] font-bold text-base">
-                        Rs {{ number_format($displayPrice, 2) }}
+                        {{ number_format($price, 2) }}
                       </span>
                       @if($hasDiscount)
                         <span class="text-slate-400 text-xs line-through font-semibold">

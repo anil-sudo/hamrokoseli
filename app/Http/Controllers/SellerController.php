@@ -231,7 +231,7 @@ class SellerController extends Controller
             'product_type' => 'nullable|string|max:100',
             'description' => 'required|string|max:2000',
             'base_price' => 'nullable|numeric|min:0',
-            'discounted_price' => 'nullable|numeric|min:0',
+            'discount_amount' => 'nullable|numeric|min:0', // Changed from discount_price
             'sku' => 'nullable|string|max:100|unique:products,sku,'.$product->id,
             'stock' => 'nullable|integer|min:0',
             'specifications' => 'nullable|array',
@@ -243,6 +243,7 @@ class SellerController extends Controller
             'variants.*.size' => 'nullable|string|max:50',
             'variants.*.color' => 'nullable|string|max:50',
             'variants.*.price' => 'nullable|numeric|min:0',
+            'variants.*.discount_amount' => 'nullable|numeric|min:0', // Changed
             'variants.*.stock' => 'nullable|integer|min:0',
             'images' => 'nullable|array|max:4',
             'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:10240',
@@ -258,10 +259,51 @@ class SellerController extends Controller
             'description' => $validated['description'],
             'specifications' => ! empty($validated['specifications']) ? $this->filterSpecs($validated['specifications']) : null,
             'price' => $validated['base_price'] ?? $product->price,
-            'discount_price' => ($validated['discounted_price'] ?? 0) > 0 ? $validated['discounted_price'] : null,
+            'discount_price' => ($validated['discount_amount'] ?? 0) > 0 ? $validated['discount_amount'] : null, // Store discount amount
             'stock' => $validated['stock'] ?? $product->stock,
             'sku' => $validated['sku'] ?? $product->sku,
         ]);
+
+        // Update variants
+        if (! empty($validated['variants'])) {
+            $existingVariantIds = $product->variants()->pluck('id')->toArray();
+            $updatedVariantIds = [];
+
+            foreach ($validated['variants'] as $variantData) {
+                if (empty($variantData['sku'])) {
+                    continue;
+                }
+
+                if (! empty($variantData['id']) && in_array($variantData['id'], $existingVariantIds)) {
+                    $variant = ProductVariant::find($variantData['id']);
+                    $variant->update([
+                        'sku' => $variantData['sku'],
+                        'size' => $variantData['size'] ?? null,
+                        'color' => $variantData['color'] ?? null,
+                        'price' => ! empty($variantData['price']) ? $variantData['price'] : null,
+                        'discount_price' => ! empty($variantData['discount_amount']) ? $variantData['discount_amount'] : null, // Store discount amount
+                        'stock' => $variantData['stock'] ?? 0,
+                    ]);
+                    $updatedVariantIds[] = $variant->id;
+                } else {
+                    $newVariant = ProductVariant::create([
+                        'product_id' => $product->id,
+                        'sku' => $variantData['sku'],
+                        'size' => $variantData['size'] ?? null,
+                        'color' => $variantData['color'] ?? null,
+                        'price' => ! empty($variantData['price']) ? $variantData['price'] : null,
+                        'discount_price' => ! empty($variantData['discount_amount']) ? $variantData['discount_amount'] : null, // Store discount amount
+                        'stock' => $variantData['stock'] ?? 0,
+                        'status' => 'active',
+                    ]);
+                    $updatedVariantIds[] = $newVariant->id;
+                }
+            }
+            $variantsToDelete = array_diff($existingVariantIds, $updatedVariantIds);
+            ProductVariant::whereIn('id', $variantsToDelete)->delete();
+        } else {
+            $product->variants()->delete();
+        }
 
         if (! empty($validated['variants'])) {
             $existingVariantIds = $product->variants()->pluck('id')->toArray();
@@ -372,7 +414,7 @@ class SellerController extends Controller
                                     : null,
             'stock' => $validated['stock'],
             'sku' => $validated['sku'],
-            'status' => 'draft',
+            'status' => 'active',
         ]);
 
         // 2. Save variants

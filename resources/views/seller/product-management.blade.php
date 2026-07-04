@@ -186,23 +186,32 @@
                                 </td>
 
                                 {{-- Price --}}
-                                <td class="px-6 py-4">
-                                    @php
-                                        $resolvedDiscount = $product->resolvedDiscountPrice();
-                                        $hasDiscount = $resolvedDiscount && $resolvedDiscount < $product->price;
-                                    @endphp
+               <td class="px-6 py-4">
+    @php
+        $discountPrice = $product->resolvedDiscountPrice();
+        $hasDiscount = $discountPrice !== null && $discountPrice < $product->price;
+    @endphp
 
-                                    @if ($hasDiscount)
-                                        <!-- Discount  case -->
-                                        <p class="font-semibold text-(--text-dark)">
-                                            Rs.{{ number_format($resolvedDiscount) }}</p>
-                                        <p class="text-xs text-(--text-color)/50 line-through">
-                                            Rs.{{ number_format($product->price) }}</p>
-                                    @else
-                                        <!--not Discount case -->
-                                        <p class="font-semibold text-(--text-dark)">
-                                            Rs.{{ number_format($product->price) }}</p>
-                                    @endif
+    @if ($hasDiscount)
+        <div class="flex flex-col">
+            <div class="flex items-center gap-2">
+                <span class="font-semibold text-green-600">
+                    Rs.{{ number_format($discountPrice, 2) }}
+                </span>
+                <span class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">
+                    -{{ $product->getDiscountPercentage() ?? 0 }}%
+                </span>
+            </div>
+            <span class="text-xs text-gray-400 line-through">
+                Rs.{{ number_format($product->price, 2) }}
+            </span>
+        </div>
+    @else
+        <p class="font-semibold text-(--text-dark)">
+            Rs.{{ number_format($product->price, 2) }}
+        </p>
+    @endif
+</td>
                                 </td>
                                 {{-- Status --}}
                                 <td class="px-6 py-4">
