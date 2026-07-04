@@ -20,6 +20,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (! app()->isLocal()) {
+            \URL::forceScheme('https');
+        }
         ResetPassword::createUrlUsing(function ($notifiable, string $token) {
             $routeName = $notifiable->isVendor() ? 'seller.password.reset' : 'password.reset';
 
@@ -28,5 +31,10 @@ class AppServiceProvider extends ServiceProvider
                 'email' => $notifiable->getEmailForPasswordReset(),
             ], false));
         });
+
+        // Dynamically resolve public disk URL based on the request to avoid broken/hanging previews in Filament
+        if (! app()->runningInConsole()) {
+            config(['filesystems.disks.public.url' => asset('storage')]);
+        }
     }
 }

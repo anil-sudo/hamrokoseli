@@ -476,7 +476,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         const grid = document.createElement('div');
-        grid.className = 'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8';
+        grid.className = 'grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 md:gap-8';
         
         const cardTemplate = document.getElementById('wishlist-card-template');
         if (!cardTemplate) return;
@@ -559,6 +559,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // and is what actually persists — it's what /cart shows on reload.
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
     let dbCartCount = parseInt(window.initialCartCount) || 0;
+
+    // Clear local storage cart if logged in to prevent count mismatches
+    if (window.isLoggedIn) {
+        localStorage.removeItem('cart');
+        cart = [];
+    }
+
     const cartItemsContainer = document.getElementById('cart-items-container');
 
     function getCsrfToken() {
@@ -571,8 +578,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const badge = document.getElementById('cart-badge');
         const headerIcon = document.getElementById('cart-header-icon');
         if (badge) {
-            const localCount = cart.reduce((sum, item) => sum + parseInt(item.qty || 1), 0);
-            const count = localCount + dbCartCount;
+            const count = window.isLoggedIn ? dbCartCount : cart.reduce((sum, item) => sum + parseInt(item.qty || 1), 0);
             badge.textContent = count;
             if (count > 0) {
                 badge.classList.remove('hidden');
@@ -944,15 +950,19 @@ document.addEventListener('DOMContentLoaded', () => {
     function populateAndShowProductModal(productData) {
         if (!productModal || !productContainer) return;
 
+        let categoryName = typeof productData.category === 'string' ? productData.category : (productData.category?.cat_name || productData.category?.name || productData.category_name || 'Crafts');
+        let vendorName = typeof productData.vendor === 'string' ? productData.vendor : (productData.vendor?.vendor_name || productData.vendor?.business_name || productData.vendor?.name || productData.vendor_name || 'Local Artisan');
+        let imageUrl = productData.primary_image_url || (typeof productData.image === 'string' && productData.image.startsWith('http') ? productData.image : (productData.image ? '/' + productData.image.replace(/^\/+/, '') : ''));
+
         window.activeProduct = {
             id: productData.id,
             name: productData.name,
             price: parseFloat(productData.price),
-            image: productData.image || productData.primary_image_url || '',
-            category: productData.category || productData.category_name || '',
+            image: imageUrl,
+            category: categoryName,
             desc: productData.desc || productData.description || '',
-            vendor: productData.vendor || productData.vendor_name || '',
-            tag: productData.tag || (productData.category === 'Metalware' ? 'Authentic' : 'Handmade')
+            vendor: vendorName,
+            tag: productData.tag || (categoryName === 'Metalware' ? 'Authentic' : 'Handmade')
         };
 
         const modalProductName = document.getElementById('modal-product-name');
@@ -970,12 +980,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (modalProductName) modalProductName.textContent = productData.name;
         if (modalMainImage) {
-            modalMainImage.src = productData.image || productData.primary_image_url || '';
+            modalMainImage.src = imageUrl;
             modalMainImage.alt = productData.name;
         }
-        if (modalBreadcrumbCat) modalBreadcrumbCat.textContent = productData.category || productData.category_name || '';
+        if (modalBreadcrumbCat) modalBreadcrumbCat.textContent = categoryName;
         if (modalProductDesc) modalProductDesc.textContent = productData.desc || productData.description || '';
-        if (modalVendorName) modalVendorName.textContent = productData.vendor || productData.vendor_name || '';
+        if (modalVendorName) modalVendorName.textContent = vendorName;
         if (modalReviewsCount) modalReviewsCount.textContent = productData.reviews || productData.reviews_count || '0';
 
         // Pricing

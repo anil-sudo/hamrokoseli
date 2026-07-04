@@ -9,9 +9,11 @@ use App\Models\Payment;
 use App\Models\Payout;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Models\SupportTicket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class SellerController extends Controller
@@ -196,8 +198,12 @@ class SellerController extends Controller
         $categories = Category::where('status', 'active')->get();
 
         return view('seller.product-management', compact(
-            'products', 'totalProducts', 'activeProducts',
-            'outOfStock', 'draftProducts', 'categories'
+            'products',
+            'totalProducts',
+            'activeProducts',
+            'outOfStock',
+            'draftProducts',
+            'categories'
         ));
     }
 
@@ -218,6 +224,125 @@ class SellerController extends Controller
         return view('seller.product-edit', compact('product', 'categories'));
     }
 
+    public function update(Request $request, $id)
+    {
+        $product = Product::where('vendor_id', auth()->user()->vendor->id)->findOrFail($id);
+
+        $validated = $request->validate([
+            'product_name' => 'required|string|max:200',
+            'category' => 'required|exists:categories,id',
+            'product_type' => 'nullable|string|max:100',
+            'description' => 'required|string|max:2000',
+            'base_price' => 'nullable|numeric|min:0',
+            'discount_amount' => 'nullable|numeric|min:0', // Changed from discount_price
+            'sku' => 'nullable|string|max:100|unique:products,sku,'.$product->id,
+            'stock' => 'nullable|integer|min:0',
+            'specifications' => 'nullable|array',
+            'specifications.*.key' => 'nullable|string|max:100',
+            'specifications.*.value' => 'nullable|string|max:255',
+            'variants' => 'nullable|array',
+            'variants.*.id' => 'nullable|integer',
+            'variants.*.sku' => 'required_with:variants|string|max:100|distinct',
+            'variants.*.size' => 'nullable|string|max:50',
+            'variants.*.color' => 'nullable|string|max:50',
+            'variants.*.price' => 'nullable|numeric|min:0',
+            'variants.*.discount_amount' => 'nullable|numeric|min:0', // Changed
+            'variants.*.stock' => 'nullable|integer|min:0',
+            'images' => 'nullable|array|max:4',
+            'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:10240',
+            'remove_images' => 'nullable|array',
+            'remove_images.*' => 'integer|exists:images,id',
+        ]);
+
+        $basePrice = $validated['base_price'] ?? $product->price;
+        if (! empty($validated['discount_amount']) && $validated['discount_amount'] >= $basePrice) {
+            return back()->withErrors(['discount_amount' => 'Discount must be less than the base price.'])->withInput();
+        }
+
+        $product->update([
+            'category_id' => $validated['category'],
+            'name' => $validated['product_name'],
+            'slug' => Str::slug($validated['product_name']).'-'.Str::lower(Str::random(5)),
+            'product_type' => $validated['product_type'] ?? null,
+            'description' => $validated['description'],
+            'specifications' => ! empty($validated['specifications']) ? $this->filterSpecs($validated['specifications']) : null,
+            'price' => $validated['base_price'] ?? $product->price,
+            'discount_price' => ($validated['discount_amount'] ?? 0) > 0 ? (($validated['base_price'] ?? $product->price) - $validated['discount_amount']) : null,
+            'stock' => $validated['stock'] ?? $product->stock,
+            'sku' => $validated['sku'] ?? $product->sku,
+        ]);
+
+        // Update variants
+        if (! empty($validated['variants'])) {
+            $existingVariantIds = $product->variants()->pluck('id')->toArray();
+            $updatedVariantIds = [];
+
+            foreach ($validated['variants'] as $variantData) {
+                if (empty($variantData['sku'])) {
+                    continue;
+                }
+
+                if (! empty($variantData['id']) && in_array($variantData['id'], $existingVariantIds)) {
+                    $variant = ProductVariant::find($variantData['id']);
+                    $variant->update([
+                        'sku' => $variantData['sku'],
+                        'size' => $variantData['size'] ?? null,
+                        'color' => $variantData['color'] ?? null,
+                        'price' => ! empty($variantData['price']) ? $variantData['price'] : null,
+                        'discount_price' => ! empty($variantData['discount_amount']) ? ($variantData['price'] - $variantData['discount_amount']) : null,
+                        'stock' => $variantData['stock'] ?? 0,
+                    ]);
+                    $updatedVariantIds[] = $variant->id;
+                } else {
+                    $newVariant = ProductVariant::create([
+                        'product_id' => $product->id,
+                        'sku' => $variantData['sku'],
+                        'size' => $variantData['size'] ?? null,
+                        'color' => $variantData['color'] ?? null,
+                        'price' => ! empty($variantData['price']) ? $variantData['price'] : null,
+                        'discount_price' => ! empty($variantData['discount_amount']) ? ($variantData['price'] - $variantData['discount_amount']) : null,
+                        'stock' => $variantData['stock'] ?? 0,
+                        'status' => 'active',
+                    ]);
+                    $updatedVariantIds[] = $newVariant->id;
+                }
+            }
+            $variantsToDelete = array_diff($existingVariantIds, $updatedVariantIds);
+            ProductVariant::whereIn('id', $variantsToDelete)->delete();
+        } else {
+            $product->variants()->delete();
+        }
+
+        if (! empty($validated['remove_images'])) {
+            $imagesToRemove = $product->images()->whereIn('id', $validated['remove_images'])->get();
+            foreach ($imagesToRemove as $img) {
+                if (Storage::disk('public')->exists($img->path)) {
+                    Storage::disk('public')->delete($img->path);
+                }
+                $img->delete();
+            }
+        }
+
+        if ($request->hasFile('images')) {
+            $remainingCount = $product->images()->count();
+            foreach ($request->file('images') as $index => $file) {
+                if ($remainingCount >= 4) {
+                    break;
+                }
+
+                $path = $file->store('products', 'public');
+                $product->images()->create([
+                    'path' => $path,
+                    'type' => 'gallery',
+                    'is_primary' => $remainingCount === 0 && $index === 0 ? 1 : 0,
+                ]);
+                $remainingCount++;
+            }
+        }
+
+        return redirect()->route('product-management')->with('success', 'Product updated successfully!');
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -226,7 +351,7 @@ class SellerController extends Controller
             'product_type' => 'nullable|string|max:100',
             'description' => 'required|string|max:2000',
             'base_price' => 'required|numeric|min:0',
-            'discounted_price' => 'nullable|numeric|min:0',
+            'discounted_price' => 'nullable|numeric|min:0|lt:base_price',
             'sku' => 'required|string|max:100|unique:products,sku',
             'stock' => 'required|integer|min:0',
             'specifications' => 'nullable|array',
@@ -251,15 +376,15 @@ class SellerController extends Controller
             'product_type' => $validated['product_type'] ?? null,
             'description' => $validated['description'],
             'specifications' => ! empty($validated['specifications'])
-                                    ? $this->filterSpecs($validated['specifications'])
-                                    : null,
+                ? $this->filterSpecs($validated['specifications'])
+                : null,
             'price' => $validated['base_price'],
             'discount_price' => ($validated['discounted_price'] ?? 0) > 0
-                                    ? $validated['discounted_price']
+                                    ? ($validated['base_price'] - $validated['discounted_price'])
                                     : null,
             'stock' => $validated['stock'],
             'sku' => $validated['sku'],
-            'status' => 'draft',
+            'status' => 'active',
         ]);
 
         // 2. Save variants
@@ -297,12 +422,6 @@ class SellerController extends Controller
         return redirect()
             ->route('product-management')
             ->with('success', 'Product "'.$product->name.'" created successfully!');
-    }
-
-    public function update(Request $request, $id)
-    {
-        abort_if(auth()->user()->cannot('update products'), 403, 'You do not have permission to update products.');
-        // update logic here
     }
 
     public function destroy($id)
@@ -499,6 +618,51 @@ class SellerController extends Controller
         return view('seller.profile', compact('user', 'vendor'));
     }
 
+    public function updateProfile(Request $request)
+    {
+        $user = auth()->user();
+
+        $request->validate([
+            'name' => 'required|string|max:100',
+            'email' => 'required|email|max:150|unique:users,email,'.$user->id,
+            'phone' => 'nullable|string|max:20',
+            'profile_pic' => 'nullable|image|max:2048',
+        ]);
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->phone = $request->phone;
+
+        if ($request->hasFile('profile_pic')) {
+            $path = $request->file('profile_pic')->store('profiles', 'public');
+            $user->profile_pic = $path;
+        }
+
+        $user->save();
+
+        return redirect()->back()->with('success', 'Profile updated successfully.');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|current_password',
+            'new_password' => 'required|min:8|confirmed',
+        ]);
+
+        $user = auth()->user();
+        if (! \Hash::check($request->current_password, $user->password)) {
+            return redirect()->back()
+                ->withErrors(['current_password' => 'Current password is incorrect.'])
+                ->withInput();
+        }
+
+        $user->password = \Hash::make($request->new_password);
+        $user->save();
+
+        return redirect()->back()->with('password_success', 'Password changed successfully.');
+    }
+
     public function sellerReview()
     {
         return view('seller.review');
@@ -607,7 +771,42 @@ class SellerController extends Controller
 
     public function sellerNotification()
     {
-        return view('seller.notification');
+        $user = auth()->user();
+
+        $notifications = $user->appNotifications()->latest()->paginate(10);
+
+        $counts = [
+            'all' => $user->appNotifications()->where('is_read', false)->count(),
+            'orders' => $user->appNotifications()->where('is_read', false)->whereIn('type', [
+                'order_placed', 'order_confirmed', 'order_shipped', 'order_delivered', 'order_cancelled', 'return_requested', 'return_approved',
+            ])->count(),
+            'payouts' => $user->appNotifications()->where('is_read', false)->whereIn('type', [
+                'payout_processed', 'payment_received',
+            ])->count(),
+            'store' => $user->appNotifications()->where('is_read', false)->whereNotIn('type', [
+                'order_placed', 'order_confirmed', 'order_shipped', 'order_delivered', 'order_cancelled', 'return_requested', 'return_approved', 'payout_processed', 'payment_received',
+            ])->count(),
+        ];
+
+        return view('seller.notification', compact('notifications', 'counts'));
+    }
+
+    public function markNotificationRead($id)
+    {
+        $notification = auth()->user()->appNotifications()->findOrFail($id);
+        $notification->markAsRead();
+
+        return response()->json(['success' => true]);
+    }
+
+    public function markAllNotificationsRead()
+    {
+        auth()->user()->appNotifications()->where('is_read', false)->update([
+            'is_read' => true,
+            'read_at' => now(),
+        ]);
+
+        return response()->json(['success' => true]);
     }
 
     public function sellerSupport()
@@ -620,9 +819,43 @@ class SellerController extends Controller
         return view('seller.create-ticket');
     }
 
+    public function storeTicket(Request $request)
+    {
+        $validated = $request->validate([
+            'category' => 'required|string|max:100',
+            'subject' => 'required|string|max:255',
+            'description' => 'required|string',
+        ]);
+
+        $vendor = auth()->user()->vendor;
+        if (! $vendor) {
+            return redirect()->back()->with('error', 'Vendor profile not found.');
+        }
+
+        SupportTicket::create([
+            'vendor_id' => $vendor->id,
+            'ticket_number' => 'TK-'.mt_rand(10000, 99999),
+            'category' => $validated['category'],
+            'subject' => $validated['subject'],
+            'description' => $validated['description'],
+            'status' => 'Pending',
+        ]);
+
+        return redirect()->route('seller-ticket')->with('success', 'Support ticket created successfully!');
+    }
+
     public function sellerTicket()
     {
-        return view('seller.tickets');
+        $vendor = auth()->user()->vendor;
+        if (! $vendor) {
+            return redirect()->route('dashboard')->with('error', 'Vendor profile not found.');
+        }
+
+        $tickets = SupportTicket::where('vendor_id', $vendor->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('seller.tickets', compact('tickets'));
     }
     // ─── Helpers ──────────────────────────────────────────────────────────────
 

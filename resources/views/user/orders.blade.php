@@ -1,271 +1,180 @@
 <x-user-layout title="Orders">
     <div class="space-y-10">
-        <!-- Header Section with fade-in -->
+        <!-- Header -->
         <div class="mb-6 animate-fadeIn">
             <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
                 <div>
                     <h1 class="text-3xl font-bold text-(--text-color)">My Orders</h1>
-                    <p class="text-sm text-(--text-color)/70 mt-1">Track and manage your thoughtful gifts in one place.
-                    </p>
+                    <p class="text-sm text-(--text-color)/70 mt-1">Track and manage your thoughtful gifts in one place.</p>
                 </div>
-
             </div>
         </div>
 
-        <!-- Tabs with smooth indicator transition -->
-        <div
-            class="relative flex flex-nowrap bg-(--card-bg) rounded-3xl p-1 shadow-sm overflow-x-auto scrollbar-hide mb-8 animate-slideUp">
-            <div class="absolute bottom-1 left-0 h-[calc(100%-8px)] bg-(--secondary-color) rounded-3xl transition-all duration-300 ease-out z-0"
-                id="tabIndicator"></div>
-            <button onclick="switchTab(0)" id="tab-0"
-                class="tab-btn relative z-10 px-5 py-3 sm:px-6 sm:py-3.5 rounded-3xl font-medium text-sm transition-all duration-200 whitespace-nowrap bg-(--secondary-color) text-(--text-light)">
-                All Orders (1,240)
-            </button>
-            <button onclick="switchTab(2)" id="tab-2"
-                class="tab-btn relative z-10 px-5 py-3 sm:px-6 sm:py-3.5 rounded-3xl font-medium text-sm transition-all duration-200 whitespace-nowrap text-(--text-dark)">
-                Processing (45)
-            </button>
-            <button onclick="switchTab(3)" id="tab-3"
-                class="tab-btn relative z-10 px-5 py-3 sm:px-6 sm:py-3.5 rounded-3xl font-medium text-sm transition-all duration-200 whitespace-nowrap text-(--text-dark)">
-                Shipped (890)
-            </button>
-            <button onclick="switchTab(4)" id="tab-4"
-                class="tab-btn relative z-10 px-5 py-3 sm:px-6 sm:py-3.5 rounded-3xl font-medium text-sm transition-all duration-200 whitespace-nowrap text-(--text-dark)">
-                Delivered (8)
-            </button>
+        <!-- Status Tabs -->
+        @php
+            $tabs = [
+                'all'       => 'All Orders',
+                'pending'   => 'Pending',
+                'confirmed' => 'Confirmed',
+                'shipped'   => 'Shipped',
+                'delivered' => 'Delivered',
+                'cancelled' => 'Cancelled',
+            ];
+            $active = $status ?? 'all';
+        @endphp
+
+        <div class="relative flex flex-nowrap bg-(--card-bg) rounded-3xl p-1 shadow-sm overflow-x-auto scrollbar-hide mb-8 animate-slideUp">
+            @foreach ($tabs as $key => $label)
+                @if ($counts[$key] > 0 || $key === 'all')
+                    <a href="{{ route('User-orders', ['status' => $key === 'all' ? null : $key]) }}"
+                        class="relative z-10 px-5 py-3 sm:px-6 sm:py-3.5 rounded-3xl font-medium text-sm transition-all duration-200 whitespace-nowrap
+                            {{ $active === $key ? 'bg-(--secondary-color) text-(--text-light)' : 'text-(--text-dark) hover:bg-(--card-dark)' }}">
+                        {{ $label }}
+                        <span class="ml-1 text-xs opacity-70">({{ $counts[$key] }})</span>
+                    </a>
+                @endif
+            @endforeach
         </div>
 
-        <!-- Table Container with smooth loading animation -->
-        <div
-            class="bg-(--card-bg) rounded-2xl shadow-md overflow-hidden border border-(--text-color)/20 mb-8 transition-all duration-300 hover:shadow-lg">
+        <!-- Orders Table -->
+        <div class="bg-(--card-bg) rounded-2xl shadow-md overflow-hidden border border-(--text-color)/20 mb-8 transition-all duration-300 hover:shadow-lg">
             <div class="responsive-table-wrapper overflow-x-auto">
                 <table class="w-full md:min-w-full">
                     <thead>
                         <tr class="border-b border-gray-100 bg-(--card-dark)">
-                            <th
-                                class="text-left py-4 px-4 md:px-6 lg:px-8 text-xs font-semibold text-(--text-color) uppercase tracking-wider">
-                                Order ID</th>
-                            <th
-                                class="text-left py-4 px-4 md:px-6 lg:px-8 text-xs font-semibold text-(--text-color) uppercase tracking-wider">
-                                Product</th>
-                            <th
-                                class="text-left py-4 px-4 md:px-6 lg:px-8 text-xs font-semibold text-(--text-color) uppercase tracking-wider">
-                                Date</th>
-                            <th
-                                class="text-left py-4 px-4 md:px-6 lg:px-8 text-xs font-semibold text-(--text-color) uppercase tracking-wider">
-                                QTY</th>
-                            <th
-                                class="text-left py-4 px-4 md:px-6 lg:px-8 text-xs font-semibold text-(--text-color) uppercase tracking-wider">
-                                Total</th>
-                            <th
-                                class="text-left py-4 px-4 md:px-6 lg:px-8 text-xs font-semibold text-(--text-color) uppercase tracking-wider">
-                                Order Status</th>
-                            <th
-                                class="text-right py-4 px-4 md:px-6 lg:px-8 text-xs font-semibold text-(--text-color) uppercase tracking-wider">
-                                Actions</th>
+                            <th class="text-left py-4 px-4 md:px-6 lg:px-8 text-xs font-semibold text-(--text-color) uppercase tracking-wider">Order ID</th>
+                            <th class="text-left py-4 px-4 md:px-6 lg:px-8 text-xs font-semibold text-(--text-color) uppercase tracking-wider">Product</th>
+                            <th class="text-left py-4 px-4 md:px-6 lg:px-8 text-xs font-semibold text-(--text-color) uppercase tracking-wider">Date</th>
+                            <th class="text-left py-4 px-4 md:px-6 lg:px-8 text-xs font-semibold text-(--text-color) uppercase tracking-wider">QTY</th>
+                            <th class="text-left py-4 px-4 md:px-6 lg:px-8 text-xs font-semibold text-(--text-color) uppercase tracking-wider">Total</th>
+                            <th class="text-left py-4 px-4 md:px-6 lg:px-8 text-xs font-semibold text-(--text-color) uppercase tracking-wider">Status</th>
+                            <th class="text-right py-4 px-4 md:px-6 lg:px-8 text-xs font-semibold text-(--text-color) uppercase tracking-wider">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-(--text-color)/10 text-sm" id="ordersTableBody">
-                        <!-- Row 1 with staggered animation -->
-                        <tr class="hover:bg-(--card-dark)/10 transition-all duration-200 cursor-pointer">
-                            <td
-                                class="px-4 md:px-6 lg:px-8 py-5 text-(--text-color) text-sm font-medium transition-colors">
-                                #HK-29401</td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5">
-                                <div class="flex items-center gap-3">
-                                    <img src="{{ asset('images/backpack.png') }}" alt="Leather Bag"
-                                        class="w-10 h-10 object-cover rounded-xl">
+                    <tbody class="divide-y divide-(--text-color)/10 text-sm">
+                        @forelse ($orders as $order)
+                            @php
+                                $firstItem    = $order->orderItems->first();
+                                $product      = $firstItem?->product;
+                                $productImage = $product?->images->first()?->url ?? $product?->image;
+                                $totalQty     = $order->orderItems->sum('quantity');
+                                $extraCount   = $order->orderItems->count() - 1;
 
-                                    <p class="font-medium text-(--text-color) line-clamp-2 md:truncate">
-                                        Handcrafted Leather Bag
-                                    </p>
-                                </div>
-                            </td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5 text-(--text-color) text-sm">June 1, 2026</td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5 font-semibold text-(--text-color)">1</td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5 font-semibold text-(--text-color)">
-                                Rs. 7,550
-                            </td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5">
-                                <span class="inline-flex items-center gap-2">
-                                    <span class="w-2.5 h-2.5 bg-(--primary-color) rounded-full"></span>
-                                    <span class="font-medium text-(--text-color)">Shipped</span>
-                                </span>
-                            </td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5 text-right">
-                                <a href="{{ route('order-detail') }}"
-                                    class="text-(--secondary-color) hover:text-(--hover-color) font-medium flex items-center justify-end gap-1 text-sm transition-all duration-200 group">
-                                    <span class="hover:underline">View Details</span>
-                                    <i data-lucide="arrow-right" class="w-6 h-4"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        <!-- Row 2 -->
-                        <tr class="hover:bg-(--card-dark)/10 transition-all duration-200 cursor-pointer">
-                            <td
-                                class="px-4 md:px-6 lg:px-8 py-5 text-(--text-color) text-sm font-medium transition-colors">
-                                #HK-29395</td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5">
-                                <div class="flex items-center gap-3">
-                                    <img src="{{ asset('images/pottery.png') }}" alt="Ceramic Mug"
-                                        class="w-10 h-10 object-cover rounded-xl">
-
-                                    <p class="font-medium text-(--text-color)">
-                                        Handmade Ceramic Mug
-                                    </p>
-                                </div>
-                            </td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5 text-(--text-color) text-sm">June 2, 2026</td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5 font-semibold text-(--text-color)">2</td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5 font-semibold text-(--text-color)">
-                                Rs. 8,550
-                            </td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5">
-                                <span class="inline-flex items-center gap-2">
-                                    <span class="w-2.5 h-2.5 bg-(--secondary-color) rounded-full"></span>
-                                    <span class="font-medium text-(--text-color)">processing</span>
-                                </span>
-                            </td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5 text-right">
-                                <button
-                                    class="text-(--secondary-color) hover:text-(--hover-color) font-medium flex items-center gap-1 ml-auto text-sm transition-all duration-200 group">
-                                    <span class="hover:underline">View Details</span>
-                                    <i data-lucide="arrow-right" class="w-6 h-4"></i>
-
-                                </button>
-                            </td>
-                        </tr>
-                        <!-- Row 3 -->
-                        <tr class="hover:bg-(--card-dark)/10 transition-all duration-200 cursor-pointer">
-                            <td
-                                class="px-4 md:px-6 lg:px-8 py-5 text-(--text-color) text-sm font-medium transition-colors">
-                                #HK-29398</td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5">
-                                <div class="flex items-center gap-3">
-                                    <img src="{{ asset('images/table.png') }}" alt="Scented Candle"
-                                        class="w-10 h-10 object-cover rounded-xl">
-
-                                    <p class="font-medium text-(--text-color)">
-                                        Aura Scented Candle
-                                    </p>
-                                </div>
-                            </td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5 text-(--text-color) text-sm">June 3, 2026</td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5 font-semibold text-(--text-color)">1</td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5 font-semibold text-(--text-color)">
-                                Rs. 9,550
-                            </td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5">
-                                <span class="inline-flex items-center gap-2">
-                                    <span class="w-2.5 h-2.5 bg-(--secondary-color) rounded-full"></span>
-                                    <span class="font-medium text-(--text-color)">processing</span>
-                                </span>
-                            </td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5 text-right">
-                                <button
-                                    class="text-(--secondary-color) hover:text-(--hover-color) font-medium flex gap-1 ml-auto text-sm transition-all duration-200 group">
-                                    <span class="hover:underline">View Details</span>
-                                    <i data-lucide="arrow-right" class="w-6 h-4"></i>
-
-                                </button>
-                            </td>
-                        </tr>
-                        <!-- Row 4 -->
-                        <tr class="hover:bg-(--card-dark)/10 transition-all duration-200 cursor-pointer">
-                            <td
-                                class="px-4 md:px-6 lg:px-8 py-5 text-(--text-color) text-sm font-medium transition-colors">
-                                #HK-29392</td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5">
-                                <div class="flex items-center gap-3">
-                                    <img src="{{ asset('images/craft.png') }}" alt="Wall Art"
-                                        class="w-10 h-10 object-cover rounded-xl">
-
-                                    <p class="font-medium text-(--text-color)">
-                                        Boho Wall Art Frame
-                                    </p>
-                                </div>
-                            </td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5 text-(--text-color) text-sm">June 4, 2026</td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5 font-semibold text-(--text-color)">2</td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5 font-semibold text-(--text-color)">
-                                Rs. 8,550
-                            </td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5">
-                                <span class="inline-flex items-center gap-2">
-                                    <span class="w-2.5 h-2.5 bg-(--text-dark)/40 rounded-full"></span>
-                                    <span class="font-medium text-(--text-color)">Cancelled</span>
-                                </span>
-                            </td>
-                            <td class="px-4 md:px-6 lg:px-8 py-5 text-right">
-                                <button
-                                    class="text-(--secondary-color) hover:text-(--hover-color) font-medium flex items-center gap-1 ml-auto text-sm transition-all duration-200 group">
-                                    <span class="hover:underline">View Details</span>
-                                    <i data-lucide="arrow-right" class="w-6 h-4"></i>
-
-                                </button>
-                            </td>
-                        </tr>
+                                $statusColors = [
+                                    'pending'   => 'bg-yellow-400',
+                                    'confirmed' => 'bg-blue-400',
+                                    'shipped'   => 'bg-(--primary-color)',
+                                    'delivered' => 'bg-green-500',
+                                    'cancelled' => 'bg-(--text-dark)/40',
+                                ];
+                                $dot = $statusColors[$order->status] ?? 'bg-gray-400';
+                            @endphp
+                            <tr class="hover:bg-(--card-dark)/10 transition-all duration-200 cursor-pointer">
+                                <td class="px-4 md:px-6 lg:px-8 py-5 text-(--text-color) text-sm font-medium">
+                                    #HK-{{ str_pad($order->id, 5, '0', STR_PAD_LEFT) }}
+                                </td>
+                                <td class="px-4 md:px-6 lg:px-8 py-5">
+                                    <div class="flex items-center gap-3">
+                                        @if ($productImage)
+                                            <img src="{{ asset('storage/' . $productImage) }}"
+                                                alt="{{ $product?->name }}"
+                                                class="w-10 h-10 object-cover rounded-xl">
+                                        @else
+                                            <div class="w-10 h-10 rounded-xl bg-(--card-dark) flex items-center justify-center">
+                                                <i data-lucide="package" class="w-5 h-5 text-(--text-color)/40"></i>
+                                            </div>
+                                        @endif
+                                        <div>
+                                            <p class="font-medium text-(--text-color) line-clamp-1">
+                                                {{ $product?->name ?? 'Product' }}
+                                            </p>
+                                            @if ($extraCount > 0)
+                                                <p class="text-xs text-(--text-color)/50">+{{ $extraCount }} more item{{ $extraCount > 1 ? 's' : '' }}</p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-4 md:px-6 lg:px-8 py-5 text-(--text-color) text-sm">
+                                    {{ $order->created_at->format('M d, Y') }}
+                                </td>
+                                <td class="px-4 md:px-6 lg:px-8 py-5 font-semibold text-(--text-color)">
+                                    {{ $totalQty }}
+                                </td>
+                                <td class="px-4 md:px-6 lg:px-8 py-5 font-semibold text-(--text-color)">
+                                    Rs. {{ number_format($order->total_amount, 2) }}
+                                </td>
+                                <td class="px-4 md:px-6 lg:px-8 py-5">
+                                    <span class="inline-flex items-center gap-2">
+                                        <span class="w-2.5 h-2.5 {{ $dot }} rounded-full"></span>
+                                        <span class="font-medium text-(--text-color) capitalize">{{ $order->status }}</span>
+                                    </span>
+                                </td>
+                                <td class="px-4 md:px-6 lg:px-8 py-5 text-right">
+                                    <a href="{{ route('order-detail', ['order' => $order->id]) }}"
+                                        class="text-(--secondary-color) hover:text-(--hover-color) font-medium flex items-center justify-end gap-1 text-sm transition-all duration-200 group">
+                                        <span class="hover:underline">View Details</span>
+                                        <i data-lucide="arrow-right" class="w-6 h-4"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="7" class="px-8 py-16 text-center text-(--text-color)/60">
+                                    <div class="flex flex-col items-center gap-3">
+                                        <i data-lucide="inbox" class="w-10 h-10 opacity-40"></i>
+                                        <p class="text-sm font-medium">No orders found{{ $active !== 'all' ? ' with status "' . $active . '"' : '' }}.</p>
+                                        <a href="{{ route('home') }}" class="text-(--secondary-color) hover:underline text-sm">Start shopping</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <!-- Pagination with smooth interactions -->
-        <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8 animate-slideUp">
-            <p class="text-sm text-(--text-dark)/50">
-                Showing <span class="font-medium text-(--text-dark)">1–4</span> of <span
-                    class="font-medium text-(--text-dark)">1,240</span> orders
-            </p>
-            <div class="flex items-center gap-2 flex-wrap justify-center">
-                <button
-                    class="pagination-btn w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center border border-gray-300 rounded-2xl hover:bg-[#1F3D2E] hover:text-white hover:border-[#1F3D2E] active:scale-95 transition-all duration-200 text-gray-700">
-                    <i data-lucide="chevron-left" class="w-3 h-3"></i>
-                </button>
-                <button
-                    class="pagination-btn w-9 h-9 sm:w-10 sm:h-10 bg-[#1F3D2E] text-white rounded-2xl font-medium text-sm transition-all duration-200 hover:bg-[#2a5040] hover:scale-105">1</button>
-                <button
-                    class="pagination-btn w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center border border-gray-300 rounded-2xl hover:bg-[#1F3D2E] hover:text-white hover:border-[#1F3D2E] active:scale-95 transition-all duration-200 text-gray-700">2</button>
-                <button
-                    class="pagination-btn w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center border border-gray-300 rounded-2xl hover:bg-[#1F3D2E] hover:text-white hover:border-[#1F3D2E] active:scale-95 transition-all duration-200 text-gray-700">3</button>
-                <button
-                    class="pagination-btn w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center border border-gray-300 rounded-2xl hover:bg-[#1F3D2E] hover:text-white hover:border-[#1F3D2E] active:scale-95 transition-all duration-200 text-gray-700">
-                    <i data-lucide="chevron-right" class="w-3 h-3"></i>
-                </button>
+        <!-- Pagination -->
+        @if ($orders->hasPages())
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8 animate-slideUp">
+                <p class="text-sm text-(--text-dark)/50">
+                    Showing <span class="font-medium text-(--text-dark)">{{ $orders->firstItem() }}–{{ $orders->lastItem() }}</span>
+                    of <span class="font-medium text-(--text-dark)">{{ $orders->total() }}</span> orders
+                </p>
+                <div class="flex items-center gap-2 flex-wrap justify-center">
+                    @if ($orders->onFirstPage())
+                        <button disabled class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center border border-gray-300 rounded-2xl opacity-40 cursor-not-allowed">
+                            <i data-lucide="chevron-left" class="w-3 h-3"></i>
+                        </button>
+                    @else
+                        <a href="{{ $orders->previousPageUrl() }}" class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center border border-gray-300 rounded-2xl hover:bg-[#1F3D2E] hover:text-white hover:border-[#1F3D2E] transition-all duration-200">
+                            <i data-lucide="chevron-left" class="w-3 h-3"></i>
+                        </a>
+                    @endif
+
+                    @foreach ($orders->getUrlRange(max(1, $orders->currentPage() - 2), min($orders->lastPage(), $orders->currentPage() + 2)) as $page => $url)
+                        @if ($page == $orders->currentPage())
+                            <button class="w-9 h-9 sm:w-10 sm:h-10 bg-[#1F3D2E] text-white rounded-2xl font-medium text-sm">{{ $page }}</button>
+                        @else
+                            <a href="{{ $url }}" class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center border border-gray-300 rounded-2xl hover:bg-[#1F3D2E] hover:text-white hover:border-[#1F3D2E] transition-all duration-200">{{ $page }}</a>
+                        @endif
+                    @endforeach
+
+                    @if ($orders->hasMorePages())
+                        <a href="{{ $orders->nextPageUrl() }}" class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center border border-gray-300 rounded-2xl hover:bg-[#1F3D2E] hover:text-white hover:border-[#1F3D2E] transition-all duration-200">
+                            <i data-lucide="chevron-right" class="w-3 h-3"></i>
+                        </a>
+                    @else
+                        <button disabled class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center border border-gray-300 rounded-2xl opacity-40 cursor-not-allowed">
+                            <i data-lucide="chevron-right" class="w-3 h-3"></i>
+                        </button>
+                    @endif
+                </div>
             </div>
-        </div>
+        @endif
     </div>
 
-    <script>
-        function switchTab(n) {
-            document.querySelectorAll('[id^="tab-"]').forEach(tab => {
-                tab.classList.remove('tab-active', 'bg-(--secondary-color)', 'text-(--text-light)');
-                tab.classList.add('text-(--text-dark)');
-            });
-            document.getElementById(`tab-${n}`).classList.add('tab-active', 'bg-(--secondary-color)',
-                'text-(--text-light)');
-        }
-
-        function exportCSV() {
-            alert('Export CSV functionality would be implemented here');
-        }
-
-        function bulkPrint() {
-            alert('Bulk Print functionality would be implemented here');
-        }
-    </script>
-
     <style>
-        .tab-btn {
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .responsive-table-wrapper {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .responsive-table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     </style>
 </x-user-layout>

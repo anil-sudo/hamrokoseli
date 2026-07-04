@@ -25,15 +25,33 @@ class PageController extends Controller
             ->limit(4)
             ->get();
 
+        // Fetch 4 random active categories
+        $categories = Category::where('status', 'active')
+            ->inRandomOrder()
+            ->limit(4)
+            ->get();
+
+        // Fetch top sellers dynamically
+        $topSellers = Product::where('status', 'active')
+            ->with(['category', 'vendor', 'images', 'variants'])
+            ->withCount('orderItems')
+            ->orderByDesc('order_items_count')
+            ->take(4)
+            ->get();
+
         return view('welcome', [
             'vendors' => $vendors,
             'featuredProducts' => $featuredProducts,
+            'categories' => $categories,
+            'topSellers' => $topSellers,
         ]);
     }
 
     public function categories()
     {
-        return view('categories');
+        $categories = Category::where('status', 'active')->get();
+
+        return view('categories', compact('categories'));
     }
 
     // Shared query logic for shop() and viewProduct()
@@ -89,7 +107,7 @@ class PageController extends Controller
         }
 
         return [
-            'products' => $query->paginate(9)->withQueryString(),
+            'products' => $query->paginate(12)->withQueryString(),
             'categories' => Category::where('status', 'active')->get(),
             'priceFloor' => $priceFloor,
             'priceCeil' => $priceCeil,
@@ -106,7 +124,7 @@ class PageController extends Controller
         $products = Product::with(['category', 'vendor', 'images'])
             ->where('status', 'active')
             ->latest()
-            ->paginate(8)
+            ->paginate(12)
             ->withQueryString();
 
         return view('new_arrival', compact('products'));
@@ -175,8 +193,8 @@ class PageController extends Controller
             ->where('status', 'active')
             ->withCount('orderItems')
             ->orderByDesc('order_items_count')
-            ->take(12)
-            ->get();
+            ->paginate(12)
+            ->withQueryString();
 
         if ($products->isEmpty()) {
             $products = collect([
@@ -331,6 +349,21 @@ class PageController extends Controller
         return view('cart');
     }
 
+    public function terms_conditions()
+    {
+        return view('terms-conditions');
+    }
+
+    public function return_policy()
+    {
+        return view('return-policy');
+    }
+
+    public function seller_policy()
+    {
+        return view('seller-policy');
+    }
+
     public function viewProduct($id)
     {
         $product = Product::with(['category', 'vendor', 'images', 'variants'])->findOrFail($id);
@@ -341,6 +374,16 @@ class PageController extends Controller
         $product->primary_image_url = method_exists($product, 'primaryImageUrl') ? $product->primaryImageUrl() : asset($product->image);
         $product->category_name = $product->category?->cat_name ?? $product->category?->name ?? 'Crafts';
         $product->vendor_name = $product->vendor?->vendor_name ?? $product->vendor?->name ?? 'Local Artisan';
+
+        // Track recently viewed products in session (store product IDs)
+        $recentlyViewed = session()->get('recently_viewed', []);
+        // Remove if already exists to avoid duplicates
+        $recentlyViewed = array_filter($recentlyViewed, fn ($pid) => $pid != $id);
+        // Prepend current product
+        array_unshift($recentlyViewed, (int) $id);
+        // Keep only last 20
+        $recentlyViewed = array_slice($recentlyViewed, 0, 20);
+        session()->put('recently_viewed', $recentlyViewed);
 
         return view('shop', array_merge($this->buildShopData(), [
             'activeProduct' => $product,

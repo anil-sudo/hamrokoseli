@@ -4,7 +4,7 @@
 
         <!-- Title -->
         <div class="mb-8 sm:mb-10">
-            <h1 class="text-3xl sm:text-4xl font-extrabold text-[#1F3D2E] mb-2">Your Handpicked Pieces</h1>
+            <h1 class="text-2xl sm:text-3xl sm:text-4xl font-extrabold text-[#1F3D2E] mb-2">Your Handpicked Pieces</h1>
             <p class="text-[#3A2A1F]/70 font-semibold">Items are grouped by seller — checkout one product or the whole box at once.</p>
         </div>
 
@@ -53,7 +53,7 @@
                     <div class="bg-white rounded-3xl border border-[#ebd7be]/60 shadow-sm overflow-hidden vendor-group">
 
                         <!-- Vendor header -->
-                        <div class="flex items-center justify-between gap-3 px-5 py-4 bg-[#FFF7EF] border-b border-[#ebd7be]/60">
+                        <div class="flex flex-wrap items-center justify-between gap-2 px-4 sm:px-5 py-3 sm:py-4 bg-[#FFF7EF] border-b border-[#ebd7be]/60">
                             <div class="flex items-center gap-2">
                                 <i class="fas fa-store text-[#C65A3A]"></i>
                                 <h2 class="font-bold text-[#1F3D2E] uppercase text-sm tracking-wide">{{ $vendorName }}</h2>
@@ -81,7 +81,7 @@
                                  data-vendor="{{ $vendorId }}">
 
                                 <!-- Product info -->
-                                <div class="flex gap-4 items-center flex-1 min-w-0">
+                                <div class="flex gap-3 items-center flex-1 min-w-0">
                                     <img src="{{ $item->product->primaryImageUrl() }}"
                                          class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover flex-shrink-0 border border-[#ebd7be]/40 shadow-sm"
                                          alt="{{ $item->product->name }}">
@@ -148,7 +148,7 @@
 
             <!-- RIGHT: Summary -->
             <div class="lg:col-span-4">
-                <div class="bg-white p-6 rounded-3xl border border-[#ebd7be]/60 shadow-sm sticky top-6">
+                <div class="bg-white p-5 sm:p-6 rounded-3xl border border-[#ebd7be]/60 shadow-sm lg:sticky lg:top-6">
 
                     <h2 class="font-bold text-lg text-[#1F3D2E] mb-5 pb-4 border-b border-[#ebd7be]/40">
                         Order Summary
@@ -267,18 +267,31 @@ function formatRs(amount) {
 
 function recalcTotals() {
     let grandTotal = 0;
+    let totalItems = 0;
     document.querySelectorAll('.cart-item').forEach(row => {
         const unitPrice = parseFloat(row.dataset.unitPrice) || 0;
         const qty       = parseInt(row.querySelector('.qty-display').textContent) || 1;
         const subtotal  = unitPrice * qty;
         row.querySelector('.item-subtotal').textContent = formatRs(subtotal);
         grandTotal += subtotal;
+        totalItems += qty;
     });
 
     const summarySubtotal = document.getElementById('summary-subtotal');
     const summaryTotal    = document.getElementById('summary-total');
     if (summarySubtotal) summarySubtotal.textContent = formatRs(grandTotal);
     if (summaryTotal)    summaryTotal.textContent    = formatRs(grandTotal);
+
+    // Update cart badge dynamically
+    const badge = document.getElementById('cart-badge');
+    if (badge) {
+        badge.textContent = totalItems;
+        if (totalItems > 0) {
+            badge.classList.remove('hidden');
+        } else {
+            badge.classList.add('hidden');
+        }
+    }
 
     // Update each vendor-checkout-all button total
     const vendorTotals = {};

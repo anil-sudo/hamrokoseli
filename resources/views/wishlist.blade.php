@@ -4,7 +4,7 @@
             
             <!-- Page Title Section -->
             <div class="mb-10 sm:mb-12">
-                <h1 class="text-3.5xl sm:text-4xl md:text-5xl font-extrabold text-[#1F3D2E] tracking-tight mb-2 sm:mb-3">
+                <h1 class="text-2xl sm:text-3.5xl sm:text-4xl md:text-5xl font-extrabold text-[#1F3D2E] tracking-tight mb-2 sm:mb-3">
                     My Wishlist
                 </h1>
                 <p class="text-[#3A2A1F]/70 text-sm sm:text-base font-medium max-w-xl">
@@ -92,7 +92,7 @@
 
     <!-- Template for rendering Wishlist Items dynamically -->
     <template id="wishlist-card-template">
-        <div class="bg-white rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group relative">
+        <div class="bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group relative">
             <div class="relative w-full aspect-[4/3] overflow-hidden">
                 <img src="" alt="" class="wishlist-img w-full h-full object-cover group-hover:scale-105 transition duration-500">
                 <span class="wishlist-tag absolute bottom-3 left-3 bg-[#1F3D2E]/80 text-[#FFF7EF] text-[10px] font-semibold px-2.5 py-1 rounded-full shadow-sm backdrop-blur-xs hidden">
@@ -102,7 +102,7 @@
                     <i class="fa-solid fa-trash-can text-sm"></i>
                 </button>
             </div>
-            <div class="p-5 flex-grow flex flex-col justify-between">
+            <div class="p-3 sm:p-5 flex-grow flex flex-col justify-between">
                 <div class="mb-4">
                     <h3 class="wishlist-title text-base sm:text-lg font-bold text-[#1F3D2E] mb-1.5 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1">
                         Product Name

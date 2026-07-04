@@ -17,22 +17,23 @@ class CategoryForm
                 TextInput::make('cat_name')
                     ->required()
                     ->live(onBlur: true)
-                    ->afterStateUpdated(function (string $operation, $state, callable $set) {
-                        if ($operation === 'create') {
-                            $set('slug', Str::slug($state));
-                        }
+                    ->afterStateUpdated(function ($state, callable $set) {
+                        $set('slug', Str::slug($state));
                     }),
-                FileUpload::make('cat_image')
+                TextInput::make('slug')
+                    ->required()
+                    ->unique(ignoreRecord: true),
+                TextInput::make('parent_cat_id')
+                    ->numeric()
+                    ->minValue(0)
+                    ->default(null),
+                FileUpload::make('image')
                     ->image()
+                    ->imageEditor()
                     ->maxSize(2048)
                     ->directory('categories')
                     ->disk('public')
                     ->nullable(),
-                TextInput::make('slug')
-                    ->required(),
-                TextInput::make('parent_cat_id')
-                    ->numeric()
-                    ->default(null),
                 Select::make('status')
                     ->options(['active' => 'Active', 'inactive' => 'Inactive'])
                     ->default('active')
