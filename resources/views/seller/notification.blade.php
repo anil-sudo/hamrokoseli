@@ -24,7 +24,7 @@
                         {{ $key === 'all' ? 'bg-(--secondary-color) text-white' : 'text-(--text-dark)' }}">
                     {{ $label }}
                     @if(($counts[$key] ?? 0) > 0)
-                        <span class="ml-1 text-xs bg-white/25 rounded-full px-1.5 py-0.5">{{ $counts[$key] }}</span>
+                        <span id="badge-{{ $key }}" class="ml-1 text-xs bg-white/25 rounded-full px-1.5 py-0.5">{{ $counts[$key] }}</span>
                     @endif
                 </button>
             @endforeach
@@ -55,9 +55,11 @@
                 @endphp
 
                 <div class="notification-card bg-(--card-bg) rounded-2xl shadow-sm border transition-all duration-200
-                        {{ $notification->is_read ? 'border-(--text-color)/10 opacity-60' : 'border-(--secondary-color)/40' }}"
+                        {{ $notification->is_read ? 'border-(--text-color)/10 opacity-60' : 'border-(--secondary-color)/40' }}
+                        {{ $isOrder ? 'cursor-pointer hover:border-(--secondary-color)' : '' }}"
                     data-id="{{ $notification->id }}"
-                    data-tab="{{ $tab }}">
+                    data-tab="{{ $tab }}"
+                    @if($isOrder) onclick="if(!event.target.closest('button') && !event.target.closest('a')) window.location.href='{{ route('order') }}'" @endif>
 
                     <div class="p-5">
                         {{-- Top row --}}
@@ -177,10 +179,22 @@
             .then(r => r.ok ? r.json() : Promise.reject())
             .then(() => {
                 const card = btn.closest('.notification-card');
+                const tab = card.dataset.tab;
+
                 card.classList.add('opacity-60', 'border-(--text-color)/10');
                 card.classList.remove('border-(--secondary-color)/40');
                 card.querySelector('span.bg-\\(--secondary-color\\).rounded-full')?.remove();
                 btn.remove();
+
+                // Decrement badges
+                ['all', tab].forEach(key => {
+                    const badge = document.getElementById('badge-' + key);
+                    if(badge) {
+                        let count = parseInt(badge.innerText) - 1;
+                        if(count <= 0) badge.remove();
+                        else badge.innerText = count;
+                    }
+                });
             });
         }
 

@@ -29,6 +29,7 @@ Route::middleware('guest:vendor')->group(function () {
 Route::post('/seller-logout', [SellerController::class, 'logout'])->name('seller.logout');
 Route::get('/seller-profile', [SellerController::class, 'sellerProfile'])->name('seller.profile');
 Route::post('/seller-profile', [SellerController::class, 'updateProfile'])->name('seller.profile.update');
+Route::post('/seller-password', [SellerController::class, 'updatePassword'])->name('seller.profile.password');
 
 // ─── Seller routes (protected by vendor guard) ────────────────────────────────
 Route::middleware(['auth', 'role:vendor'])->group(function () {
@@ -52,6 +53,8 @@ Route::middleware(['auth', 'role:vendor'])->group(function () {
     Route::post('/create-ticket', [SellerController::class, 'storeTicket'])->name('store-ticket');
     Route::get('/tickets', [SellerController::class, 'sellerTicket'])->name('seller-ticket');
     Route::get('/seller-notification', [SellerController::class, 'sellerNotification'])->name('seller-notification');
+    Route::patch('/seller-notification/read-all', [SellerController::class, 'markAllNotificationsRead'])->name('seller.notifications.markAllRead');
+    Route::patch('/seller-notification/{id}/read', [SellerController::class, 'markNotificationRead'])->name('seller.notifications.read');
 });
 
 // ─── Seller registration (public) ─────────────────────────────────────────────

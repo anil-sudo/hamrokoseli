@@ -32,7 +32,7 @@
             <div class="transition-all duration-300 hover:translate-x-1">
                 <h1 class="text-2xl font-bold tracking-tight text-[#FFF7EF] font-sans">
                     HamroKoseli</h1>
-                <p class="text-xs text-[#FFF7EF] font-medium mt-0.5">Seller Portal</p>
+                <p class="text-xs text-[#FFF7EF] font-medium mt-0.5">Vendor Panel</p>
             </div>
         </div>
     </div>

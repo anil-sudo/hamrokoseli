@@ -5,7 +5,29 @@
             <h1 class="text-3xl font-bold text-(--text-color)">Account Settings</h1>
             <p class="text-sm text-(--text-color)/70 mt-1">Manage your profile information </p>
         </div>
-
+        <!-- Flash Messages -->
+        @if (session('success'))
+            <div class="flex items-center gap-3 px-5 py-4 rounded-2xl bg-(--primary-color)/10 border border-(--primary-color)/25 text-(--primary-color) text-sm font-medium">
+                <i data-lucide="check-circle-2" class="w-5 h-5 shrink-0"></i>
+                {{ session('success') }}
+            </div>
+        @endif
+        @if (session('password_success'))
+            <div class="flex items-center gap-3 px-5 py-4 rounded-2xl bg-green-500/10 border border-green-500/25 text-green-700 text-sm font-medium">
+                <i data-lucide="check-circle-2" class="w-5 h-5 shrink-0"></i>
+                {{ session('password_success') }}
+            </div>
+        @endif
+        @if ($errors->any())
+            <div class="flex items-start gap-3 px-5 py-4 rounded-2xl bg-red-500/10 border border-red-500/25 text-red-600 text-sm font-medium">
+                <i data-lucide="alert-circle" class="w-5 h-5 shrink-0 mt-0.5"></i>
+                <ul class="list-disc pl-4 space-y-1">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         <div class="space-y-6">
         <form action="{{ route('seller.profile.update') }}" method="POST" enctype="multipart/form-data" id="profileForm">
             @csrf
@@ -145,7 +167,7 @@
             </div>
         </form>
             <!-- Security & Privacy -->
-            <form action="{{ route('seller.password.update') }}" method="POST">
+            <form action="{{ route('seller.profile.password') }}" method="POST" id="passwordUpdateForm">
                 @csrf
                 <div class="bg-(--card-bg) rounded-2xl shadow-sm p-6 hover:shadow-md transition-all duration-300">
                     <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
@@ -186,6 +208,19 @@
                                 </button>
                             </div>
                             @error('new_password') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div>
+                            <label class="block text-sm font-medium text-brand-dark mb-1">Confirm Password</label>
+                            <div class="relative">
+                                <input type="password" id="confirmPassword" name="new_password_confirmation" required
+                                    class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color) pr-12">
+                                <button type="button" id="toggleConfirm"
+                                    class="absolute right-4 top-1/2 -translate-y-1/2 text-(--text-color)/60 hover:text-(--text-color) transition">
+                                    <i data-lucide="eye" class="w-5 h-5"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -273,4 +308,85 @@
     </div>
     @vite('resources/js/seller-profile.js')
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle for confirm password
+            const toggleConfirmBtn = document.getElementById('toggleConfirm');
+            if(toggleConfirmBtn) {
+                toggleConfirmBtn.addEventListener('click', function() {
+                    const confirmInput = document.getElementById('confirmPassword');
+                    const icon = this.querySelector('i');
+                    if (confirmInput.type === 'password') {
+                        confirmInput.type = 'text';
+                        icon.setAttribute('data-lucide', 'eye-off');
+                    } else {
+                        confirmInput.type = 'password';
+                        icon.setAttribute('data-lucide', 'eye');
+                    }
+                    lucide.createIcons();
+                });
+            }
+
+            const passwordForm = document.getElementById('passwordUpdateForm');
+            if (passwordForm) {
+                passwordForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    const form = this;
+                    const formData = new FormData(form);
+                    const submitBtn = document.getElementById('savePasswordBtn');
+
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = 'Processing...';
+
+                    try {
+                        const response = await fetch(form.action, {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json'
+                            }
+                        });
+
+                        const result = await response.json();
+
+                        if (response.ok) {
+                            Swal.fire({
+                                title: 'Success!',
+                                text: result.message || 'Password updated successfully.',
+                                icon: 'success',
+                                confirmButtonColor: '#B94E31',
+                                allowOutsideClick: false
+                            }).then(() => {
+                                window.location.href = "{{ route('seller.login') }}";
+                            });
+                        } else {
+                            // handle validation errors
+                            let errorMsg = result.message || 'Something went wrong';
+                            if (result.errors) {
+                                errorMsg = Object.values(result.errors).flat().join('\n');
+                            }
+                            Swal.fire({
+                                title: 'Error!',
+                                text: errorMsg,
+                                icon: 'error',
+                                confirmButtonColor: '#B94E31'
+                            });
+                        }
+                    } catch (error) {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Network error occurred.',
+                            icon: 'error',
+                            confirmButtonColor: '#B94E31'
+                        });
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                    }
+                });
+            }
+        });
+    </script>
 </x-seller_layout>

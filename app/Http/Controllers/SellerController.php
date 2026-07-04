@@ -13,7 +13,6 @@ use App\Models\SupportTicket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -199,8 +198,12 @@ class SellerController extends Controller
         $categories = Category::where('status', 'active')->get();
 
         return view('seller.product-management', compact(
-            'products', 'totalProducts', 'activeProducts',
-            'outOfStock', 'draftProducts', 'categories'
+            'products',
+            'totalProducts',
+            'activeProducts',
+            'outOfStock',
+            'draftProducts',
+            'categories'
         ));
     }
 
@@ -373,8 +376,8 @@ class SellerController extends Controller
             'product_type' => $validated['product_type'] ?? null,
             'description' => $validated['description'],
             'specifications' => ! empty($validated['specifications'])
-                                    ? $this->filterSpecs($validated['specifications'])
-                                    : null,
+                ? $this->filterSpecs($validated['specifications'])
+                : null,
             'price' => $validated['base_price'],
             'discount_price' => ($validated['discounted_price'] ?? 0) > 0
                                     ? ($validated['base_price'] - $validated['discounted_price'])
@@ -644,18 +647,20 @@ class SellerController extends Controller
     {
         $request->validate([
             'current_password' => 'required|current_password',
-            'new_password' => 'required|min:8',
+            'new_password' => 'required|min:8|confirmed',
         ]);
 
         $user = auth()->user();
-        $user->password = Hash::make($request->new_password);
+        if (! \Hash::check($request->current_password, $user->password)) {
+            return redirect()->back()
+                ->withErrors(['current_password' => 'Current password is incorrect.'])
+                ->withInput();
+        }
+
+        $user->password = \Hash::make($request->new_password);
         $user->save();
 
-        auth()->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return redirect()->route('seller.login')->with('success', 'Password updated successfully. Please login again.');
+        return redirect()->back()->with('password_success', 'Password changed successfully.');
     }
 
     public function sellerReview()
@@ -766,7 +771,42 @@ class SellerController extends Controller
 
     public function sellerNotification()
     {
-        return view('seller.notification');
+        $user = auth()->user();
+
+        $notifications = $user->appNotifications()->latest()->paginate(10);
+
+        $counts = [
+            'all' => $user->appNotifications()->where('is_read', false)->count(),
+            'orders' => $user->appNotifications()->where('is_read', false)->whereIn('type', [
+                'order_placed', 'order_confirmed', 'order_shipped', 'order_delivered', 'order_cancelled', 'return_requested', 'return_approved',
+            ])->count(),
+            'payouts' => $user->appNotifications()->where('is_read', false)->whereIn('type', [
+                'payout_processed', 'payment_received',
+            ])->count(),
+            'store' => $user->appNotifications()->where('is_read', false)->whereNotIn('type', [
+                'order_placed', 'order_confirmed', 'order_shipped', 'order_delivered', 'order_cancelled', 'return_requested', 'return_approved', 'payout_processed', 'payment_received',
+            ])->count(),
+        ];
+
+        return view('seller.notification', compact('notifications', 'counts'));
+    }
+
+    public function markNotificationRead($id)
+    {
+        $notification = auth()->user()->appNotifications()->findOrFail($id);
+        $notification->markAsRead();
+
+        return response()->json(['success' => true]);
+    }
+
+    public function markAllNotificationsRead()
+    {
+        auth()->user()->appNotifications()->where('is_read', false)->update([
+            'is_read' => true,
+            'read_at' => now(),
+        ]);
+
+        return response()->json(['success' => true]);
     }
 
     public function sellerSupport()
