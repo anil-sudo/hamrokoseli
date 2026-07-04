@@ -151,6 +151,9 @@ class CheckoutController extends Controller
             return $order;
         });
 
+        // NOTIFY VENDOR(S)
+        \App\Services\NotificationService::orderPlaced($order);
+
         // COD is complete the moment the order is created. Khalti and eSewa
         // still need the customer to actually pay — send them to the
         // gateway's hosted checkout instead of the confirmation page.
@@ -308,6 +311,9 @@ class CheckoutController extends Controller
 
             return $order;
         });
+
+        // NOTIFY VENDOR(S)
+        \App\Services\NotificationService::orderPlaced($order);
 
         if ($data['payment_method'] === 'khalti') {
             return redirect()->route('khalti.initiate', $order);
