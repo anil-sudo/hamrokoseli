@@ -28,5 +28,10 @@ class AppServiceProvider extends ServiceProvider
                 'email' => $notifiable->getEmailForPasswordReset(),
             ], false));
         });
+
+        // Dynamically resolve public disk URL based on the request to avoid broken/hanging previews in Filament
+        if (! app()->runningInConsole()) {
+            config(['filesystems.disks.public.url' => asset('storage')]);
+        }
     }
 }

@@ -29,9 +29,11 @@ class CategoryForm
                     ->default(null),
                 FileUpload::make('image')
                     ->image()
+                    ->imageEditor()
                     ->maxSize(2048)
                     ->directory('categories')
-                    ->disk('public'),
+                    ->disk('public')
+                    ->nullable(),
                 Select::make('status')
                     ->options(['active' => 'Active', 'inactive' => 'Inactive'])
                     ->default('active')
