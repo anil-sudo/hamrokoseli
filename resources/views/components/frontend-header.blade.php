@@ -64,15 +64,11 @@
                     <div class="hidden md:flex items-center gap-2 relative" id="account-menu-wrap">
                         <a href="{{ route('Userdashboard') }}" id="account-menu-btn"
                             class="inline-flex items-center gap-2 rounded-full border border-white/90 text-white font-semibold px-4 py-1.5 text-sm hover:bg-white hover:text-[#1f3d2e] transition-all duration-300 active:scale-95 shadow-sm">
-<<<<<<< HEAD
                             @if(auth()->user()->profile_pic)
                                 <img src="{{ asset('storage/' . auth()->user()->profile_pic) }}" alt="Profile" class="w-6 h-6 rounded-full object-cover">
                             @else
                                 <i class="far fa-user-circle"></i>
                             @endif
-=======
-                            <i class="far fa-user-circle"></i>
->>>>>>> ee2554b4bf0108cab62261e3d11a7a28779c1589
                             <span>Hello, {{ explode(' ', auth()->user()->name)[0] }}</span><i class="fa-solid fa-chevron-down"></i>
                         </a>
                     </div>
