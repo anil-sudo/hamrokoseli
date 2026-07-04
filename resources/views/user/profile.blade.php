@@ -7,12 +7,14 @@
         </div>
 
         <div class="space-y-6">
+        <form action="{{ route('user.profile.update') }}" method="POST" enctype="multipart/form-data" id="profileForm">
+            @csrf
             <!-- Profile Information -->
             <div class="bg-(--card-bg) rounded-2xl shadow-sm p-6 hover:shadow-md transition-all duration-300">
                 <div class="flex items-start gap-6">
                     <!-- Profile Picture -->
                     <div id="profileContainer" class="relative group cursor-pointer">
-                        <img id="profilePreview" src="https://api.iconify.design/lucide/user.svg?color=%236b7280"
+                        <img id="profilePreview" src="{{ $user->profile_pic ? asset('storage/' . $user->profile_pic) : 'https://api.iconify.design/lucide/user.svg?color=%236b7280' }}"
                             alt="Profile"
                             class="w-24 h-24 rounded-full object-cover border border-(--text-color)/10 shadow bg-(--card-dark)">
 
@@ -29,7 +31,7 @@
                         </button>
 
                         <!-- Hidden File Input -->
-                        <input type="file" id="profileImage" accept="image/*" class="hidden">
+                        <input type="file" name="profile_pic" id="profileImage" accept="image/*" class="hidden">
                     </div>
 
                     <!-- Form Fields -->
@@ -85,6 +87,7 @@
 
                 </div>
             </div>
+        </form>
 
             <!-- Security & Privacy -->
             <div class="bg-(--card-bg) rounded-2xl shadow-sm p-6 hover:shadow-md transition-all duration-300">

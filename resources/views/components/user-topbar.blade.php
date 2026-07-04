@@ -29,9 +29,12 @@
                 <div class="text-right hidden sm:block">
                     <p class="text-sm font-medium text-white">{{ Auth::user()->name ?? 'User' }}</p>
                 </div>
-                <div
-                    class="w-9 h-9 bg-[#D4A017] text-[#1E2A44] rounded-2xl flex items-center justify-center font-semibold shadow">
-                    {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
+                <div class="w-9 h-9 bg-[#D4A017] text-[#1E2A44] rounded-2xl flex items-center justify-center font-semibold shadow overflow-hidden">
+                    @if(Auth::user()->profile_pic)
+                        <img src="{{ asset('storage/' . Auth::user()->profile_pic) }}" alt="Profile" class="w-full h-full object-cover">
+                    @else
+                        {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
+                    @endif
                 </div>
             </a>
         </div>

@@ -7,12 +7,14 @@
         </div>
 
         <div class="space-y-6">
+        <form action="{{ route('seller.profile.update') }}" method="POST" enctype="multipart/form-data" id="profileForm">
+            @csrf
             <!-- Profile Information -->
             <div class="bg-(--card-bg) rounded-2xl shadow-sm p-6 hover:shadow-md transition-all duration-300">
                 <div class="flex items-start gap-6">
                     <!-- Profile Picture -->
                     <div id="profileContainer" class="relative group cursor-pointer">
-                        <img id="profilePreview" src="https://api.iconify.design/lucide/user.svg?color=%236b7280"
+                        <img id="profilePreview" src="{{ $user->profile_pic ? asset('storage/' . $user->profile_pic) : 'https://api.iconify.design/lucide/user.svg?color=%236b7280' }}"
                             alt="Profile"
                             class="w-24 h-24 rounded-full object-cover border border-(--text-color)/10 shadow bg-(--card-dark)">
 
@@ -29,7 +31,7 @@
                         </button>
 
                         <!-- Hidden File Input -->
-                        <input type="file" id="profileImage" accept="image/*" class="hidden">
+                        <input type="file" name="profile_pic" id="profileImage" accept="image/*" class="hidden">
                     </div>
 
                     <!-- Form Fields -->
@@ -87,23 +89,10 @@
                         </div>
                     </div>
                 </div>
-                <!-- Buttons -->
-                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mt-8">
-
-                    <button type="submit" id="saveProfileBtn"
-                        class="order-1 sm:order-2 inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-(--secondary-color) hover:bg-[#B94E31] text-(--text-light) rounded-2xl font-medium transition">
-                        Save &nbsp; Profile
-                    </button>
-                    <a href="#"
-                        class="order-2 sm:order-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 border border-(--secondary-color) text-(--text-color)! hover:bg-[#FFFAF5] bg-(--text-light) rounded-2xl font-medium transition">
-                        Discard &nbsp; Changes
-                    </a>
-
-                </div>
             </div>
 
             <!-- Shop Details -->
-            <div class="bg-(--card-bg) rounded-2xl shadow-sm p-6">
+            <div class="bg-(--card-bg) rounded-2xl shadow-sm p-6 mt-6">
                     <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
                         <i data-lucide="store"></i>
                         Shop Details
@@ -154,6 +143,7 @@
 
                 </div>
             </div>
+        </form>
             <!-- Security & Privacy -->
             <div class="bg-(--card-bg) rounded-2xl shadow-sm p-6 hover:shadow-md transition-all duration-300">
                 <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
