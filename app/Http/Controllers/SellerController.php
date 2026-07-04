@@ -252,7 +252,7 @@ class SellerController extends Controller
         ]);
 
         $basePrice = $validated['base_price'] ?? $product->price;
-        if (!empty($validated['discount_amount']) && $validated['discount_amount'] >= $basePrice) {
+        if (! empty($validated['discount_amount']) && $validated['discount_amount'] >= $basePrice) {
             return back()->withErrors(['discount_amount' => 'Discount must be less than the base price.'])->withInput();
         }
 
