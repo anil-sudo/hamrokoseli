@@ -93,75 +93,12 @@
                             </div>
                         </div>
                     </div>
-                @endif
 
-                <button
-                    class="wishlist-btn absolute bottom-4 right-4 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-xl drop-shadow"
-                    data-product-id="{{ $product->id }}"
-                    data-product-name="{{ $product->name }}"
-                    data-product-price="{{ $product->effectivePrice() }}"
-                    data-product-image="{{ $product->primaryImageUrl() }}"
-                    data-product-desc="{{ $product->description }}"
-                    data-product-category="{{ $product->category?->cat_name }}">
-                    <i class="far fa-heart"></i>
-                </button>
-
-            </div>
-
-            <div class="p-5 flex-grow flex flex-col justify-between">
-
-                <div>
-                    <span class="text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-1">
-                        {{ $product->category?->cat_name ?? 'General' }}
-                    </span>
-
-                    <h3 class="text-lg font-bold text-[#1F3D2E] mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1">
-                        {{ $product->name }}
-                    </h3>
-
-                    <span class="text-[#C65A3A] font-bold text-base block mb-4">
-                        Rs {{ number_format($product->effectivePrice(), 2) }}
-                    </span>
-                </div>
-
-                    <div class="flex gap-2 mt-auto">
-                        <a href="{{ route('viewdetails', $product->id) }}"
-                           class="view-details-btn flex-1 flex items-center justify-center gap-2 bg-[#1F3D2E] hover:bg-[#16301f] text-white text-sm font-semibold py-3 px-3 rounded-xl shadow-sm hover:shadow transition duration-300"
-                           data-id="{{ $product->id }}"
-                           data-name="{{ $product->name }}"
-                           data-price="{{ $product->effectivePrice() }}"
-                           data-original-price="{{ $product->originalPrice() }}"
-                           data-discount="{{ $product->hasDiscount() ? 'true' : 'false' }}"
-                           data-discount-price="{{ $product->resolvedDiscountPrice() ?? '' }}"
-                           data-image="{{ $product->primaryImageUrl() }}"
-                           data-category="{{ $product->category?->cat_name ?? 'Crafts' }}"
-                           data-vendor="{{ $product->vendor->business_name ?? $product->vendor->name ?? 'Local Artisan' }}"
-                           data-desc="{{ $product->description }}"
-                           data-rating="{{ $product->rating ?? 5 }}"
-                           data-reviews="{{ $product->reviews_count ?? 24 }}"
-                           data-stock="{{ $product->stock ?? 10 }}">
-                            <i class="fa-solid fa-circle-info text-xs"></i>
-                            Details
-                        </a>
-
-                        <button
-                            type="button"
-                            class="add-to-cart-btn flex-1 flex items-center justify-center gap-2 bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-sm font-semibold py-3 px-3 rounded-xl shadow-sm hover:shadow transition duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
-                            data-product-id="{{ $product->id }}"
-                            data-product-name="{{ $product->name }}"
-                            {{ ($product->stock ?? 0) < 1 ? 'disabled' : '' }}>
-                            <i class="fa-solid fa-cart-plus text-xs"></i>
-                            {{ ($product->stock ?? 0) < 1 ? 'Sold Out' : 'Add' }}
-                        </button>
+                @empty
+                    <div class="col-span-4 text-center py-12">
+                        <p class="text-[#3A2A1F]/60">No products found.</p>
                     </div>
-
-            </div>
-        </div>
-    @empty
-        <div class="col-span-3 text-center py-12">
-            No products found.
-        </div>
-    @endforelse
+                @endforelse
 
             </div>
 

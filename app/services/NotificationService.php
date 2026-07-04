@@ -19,35 +19,37 @@ class NotificationService
         // vendor_id + product name + quantity + subtotal
         $order->loadMissing(['user', 'orderItems.product']);
 
-        $customerName  = $order->user->name;
+        $customerName = $order->user->name;
         $paymentMethod = match ($order->payment_method) {
-            'cod'    => 'Cash on Delivery',
-            'esewa'  => 'eSewa',
+            'cod' => 'Cash on Delivery',
+            'esewa' => 'eSewa',
             'khalti' => 'Khalti',
-            default  => $order->payment_method,
+            default => $order->payment_method,
         };
 
         // One notification per vendor whose items are in this order
         foreach ($order->orderItems->groupBy('vendor_id') as $vendorId => $items) {
 
             $vendor = Vendor::find($vendorId);
-            if (! $vendor?->user_id) continue;
+            if (! $vendor?->user_id) {
+                continue;
+            }
 
             Notification::create([
                 'user_id' => $vendor->user_id,
-                'type'    => Notification::TYPE_ORDER_PLACED,
-                'title'   => 'New Order Received',
+                'type' => Notification::TYPE_ORDER_PLACED,
+                'title' => 'New Order Received',
                 // Store the exact fields we want to show — pulled straight
                 // from the order row that was just inserted
                 'message' => json_encode([
-                    'order_ref'      => '#HK-' . str_pad($order->id, 5, '0', STR_PAD_LEFT),
-                    'customer_name'  => $customerName,
+                    'order_ref' => '#HK-'.str_pad($order->id, 5, '0', STR_PAD_LEFT),
+                    'customer_name' => $customerName,
                     'payment_method' => $paymentMethod,
-                    'amount'         => 'Rs. ' . number_format($items->sum('subtotal'), 2),
-                    'quantity'       => $items->sum('quantity'),
-                    'products'       => $items->map(fn($i) => $i->product->name)->filter()->implode(', '),
-                    'order_status'   => $order->status,          // 'pending'
-                    'placed_at'      => $order->created_at->format('M j, Y  g:i A'),
+                    'amount' => 'Rs. '.number_format($items->sum('subtotal'), 2),
+                    'quantity' => $items->sum('quantity'),
+                    'products' => $items->map(fn ($i) => $i->product->name)->filter()->implode(', '),
+                    'order_status' => $order->status,          // 'pending'
+                    'placed_at' => $order->created_at->format('M j, Y  g:i A'),
                 ]),
                 'is_read' => false,
             ]);
@@ -63,30 +65,32 @@ class NotificationService
         $order->loadMissing(['user', 'orderItems.product', 'payment']);
 
         $customerName = $order->user->name;
-        $gateway      = match (strtolower($order->payment?->gateway ?? '')) {
-            'esewa'  => 'eSewa',
+        $gateway = match (strtolower($order->payment?->gateway ?? '')) {
+            'esewa' => 'eSewa',
             'khalti' => 'Khalti',
-            default  => ucfirst($order->payment_method),
+            default => ucfirst($order->payment_method),
         };
 
         foreach ($order->orderItems->groupBy('vendor_id') as $vendorId => $items) {
 
             $vendor = Vendor::find($vendorId);
-            if (! $vendor?->user_id) continue;
+            if (! $vendor?->user_id) {
+                continue;
+            }
 
             Notification::create([
                 'user_id' => $vendor->user_id,
-                'type'    => Notification::TYPE_PAYMENT_RECEIVED,
-                'title'   => 'Payment Received',
+                'type' => Notification::TYPE_PAYMENT_RECEIVED,
+                'title' => 'Payment Received',
                 'message' => json_encode([
-                    'order_ref'      => '#HK-' . str_pad($order->id, 5, '0', STR_PAD_LEFT),
-                    'customer_name'  => $customerName,
+                    'order_ref' => '#HK-'.str_pad($order->id, 5, '0', STR_PAD_LEFT),
+                    'customer_name' => $customerName,
                     'payment_method' => $gateway,
-                    'amount'         => 'Rs. ' . number_format($items->sum('subtotal'), 2),
-                    'quantity'       => $items->sum('quantity'),
-                    'products'       => $items->map(fn($i) => $i->product->name)->filter()->implode(', '),
-                    'order_status'   => 'confirmed',
-                    'placed_at'      => $order->created_at->format('M j, Y  g:i A'),
+                    'amount' => 'Rs. '.number_format($items->sum('subtotal'), 2),
+                    'quantity' => $items->sum('quantity'),
+                    'products' => $items->map(fn ($i) => $i->product->name)->filter()->implode(', '),
+                    'order_status' => 'confirmed',
+                    'placed_at' => $order->created_at->format('M j, Y  g:i A'),
                 ]),
                 'is_read' => false,
             ]);

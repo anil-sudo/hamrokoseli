@@ -50,7 +50,6 @@ Route::middleware(['auth', 'role:vendor'])->group(function () {
     Route::get('/create-ticket', [SellerController::class, 'createTicket'])->name('create-ticket');
     Route::get('/tickets', [SellerController::class, 'sellerTicket'])->name('seller-ticket');
     Route::get('/seller-notification', [SellerController::class, 'sellerNotification'])->name('seller-notification');
-    Route::post('/seller-payments/request', [SellerController::class, 'requestPayout'])->name('seller.payout.request');
 });
 
 // ─── Seller registration (public) ─────────────────────────────────────────────
@@ -149,8 +148,12 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/user-dashboard', [UserController::class, 'dashboard'])->name('Userdashboard');
 Route::get('/user-orders', [UserController::class, 'orders'])->name('User-orders');
 Route::get('/user-order-details', [UserController::class, 'orderDetail'])->name('order-detail');
+Route::patch('/user-orders/{order}/cancel', [UserController::class, 'cancelOrder'])->name('order.cancel');
 Route::get('/return-product', [UserController::class, 'returnProduct'])->name('return-product');
 Route::get('/user-profile', [UserController::class, 'userProfile'])->name('user-profile');
 Route::post('/user-profile', [UserController::class, 'updateProfile'])->name('user.profile.update');
+Route::post('/user-password', [UserController::class, 'updatePassword'])->name('user.password.update');
 Route::get('/user-notification', [UserController::class, 'userNotification'])->name('user-notification');
+Route::post('/user-notification/mark-all-read', [UserController::class, 'markAllNotificationsRead'])->name('user.notifications.markAllRead');
+Route::patch('/user-notification/{id}/read', [UserController::class, 'markNotificationRead'])->name('user.notifications.read');
 Route::redirect('/login.php', '/userlogin');

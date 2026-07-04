@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\DB;
 
 class Payout extends Model
 {
@@ -21,16 +20,19 @@ class Payout extends Model
     ];
 
     protected $casts = [
-        'gross_amount'  => 'decimal:2',
-        'platform_fee'  => 'decimal:2',
-        'amount'        => 'decimal:2',
-        'paid_at'       => 'datetime',
+        'gross_amount' => 'decimal:2',
+        'platform_fee' => 'decimal:2',
+        'amount' => 'decimal:2',
+        'paid_at' => 'datetime',
     ];
 
-    const STATUS_PENDING    = 'pending';
+    const STATUS_PENDING = 'pending';
+
     const STATUS_PROCESSING = 'processing';
-    const STATUS_COMPLETED  = 'completed';
-    const STATUS_FAILED     = 'failed';
+
+    const STATUS_COMPLETED = 'completed';
+
+    const STATUS_FAILED = 'failed';
 
     /** 3% platform fee deducted from vendor order earnings */
     const PLATFORM_FEE_RATE = 0.03;
@@ -81,13 +83,13 @@ class Payout extends Model
         $net = round($gross - $fee, 2);
 
         return static::create([
-            'vendor_id'    => $vendorId,
+            'vendor_id' => $vendorId,
             'gross_amount' => $gross,
             'platform_fee' => $fee,
-            'amount'       => $net,
-            'method'       => $method,
-            'status'       => self::STATUS_PENDING,
-            'notes'        => $notes,
+            'amount' => $net,
+            'method' => $method,
+            'status' => self::STATUS_PENDING,
+            'notes' => $notes,
         ]);
     }
 
@@ -100,9 +102,9 @@ class Payout extends Model
     public function markAsCompleted(?string $transactionId = null): bool
     {
         return $this->update([
-            'status'         => self::STATUS_COMPLETED,
+            'status' => self::STATUS_COMPLETED,
             'transaction_id' => $transactionId ?? $this->transaction_id,
-            'paid_at'        => now(),
+            'paid_at' => now(),
         ]);
     }
 

@@ -22,10 +22,10 @@ class VendorEarning extends Model
     ];
 
     protected $casts = [
-        'gross_amount'  => 'decimal:2',
-        'commission'    => 'decimal:2',
-        'platform_fee'  => 'decimal:2',
-        'net_amount'    => 'decimal:2',
+        'gross_amount' => 'decimal:2',
+        'commission' => 'decimal:2',
+        'platform_fee' => 'decimal:2',
+        'net_amount' => 'decimal:2',
     ];
 
     /*
@@ -35,7 +35,9 @@ class VendorEarning extends Model
     */
 
     const STATUS_PENDING = 'pending';
+
     const STATUS_CLEARED = 'cleared';
+
     const STATUS_ON_HOLD = 'on_hold';
 
     /*

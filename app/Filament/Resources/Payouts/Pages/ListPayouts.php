@@ -3,7 +3,6 @@
 namespace App\Filament\Resources\Payouts\Pages;
 
 use App\Filament\Resources\Payouts\PayoutResource;
-use App\Models\OrderItem;
 use App\Models\Payout;
 use App\Models\Vendor;
 use Filament\Actions\Action;
@@ -29,7 +28,7 @@ class ListPayouts extends ListRecords
                         ->label('Vendor')
                         ->options(
                             // Only vendors who have delivered order items
-                            Vendor::whereHas('orderItems', fn($q) => $q->where('status', 'delivered'))
+                            Vendor::whereHas('orderItems', fn ($q) => $q->where('status', 'delivered'))
                                 ->pluck('vendor_name', 'id')
                         )
                         ->searchable()
@@ -38,10 +37,10 @@ class ListPayouts extends ListRecords
                     Select::make('method')
                         ->label('Payment Method')
                         ->options([
-                            'eSewa'         => 'eSewa',
-                            'Khalti'        => 'Khalti',
+                            'eSewa' => 'eSewa',
+                            'Khalti' => 'Khalti',
                             'Bank Transfer' => 'Bank Transfer',
-                            'Cash'          => 'Cash',
+                            'Cash' => 'Cash',
                         ])
                         ->required(),
 
@@ -52,8 +51,8 @@ class ListPayouts extends ListRecords
                 ])
                 ->action(function (array $data) {
                     $gross = Payout::getTotalEarnings($data['vendor_id']);
-                    $fee   = round($gross * Payout::PLATFORM_FEE_RATE, 2);
-                    $net   = round($gross - $fee, 2);
+                    $fee = round($gross * Payout::PLATFORM_FEE_RATE, 2);
+                    $net = round($gross - $fee, 2);
 
                     $payout = Payout::createForVendor($data['vendor_id'], $data['method'], $data['notes'] ?? null);
 

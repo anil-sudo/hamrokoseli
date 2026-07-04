@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Notification;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Payment;
@@ -630,75 +631,74 @@ class SellerController extends Controller
         return view('seller.payment-details');
     }
 
-public function sellerNotification()
-{
-    $userId = auth()->id();
- 
-    // Order types map to "Orders" tab
-    $orderTypes = [
-        \App\Models\Notification::TYPE_ORDER_PLACED,
-        \App\Models\Notification::TYPE_ORDER_CONFIRMED,
-        \App\Models\Notification::TYPE_ORDER_SHIPPED,
-        \App\Models\Notification::TYPE_ORDER_DELIVERED,
-        \App\Models\Notification::TYPE_ORDER_CANCELLED,
-        \App\Models\Notification::TYPE_RETURN_REQUESTED,
-        \App\Models\Notification::TYPE_RETURN_APPROVED,
-    ];
- 
-    // Payout types map to "Payouts" tab
-    $payoutTypes = [
-        \App\Models\Notification::TYPE_PAYOUT_PROCESSED,
-        \App\Models\Notification::TYPE_PAYMENT_RECEIVED,
-    ];
- 
-    // Paginated list (all types, newest first)
-    $notifications = \App\Models\Notification::where('user_id', $userId)
-        ->latest('created_at')
-        ->paginate(10);
- 
-    // Unread counts per tab (used for badge numbers)
-    $counts = [
-        'all'     => \App\Models\Notification::where('user_id', $userId)->where('is_read', false)->count(),
-        'orders'  => \App\Models\Notification::where('user_id', $userId)->whereIn('type', $orderTypes)->where('is_read', false)->count(),
-        'payouts' => \App\Models\Notification::where('user_id', $userId)->whereIn('type', $payoutTypes)->where('is_read', false)->count(),
-        'store'   => \App\Models\Notification::where('user_id', $userId)
-                        ->whereNotIn('type', array_merge($orderTypes, $payoutTypes))
-                        ->where('is_read', false)
-                        ->count(),
-    ];
- 
-    return view('seller.notification', compact('notifications', 'counts'));
-}
- 
-/**
- * Mark a single notification as read (PATCH /seller-notification/{id}/read).
- * Only marks notifications that belong to the authenticated user.
- */
-public function markNotificationRead(int $id)
-{
-    $notification = \App\Models\Notification::where('user_id', auth()->id())
-        ->findOrFail($id);
- 
-    $notification->markAsRead();
- 
-    return response()->json(['success' => true]);
-}
- 
-/**
- * Mark ALL of the vendor's notifications as read (PATCH /seller-notification/read-all).
- */
-public function markAllNotificationsRead()
-{
-    \App\Models\Notification::where('user_id', auth()->id())
-        ->where('is_read', false)
-        ->update([
-            'is_read' => true,
-            'read_at' => now(),
-        ]);
- 
-    return response()->json(['success' => true]);
-}
+    public function sellerNotification()
+    {
+        $userId = auth()->id();
 
+        // Order types map to "Orders" tab
+        $orderTypes = [
+            Notification::TYPE_ORDER_PLACED,
+            Notification::TYPE_ORDER_CONFIRMED,
+            Notification::TYPE_ORDER_SHIPPED,
+            Notification::TYPE_ORDER_DELIVERED,
+            Notification::TYPE_ORDER_CANCELLED,
+            Notification::TYPE_RETURN_REQUESTED,
+            Notification::TYPE_RETURN_APPROVED,
+        ];
+
+        // Payout types map to "Payouts" tab
+        $payoutTypes = [
+            Notification::TYPE_PAYOUT_PROCESSED,
+            Notification::TYPE_PAYMENT_RECEIVED,
+        ];
+
+        // Paginated list (all types, newest first)
+        $notifications = Notification::where('user_id', $userId)
+            ->latest('created_at')
+            ->paginate(10);
+
+        // Unread counts per tab (used for badge numbers)
+        $counts = [
+            'all' => Notification::where('user_id', $userId)->where('is_read', false)->count(),
+            'orders' => Notification::where('user_id', $userId)->whereIn('type', $orderTypes)->where('is_read', false)->count(),
+            'payouts' => Notification::where('user_id', $userId)->whereIn('type', $payoutTypes)->where('is_read', false)->count(),
+            'store' => Notification::where('user_id', $userId)
+                ->whereNotIn('type', array_merge($orderTypes, $payoutTypes))
+                ->where('is_read', false)
+                ->count(),
+        ];
+
+        return view('seller.notification', compact('notifications', 'counts'));
+    }
+
+    /**
+     * Mark a single notification as read (PATCH /seller-notification/{id}/read).
+     * Only marks notifications that belong to the authenticated user.
+     */
+    public function markNotificationRead(int $id)
+    {
+        $notification = Notification::where('user_id', auth()->id())
+            ->findOrFail($id);
+
+        $notification->markAsRead();
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Mark ALL of the vendor's notifications as read (PATCH /seller-notification/read-all).
+     */
+    public function markAllNotificationsRead()
+    {
+        Notification::where('user_id', auth()->id())
+            ->where('is_read', false)
+            ->update([
+                'is_read' => true,
+                'read_at' => now(),
+            ]);
+
+        return response()->json(['success' => true]);
+    }
 
     public function sellerSupport()
     {

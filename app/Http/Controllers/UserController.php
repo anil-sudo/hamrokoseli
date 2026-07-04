@@ -138,14 +138,64 @@ class UserController extends Controller
         ));
     }
 
-    public function orders()
+    public function orders(Request $request)
     {
-        return view('user.orders');
+        $user = auth()->user();
+        $status = $request->query('status'); // null = all
+
+        $query = $user->orders()
+            ->with(['orderItems.product.images'])
+            ->latest();
+
+        if ($status && $status !== 'all') {
+            $query->where('status', $status);
+        }
+
+        $orders = $query->paginate(10)->withQueryString();
+
+        // Tab counts
+        $counts = [
+            'all' => $user->orders()->count(),
+            'pending' => $user->orders()->where('status', 'pending')->count(),
+            'confirmed' => $user->orders()->where('status', 'confirmed')->count(),
+            'shipped' => $user->orders()->where('status', 'shipped')->count(),
+            'delivered' => $user->orders()->where('status', 'delivered')->count(),
+            'cancelled' => $user->orders()->where('status', 'cancelled')->count(),
+        ];
+
+        return view('user.orders', compact('orders', 'counts', 'status'));
     }
 
-    public function orderDetail()
+    public function orderDetail(Request $request)
     {
-        return view('user.order-details');
+        $user = auth()->user();
+        $order = $user->orders()
+            ->with([
+                'orderItems.product.images',
+                'orderItems.variant',
+                'shippingAddress',
+                'payment',
+            ])
+            ->findOrFail($request->query('order'));
+
+        return view('user.order-details', compact('order'));
+    }
+
+    public function cancelOrder(Request $request, $orderId)
+    {
+        $order = auth()->user()->orders()->findOrFail($orderId);
+
+        if (! $order->isCancellable()) {
+            return redirect()
+                ->route('order-detail', ['order' => $orderId])
+                ->with('error', 'This order can no longer be cancelled.');
+        }
+
+        $order->cancel();
+
+        return redirect()
+            ->route('order-detail', ['order' => $orderId])
+            ->with('success', 'Your order has been cancelled successfully.');
     }
 
     public function returnProduct()
@@ -168,16 +218,26 @@ class UserController extends Controller
             'name' => 'required|string|max:100',
             'email' => 'required|email|max:150|unique:users,email,'.$user->id,
             'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:255',
             'profile_pic' => 'nullable|image|max:2048',
         ]);
 
         $user->name = $request->name;
         $user->email = $request->email;
         $user->phone = $request->phone;
+        $user->address = $request->address;
 
         if ($request->hasFile('profile_pic')) {
-            $path = $request->file('profile_pic')->store('profiles', 'public');
-            $user->profile_pic = $path;
+            // Delete old pic if exists
+            if ($user->profile_pic && \Storage::disk('public')->exists($user->profile_pic)) {
+                \Storage::disk('public')->delete($user->profile_pic);
+            }
+            $user->profile_pic = $request->file('profile_pic')->store('profiles', 'public');
+        }
+
+        if ($request->boolean('remove_pic') && $user->profile_pic) {
+            \Storage::disk('public')->delete($user->profile_pic);
+            $user->profile_pic = null;
         }
 
         $user->save();
@@ -185,8 +245,64 @@ class UserController extends Controller
         return redirect()->back()->with('success', 'Profile updated successfully.');
     }
 
-    public function userNotification()
+    public function updatePassword(Request $request)
     {
-        return view('user.notification');
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|min:8|confirmed',
+        ]);
+
+        $user = auth()->user();
+
+        if (! \Hash::check($request->current_password, $user->password)) {
+            return redirect()->back()
+                ->withErrors(['current_password' => 'Current password is incorrect.'])
+                ->withInput();
+        }
+
+        $user->password = \Hash::make($request->new_password);
+        $user->save();
+
+        return redirect()->back()->with('password_success', 'Password changed successfully.');
+    }
+
+    public function userNotification(Request $request)
+    {
+        $user = auth()->user();
+        $type = $request->query('type'); // orders | deliveries | account | null = all
+
+        $typeGroups = [
+            'orders' => ['order_placed', 'order_confirmed', 'order_cancelled'],
+            'deliveries' => ['order_shipped', 'order_delivered', 'return_requested', 'return_approved'],
+            'account' => ['payment_received', 'payout_processed'],
+        ];
+
+        $query = $user->appNotifications()->latest('created_at');
+
+        if ($type && isset($typeGroups[$type])) {
+            $query->whereIn('type', $typeGroups[$type]);
+        }
+
+        $notifications = $query->paginate(10)->withQueryString();
+        $unreadCount = $user->appNotifications()->where('is_read', false)->count();
+
+        return view('user.notification', compact('notifications', 'unreadCount', 'type'));
+    }
+
+    public function markNotificationRead(Request $request, $id)
+    {
+        $notification = auth()->user()->appNotifications()->findOrFail($id);
+        $notification->markAsRead();
+
+        return response()->json(['success' => true]);
+    }
+
+    public function markAllNotificationsRead(Request $request)
+    {
+        auth()->user()->appNotifications()
+            ->where('is_read', false)
+            ->update(['is_read' => true, 'read_at' => now()]);
+
+        return redirect()->back()->with('success', 'All notifications marked as read.');
     }
 }
