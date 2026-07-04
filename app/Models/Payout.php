@@ -4,37 +4,36 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 class Payout extends Model
 {
     protected $fillable = [
         'vendor_id',
+        'gross_amount',
+        'platform_fee',
         'amount',
         'method',
         'transaction_id',
         'status',
+        'notes',
         'paid_at',
     ];
 
     protected $casts = [
-        'amount' => 'decimal:2',
-        'paid_at' => 'datetime',
+        'gross_amount'  => 'decimal:2',
+        'platform_fee'  => 'decimal:2',
+        'amount'        => 'decimal:2',
+        'paid_at'       => 'datetime',
     ];
 
-    /*
-    |--------------------------------------------------------------------------
-    | Status Constants
-    |--------------------------------------------------------------------------
-    */
-
-    const STATUS_PENDING = 'pending';
-
+    const STATUS_PENDING    = 'pending';
     const STATUS_PROCESSING = 'processing';
+    const STATUS_COMPLETED  = 'completed';
+    const STATUS_FAILED     = 'failed';
 
-    const STATUS_COMPLETED = 'completed';
-
-    const STATUS_FAILED = 'failed';
+    /** 3% platform fee deducted from vendor order earnings */
+    const PLATFORM_FEE_RATE = 0.03;
 
     /*
     |--------------------------------------------------------------------------
@@ -42,58 +41,54 @@ class Payout extends Model
     |--------------------------------------------------------------------------
     */
 
-    /**
-     * The vendor receiving this payout.
-     */
     public function vendor(): BelongsTo
     {
         return $this->belongsTo(Vendor::class);
     }
 
-    /**
-     * The vendor earnings grouped under this payout.
-     * Requires a payout_id FK column on the vendor_earnings table.
-     *
-     * Add to vendor_earnings migration:
-     *   $table->foreignId('payout_id')->nullable()->constrained('payouts')->nullOnDelete();
-     */
-    public function earnings(): HasMany
-    {
-        return $this->hasMany(VendorEarning::class);
-    }
-
     /*
     |--------------------------------------------------------------------------
-    | Scopes
+    | Core Logic — reads directly from order_items
     |--------------------------------------------------------------------------
     */
 
-    public function scopePending($query)
+    /**
+     * Get total earnings for a vendor from delivered order items.
+     * Uses order_items.subtotal which is quantity × price.
+     */
+    public static function getTotalEarnings(int $vendorId): float
     {
-        return $query->where('status', self::STATUS_PENDING);
-    }
-
-    public function scopeProcessing($query)
-    {
-        return $query->where('status', self::STATUS_PROCESSING);
-    }
-
-    public function scopeCompleted($query)
-    {
-        return $query->where('status', self::STATUS_COMPLETED);
-    }
-
-    public function scopeFailed($query)
-    {
-        return $query->where('status', self::STATUS_FAILED);
+        return (float) OrderItem::where('vendor_id', $vendorId)
+            ->where('status', 'delivered')
+            ->sum('subtotal');
     }
 
     /**
-     * Filter payouts for a specific vendor.
+     * Create a payout for a vendor:
+     *  1. Sums subtotal from all delivered order_items for the vendor
+     *  2. Deducts 3% platform fee
+     *  3. Saves the payout record
      */
-    public function scopeForVendor($query, int $vendorId)
+    public static function createForVendor(int $vendorId, string $method, ?string $notes = null): ?static
     {
-        return $query->where('vendor_id', $vendorId);
+        $gross = static::getTotalEarnings($vendorId);
+
+        if ($gross <= 0) {
+            return null;
+        }
+
+        $fee = round($gross * self::PLATFORM_FEE_RATE, 2);
+        $net = round($gross - $fee, 2);
+
+        return static::create([
+            'vendor_id'    => $vendorId,
+            'gross_amount' => $gross,
+            'platform_fee' => $fee,
+            'amount'       => $net,
+            'method'       => $method,
+            'status'       => self::STATUS_PENDING,
+            'notes'        => $notes,
+        ]);
     }
 
     /*
@@ -102,39 +97,22 @@ class Payout extends Model
     |--------------------------------------------------------------------------
     */
 
-    /**
-     * Mark payout as processing.
-     */
+    public function markAsCompleted(?string $transactionId = null): bool
+    {
+        return $this->update([
+            'status'         => self::STATUS_COMPLETED,
+            'transaction_id' => $transactionId ?? $this->transaction_id,
+            'paid_at'        => now(),
+        ]);
+    }
+
     public function markAsProcessing(): bool
     {
         return $this->update(['status' => self::STATUS_PROCESSING]);
     }
 
-    /**
-     * Mark payout as completed and record the disbursement time.
-     */
-    public function markAsCompleted(?string $transactionId = null): bool
-    {
-        return $this->update([
-            'status' => self::STATUS_COMPLETED,
-            'transaction_id' => $transactionId ?? $this->transaction_id,
-            'paid_at' => now(),
-        ]);
-    }
-
-    /**
-     * Mark payout as failed.
-     */
     public function markAsFailed(): bool
     {
         return $this->update(['status' => self::STATUS_FAILED]);
-    }
-
-    /**
-     * Whether the payout has been disbursed successfully.
-     */
-    public function isCompleted(): bool
-    {
-        return $this->status === self::STATUS_COMPLETED;
     }
 }

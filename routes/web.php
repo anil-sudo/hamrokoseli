@@ -50,6 +50,7 @@ Route::middleware(['auth', 'role:vendor'])->group(function () {
     Route::get('/create-ticket', [SellerController::class, 'createTicket'])->name('create-ticket');
     Route::get('/tickets', [SellerController::class, 'sellerTicket'])->name('seller-ticket');
     Route::get('/seller-notification', [SellerController::class, 'sellerNotification'])->name('seller-notification');
+    Route::post('/seller-payments/request', [SellerController::class, 'requestPayout'])->name('seller.payout.request');
 });
 
 // ─── Seller registration (public) ─────────────────────────────────────────────

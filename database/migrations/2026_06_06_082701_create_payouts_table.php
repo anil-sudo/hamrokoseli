@@ -18,11 +18,21 @@ return new class extends Migration
                 ->constrained('vendors')
                 ->onDelete('cascade');
 
-            $table->decimal('amount', 12, 2)->comment('Total disbursed amount');
+            // Sum of vendor's net_amount earnings before platform fee
+            $table->decimal('gross_amount', 12, 2)->default(0)->comment('Total vendor earnings before 3% platform fee');
+
+            // 3% platform fee deducted
+            $table->decimal('platform_fee', 12, 2)->default(0)->comment('3% platform fee deducted from gross_amount');
+
+            // Final amount the vendor receives (gross_amount - platform_fee)
+            $table->decimal('amount', 12, 2)->comment('Net amount disbursed to vendor after fee');
+
             $table->string('method', 50)->comment('Bank transfer | eSewa | Khalti');
             $table->string('transaction_id', 150)->nullable()->comment('Bank/gateway transaction ref');
 
             $table->enum('status', ['pending', 'processing', 'completed', 'failed'])->default('pending');
+
+            $table->text('notes')->nullable()->comment('Admin notes for this payout');
 
             $table->timestamp('paid_at')->nullable()->comment('Disbursement timestamp');
 

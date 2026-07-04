@@ -1,6 +1,21 @@
 <x-seller_layout title="payment Management" searchPlaceholder="Search by Orders , products or analytics...">
     <!-- Main Content -->
     <div class="space-y-10">
+
+        <!-- Flash messages -->
+        @if (session('success'))
+            <div class="flex items-center gap-3 bg-emerald-50 border border-emerald-200 text-emerald-800 px-5 py-4 rounded-2xl">
+                <i data-lucide="circle-check" class="w-5 h-5 shrink-0"></i>
+                <span class="text-sm font-medium">{{ session('success') }}</span>
+            </div>
+        @endif
+        @if (session('error'))
+            <div class="flex items-center gap-3 bg-red-50 border border-red-200 text-red-700 px-5 py-4 rounded-2xl">
+                <i data-lucide="circle-x" class="w-5 h-5 shrink-0"></i>
+                <span class="text-sm font-medium">{{ session('error') }}</span>
+            </div>
+        @endif
+
         <!-- Header -->
         <div class="mb-6 animate-fadeIn">
             <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
@@ -258,251 +273,125 @@
                     class="w-10 h-10 rounded-full text-2xl text-gray-600 hover:text-gray-700 transition">&times;</button>
             </div>
 
-            <div class="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
+            <form method="POST" action="{{ route('seller.payout.request') }}" id="payoutForm">
+                @csrf
+                <div class="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
 
-                <!-- Balance Card -->
-                <div class="rounded-3xl bg-(--card-dark)/50 p-4 border border-(--text-color)/20">
-                    <p class="text-sm text-(--text-color)/90">Available Balance</p>
-                    <h3 class="text-3xl font-bold text-(--secondary-color) mt-1">
-                        Rs.{{ number_format($currentBalance, 2) }}
-                    </h3>
-                    <div class="mt-3 inline-flex items-center gap-2 bg-[#FFFCF8] px-3 py-1 rounded-full text-(--primary-color) text-sm">
-                        <i data-lucide="check-circle" class="w-4 h-4"></i>
-                        Available for payout
+                    <!-- Balance Card -->
+                    <div class="rounded-3xl bg-(--card-dark)/50 p-4 border border-(--text-color)/20">
+                        <p class="text-sm text-(--text-color)/90">Available Balance</p>
+                        <h3 class="text-3xl font-bold text-(--secondary-color) mt-1">
+                            Rs.{{ number_format($currentBalance, 2) }}
+                        </h3>
+                        <div class="mt-3 inline-flex items-center gap-2 bg-[#FFFCF8] px-3 py-1 rounded-full text-(--primary-color) text-sm">
+                            <i data-lucide="check-circle" class="w-4 h-4"></i>
+                            Available for payout
+                        </div>
+                    </div>
+
+                    <!-- Amount -->
+                    <div>
+                        <label class="text-sm font-medium text-(--text-dark)">Payout Amount</label>
+                        <div class="relative mt-2">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-(--text-color)/70">Rs.</span>
+                            <input id="payoutAmount" name="amount" oninput="formatAmount(this)" type="number"
+                                max="{{ $currentBalance }}" min="500" step="0.01"
+                                class="bg-(--card-dark) w-full pl-12 pr-4 py-4 border border-(--text-color)/20 rounded-2xl text-lg focus:outline-none focus:border-(--secondary-color) transition"
+                                placeholder="Enter amount">
+                        </div>
+                        <p class="text-xs text-(--text-color)/70 mt-2">
+                            Minimum Rs.500 &bull; Maximum Rs.{{ number_format($currentBalance, 2) }}
+                        </p>
+                    </div>
+
+                    <!-- Payment Method -->
+                    <div>
+                        <label class="block text-sm font-medium text-(--text-dark) mb-2">Payment Method</label>
+                        <select name="method" required
+                            class="w-full border border-(--text-color)/20 rounded-2xl px-4 py-3.5 bg-(--card-dark)/50 focus:outline-none focus:border-(--secondary-color) text-sm">
+                            <option value="">Select method</option>
+                            <option value="eSewa">eSewa</option>
+                            <option value="Khalti">Khalti</option>
+                            <option value="Bank Transfer">Bank Transfer</option>
+                            <option value="Cash">Cash</option>
+                        </select>
+                    </div>
+
+                    <!-- Summary — updates live as user types -->
+                    <div class="bg-(--card-dark)/50 rounded-3xl p-5">
+                        <h3 class="font-semibold mb-3">Payout Summary</h3>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span>Requested Amount</span>
+                                <span id="summaryAmount">Rs.0.00</span>
+                            </div>
+                            <div class="flex justify-between text-red-500">
+                                <span>Platform Fee (3%)</span>
+                                <span id="summaryFee">- Rs.0.00</span>
+                            </div>
+                            <hr>
+                            <div class="flex justify-between font-bold">
+                                <span>You Receive</span>
+                                <span id="summaryReceive" class="text-(--primary-color)">Rs.0.00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Info -->
+                    <div class="bg-(--secondary-color)/20 rounded-2xl p-4 text-sm">
+                        <p class="font-medium text-(--secondary-color)">
+                            <i data-lucide="info" class="inline mr-1 w-4 h-4"></i>
+                            Payout Information
+                        </p>
+                        <ul class="list-disc pl-5 mt-2 text-(--secondary-color)">
+                            <li>A 3% platform fee is deducted from your requested amount</li>
+                            <li>Processed within 1–2 business days</li>
+                            <li>Email notification will be sent on completion</li>
+                        </ul>
                     </div>
                 </div>
 
-                <!-- Amount -->
-                <div>
-                    <label class="text-sm font-medium text-(--text-dark)">Payout Amount</label>
-                    <div class="relative mt-2">
-                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-(--text-color)/70">Rs.</span>
-                        <input id="payoutAmount" oninput="formatAmount(this)" type="number"
-                            max="{{ $currentBalance }}"
-                            class="bg-(--card-dark) w-full pl-12 pr-4 py-4 border border-(--text-color)/20 rounded-2xl text-lg focus:outline-none focus:border-(--secondary-color) transition"
-                            placeholder="Enter amount">
-                    </div>
-                    <p class="text-xs text-(--text-color)/70 mt-2">
-                        Minimum Rs.500 &bull; Maximum Rs.{{ number_format($currentBalance, 2) }}
-                    </p>
+                <!-- Footer -->
+                <div class="border-t p-4 grid grid-cols-2 gap-3">
+                    <button type="button" onclick="closePayoutModal()"
+                        class="py-3 rounded-2xl border border-(--secondary-color) hover:bg-gray-50 transition">
+                        Cancel
+                    </button>
+                    <button type="submit" id="submitPayoutBtn"
+                        class="py-3 rounded-2xl bg-(--secondary-color) text-white font-semibold hover:bg-[#B94E31] transition">
+                        Request Payout
+                    </button>
                 </div>
-
-                <!-- Payment Method -->
-                <div>
-                    <label class="block text-sm font-medium text-(--text-dark) mb-2">Payment Method</label>
-                    <div class="border border-(--text-color)/20 rounded-2xl p-5 bg-(--card-dark)/50">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-4">
-                                <div class="w-10 h-10 bg-[#FFFCF8] rounded-xl flex items-center justify-center text-2xl">
-                                    <i data-lucide="landmark"></i>
-                                </div>
-                                <div>
-                                    <p class="font-semibold">Bank Transfer</p>
-                                    <p class="text-sm text-(--text-color)/80">Add your bank account below</p>
-                                </div>
-                            </div>
-                            <button onclick="toggleBankInfo()"
-                                class="px-5 py-2.5 text-sm font-medium text-(--secondary-color) border border-(--text-color)/20 focus:outline-none focus:border-(--secondary-color) rounded-xl">
-                                Change Bank
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Bank Information Form -->
-                <div id="bankInfoSection" class="hidden bg-(--card-dark)/50 border border-(--text-color)/20 rounded-2xl p-6">
-                    <h3 class="font-semibold text-(--text-color) mb-5">Bank Information</h3>
-                    <form id="bankForm" class="space-y-5">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-xs font-medium text-brand-dark mb-1">
-                                    Account Holder Name <span class="text-(--secondary-color)">*</span>
-                                </label>
-                                <input type="text" id="accName"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-(--secondary-color)">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-brand-dark mb-1">
-                                    Bank Name <span class="text-(--secondary-color)">*</span>
-                                </label>
-                                <input type="text" id="bankName"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-(--secondary-color)">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-brand-dark mb-1">
-                                    Account Number <span class="text-(--secondary-color)">*</span>
-                                </label>
-                                <input type="text" id="accNumber"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-(--secondary-color)">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-brand-dark mb-1">
-                                    Account Type <span class="text-(--secondary-color)">*</span>
-                                </label>
-                                <select id="accType" name="accType"
-                                    class="w-full border border-(--text-color)/20 rounded-xl px-4 py-3 focus:outline-none focus:border-(--secondary-color)">
-                                    <option value="" selected>Select Account Type</option>
-                                    <option value="Savings">Savings</option>
-                                    <option value="Current">Current</option>
-                                    <option value="Fixed Deposit">Fixed Deposit</option>
-                                </select>
-                            </div>
-                            <div class="col-span-2">
-                                <label class="block text-xs font-medium text-brand-dark mb-1">
-                                    Branch Name <span class="text-gray-500 text-xs">(optional)</span>
-                                </label>
-                                <input type="text" id="branchName"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-(--secondary-color)">
-                            </div>
-                        </div>
-                        <div class="flex gap-3 pt-4">
-                            <button type="button" onclick="cancelBankEdit()"
-                                class="flex-1 py-3.5 text-gray-700 font-medium border border-(--text-color)/20 rounded-2xl hover:bg-gray-50 focus:outline-none">
-                                Cancel
-                            </button>
-                            <button type="button" onclick="saveBankInfo()"
-                                class="flex-1 py-3.5 bg-(--secondary-color) hover:bg-[#B94E31] text-white font-semibold rounded-2xl">
-                                Save Changes
-                            </button>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Summary -->
-                <div class="bg-(--card-dark)/50 rounded-3xl p-5">
-                    <h3 class="font-semibold mb-3">Payout Summary</h3>
-                    <div class="space-y-2 text-sm">
-                        <div class="flex justify-between">
-                            <span>Requested Amount</span>
-                            <span id="summaryAmount">Rs.0.00</span>
-                        </div>
-                        <div class="flex justify-between">
-                            <span>Processing Fee</span>
-                            <span>Rs.0.00</span>
-                        </div>
-                        <hr>
-                        <div class="flex justify-between font-bold">
-                            <span>You Receive</span>
-                            <span id="summaryReceive" class="text-(--primary-color)">Rs.0.00</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Info -->
-                <div class="bg-(--secondary-color)/20 rounded-2xl p-4 text-sm">
-                    <p class="font-medium text-(--secondary-color)">
-                        <i data-lucide="info" class="inline mr-1 w-4 h-4"></i>
-                        Payout Information
-                    </p>
-                    <ul class="list-disc pl-5 mt-2 text-(--secondary-color)">
-                        <li>Processed within 1–2 business days</li>
-                        <li>Email notification will be sent on completion</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- Footer -->
-            <div class="border-t p-4 grid grid-cols-2 gap-3">
-                <button onclick="closePayoutModal()"
-                    class="py-3 rounded-2xl border border-(--secondary-color) hover:bg-gray-50 transition">
-                    Cancel
-                </button>
-                <button onclick="requestPayout()"
-                    class="py-3 rounded-2xl bg-(--secondary-color) text-white font-semibold hover:bg-[#B94E31] transition">
-                    Request Payout
-                </button>
-            </div>
+            </form>
         </div>
     </div>
 
     <script>
         const maxBalance = {{ $currentBalance }};
+        const FEE_RATE   = 0.03; // 3% platform fee
 
         function openPayoutModal() {
-            const modal = document.getElementById('payoutModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            document.getElementById('bankInfoSection').classList.add('hidden');
+            document.getElementById('payoutModal').classList.remove('hidden');
+            document.getElementById('payoutModal').classList.add('flex');
         }
 
         function closePayoutModal() {
-            const modal = document.getElementById('payoutModal');
-            modal.classList.remove('flex');
-            modal.classList.add('hidden');
+            document.getElementById('payoutModal').classList.remove('flex');
+            document.getElementById('payoutModal').classList.add('hidden');
         }
 
-        function toggleBankInfo() {
-            document.getElementById('bankInfoSection').classList.toggle('hidden');
-        }
-
-        function cancelBankEdit() {
-            document.getElementById('bankInfoSection').classList.add('hidden');
+        function fmt(n) {
+            return 'Rs.' + n.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
         }
 
         function formatAmount(input) {
-            let value = input.value.replace(/[^0-9]/g, '');
-            input.value = value;
-            const amount = parseFloat(value) || 0;
-            const formatted = 'Rs.' + amount.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-            document.getElementById('summaryAmount').textContent = formatted;
-            document.getElementById('summaryReceive').textContent = formatted;
-        }
+            const amount = parseFloat(input.value) || 0;
+            const fee    = Math.round(amount * FEE_RATE * 100) / 100;
+            const net    = Math.round((amount - fee) * 100) / 100;
 
-        function showError(input, message) {
-            removeError(input);
-            const error = document.createElement('p');
-            error.className = 'text-red-500 text-xs mt-2 error';
-            error.innerText = message;
-            input.parentElement.parentElement.appendChild(error);
-            input.classList.add('border-red-500');
-        }
-
-        function removeError(input) {
-            const error = input.closest('div').querySelector('.error');
-            if (error) error.remove();
-            input.classList.remove('border-red-500');
-        }
-
-        function requestPayout() {
-            const amount = document.getElementById('payoutAmount');
-            let valid = true;
-
-            if (!amount.value) {
-                showError(amount, 'Please enter a payout amount');
-                valid = false;
-            } else if (parseFloat(amount.value) < 500) {
-                showError(amount, 'Minimum payout amount is Rs.500');
-                valid = false;
-            } else if (parseFloat(amount.value) > maxBalance) {
-                showError(amount, 'Amount exceeds your available balance of Rs.' + maxBalance.toFixed(2));
-                valid = false;
-            } else {
-                removeError(amount);
-            }
-
-            if (!valid) return;
-            closePayoutModal();
-        }
-
-        function saveBankInfo() {
-            let valid = true;
-            const fields = [
-                { id: 'accName',   msg: 'Account holder name required' },
-                { id: 'bankName',  msg: 'Bank name required' },
-                { id: 'accNumber', msg: 'Account number required' },
-                { id: 'accType',   msg: 'Account type required' },
-            ];
-            fields.forEach(field => {
-                const input = document.getElementById(field.id);
-                if (!input.value.trim()) {
-                    showError(input, field.msg);
-                    valid = false;
-                } else {
-                    removeError(input);
-                }
-            });
-            if (!valid) return;
-            document.getElementById('bankInfoSection').classList.add('hidden');
+            document.getElementById('summaryAmount').textContent  = fmt(amount);
+            document.getElementById('summaryFee').textContent     = '- ' + fmt(fee);
+            document.getElementById('summaryReceive').textContent = fmt(net);
         }
     </script>
 </x-seller_layout>

@@ -12,17 +12,20 @@ class VendorEarning extends Model
     protected $fillable = [
         'vendor_id',
         'order_item_id',
+        'payout_id',
         'gross_amount',
         'commission',
+        'platform_fee',
         'net_amount',
         'quantity',
         'status',
     ];
 
     protected $casts = [
-        'gross_amount' => 'decimal:2',
-        'commission' => 'decimal:2',
-        'net_amount' => 'decimal:2',
+        'gross_amount'  => 'decimal:2',
+        'commission'    => 'decimal:2',
+        'platform_fee'  => 'decimal:2',
+        'net_amount'    => 'decimal:2',
     ];
 
     /*
@@ -32,9 +35,7 @@ class VendorEarning extends Model
     */
 
     const STATUS_PENDING = 'pending';
-
     const STATUS_CLEARED = 'cleared';
-
     const STATUS_ON_HOLD = 'on_hold';
 
     /*
@@ -43,20 +44,22 @@ class VendorEarning extends Model
     |--------------------------------------------------------------------------
     */
 
-    /**
-     * The vendor this earning belongs to.
-     */
     public function vendor(): BelongsTo
     {
         return $this->belongsTo(Vendor::class);
     }
 
-    /**
-     * The order item that generated this earning.
-     */
     public function orderItem(): BelongsTo
     {
         return $this->belongsTo(OrderItem::class);
+    }
+
+    /**
+     * The payout this earning was settled in (nullable until paid).
+     */
+    public function payout(): BelongsTo
+    {
+        return $this->belongsTo(Payout::class);
     }
 
     /*
@@ -85,6 +88,12 @@ class VendorEarning extends Model
         return $query->where('vendor_id', $vendorId);
     }
 
+    /** Earnings not yet attached to any payout. */
+    public function scopeUnpaid($query)
+    {
+        return $query->whereNull('payout_id');
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Helpers
@@ -109,5 +118,14 @@ class VendorEarning extends Model
     public function markAsOnHold(): bool
     {
         return $this->update(['status' => self::STATUS_ON_HOLD]);
+    }
+
+    /**
+     * Amount the vendor actually receives after the platform fee.
+     * = gross_amount - commission - platform_fee
+     */
+    public function payableAmount(): float
+    {
+        return (float) $this->net_amount - (float) $this->platform_fee;
     }
 }

@@ -1,167 +1,203 @@
 <x-seller_layout title="Seller Notification">
     <div class="space-y-10">
-        <!-- Notifications Header -->
+
+        {{-- Header --}}
         <div class="flex flex-col md:flex-row md:items-center md:justify-between items-start gap-4 mb-8">
             <div>
                 <h1 class="text-3xl font-bold text-(--text-color)">Notifications</h1>
-                <p class="text-sm text-(--text-color)/70 mt-1">Stay updated with your orders, payouts, and store
-                    activities.</p>
+                <p class="text-sm text-(--text-color)/70 mt-1">Stay updated with your orders, payouts, and store activities.</p>
             </div>
-            <button onclick="markAllAsRead()"
-                class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-(--text-dark) bg-(--text-light) border border-(--text-color)/20 rounded-2xl">
-                <i data-lucide="check" class="w-5 h-5"></i>
-                Mark all as read
-            </button>
+            @if($notifications->isNotEmpty())
+                <button onclick="markAllAsRead()"
+                    class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-(--text-dark) bg-(--text-light) border border-(--text-color)/20 rounded-2xl hover:border-(--secondary-color) transition-colors">
+                    <i data-lucide="check" class="w-4 h-4"></i>
+                    Mark all as read
+                </button>
+            @endif
         </div>
 
-        <!-- Tabs -->
-        <div class="flex flex-wrap border-b border-(--secondary-color)/20 mb-8">
-            <button onclick="switchTab(0)"
-                class="tab-button active flex-1 sm:flex-none px-4 sm:px-8 py-3 sm:py-4 text-sm font-semibold  text-(--secondary-color) border-b-2 border-(--secondary-color)">
-                All
-            </button>
-
-            <button onclick="switchTab(1)"
-                class="tab-button flex-1 sm:flex-none px-4 sm:px-8 py-3 sm:py-4 text-sm font-semibold text-(--text-color) border-b-2 border-transparent">
-                Orders
-            </button>
-
-            <button onclick="switchTab(2)"
-                class="tab-button flex-1 sm:flex-none px-4 sm:px-8 py-3 sm:py-4 text-sm font-semibold text-(--text-color) border-b-2 border-transparent">
-                Payouts
-            </button>
-
-            <button onclick="switchTab(3)"
-                class="tab-button flex-1 sm:flex-none px-4 sm:px-8 py-3 sm:py-4 text-sm font-semibold text-(--text-color) border-b-2 border-transparent">
-                Store
-            </button>
+        {{-- Tabs --}}
+        <div class="relative flex flex-nowrap bg-(--card-bg) rounded-3xl p-1 shadow-sm overflow-x-auto scrollbar-hide mb-8">
+            @foreach(['all' => 'All', 'orders' => 'Orders', 'payouts' => 'Payouts', 'store' => 'Store'] as $key => $label)
+                <button onclick="switchTab('{{ $key }}')" data-tab="{{ $key }}"
+                    class="tab-button relative z-10 px-5 py-3 sm:px-6 sm:py-3.5 rounded-3xl font-medium text-sm transition-all duration-200 whitespace-nowrap
+                        {{ $key === 'all' ? 'bg-(--secondary-color) text-white' : 'text-(--text-dark)' }}">
+                    {{ $label }}
+                    @if(($counts[$key] ?? 0) > 0)
+                        <span class="ml-1 text-xs bg-white/25 rounded-full px-1.5 py-0.5">{{ $counts[$key] }}</span>
+                    @endif
+                </button>
+            @endforeach
         </div>
 
-        <!-- Recent Notifications -->
-        <div class="space-y-6">
-            <!-- New Order -->
-            <div
-                class="bg-(--card-bg) rounded-2xl p-6 shadow-sm hover:shadow-md border border-(--text-color)/20 flex gap-5 transition-all duration-300">
-                <div class="w-12 h-12 bg-(--hover-color)/10 rounded-2xl flex items-center justify-center flex-shrink-0">
-                    <span class="text-3xl"><i data-lucide="archive" class="text-(--hover-color)"></i></span>
-                </div>
-                <div class="flex-1">
-                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-                        <h3 class="font-semibold text-lg text-(--text-color)">New Order Received</h3>
-                        <span
-                            class="text-xs text-(--primary-color) font-medium bg-(--primary-color)/20 px-3 py-1.5 rounded-2xl rounded-full w-fit">Just
-                            now</span>
-                    </div>
-                    <p class="text-(--text-color)/90 mt-1 text-base">Order <strong>#HK-9945</strong> from Sujata Sharma
-                        • Rs. 2,850</p>
-                    <p class="text-sm text-(--text-color)/60 mt-2">Gift Basket "Festive Delight" for delivery in
-                        Kathmandu</p>
-                    <div class="flex gap-3 mt-5">
-                        <a href="{{ route('order') }}"
-                            class="px-6 py-2.5 bg-(--secondary-color) hover:bg-[#B94E31] text-white rounded-xl text-sm font-medium transition-colors">
-                            View Order
-                        </a>
-                    </div>
-                </div>
-            </div>
+        {{-- Cards --}}
+        <div class="space-y-4" id="notification-list">
+            @forelse($notifications as $notification)
+                @php
+                    $d = json_decode($notification->message, true) ?? [];
 
-            <!-- Order Shipped -->
-            <div
-                class="bg-(--card-bg) rounded-2xl p-6 shadow-sm hover:shadow-md border border-(--text-color)/20 flex gap-5 transition-all duration-300">
-                <div
-                    class="w-12 h-12 bg-(--primary-color)/20 rounded-2xl flex items-center justify-center flex-shrink-0">
-                    <span class="text-3xl"><i data-lucide="truck" class="text-(--primary-color)"></i></span>
-                </div>
-                <div class="flex-1">
-                    <div class="flex justify-between">
-                        <h3 class="font-semibold text-lg text-(--text-color)">Order Shipped</h3>
-                        <span class="text-xs text-(--text-color)/60">2 hours ago</span>
-                    </div>
-                    <p class="text-(--text-color)/90 mt-1 text-base">You shipped Order <strong>#HK-9921</strong> for
-                        customer
-                        Ramesh Thapa
-                    </p>
-                    <div class="mt-4 flex items-center gap-2 text-sm text-(--text-color)/60">
-                        <span class="px-3 py-1 bg-(--primary-color)/10 rounded-lg">Tracking ID: NP98765432</span>
-                    </div>
-                </div>
-            </div>
+                    $isOrder  = in_array($notification->type, ['order_placed','order_confirmed','order_shipped','order_delivered','order_cancelled','return_requested','return_approved']);
+                    $isPayout = in_array($notification->type, ['payout_processed','payment_received']);
+                    $tab      = $isOrder ? 'orders' : ($isPayout ? 'payouts' : 'store');
 
-            <!-- Payout Processed -->
-            <div
-                class="bg-(--card-bg) rounded-2xl p-6 shadow-sm hover:shadow-md border border-(--text-color)/20 flex gap-5 transition-all duration-300">
-                <div class="w-12 h-12 bg-(--text-color)/20 rounded-2xl flex items-center justify-center flex-shrink-0">
-                    <span class="text-3xl"><i data-lucide="wallet-cards" class="text-(--text-color)"></i></span>
-                </div>
-                <div class="flex-1">
-                    <div class="flex justify-between">
-                        <h3 class="font-semibold text-lg text-(--text-color)">Payout Processed</h3>
-                        <span class="text-xs text-(--text-color)/60 ">Yesterday</span>
-                    </div>
-                    <p class="text-(--text-color)/90 mt-1 text-base">Your weekly payout of <strong>Rs. 48,750</strong>
-                        has been
-                        transferred
-                        to your account ending ****6742</p>
-                    <a href="{{ route('seller.payment') }}"
-                        class="text-(--secondary-color) text-sm font-medium mt-4 inline-flex items-center gap-1 hover:underline">
-                        View Transaction Receipt
-                        <i data-lucide="arrow-right" class="w-3 h-3"></i>
-                    </a>
-                </div>
-            </div>
+                    $icon = match($notification->type) {
+                        'order_placed'     => 'archive',
+                        'order_confirmed'  => 'package-check',
+                        'order_shipped'    => 'truck',
+                        'order_delivered'  => 'circle-check',
+                        'order_cancelled'  => 'x-circle',
+                        'return_requested' => 'undo-2',
+                        'return_approved'  => 'refresh-ccw',
+                        'payment_received' => 'banknote',
+                        'payout_processed' => 'wallet-cards',
+                        default            => 'bell',
+                    };
+                @endphp
 
-            <!-- Low Stock Alert -->
-            <div
-                class="bg-(--card-bg) rounded-2xl p-6 shadow-sm hover:shadow-md border border-(--text-color)/20 flex gap-5 transition-all duration-300">
-                <div
-                    class="w-12 h-12 bg-(--secondary-color)/20 rounded-2xl flex items-center justify-center flex-shrink-0">
-                    <span class="text-3xl"><i data-lucide="alert-triangle" class="text-(--secondary-color)"></i></span>
-                </div>
-                <div class="flex-1">
-                    <div class="flex justify-between">
-                        <h3 class="font-semibold text-lg text-(--secondary-color)">Low Stock Alert</h3>
-                        <span class="text-xs text-(--text-color)/60">3 days ago</span>
+                <div class="notification-card bg-(--card-bg) rounded-2xl shadow-sm border transition-all duration-200
+                        {{ $notification->is_read ? 'border-(--text-color)/10 opacity-60' : 'border-(--secondary-color)/40' }}"
+                    data-id="{{ $notification->id }}"
+                    data-tab="{{ $tab }}">
+
+                    <div class="p-5">
+                        {{-- Top row --}}
+                        <div class="flex items-start justify-between gap-3 mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-9 h-9 rounded-xl bg-(--card-dark) flex items-center justify-center flex-shrink-0">
+                                    <i data-lucide="{{ $icon }}" class="w-4 h-4 text-(--secondary-color)"></i>
+                                </div>
+                                <div>
+                                    <span class="font-semibold text-(--text-color)">{{ $notification->title }}</span>
+                                    @if(!$notification->is_read)
+                                        <span class="inline-block w-1.5 h-1.5 bg-(--secondary-color) rounded-full ml-1.5 align-middle"></span>
+                                    @endif
+                                    <p class="text-xs text-(--text-color)/50 mt-0.5">{{ $notification->created_at->diffForHumans() }}</p>
+                                </div>
+                            </div>
+                            @if(!$notification->is_read)
+                                <button onclick="markAsRead({{ $notification->id }}, this)"
+                                    class="text-xs text-(--text-color)/40 hover:text-(--secondary-color) transition-colors whitespace-nowrap flex-shrink-0">
+                                    Mark read
+                                </button>
+                            @endif
+                        </div>
+
+                        @if(!empty($d) && isset($d['order_ref']))
+                            {{-- Order detail rows — data pulled straight from the order at checkout --}}
+                            <div class="rounded-xl bg-(--card-dark)/40 divide-y divide-(--text-color)/10 text-sm mb-4">
+
+                                <div class="flex items-center justify-between px-4 py-2.5">
+                                    <span class="text-(--text-color)/50">Order</span>
+                                    <span class="font-semibold text-(--text-color)">{{ $d['order_ref'] }}</span>
+                                </div>
+
+                                <div class="flex items-center justify-between px-4 py-2.5">
+                                    <span class="text-(--text-color)/50">Customer</span>
+                                    <span class="font-medium text-(--text-color)">{{ $d['customer_name'] }}</span>
+                                </div>
+
+                                <div class="flex items-center justify-between px-4 py-2.5">
+                                    <span class="text-(--text-color)/50">Payment</span>
+                                    <span class="font-medium text-(--text-color)">{{ $d['payment_method'] }}</span>
+                                </div>
+
+                                <div class="flex items-center justify-between px-4 py-2.5">
+                                    <span class="text-(--text-color)/50">Amount</span>
+                                    <span class="font-semibold text-(--text-color)">{{ $d['amount'] }}</span>
+                                </div>
+
+                                <div class="flex items-center justify-between px-4 py-2.5">
+                                    <span class="text-(--text-color)/50">Items</span>
+                                    <span class="text-(--text-color)/80 text-right max-w-[60%] truncate">
+                                        {{ $d['quantity'] }} × {{ $d['products'] }}
+                                    </span>
+                                </div>
+
+                                <div class="flex items-center justify-between px-4 py-2.5">
+                                    <span class="text-(--text-color)/50">Placed</span>
+                                    <span class="text-(--text-color)/70">{{ $d['placed_at'] }}</span>
+                                </div>
+
+                            </div>
+
+                            <a href="{{ route('order') }}"
+                                class="inline-flex items-center gap-2 px-5 py-2 bg-(--secondary-color) hover:bg-[#B94E31] text-white rounded-xl text-sm font-medium transition-colors">
+                                View Order
+                                <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                            </a>
+
+                        @else
+                            {{-- Plain text fallback for payout / store notifications --}}
+                            <p class="text-sm text-(--text-color)/80 mb-3">{{ $notification->message }}</p>
+                            @if($isPayout)
+                                <a href="{{ route('seller.payment') }}"
+                                    class="inline-flex items-center gap-1 text-(--secondary-color) text-sm font-medium hover:underline">
+                                    View Payment <i data-lucide="arrow-right" class="w-3 h-3"></i>
+                                </a>
+                            @endif
+                        @endif
                     </div>
-                    <p class="text-(--text-color)/90 mt-1 text-base">"Premium Dry Fruit Basket" is running low (only 7
-                        left in
-                        stock)</p>
-                    <a href="{{ route('product-management') }}"
-                        class="mt-4 inline-flex items-center justify-center px-5 py-2 bg-(--secondary-color) text-white text-sm rounded-xl hover:bg-[#B94E31] transition-colors">
-                        Restock Now
-                    </a>
                 </div>
-            </div>
+
+            @empty
+                <div class="text-center py-24 text-(--text-color)/30">
+                    <i data-lucide="bell-off" class="w-12 h-12 mx-auto mb-4"></i>
+                    <p class="text-lg font-medium">No notifications yet</p>
+                    <p class="text-sm mt-1">You're all caught up!</p>
+                </div>
+            @endforelse
         </div>
+
+        @if($notifications->hasPages())
+            <div class="mt-8">{{ $notifications->links() }}</div>
+        @endif
     </div>
 
     <script>
-        function switchTab(tabIndex) {
-            document.querySelectorAll('.tab-button').forEach((btn, i) => {
-
-                if (i === tabIndex) {
-                    btn.classList.add(
-                        'text-(--secondary-color)',
-                        'border-(--secondary-color)',
-                        'border-b-2'
-                    );
-
-                    btn.classList.remove(
-                        'text-(--text-color)',
-                        'border-transparent'
-                    );
-
-                } else {
-                    btn.classList.remove(
-                        'text-(--secondary-color)',
-                        'border-(--secondary-color)'
-                    );
-
-                    btn.classList.add(
-                        'text-(--text-color)',
-                        'border-transparent'
-                    );
-                }
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                const on = btn.dataset.tab === tab;
+                btn.classList.toggle('bg-(--secondary-color)', on);
+                btn.classList.toggle('text-white', on);
+                btn.classList.toggle('text-(--text-dark)', !on);
+            });
+            document.querySelectorAll('.notification-card').forEach(card => {
+                card.style.display = (tab === 'all' || card.dataset.tab === tab) ? '' : 'none';
             });
         }
+
+        function markAsRead(id, btn) {
+            fetch(`/seller-notification/${id}/read`, {
+                method: 'PATCH',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                },
+            })
+            .then(r => r.ok ? r.json() : Promise.reject())
+            .then(() => {
+                const card = btn.closest('.notification-card');
+                card.classList.add('opacity-60', 'border-(--text-color)/10');
+                card.classList.remove('border-(--secondary-color)/40');
+                card.querySelector('span.bg-\\(--secondary-color\\).rounded-full')?.remove();
+                btn.remove();
+            });
+        }
+
+        function markAllAsRead() {
+            fetch('/seller-notification/read-all', {
+                method: 'PATCH',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                    'Accept': 'application/json',
+                },
+            })
+            .then(r => r.ok ? r.json() : Promise.reject())
+            .then(() => location.reload());
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        });
     </script>
 </x-seller_layout>
