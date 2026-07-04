@@ -218,6 +218,111 @@ class SellerController extends Controller
         return view('seller.product-edit', compact('product', 'categories'));
     }
 
+    public function update(Request $request, $id)
+    {
+        $product = Product::where('vendor_id', auth()->user()->vendor->id)->findOrFail($id);
+
+        $validated = $request->validate([
+            'product_name' => 'required|string|max:200',
+            'category' => 'required|exists:categories,id',
+            'product_type' => 'nullable|string|max:100',
+            'description' => 'required|string|max:2000',
+            'base_price' => 'nullable|numeric|min:0',
+            'discounted_price' => 'nullable|numeric|min:0',
+            'sku' => 'nullable|string|max:100|unique:products,sku,' . $product->id,
+            'stock' => 'nullable|integer|min:0',
+            'specifications' => 'nullable|array',
+            'specifications.*.key' => 'nullable|string|max:100',
+            'specifications.*.value' => 'nullable|string|max:255',
+            'variants' => 'nullable|array',
+            'variants.*.id' => 'nullable|integer',
+            'variants.*.sku' => 'required_with:variants|string|max:100|distinct',
+            'variants.*.size' => 'nullable|string|max:50',
+            'variants.*.color' => 'nullable|string|max:50',
+            'variants.*.price' => 'nullable|numeric|min:0',
+            'variants.*.stock' => 'nullable|integer|min:0',
+            'images' => 'nullable|array|max:4',
+            'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:10240',
+            'remove_images' => 'nullable|array',
+            'remove_images.*' => 'integer|exists:images,id',
+        ]);
+
+        $product->update([
+            'category_id' => $validated['category'],
+            'name' => $validated['product_name'],
+            'slug' => \Illuminate\Support\Str::slug($validated['product_name']).'-'.\Illuminate\Support\Str::lower(\Illuminate\Support\Str::random(5)),
+            'product_type' => $validated['product_type'] ?? null,
+            'description' => $validated['description'],
+            'specifications' => !empty($validated['specifications']) ? $this->filterSpecs($validated['specifications']) : null,
+            'price' => $validated['base_price'] ?? $product->price,
+            'discount_price' => ($validated['discounted_price'] ?? 0) > 0 ? $validated['discounted_price'] : null,
+            'stock' => $validated['stock'] ?? $product->stock,
+            'sku' => $validated['sku'] ?? $product->sku,
+        ]);
+
+        if (!empty($validated['variants'])) {
+            $existingVariantIds = $product->variants()->pluck('id')->toArray();
+            $updatedVariantIds = [];
+
+            foreach ($validated['variants'] as $variantData) {
+                if (empty($variantData['sku'])) continue;
+
+                if (!empty($variantData['id']) && in_array($variantData['id'], $existingVariantIds)) {
+                    $variant = \App\Models\ProductVariant::find($variantData['id']);
+                    $variant->update([
+                        'sku' => $variantData['sku'],
+                        'size' => $variantData['size'] ?? null,
+                        'color' => $variantData['color'] ?? null,
+                        'price' => !empty($variantData['price']) ? $variantData['price'] : null,
+                        'stock' => $variantData['stock'] ?? 0,
+                    ]);
+                    $updatedVariantIds[] = $variant->id;
+                } else {
+                    $newVariant = \App\Models\ProductVariant::create([
+                        'product_id' => $product->id,
+                        'sku' => $variantData['sku'],
+                        'size' => $variantData['size'] ?? null,
+                        'color' => $variantData['color'] ?? null,
+                        'price' => !empty($variantData['price']) ? $variantData['price'] : null,
+                        'stock' => $variantData['stock'] ?? 0,
+                        'status' => 'active',
+                    ]);
+                    $updatedVariantIds[] = $newVariant->id;
+                }
+            }
+            $variantsToDelete = array_diff($existingVariantIds, $updatedVariantIds);
+            \App\Models\ProductVariant::whereIn('id', $variantsToDelete)->delete();
+        } else {
+            $product->variants()->delete();
+        }
+
+        if (!empty($validated['remove_images'])) {
+            $imagesToRemove = $product->images()->whereIn('id', $validated['remove_images'])->get();
+            foreach ($imagesToRemove as $img) {
+                if (\Illuminate\Support\Facades\Storage::disk('public')->exists($img->path)) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($img->path);
+                }
+                $img->delete();
+            }
+        }
+
+        if ($request->hasFile('images')) {
+            $remainingCount = $product->images()->count();
+            foreach ($request->file('images') as $index => $file) {
+                if ($remainingCount >= 4) break;
+
+                $path = $file->store('products', 'public');
+                $product->images()->create([
+                    'path' => $path,
+                    'type' => 'gallery',
+                    'is_primary' => $remainingCount === 0 && $index === 0 ? 1 : 0,
+                ]);
+                $remainingCount++;
+            }
+        }
+
+        return redirect()->route('product-management')->with('success', 'Product updated successfully!');
+    }
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -299,11 +404,6 @@ class SellerController extends Controller
             ->with('success', 'Product "'.$product->name.'" created successfully!');
     }
 
-    public function update(Request $request, $id)
-    {
-        abort_if(auth()->user()->cannot('update products'), 403, 'You do not have permission to update products.');
-        // update logic here
-    }
 
     public function destroy($id)
     {
@@ -524,6 +624,24 @@ class SellerController extends Controller
         return redirect()->back()->with('success', 'Profile updated successfully.');
     }
 
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|current_password',
+            'new_password' => 'required|min:8',
+        ]);
+
+        $user = auth()->user();
+        $user->password = \Illuminate\Support\Facades\Hash::make($request->new_password);
+        $user->save();
+
+        auth()->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('seller.login')->with('success', 'Password updated successfully. Please login again.');
+    }
+
     public function sellerReview()
     {
         return view('seller.review');
@@ -645,9 +763,43 @@ class SellerController extends Controller
         return view('seller.create-ticket');
     }
 
+    public function storeTicket(Request $request)
+    {
+        $validated = $request->validate([
+            'category' => 'required|string|max:100',
+            'subject' => 'required|string|max:255',
+            'description' => 'required|string',
+        ]);
+
+        $vendor = auth()->user()->vendor;
+        if (!$vendor) {
+            return redirect()->back()->with('error', 'Vendor profile not found.');
+        }
+
+        \App\Models\SupportTicket::create([
+            'vendor_id' => $vendor->id,
+            'ticket_number' => 'TK-' . mt_rand(10000, 99999),
+            'category' => $validated['category'],
+            'subject' => $validated['subject'],
+            'description' => $validated['description'],
+            'status' => 'Pending',
+        ]);
+
+        return redirect()->route('seller-ticket')->with('success', 'Support ticket created successfully!');
+    }
+
     public function sellerTicket()
     {
-        return view('seller.tickets');
+        $vendor = auth()->user()->vendor;
+        if (!$vendor) {
+            return redirect()->route('dashboard')->with('error', 'Vendor profile not found.');
+        }
+
+        $tickets = \App\Models\SupportTicket::where('vendor_id', $vendor->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('seller.tickets', compact('tickets'));
     }
     // ─── Helpers ──────────────────────────────────────────────────────────────
 

@@ -168,12 +168,14 @@ class UserController extends Controller
             'name' => 'required|string|max:100',
             'email' => 'required|email|max:150|unique:users,email,'.$user->id,
             'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:255',
             'profile_pic' => 'nullable|image|max:2048',
         ]);
 
         $user->name = $request->name;
         $user->email = $request->email;
         $user->phone = $request->phone;
+        $user->address = $request->address;
 
         if ($request->hasFile('profile_pic')) {
             $path = $request->file('profile_pic')->store('profiles', 'public');
@@ -183,6 +185,24 @@ class UserController extends Controller
         $user->save();
 
         return redirect()->back()->with('success', 'Profile updated successfully.');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|current_password',
+            'new_password' => 'required|min:8',
+        ]);
+
+        $user = auth()->user();
+        $user->password = \Illuminate\Support\Facades\Hash::make($request->new_password);
+        $user->save();
+
+        auth()->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('userlogin')->with('success', 'Password updated successfully. Please login again.');
     }
 
     public function userNotification()
