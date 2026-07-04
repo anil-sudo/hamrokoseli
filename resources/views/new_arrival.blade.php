@@ -93,13 +93,10 @@
                             </div>
                         </div>
                     </div>
+
                 @empty
-                    <div class="col-span-full text-center py-20 bg-white/40 rounded-3xl">
-                        <h2 class="text-xl font-bold text-[#1F3D2E]">No new arrivals just yet</h2>
-                        <p class="text-[#3A2A1F]/60 text-sm mt-2">Check back soon — artisans add new pieces all the time.</p>
-                        <a href="{{ route('shop') }}" class="text-[#C65A3A] font-bold mt-4 inline-block">
-                            Browse the Shop
-                        </a>
+                    <div class="col-span-4 text-center py-12">
+                        <p class="text-[#3A2A1F]/60">No products found.</p>
                     </div>
                 @endforelse
 

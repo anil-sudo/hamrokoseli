@@ -11,18 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('categories', function (Blueprint $table) {
-            $table->string('image')->nullable();
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('profile_pic')->nullable()->default(null)->change();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::table('categories', function (Blueprint $table) {
-            $table->dropColumn('image');
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('profile_pic')->nullable(false)->change();
         });
+
     }
 };

@@ -20,6 +20,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (! app()->isLocal()) {
+            \URL::forceScheme('https');
+        }
         ResetPassword::createUrlUsing(function ($notifiable, string $token) {
             $routeName = $notifiable->isVendor() ? 'seller.password.reset' : 'password.reset';
 

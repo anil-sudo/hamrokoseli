@@ -49,7 +49,7 @@
                     <ul class="flex flex-col space-y-2.5 text-sm">
                         <li><a href="{{ url('privacypolicy') }}"
                                 class="text-slate-300 hover:text-white transition-colors">Privacy Policy</a></li>
-                        <li><a href="{{ url('terms_$_conditions') }}"
+                        <li><a href="{{ url('terms_&_conditions') }}"
                                 class="text-slate-300 hover:text-white transition-colors">Terms & Conditions</a></li>
                         <li><a href="{{ url('return_&_refund') }}"
                                 class="text-slate-300 hover:text-white transition-colors">Return & Refund Policy</a>

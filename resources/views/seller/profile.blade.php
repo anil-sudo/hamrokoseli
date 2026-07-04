@@ -7,12 +7,14 @@
         </div>
 
         <div class="space-y-6">
+        <form action="{{ route('seller.profile.update') }}" method="POST" enctype="multipart/form-data" id="profileForm">
+            @csrf
             <!-- Profile Information -->
             <div class="bg-(--card-bg) rounded-2xl shadow-sm p-6 hover:shadow-md transition-all duration-300">
                 <div class="flex items-start gap-6">
                     <!-- Profile Picture -->
                     <div id="profileContainer" class="relative group cursor-pointer">
-                        <img id="profilePreview" src="https://api.iconify.design/lucide/user.svg?color=%236b7280"
+                        <img id="profilePreview" src="{{ $user->profile_pic ? asset('storage/' . $user->profile_pic) : 'https://api.iconify.design/lucide/user.svg?color=%236b7280' }}"
                             alt="Profile"
                             class="w-24 h-24 rounded-full object-cover border border-(--text-color)/10 shadow bg-(--card-dark)">
 
@@ -29,7 +31,7 @@
                         </button>
 
                         <!-- Hidden File Input -->
-                        <input type="file" id="profileImage" accept="image/*" class="hidden">
+                        <input type="file" name="profile_pic" id="profileImage" accept="image/*" class="hidden">
                     </div>
 
                     <!-- Form Fields -->
@@ -87,23 +89,10 @@
                         </div>
                     </div>
                 </div>
-                <!-- Buttons -->
-                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mt-8">
-
-                    <button type="submit" id="saveProfileBtn"
-                        class="order-1 sm:order-2 inline-flex items-center justify-center gap-2 px-6 py-3.5 bg-(--secondary-color) hover:bg-[#B94E31] text-(--text-light) rounded-2xl font-medium transition">
-                        Save &nbsp; Profile
-                    </button>
-                    <a href="#"
-                        class="order-2 sm:order-1 inline-flex items-center justify-center gap-2 px-6 py-3.5 border border-(--secondary-color) text-(--text-color)! hover:bg-[#FFFAF5] bg-(--text-light) rounded-2xl font-medium transition">
-                        Discard &nbsp; Changes
-                    </a>
-
-                </div>
             </div>
 
             <!-- Shop Details -->
-            <div class="bg-(--card-bg) rounded-2xl shadow-sm p-6">
+            <div class="bg-(--card-bg) rounded-2xl shadow-sm p-6 mt-6">
                     <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
                         <i data-lucide="store"></i>
                         Shop Details
@@ -154,47 +143,60 @@
 
                 </div>
             </div>
+        </form>
             <!-- Security & Privacy -->
-            <div class="bg-(--card-bg) rounded-2xl shadow-sm p-6 hover:shadow-md transition-all duration-300">
-                <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
-                    <i data-lucide="lock-keyhole"></i>
-                    Security & Privacy
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Current Password -->
-                    <div>
-                        <label class="block text-sm font-medium text-brand-dark mb-1">Current Password</label>
-                        <div class="relative">
-                            <input type="password" id="currentPassword"
-                                class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color) pr-12">
-                            <button type="button" id="toggleCurrent"
-                                class="absolute right-4 top-1/2 -translate-y-1/2 text-(--text-color)/60 hover:text-(--text-color) transition">
-                                <i data-lucide="eye" class="w-5 h-5"></i>
-                            </button>
+            <form action="{{ route('seller.password.update') }}" method="POST">
+                @csrf
+                <div class="bg-(--card-bg) rounded-2xl shadow-sm p-6 hover:shadow-md transition-all duration-300">
+                    <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
+                        <i data-lucide="lock-keyhole"></i>
+                        Security & Privacy
+                    </h2>
+
+                    @if(session('success'))
+                        <div class="mb-4 text-sm text-green-600 bg-green-100 p-3 rounded">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Current Password -->
+                        <div>
+                            <label class="block text-sm font-medium text-brand-dark mb-1">Current Password</label>
+                            <div class="relative">
+                                <input type="password" id="currentPassword" name="current_password" required
+                                    class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color) pr-12">
+                                <button type="button" id="toggleCurrent"
+                                    class="absolute right-4 top-1/2 -translate-y-1/2 text-(--text-color)/60 hover:text-(--text-color) transition">
+                                    <i data-lucide="eye" class="w-5 h-5"></i>
+                                </button>
+                            </div>
+                            @error('current_password') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        </div>
+
+                        <!-- New Password -->
+                        <div>
+                            <label class="block text-sm font-medium text-brand-dark mb-1">New Password</label>
+                            <div class="relative">
+                                <input type="password" id="newPassword" name="new_password" required
+                                    class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color) pr-12">
+                                <button type="button" id="toggleNew"
+                                    class="absolute right-4 top-1/2 -translate-y-1/2 text-(--text-color)/60 hover:text-(--text-color) transition">
+                                    <i data-lucide="eye" class="w-5 h-5"></i>
+                                </button>
+                            </div>
+                            @error('new_password') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                         </div>
                     </div>
 
-                    <!-- New Password -->
-                    <div>
-                        <label class="block text-sm font-medium text-brand-dark mb-1">New Password</label>
-                        <div class="relative">
-                            <input type="password" id="newPassword"
-                                class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color) pr-12">
-                            <button type="button" id="toggleNew"
-                                class="absolute right-4 top-1/2 -translate-y-1/2 text-(--text-color)/60 hover:text-(--text-color) transition">
-                                <i data-lucide="eye" class="w-5 h-5"></i>
-                            </button>
-                        </div>
+                    <div class="flex justify-end mt-8">
+                        <button type="submit" id="savePasswordBtn"
+                            class="inline-flex items-center gap-2 px-8 py-3.5 bg-(--secondary-color) hover:bg-[#B94E31] text-(--text-light) rounded-2xl font-semibold transition">
+                            Save &nbsp; Password
+                        </button>
                     </div>
                 </div>
-
-                <div class="flex justify-end mt-8">
-                    <button type="submit" id="savePasswordBtn"
-                        class="inline-flex items-center gap-2 px-8 py-3.5 bg-(--secondary-color) hover:bg-[#B94E31] text-(--text-light) rounded-2xl font-semibold transition">
-                        Save &nbsp; Password
-                    </button>
-                </div>
-            </div>
+            </form>
             <!-- Bank Information -->
 
             <div class="bg-(--card-bg) rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-6">

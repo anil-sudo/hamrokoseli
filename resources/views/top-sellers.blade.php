@@ -5,11 +5,11 @@
 
         <!-- Page Header -->
         <div class="mb-8">
-            <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-[#1F3D2E] tracking-tight">🏆 Top Selling Creations</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-[#1F3D2E] tracking-tight">🏆 Top Selling Creations</h1>
         </div>
 
         <!-- Filter Controls -->
-        <div class="bg-[#FFF7EF] rounded-3xl p-4 sm:p-6 sm:p-8 border border-[#ebd7be]/40 shadow-sm mb-6 sm:mb-10">
+        <div class="bg-[#FFF7EF] rounded-3xl p-6 sm:p-8 border border-[#ebd7be]/40 shadow-sm mb-10">
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                 <div>
                     <span class="text-xs font-bold uppercase tracking-wider text-[#3A2A1F]/60 block mb-3">Filter by Category</span>
@@ -45,7 +45,7 @@
         </div>
 
         <!-- Product Grid -->
-        <div class="grid grid-cols-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-8" id="product-grid">
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8" id="product-grid">
             @foreach($products as $index => $product)
                 @php
                     $rank = $index + 1;
@@ -74,30 +74,30 @@
                     $stock      = $product->stock ?? 10;
                 @endphp
 
-                <div class="product-card bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group"
+                <div class="product-card bg-white rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group"
                      data-id="{{ $product->id }}"
                      data-name="{{ $product->name }}"
                      data-price="{{ $displayPrice }}"
                      data-category="{{ strtolower($catName) }}"
                      data-rank="{{ $rank }}">
 
-                    <div class="relative w-full aspect-[4/5] overflow-hidden rounded-t-2xl sm:rounded-t-3xl bg-slate-100">
+                    <div class="relative w-full aspect-[4/5] overflow-hidden rounded-t-3xl bg-slate-100">
                         <img src="{{ $imageUrl }}"
                              alt="{{ $product->name }}"
                              class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                              onerror="this.src='{{ asset('images/placeholder.png') }}'">
 
-                        <span class="absolute top-2 left-2 sm:top-4 sm:left-4 {{ $rankBg }} text-[6px] xs:text-[8px] sm:text-[10px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 sm:px-3 sm:py-1.5 rounded-full z-10 shadow">
+                        <span class="absolute top-4 left-4 {{ $rankBg }} text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-full z-10 shadow">
                             #{{ $rank }} {{ $rank <= 3 ? 'Best Seller' : 'Seller' }}
                         </span>
 
                         @if($product->vendor)
-                            <div class="absolute top-2 right-2 sm:top-4 sm:right-14 bg-white/95 text-[#1F3D2E] text-[6px] xs:text-[9px] sm:text-[10px] font-bold tracking-wider uppercase px-1.5 py-0.5 sm:px-3 sm:py-1.5 rounded-full shadow-sm z-10">
+                            <div class="absolute top-4 right-14 bg-white/95 text-[#1F3D2E] text-[10px] font-bold tracking-wider uppercase px-3 py-1.5 rounded-full shadow-sm z-10">
                                 {{ $vendorName }}
                             </div>
                         @endif
 
-                        <button class="wishlist-btn absolute bottom-2 right-2 sm:bottom-4 sm:right-4 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-xs sm:text-xl drop-shadow z-10"
+                        <button class="wishlist-btn absolute bottom-4 right-4 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-xl drop-shadow z-10"
                                 data-product-id="{{ $product->id }}"
                                 data-product-name="{{ $product->name }}"
                                 data-product-price="{{ $displayPrice }}"
@@ -109,31 +109,32 @@
                         </button>
                     </div>
 
-                    <div class="p-2.5 sm:p-5 flex-grow flex flex-col justify-between">
+                    <div class="p-5 flex-grow flex flex-col justify-between">
                         <div>
-                            <span class="text-[8px] sm:text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-0.5 sm:mb-1">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-1">
                                 {{ $catName }}
                             </span>
 
-                            <h3 class="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-[#1F3D2E] mb-1 sm:mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1">
+                            <h3 class="text-lg font-bold text-[#1F3D2E] mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1">
                                 {{ $product->name }}
                             </h3>
 
-                            <div class="flex flex-wrap items-baseline gap-1 sm:gap-2 mb-2 sm:mb-4">
-                                <span class="text-[#C65A3A] font-bold text-xs sm:text-sm md:text-base">
+                            <div class="flex items-baseline gap-2 mb-4">
+                                <span class="text-[#C65A3A] font-bold text-base">
                                     Rs {{ number_format($displayPrice, 2) }}
                                 </span>
                                 @if($hasDiscount)
-                                    <span class="text-slate-400 text-[8px] sm:text-xs line-through font-semibold">
+                                    <span class="text-slate-400 text-xs line-through font-semibold">
                                         Rs {{ number_format($price, 2) }}
                                     </span>
                                 @endif
                             </div>
                         </div>
 
-                        <div class="flex flex-col xs:flex-row gap-1 sm:gap-2 mt-auto">
+                        <!-- View Details triggers modal -->
+                        <div class="flex gap-2 mt-auto">
                             <a href="{{ route('viewdetails', $product->id) }}"
-                               class="view-details-btn flex-grow flex items-center justify-center gap-1 sm:gap-2 bg-[#1F3D2E] hover:bg-[#16301f] text-white text-[8px] sm:text-xs md:text-sm font-semibold py-1.5 px-1 sm:py-3 sm:px-3 rounded-lg sm:rounded-xl shadow-sm hover:shadow transition duration-300"
+                               class="view-details-btn flex-1 flex items-center justify-center gap-2 bg-[#1F3D2E] hover:bg-[#16301f] text-white text-sm font-semibold py-3 px-3 rounded-xl shadow-sm hover:shadow transition duration-300"
                                data-id="{{ $product->id }}"
                                data-name="{{ $product->name }}"
                                data-price="{{ $displayPrice }}"
@@ -147,17 +148,17 @@
                                data-rating="{{ $rating }}"
                                data-reviews="{{ $reviews }}"
                                data-stock="{{ $stock }}">
-                                <i class="fa-solid fa-circle-info text-[8px] sm:text-xs"></i>
+                                <i class="fa-solid fa-circle-info text-xs"></i>
                                 Details
                             </a>
 
                             <button
                                 type="button"
-                                class="add-to-cart-btn flex-grow flex items-center justify-center gap-1 sm:gap-2 bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-[8px] sm:text-xs md:text-sm font-semibold py-1.5 px-1 sm:py-3 sm:px-3 rounded-lg sm:rounded-xl shadow-sm hover:shadow transition duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
+                                class="add-to-cart-btn flex-1 flex items-center justify-center gap-2 bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-sm font-semibold py-3 px-3 rounded-xl shadow-sm hover:shadow transition duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
                                 data-product-id="{{ $product->id }}"
                                 data-product-name="{{ $product->name }}"
                                 {{ ($product->stock ?? 0) < 1 ? 'disabled' : '' }}>
-                                <i class="fa-solid fa-cart-plus text-[8px] sm:text-xs"></i>
+                                <i class="fa-solid fa-cart-plus text-xs"></i>
                                 {{ ($product->stock ?? 0) < 1 ? 'Sold Out' : 'Add' }}
                             </button>
                         </div>
@@ -172,8 +173,7 @@
 
             {{-- Previous --}}
             @if($products->onFirstPage())
-                <span
-                    class="w-10 h-10 rounded-full border border-[#1F3D2E]/10 flex items-center justify-center text-[#1F3D2E]/30 shadow-sm cursor-not-allowed">
+                <span class="w-10 h-10 rounded-full border border-[#1F3D2E]/10 flex items-center justify-center text-[#1F3D2E]/30 shadow-sm cursor-not-allowed">
                     <i class="fas fa-chevron-left text-xs"></i>
                 </span>
             @else
@@ -183,7 +183,7 @@
                 </a>
             @endif
 
-            {{-- Page numbers (windowed around the current page) --}}
+            {{-- Page numbers --}}
             <div class="flex items-center gap-1">
                 @php
                     $start = max(1, $products->currentPage() - 2);
@@ -191,8 +191,7 @@
                 @endphp
 
                 @if($start > 1)
-                    <a href="{{ $products->url(1) }}"
-                        class="w-10 h-10 flex items-center justify-center text-sm font-semibold text-[#3A2A1F]/60 hover:text-[#1F3D2E] transition-colors">1</a>
+                    <a href="{{ $products->url(1) }}" class="w-10 h-10 flex items-center justify-center text-sm font-semibold text-[#3A2A1F]/60 hover:text-[#1F3D2E] transition-colors">1</a>
                     @if($start > 2)
                         <span class="text-sm font-semibold text-[#3A2A1F]/40 px-2 select-none">...</span>
                     @endif
@@ -200,14 +199,12 @@
 
                 @for($page = $start; $page <= $end; $page++)
                     @if($page == $products->currentPage())
-                        <a href="{{ $products->url($page) }}"
-                            class="w-10 h-10 flex flex-col items-center justify-center text-sm font-bold text-[#1F3D2E] relative">
+                        <a href="{{ $products->url($page) }}" class="w-10 h-10 flex flex-col items-center justify-center text-sm font-bold text-[#1F3D2E] relative">
                             <span>{{ $page }}</span>
                             <span class="absolute bottom-1 w-5 h-0.5 bg-[#1F3D2E] rounded-full"></span>
                         </a>
                     @else
-                        <a href="{{ $products->url($page) }}"
-                            class="w-10 h-10 flex items-center justify-center text-sm font-semibold text-[#3A2A1F]/60 hover:text-[#1F3D2E] transition-colors">{{ $page }}</a>
+                        <a href="{{ $products->url($page) }}" class="w-10 h-10 flex items-center justify-center text-sm font-semibold text-[#3A2A1F]/60 hover:text-[#1F3D2E] transition-colors">{{ $page }}</a>
                     @endif
                 @endfor
 
@@ -215,8 +212,7 @@
                     @if($end < $products->lastPage() - 1)
                         <span class="text-sm font-semibold text-[#3A2A1F]/40 px-2 select-none">...</span>
                     @endif
-                    <a href="{{ $products->url($products->lastPage()) }}"
-                        class="w-10 h-10 flex items-center justify-center text-sm font-semibold text-[#3A2A1F]/60 hover:text-[#1F3D2E] transition-colors">{{ $products->lastPage() }}</a>
+                    <a href="{{ $products->url($products->lastPage()) }}" class="w-10 h-10 flex items-center justify-center text-sm font-semibold text-[#3A2A1F]/60 hover:text-[#1F3D2E] transition-colors">{{ $products->lastPage() }}</a>
                 @endif
             </div>
 
@@ -227,15 +223,13 @@
                     <i class="fas fa-chevron-right text-xs"></i>
                 </a>
             @else
-                <span
-                    class="w-10 h-10 rounded-full border border-[#1F3D2E]/10 flex items-center justify-center text-[#1F3D2E]/30 shadow-sm cursor-not-allowed">
+                <span class="w-10 h-10 rounded-full border border-[#1F3D2E]/10 flex items-center justify-center text-[#1F3D2E]/30 shadow-sm cursor-not-allowed">
                     <i class="fas fa-chevron-right text-xs"></i>
                 </span>
             @endif
         </div>
         @endif
 
-        </div>
     </div>
 </div>
 
@@ -302,7 +296,6 @@
     </div>
 </div>
 
-
 <style>
     .filter-pill.active { background-color: rgba(198,90,58,0.12); border-color: #C65A3A; }
 </style>
@@ -339,11 +332,218 @@ document.addEventListener('DOMContentLoaded', function () {
             .forEach(card => grid.appendChild(card));
     });
 
-    // Note: view-details-btn clicks and all product-details-modal logic
-    // (quantity +/-, tabs, Add to Cart, Buy Now) are handled globally
-    // by app.js via event delegation — no duplication needed here.
-});
-</script>
+    // ── Modal ───────────────────────────────────────────────
+    const modal        = document.getElementById('product-modal');
+    const backdrop     = document.getElementById('modal-backdrop');
+    const closeBtn     = document.getElementById('modal-close');
 
+    function openModal(btn) {
+        const d = btn.dataset;
+
+        document.getElementById('modal-image').src          = d.image;
+        document.getElementById('modal-image').alt          = d.name;
+        document.getElementById('modal-name').textContent   = d.name;
+        document.getElementById('modal-category').textContent = d.category;
+        document.getElementById('modal-vendor').textContent = 'by ' + d.vendor;
+        document.getElementById('modal-desc').textContent   = d.desc;
+
+        // Stars
+        const rating = parseFloat(d.rating) || 5;
+        let stars = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= Math.floor(rating))            stars += '<i class="fas fa-star"></i>';
+            else if (rating % 1 >= 0.5 && i === Math.ceil(rating)) stars += '<i class="fas fa-star-half-alt"></i>';
+            else                                    stars += '<i class="far fa-star"></i>';
+        }
+        document.getElementById('modal-stars').innerHTML   = stars;
+        document.getElementById('modal-reviews').textContent = '(' + (d.reviews || 0) + ' reviews)';
+
+        // Price
+        document.getElementById('modal-price').textContent = 'Rs. ' + Number(d.price).toLocaleString();
+        const origEl   = document.getElementById('modal-original-price');
+        const badgeEl  = document.getElementById('modal-discount-badge');
+        if (d.discount === 'true') {
+            const orig    = parseFloat(d.originalPrice);
+            const pct     = Math.round(((orig - parseFloat(d.price)) / orig) * 100);
+            origEl.textContent  = 'Rs. ' + orig.toLocaleString();
+            badgeEl.textContent = '-' + pct + '%';
+            origEl.classList.remove('hidden');
+            badgeEl.classList.remove('hidden');
+        } else {
+            origEl.classList.add('hidden');
+            badgeEl.classList.add('hidden');
+        }
+
+        // Stock
+        const stockEl = document.getElementById('modal-stock');
+        const stock   = parseInt(d.stock) || 0;
+        if (stock === 0)      { stockEl.textContent = 'Out of Stock';       stockEl.className = 'text-xs font-bold mb-4 text-red-500'; }
+        else if (stock <= 5)  { stockEl.textContent = 'Only ' + stock + ' left!'; stockEl.className = 'text-xs font-bold mb-4 text-orange-500'; }
+        else                  { stockEl.textContent = 'In Stock';           stockEl.className = 'text-xs font-bold mb-4 text-green-600'; }
+
+        // Wishlist btn inside modal
+        const wb = document.getElementById('modal-wishlist-btn');
+        wb.dataset.productId       = d.id;
+        wb.dataset.productName     = d.name;
+        wb.dataset.productPrice    = d.price;
+        wb.dataset.productImage    = d.image;
+        wb.dataset.productDesc     = d.desc;
+        wb.dataset.productCategory = d.category;
+
+        // Full page link
+        document.getElementById('modal-full-link').href = '/viewdetails/' + d.id;
+
+        // Show modal
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('.view-details-btn').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            openModal(this);
+        });
+    });
+
+    closeBtn.addEventListener('click', closeModal);
+    backdrop.addEventListener('click', closeModal);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+});
+
+{{-- ==================== ADD TO CART (AJAX) ==================== --}}
+(function () {
+    // ── Toast helper ────────────────────────────────────────────────────
+    function showToast(message, type = 'success') {
+        const existing = document.getElementById('shop-cart-toast');
+        if (existing) existing.remove();
+
+        const colours = {
+            success : 'bg-[#1F3D2E] text-white',
+            error   : 'bg-red-600 text-white',
+            warning : 'bg-amber-500 text-white',
+            info    : 'bg-[#C65A3A] text-white',
+        };
+
+        const icons = {
+            success : 'fa-circle-check',
+            error   : 'fa-circle-xmark',
+            warning : 'fa-triangle-exclamation',
+            info    : 'fa-circle-info',
+        };
+
+        const toast = document.createElement('div');
+        toast.id = 'shop-cart-toast';
+        toast.className = [
+            'fixed bottom-6 right-6 z-[9999] flex items-center gap-3',
+            'px-5 py-3.5 rounded-2xl shadow-xl text-sm font-semibold',
+            'translate-y-4 opacity-0 transition-all duration-300',
+            colours[type] ?? colours.success,
+        ].join(' ');
+
+        toast.innerHTML = `
+            <i class="fas ${icons[type] ?? icons.success} text-base"></i>
+            <span>${message}</span>
+        `;
+
+        document.body.appendChild(toast);
+
+        // Animate in
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-4', 'opacity-0');
+                toast.classList.add('translate-y-0', 'opacity-100');
+            });
+        });
+
+        // Animate out after 3 s
+        setTimeout(() => {
+            toast.classList.remove('translate-y-0', 'opacity-100');
+            toast.classList.add('translate-y-4', 'opacity-0');
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }
+
+    // ── Update cart badge in the navbar (if one exists) ─────────────────
+    function updateCartBadge(count) {
+        document.querySelectorAll('[data-cart-count]').forEach(el => {
+            el.textContent = count;
+            el.classList.toggle('hidden', count === 0);
+        });
+    }
+
+    // ── Wire up every "Add to Cart" button ──────────────────────────────
+    document.addEventListener('DOMContentLoaded', function () {
+
+        document.querySelectorAll('.add-to-cart-btn').forEach(function (btn) {
+            btn.addEventListener('click', async function () {
+                const productId   = btn.dataset.productId;
+                const productName = btn.dataset.productName;
+
+                // Prevent double-clicks while the request is in flight
+                btn.disabled = true;
+                const originalHtml = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin text-xs"></i> Adding…';
+
+                try {
+                    const response = await fetch('{{ route('cart.add') }}', {
+                        method  : 'POST',
+                        headers : {
+                            'Content-Type' : 'application/json',
+                            'Accept'       : 'application/json',
+                            // Laravel CSRF token -must be present in the page meta tag
+                            'X-CSRF-TOKEN' : document.querySelector('meta[name="csrf-token"]')?.content ?? '',
+                        },
+                        body: JSON.stringify({
+                            product_id : productId,
+                            quantity   : 1,
+                        }),
+                    });
+
+                    const json = await response.json();
+
+                    if (response.status === 401) {
+                        // Not logged in -send to login page
+                        showToast('Please log in to add items to your cart.', 'warning');
+                        setTimeout(() => {
+                            window.location.href = '{{ route('userlogin') }}';
+                        }, 1500);
+                        return;
+                    }
+
+                    if (json.success) {
+                        showToast(`${productName} added to cart!`, 'success');
+                        updateCartBadge(json.cart_count ?? 0);
+
+                        // Brief visual feedback on the button
+                        btn.innerHTML = '<i class="fas fa-check text-xs"></i> Added!';
+                        setTimeout(() => {
+                            btn.innerHTML = originalHtml;
+                            btn.disabled  = false;
+                        }, 1500);
+                    } else {
+                        showToast(json.message ?? 'Could not add to cart.', 'error');
+                        btn.innerHTML = originalHtml;
+                        btn.disabled  = false;
+                    }
+
+                } catch (err) {
+                    console.error('Add-to-cart error:', err);
+                    showToast('Something went wrong. Please try again.', 'error');
+                    btn.innerHTML = originalHtml;
+                    btn.disabled  = false;
+                }
+            });
+        });
+
+    });
+})();
+</script>
 
 </x-frontend-layout>

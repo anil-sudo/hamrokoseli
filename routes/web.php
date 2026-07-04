@@ -28,6 +28,7 @@ Route::middleware('guest:vendor')->group(function () {
 
 Route::post('/seller-logout', [SellerController::class, 'logout'])->name('seller.logout');
 Route::get('/seller-profile', [SellerController::class, 'sellerProfile'])->name('seller.profile');
+Route::post('/seller-profile', [SellerController::class, 'updateProfile'])->name('seller.profile.update');
 
 // ─── Seller routes (protected by vendor guard) ────────────────────────────────
 Route::middleware(['auth', 'role:vendor'])->group(function () {
@@ -36,7 +37,7 @@ Route::middleware(['auth', 'role:vendor'])->group(function () {
     Route::get('/create-product', [SellerController::class, 'productCreate'])->name('product-create');
     Route::post('/create-product', [SellerController::class, 'store'])->name('product.store');
     Route::get('/edit-product/{id}', [SellerController::class, 'productEdit'])->name('product-edit');
-    Route::post('/edit-product/{id}', [SellerController::class, 'update'])->name('product.update');
+    Route::put('/product/{id}', [SellerController::class, 'update'])->name('product.update');
     Route::delete('/product/{id}', [SellerController::class, 'destroy'])->name('product.destroy');
     Route::get('/orders', [SellerController::class, 'order'])->name('order');
     Route::get('/order-details', [SellerController::class, 'orderDetails'])->name('order-details');
@@ -48,6 +49,7 @@ Route::middleware(['auth', 'role:vendor'])->group(function () {
     Route::get('/seller-payments-details', [SellerController::class, 'paymentDetails'])->name('payment-details');
     Route::get('/seller-support', [SellerController::class, 'sellerSupport'])->name('seller-support');
     Route::get('/create-ticket', [SellerController::class, 'createTicket'])->name('create-ticket');
+    Route::post('/create-ticket', [SellerController::class, 'storeTicket'])->name('store-ticket');
     Route::get('/tickets', [SellerController::class, 'sellerTicket'])->name('seller-ticket');
     Route::get('/seller-notification', [SellerController::class, 'sellerNotification'])->name('seller-notification');
 });
@@ -67,6 +69,10 @@ Route::get('/wishlist', [PageController::class, 'wishlist'])->name('wishlist');
 Route::get('/privacypolicy', [PageController::class, 'privacy'])->name('privacy');
 Route::get('/contact-us', [PageController::class, 'contactus'])->name('contact-us');
 Route::get('/viewdetails/{id}', [PageController::class, 'viewProduct'])->name('viewdetails');
+Route::get('/terms_&_conditions', [PageController::class, 'terms_conditions'])->name('terms&conditions');
+Route::get('/return_&_refund', [PageController::class, 'return_policy'])->name('return&refund');
+Route::get('/faq', [PageController::class, 'faq'])->name('faq');
+Route::get('/seller_policy', [PageController::class, 'seller_policy'])->name('seller-policy');
 
 // ─── Requires login (guests are redirected to /userlogin automatically) ───────
 Route::middleware('auth')->group(function () {
@@ -144,7 +150,12 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/user-dashboard', [UserController::class, 'dashboard'])->name('Userdashboard');
 Route::get('/user-orders', [UserController::class, 'orders'])->name('User-orders');
 Route::get('/user-order-details', [UserController::class, 'orderDetail'])->name('order-detail');
+Route::patch('/user-orders/{order}/cancel', [UserController::class, 'cancelOrder'])->name('order.cancel');
 Route::get('/return-product', [UserController::class, 'returnProduct'])->name('return-product');
 Route::get('/user-profile', [UserController::class, 'userProfile'])->name('user-profile');
+Route::post('/user-profile', [UserController::class, 'updateProfile'])->name('user.profile.update');
+Route::post('/user-password', [UserController::class, 'updatePassword'])->name('user.password.update');
 Route::get('/user-notification', [UserController::class, 'userNotification'])->name('user-notification');
+Route::post('/user-notification/mark-all-read', [UserController::class, 'markAllNotificationsRead'])->name('user.notifications.markAllRead');
+Route::patch('/user-notification/{id}/read', [UserController::class, 'markNotificationRead'])->name('user.notifications.read');
 Route::redirect('/login.php', '/userlogin');
