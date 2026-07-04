@@ -87,7 +87,11 @@ class SellerController extends Controller
 
     public function dashboard()
     {
-        return view('seller.dashboard');
+        $dealEndsAt = \App\Models\Setting::getValue('todays_deal_ends_at');
+        if (!$dealEndsAt) {
+            $dealEndsAt = now()->endOfDay()->toDateTimeString();
+        }
+        return view('seller.dashboard', compact('dealEndsAt'));
     }
 
     public function product_management(Request $request)

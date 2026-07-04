@@ -158,7 +158,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     setInterval(moveFeaturedSlider, 3000);
 
-    const endTime = new Date().getTime() + (8 * 60 * 60 * 1000);
+    const countdownEl = document.getElementById('deal-countdown');
+    const dealEndsAt = countdownEl ? countdownEl.getAttribute('data-ends-at') : null;
+    const endTime = dealEndsAt ? new Date(dealEndsAt.replace(' ', 'T')).getTime() : (new Date().getTime() + (8 * 60 * 60 * 1000));
 
     function updateCountdown() {
 

@@ -162,7 +162,14 @@ class PageController extends Controller
             ]);
         }
 
-        return view('todays-deals', compact('products'));
+        $categories = $products->pluck('category.cat_name')->filter()->unique();
+
+        $dealEndsAt = \App\Models\Setting::getValue('todays_deal_ends_at');
+        if (!$dealEndsAt) {
+            $dealEndsAt = now()->endOfDay()->toDateTimeString();
+        }
+
+        return view('todays-deals', compact('products', 'categories', 'dealEndsAt'));
     }
 
     public function featured_products()

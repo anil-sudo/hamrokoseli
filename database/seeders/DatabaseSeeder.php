@@ -55,5 +55,11 @@ class DatabaseSeeder extends Seeder
                 'status' => 'active',
             ]
         );
+
+        // Seed default deal countdown time
+        \App\Models\Setting::updateOrCreate(
+            ['key' => 'todays_deal_ends_at'],
+            ['value' => now()->addHours(24)->toDateTimeString()]
+        );
     }
 }

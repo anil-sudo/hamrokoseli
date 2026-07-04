@@ -16,7 +16,7 @@
                         craftsmanship with our exclusive artisanal collection. Up to 60% off for the next 24 hours.</p>
 
                     <!-- Countdown Timer -->
-                    <div class="flex gap-6 mb-8 font-['Plus_Jakarta_Sans']">
+                    <div id="deal-countdown" data-ends-at="{{ $dealEndsAt }}" class="flex gap-6 mb-8 font-['Plus_Jakarta_Sans']">
                         <div class="text-center">
                             <div id="countdown-hours" class="text-3xl font-bold">00</div>
                             <div class="text-xs font-semibold text-white text-opacity-80 uppercase">
