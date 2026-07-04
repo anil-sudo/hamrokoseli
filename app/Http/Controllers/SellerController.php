@@ -251,6 +251,11 @@ class SellerController extends Controller
             'remove_images.*' => 'integer|exists:images,id',
         ]);
 
+        $basePrice = $validated['base_price'] ?? $product->price;
+        if (! empty($validated['discount_amount']) && $validated['discount_amount'] >= $basePrice) {
+            return back()->withErrors(['discount_amount' => 'Discount must be less than the base price.'])->withInput();
+        }
+
         $product->update([
             'category_id' => $validated['category'],
             'name' => $validated['product_name'],
@@ -259,7 +264,7 @@ class SellerController extends Controller
             'description' => $validated['description'],
             'specifications' => ! empty($validated['specifications']) ? $this->filterSpecs($validated['specifications']) : null,
             'price' => $validated['base_price'] ?? $product->price,
-            'discount_price' => ($validated['discount_amount'] ?? 0) > 0 ? $validated['discount_amount'] : null, // Store discount amount
+            'discount_price' => ($validated['discount_amount'] ?? 0) > 0 ? (($validated['base_price'] ?? $product->price) - $validated['discount_amount']) : null,
             'stock' => $validated['stock'] ?? $product->stock,
             'sku' => $validated['sku'] ?? $product->sku,
         ]);
@@ -281,7 +286,7 @@ class SellerController extends Controller
                         'size' => $variantData['size'] ?? null,
                         'color' => $variantData['color'] ?? null,
                         'price' => ! empty($variantData['price']) ? $variantData['price'] : null,
-                        'discount_price' => ! empty($variantData['discount_amount']) ? $variantData['discount_amount'] : null, // Store discount amount
+                        'discount_price' => ! empty($variantData['discount_amount']) ? ($variantData['price'] - $variantData['discount_amount']) : null,
                         'stock' => $variantData['stock'] ?? 0,
                     ]);
                     $updatedVariantIds[] = $variant->id;
@@ -292,45 +297,7 @@ class SellerController extends Controller
                         'size' => $variantData['size'] ?? null,
                         'color' => $variantData['color'] ?? null,
                         'price' => ! empty($variantData['price']) ? $variantData['price'] : null,
-                        'discount_price' => ! empty($variantData['discount_amount']) ? $variantData['discount_amount'] : null, // Store discount amount
-                        'stock' => $variantData['stock'] ?? 0,
-                        'status' => 'active',
-                    ]);
-                    $updatedVariantIds[] = $newVariant->id;
-                }
-            }
-            $variantsToDelete = array_diff($existingVariantIds, $updatedVariantIds);
-            ProductVariant::whereIn('id', $variantsToDelete)->delete();
-        } else {
-            $product->variants()->delete();
-        }
-
-        if (! empty($validated['variants'])) {
-            $existingVariantIds = $product->variants()->pluck('id')->toArray();
-            $updatedVariantIds = [];
-
-            foreach ($validated['variants'] as $variantData) {
-                if (empty($variantData['sku'])) {
-                    continue;
-                }
-
-                if (! empty($variantData['id']) && in_array($variantData['id'], $existingVariantIds)) {
-                    $variant = ProductVariant::find($variantData['id']);
-                    $variant->update([
-                        'sku' => $variantData['sku'],
-                        'size' => $variantData['size'] ?? null,
-                        'color' => $variantData['color'] ?? null,
-                        'price' => ! empty($variantData['price']) ? $variantData['price'] : null,
-                        'stock' => $variantData['stock'] ?? 0,
-                    ]);
-                    $updatedVariantIds[] = $variant->id;
-                } else {
-                    $newVariant = ProductVariant::create([
-                        'product_id' => $product->id,
-                        'sku' => $variantData['sku'],
-                        'size' => $variantData['size'] ?? null,
-                        'color' => $variantData['color'] ?? null,
-                        'price' => ! empty($variantData['price']) ? $variantData['price'] : null,
+                        'discount_price' => ! empty($variantData['discount_amount']) ? ($variantData['price'] - $variantData['discount_amount']) : null,
                         'stock' => $variantData['stock'] ?? 0,
                         'status' => 'active',
                     ]);
@@ -381,7 +348,7 @@ class SellerController extends Controller
             'product_type' => 'nullable|string|max:100',
             'description' => 'required|string|max:2000',
             'base_price' => 'required|numeric|min:0',
-            'discounted_price' => 'nullable|numeric|min:0',
+            'discounted_price' => 'nullable|numeric|min:0|lt:base_price',
             'sku' => 'required|string|max:100|unique:products,sku',
             'stock' => 'required|integer|min:0',
             'specifications' => 'nullable|array',
@@ -410,7 +377,7 @@ class SellerController extends Controller
                                     : null,
             'price' => $validated['base_price'],
             'discount_price' => ($validated['discounted_price'] ?? 0) > 0
-                                    ? $validated['discounted_price']
+                                    ? ($validated['base_price'] - $validated['discounted_price'])
                                     : null,
             'stock' => $validated['stock'],
             'sku' => $validated['sku'],

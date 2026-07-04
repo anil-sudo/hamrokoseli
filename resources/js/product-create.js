@@ -322,6 +322,34 @@ document.getElementById('productForm').addEventListener('submit', function (e) {
     }
 });
 
+// ==================== LIVE DISCOUNT CALCULATION ====================
+function updateDiscountPreview() {
+    const basePriceInput = document.getElementById('base_price');
+    const discountedPriceInput = document.getElementById('discounted_price');
+    const discountPreviewEl = document.getElementById('discount_preview');
+
+    if (!basePriceInput || !discountedPriceInput || !discountPreviewEl) return;
+
+    const basePrice = parseFloat(basePriceInput.value) || 0;
+    const discountAmount = parseFloat(discountedPriceInput.value) || 0;
+
+    if (basePrice > 0 && discountAmount > 0) {
+        if (discountAmount >= basePrice) {
+            discountPreviewEl.textContent = "Discount must be less than the base price.";
+            discountPreviewEl.className = "text-xs text-red-500 font-medium mt-1.5";
+            discountPreviewEl.classList.remove('hidden');
+        } else {
+            const sellingPrice = basePrice - discountAmount;
+            const percentage = Math.round((discountAmount / basePrice) * 100);
+            discountPreviewEl.textContent = `Selling Price: Rs. ${sellingPrice.toLocaleString()} (${percentage}% off)`;
+            discountPreviewEl.className = "text-xs text-green-600 font-medium mt-1.5";
+            discountPreviewEl.classList.remove('hidden');
+        }
+    } else {
+        discountPreviewEl.classList.add('hidden');
+    }
+}
+
 // ==================== INITIAL LOAD ====================
 document.addEventListener('DOMContentLoaded', () => {
     const specs = document.getElementById('specifications');
@@ -335,9 +363,19 @@ document.addEventListener('DOMContentLoaded', () => {
         variantsEnabled = false; // ensure it starts false so toggle flips to true
         toggleVariants();
     }
+
+    // Live Discount Calculation listeners
+    const basePriceInput = document.getElementById('base_price');
+    const discountedPriceInput = document.getElementById('discounted_price');
+    if (basePriceInput && discountedPriceInput) {
+        basePriceInput.addEventListener('input', updateDiscountPreview);
+        discountedPriceInput.addEventListener('input', updateDiscountPreview);
+        updateDiscountPreview();
+    }
 });
 
 window.addSpecification = addSpecification;
 window.addVariant = addVariant;
 window.removeImage = removeImage;
 window.toggleVariants = toggleVariants;
+window.updateDiscountPreview = updateDiscountPreview;

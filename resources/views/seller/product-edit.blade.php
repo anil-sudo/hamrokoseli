@@ -304,11 +304,11 @@
                             <span class="text-xs text-gray-400 font-normal"></span>
                         </label>
                         <input type="number" id="discount_amount" name="discount_amount" 
-                            value="{{ old('discount_amount', $product->discount_price) }}" 
+                            value="{{ old('discount_amount', ($product->discount_price && $product->discount_price > 0 && $product->discount_price < $product->price) ? ($product->price - $product->discount_price) : '') }}" 
                             min="0" step="0.01"
                             class="w-full px-5 py-4 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-base focus:outline-none focus:border-(--secondary-color) transition duration-200"
-                            placeholder="Enter discount amount"
-                            oninput="calculateFinalPrice()">
+                            placeholder="Enter discount amount (e.g. 500 off)"
+                            oninput="updateDiscountPreview()">
                         <div id="pricePreview" class="mt-2 text-sm text-gray-600"></div>
                         @error('discount_amount')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>

@@ -111,11 +111,16 @@ class Product extends Model
     /**
      * Get the effective price (discount if available, otherwise regular price)
      */
-    public function getEffectivePrice()
+    public function effectivePrice()
     {
         $discount = $this->resolvedDiscountPrice();
 
         return $discount ?? $this->price;
+    }
+
+    public function getEffectivePrice()
+    {
+        return $this->effectivePrice();
     }
 
     /**
