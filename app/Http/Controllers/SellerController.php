@@ -9,9 +9,12 @@ use App\Models\Payment;
 use App\Models\Payout;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Models\SupportTicket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class SellerController extends Controller
@@ -229,7 +232,7 @@ class SellerController extends Controller
             'description' => 'required|string|max:2000',
             'base_price' => 'nullable|numeric|min:0',
             'discounted_price' => 'nullable|numeric|min:0',
-            'sku' => 'nullable|string|max:100|unique:products,sku,' . $product->id,
+            'sku' => 'nullable|string|max:100|unique:products,sku,'.$product->id,
             'stock' => 'nullable|integer|min:0',
             'specifications' => 'nullable|array',
             'specifications.*.key' => 'nullable|string|max:100',
@@ -250,40 +253,42 @@ class SellerController extends Controller
         $product->update([
             'category_id' => $validated['category'],
             'name' => $validated['product_name'],
-            'slug' => \Illuminate\Support\Str::slug($validated['product_name']).'-'.\Illuminate\Support\Str::lower(\Illuminate\Support\Str::random(5)),
+            'slug' => Str::slug($validated['product_name']).'-'.Str::lower(Str::random(5)),
             'product_type' => $validated['product_type'] ?? null,
             'description' => $validated['description'],
-            'specifications' => !empty($validated['specifications']) ? $this->filterSpecs($validated['specifications']) : null,
+            'specifications' => ! empty($validated['specifications']) ? $this->filterSpecs($validated['specifications']) : null,
             'price' => $validated['base_price'] ?? $product->price,
             'discount_price' => ($validated['discounted_price'] ?? 0) > 0 ? $validated['discounted_price'] : null,
             'stock' => $validated['stock'] ?? $product->stock,
             'sku' => $validated['sku'] ?? $product->sku,
         ]);
 
-        if (!empty($validated['variants'])) {
+        if (! empty($validated['variants'])) {
             $existingVariantIds = $product->variants()->pluck('id')->toArray();
             $updatedVariantIds = [];
 
             foreach ($validated['variants'] as $variantData) {
-                if (empty($variantData['sku'])) continue;
+                if (empty($variantData['sku'])) {
+                    continue;
+                }
 
-                if (!empty($variantData['id']) && in_array($variantData['id'], $existingVariantIds)) {
-                    $variant = \App\Models\ProductVariant::find($variantData['id']);
+                if (! empty($variantData['id']) && in_array($variantData['id'], $existingVariantIds)) {
+                    $variant = ProductVariant::find($variantData['id']);
                     $variant->update([
                         'sku' => $variantData['sku'],
                         'size' => $variantData['size'] ?? null,
                         'color' => $variantData['color'] ?? null,
-                        'price' => !empty($variantData['price']) ? $variantData['price'] : null,
+                        'price' => ! empty($variantData['price']) ? $variantData['price'] : null,
                         'stock' => $variantData['stock'] ?? 0,
                     ]);
                     $updatedVariantIds[] = $variant->id;
                 } else {
-                    $newVariant = \App\Models\ProductVariant::create([
+                    $newVariant = ProductVariant::create([
                         'product_id' => $product->id,
                         'sku' => $variantData['sku'],
                         'size' => $variantData['size'] ?? null,
                         'color' => $variantData['color'] ?? null,
-                        'price' => !empty($variantData['price']) ? $variantData['price'] : null,
+                        'price' => ! empty($variantData['price']) ? $variantData['price'] : null,
                         'stock' => $variantData['stock'] ?? 0,
                         'status' => 'active',
                     ]);
@@ -291,16 +296,16 @@ class SellerController extends Controller
                 }
             }
             $variantsToDelete = array_diff($existingVariantIds, $updatedVariantIds);
-            \App\Models\ProductVariant::whereIn('id', $variantsToDelete)->delete();
+            ProductVariant::whereIn('id', $variantsToDelete)->delete();
         } else {
             $product->variants()->delete();
         }
 
-        if (!empty($validated['remove_images'])) {
+        if (! empty($validated['remove_images'])) {
             $imagesToRemove = $product->images()->whereIn('id', $validated['remove_images'])->get();
             foreach ($imagesToRemove as $img) {
-                if (\Illuminate\Support\Facades\Storage::disk('public')->exists($img->path)) {
-                    \Illuminate\Support\Facades\Storage::disk('public')->delete($img->path);
+                if (Storage::disk('public')->exists($img->path)) {
+                    Storage::disk('public')->delete($img->path);
                 }
                 $img->delete();
             }
@@ -309,7 +314,9 @@ class SellerController extends Controller
         if ($request->hasFile('images')) {
             $remainingCount = $product->images()->count();
             foreach ($request->file('images') as $index => $file) {
-                if ($remainingCount >= 4) break;
+                if ($remainingCount >= 4) {
+                    break;
+                }
 
                 $path = $file->store('products', 'public');
                 $product->images()->create([
@@ -323,6 +330,7 @@ class SellerController extends Controller
 
         return redirect()->route('product-management')->with('success', 'Product updated successfully!');
     }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -403,7 +411,6 @@ class SellerController extends Controller
             ->route('product-management')
             ->with('success', 'Product "'.$product->name.'" created successfully!');
     }
-
 
     public function destroy($id)
     {
@@ -632,7 +639,7 @@ class SellerController extends Controller
         ]);
 
         $user = auth()->user();
-        $user->password = \Illuminate\Support\Facades\Hash::make($request->new_password);
+        $user->password = Hash::make($request->new_password);
         $user->save();
 
         auth()->logout();
@@ -772,13 +779,13 @@ class SellerController extends Controller
         ]);
 
         $vendor = auth()->user()->vendor;
-        if (!$vendor) {
+        if (! $vendor) {
             return redirect()->back()->with('error', 'Vendor profile not found.');
         }
 
-        \App\Models\SupportTicket::create([
+        SupportTicket::create([
             'vendor_id' => $vendor->id,
-            'ticket_number' => 'TK-' . mt_rand(10000, 99999),
+            'ticket_number' => 'TK-'.mt_rand(10000, 99999),
             'category' => $validated['category'],
             'subject' => $validated['subject'],
             'description' => $validated['description'],
@@ -791,11 +798,11 @@ class SellerController extends Controller
     public function sellerTicket()
     {
         $vendor = auth()->user()->vendor;
-        if (!$vendor) {
+        if (! $vendor) {
             return redirect()->route('dashboard')->with('error', 'Vendor profile not found.');
         }
 
-        $tickets = \App\Models\SupportTicket::where('vendor_id', $vendor->id)
+        $tickets = SupportTicket::where('vendor_id', $vendor->id)
             ->orderBy('created_at', 'desc')
             ->get();
 
