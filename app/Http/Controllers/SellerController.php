@@ -3,16 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use App\Models\Notification;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Payment;
 use App\Models\Payout;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Models\SupportTicket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class SellerController extends Controller
@@ -219,6 +221,116 @@ class SellerController extends Controller
         return view('seller.product-edit', compact('product', 'categories'));
     }
 
+    public function update(Request $request, $id)
+    {
+        $product = Product::where('vendor_id', auth()->user()->vendor->id)->findOrFail($id);
+
+        $validated = $request->validate([
+            'product_name' => 'required|string|max:200',
+            'category' => 'required|exists:categories,id',
+            'product_type' => 'nullable|string|max:100',
+            'description' => 'required|string|max:2000',
+            'base_price' => 'nullable|numeric|min:0',
+            'discounted_price' => 'nullable|numeric|min:0',
+            'sku' => 'nullable|string|max:100|unique:products,sku,'.$product->id,
+            'stock' => 'nullable|integer|min:0',
+            'specifications' => 'nullable|array',
+            'specifications.*.key' => 'nullable|string|max:100',
+            'specifications.*.value' => 'nullable|string|max:255',
+            'variants' => 'nullable|array',
+            'variants.*.id' => 'nullable|integer',
+            'variants.*.sku' => 'required_with:variants|string|max:100|distinct',
+            'variants.*.size' => 'nullable|string|max:50',
+            'variants.*.color' => 'nullable|string|max:50',
+            'variants.*.price' => 'nullable|numeric|min:0',
+            'variants.*.stock' => 'nullable|integer|min:0',
+            'images' => 'nullable|array|max:4',
+            'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:10240',
+            'remove_images' => 'nullable|array',
+            'remove_images.*' => 'integer|exists:images,id',
+        ]);
+
+        $product->update([
+            'category_id' => $validated['category'],
+            'name' => $validated['product_name'],
+            'slug' => Str::slug($validated['product_name']).'-'.Str::lower(Str::random(5)),
+            'product_type' => $validated['product_type'] ?? null,
+            'description' => $validated['description'],
+            'specifications' => ! empty($validated['specifications']) ? $this->filterSpecs($validated['specifications']) : null,
+            'price' => $validated['base_price'] ?? $product->price,
+            'discount_price' => ($validated['discounted_price'] ?? 0) > 0 ? $validated['discounted_price'] : null,
+            'stock' => $validated['stock'] ?? $product->stock,
+            'sku' => $validated['sku'] ?? $product->sku,
+        ]);
+
+        if (! empty($validated['variants'])) {
+            $existingVariantIds = $product->variants()->pluck('id')->toArray();
+            $updatedVariantIds = [];
+
+            foreach ($validated['variants'] as $variantData) {
+                if (empty($variantData['sku'])) {
+                    continue;
+                }
+
+                if (! empty($variantData['id']) && in_array($variantData['id'], $existingVariantIds)) {
+                    $variant = ProductVariant::find($variantData['id']);
+                    $variant->update([
+                        'sku' => $variantData['sku'],
+                        'size' => $variantData['size'] ?? null,
+                        'color' => $variantData['color'] ?? null,
+                        'price' => ! empty($variantData['price']) ? $variantData['price'] : null,
+                        'stock' => $variantData['stock'] ?? 0,
+                    ]);
+                    $updatedVariantIds[] = $variant->id;
+                } else {
+                    $newVariant = ProductVariant::create([
+                        'product_id' => $product->id,
+                        'sku' => $variantData['sku'],
+                        'size' => $variantData['size'] ?? null,
+                        'color' => $variantData['color'] ?? null,
+                        'price' => ! empty($variantData['price']) ? $variantData['price'] : null,
+                        'stock' => $variantData['stock'] ?? 0,
+                        'status' => 'active',
+                    ]);
+                    $updatedVariantIds[] = $newVariant->id;
+                }
+            }
+            $variantsToDelete = array_diff($existingVariantIds, $updatedVariantIds);
+            ProductVariant::whereIn('id', $variantsToDelete)->delete();
+        } else {
+            $product->variants()->delete();
+        }
+
+        if (! empty($validated['remove_images'])) {
+            $imagesToRemove = $product->images()->whereIn('id', $validated['remove_images'])->get();
+            foreach ($imagesToRemove as $img) {
+                if (Storage::disk('public')->exists($img->path)) {
+                    Storage::disk('public')->delete($img->path);
+                }
+                $img->delete();
+            }
+        }
+
+        if ($request->hasFile('images')) {
+            $remainingCount = $product->images()->count();
+            foreach ($request->file('images') as $index => $file) {
+                if ($remainingCount >= 4) {
+                    break;
+                }
+
+                $path = $file->store('products', 'public');
+                $product->images()->create([
+                    'path' => $path,
+                    'type' => 'gallery',
+                    'is_primary' => $remainingCount === 0 && $index === 0 ? 1 : 0,
+                ]);
+                $remainingCount++;
+            }
+        }
+
+        return redirect()->route('product-management')->with('success', 'Product updated successfully!');
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -298,12 +410,6 @@ class SellerController extends Controller
         return redirect()
             ->route('product-management')
             ->with('success', 'Product "'.$product->name.'" created successfully!');
-    }
-
-    public function update(Request $request, $id)
-    {
-        abort_if(auth()->user()->cannot('update products'), 403, 'You do not have permission to update products.');
-        // update logic here
     }
 
     public function destroy($id)
@@ -525,6 +631,24 @@ class SellerController extends Controller
         return redirect()->back()->with('success', 'Profile updated successfully.');
     }
 
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|current_password',
+            'new_password' => 'required|min:8',
+        ]);
+
+        $user = auth()->user();
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        auth()->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('seller.login')->with('success', 'Password updated successfully. Please login again.');
+    }
+
     public function sellerReview()
     {
         return view('seller.review');
@@ -554,9 +678,9 @@ class SellerController extends Controller
         // ─── Total Earnings: sum of subtotals from paid, non-cancelled items ─
         $totalEarnings = (clone $paidItemsBase)->sum('order_items.subtotal');
 
-        // ─── Total Payouts: sum of all non-failed payouts (pending + processing + completed) ─
+        // ─── Total Payouts: sum of completed payouts for this vendor ─────────
         $totalPayouts = Payout::where('vendor_id', $vendorId)
-            ->whereIn('status', ['pending', 'processing', 'completed'])
+            ->where('status', 'completed')
             ->sum('amount');
 
         // ─── Pending Settlement: orders confirmed/shipped but not yet paid ───
@@ -633,71 +757,7 @@ class SellerController extends Controller
 
     public function sellerNotification()
     {
-        $userId = auth()->id();
-
-        // Order types map to "Orders" tab
-        $orderTypes = [
-            Notification::TYPE_ORDER_PLACED,
-            Notification::TYPE_ORDER_CONFIRMED,
-            Notification::TYPE_ORDER_SHIPPED,
-            Notification::TYPE_ORDER_DELIVERED,
-            Notification::TYPE_ORDER_CANCELLED,
-            Notification::TYPE_RETURN_REQUESTED,
-            Notification::TYPE_RETURN_APPROVED,
-        ];
-
-        // Payout types map to "Payouts" tab
-        $payoutTypes = [
-            Notification::TYPE_PAYOUT_PROCESSED,
-            Notification::TYPE_PAYMENT_RECEIVED,
-        ];
-
-        // Paginated list (all types, newest first)
-        $notifications = Notification::where('user_id', $userId)
-            ->latest('created_at')
-            ->paginate(10);
-
-        // Unread counts per tab (used for badge numbers)
-        $counts = [
-            'all' => Notification::where('user_id', $userId)->where('is_read', false)->count(),
-            'orders' => Notification::where('user_id', $userId)->whereIn('type', $orderTypes)->where('is_read', false)->count(),
-            'payouts' => Notification::where('user_id', $userId)->whereIn('type', $payoutTypes)->where('is_read', false)->count(),
-            'store' => Notification::where('user_id', $userId)
-                ->whereNotIn('type', array_merge($orderTypes, $payoutTypes))
-                ->where('is_read', false)
-                ->count(),
-        ];
-
-        return view('seller.notification', compact('notifications', 'counts'));
-    }
-
-    /**
-     * Mark a single notification as read (PATCH /seller-notification/{id}/read).
-     * Only marks notifications that belong to the authenticated user.
-     */
-    public function markNotificationRead(int $id)
-    {
-        $notification = Notification::where('user_id', auth()->id())
-            ->findOrFail($id);
-
-        $notification->markAsRead();
-
-        return response()->json(['success' => true]);
-    }
-
-    /**
-     * Mark ALL of the vendor's notifications as read (PATCH /seller-notification/read-all).
-     */
-    public function markAllNotificationsRead()
-    {
-        Notification::where('user_id', auth()->id())
-            ->where('is_read', false)
-            ->update([
-                'is_read' => true,
-                'read_at' => now(),
-            ]);
-
-        return response()->json(['success' => true]);
+        return view('seller.notification');
     }
 
     public function sellerSupport()
@@ -710,9 +770,43 @@ class SellerController extends Controller
         return view('seller.create-ticket');
     }
 
+    public function storeTicket(Request $request)
+    {
+        $validated = $request->validate([
+            'category' => 'required|string|max:100',
+            'subject' => 'required|string|max:255',
+            'description' => 'required|string',
+        ]);
+
+        $vendor = auth()->user()->vendor;
+        if (! $vendor) {
+            return redirect()->back()->with('error', 'Vendor profile not found.');
+        }
+
+        SupportTicket::create([
+            'vendor_id' => $vendor->id,
+            'ticket_number' => 'TK-'.mt_rand(10000, 99999),
+            'category' => $validated['category'],
+            'subject' => $validated['subject'],
+            'description' => $validated['description'],
+            'status' => 'Pending',
+        ]);
+
+        return redirect()->route('seller-ticket')->with('success', 'Support ticket created successfully!');
+    }
+
     public function sellerTicket()
     {
-        return view('seller.tickets');
+        $vendor = auth()->user()->vendor;
+        if (! $vendor) {
+            return redirect()->route('dashboard')->with('error', 'Vendor profile not found.');
+        }
+
+        $tickets = SupportTicket::where('vendor_id', $vendor->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('seller.tickets', compact('tickets'));
     }
     // ─── Helpers ──────────────────────────────────────────────────────────────
 

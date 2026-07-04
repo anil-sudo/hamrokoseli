@@ -223,11 +223,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 isValid = false;
             }
 
-            if (!valid) return;
+            if (!isValid) return;
 
-            // Success
-            // showToast("Password changed successfully!");
-
+            // Submit the form
+            e.target.closest('form').submit();
         });
     }
 });

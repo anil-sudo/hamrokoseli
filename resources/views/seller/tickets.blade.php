@@ -19,83 +19,48 @@
         <!-- Tickets List -->
         <div class="space-y-6">
 
-            <!-- Ticket Card 1 -->
-            <div class="bg-(--card-bg) border border-(--text-color)/20 rounded-3xl p-6 hover:shadow-md transition">
-                <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
-                    <div class="flex-1">
-                        <div class="flex items-center gap-3">
-                            <span
-                                class="px-3 py-1 text-xs font-medium bg-(--card-dark)/50 text-(--text-dark) rounded-full">General
-                                Support</span>
-                            <span class="text-sm text-(--text-color)/60">TK-74829</span>
-                        </div>
-                        <h3 class="text-lg font-semibold text-(--text-color) mt-3">Payment not credited this week</h3>
-                        <p class="text-(--text-color)/70 mt-2 line-clamp-2">
-                            My weekly payout for last week has not been received yet. Please check...
-                        </p>
-                    </div>
-
-                    <div class="text-right">
-                        <span
-                            class="inline-block px-4 py-1.5 text-sm font-medium bg-(--primary-color)/20 text-(--primary-color) rounded-2xl">
-                            Resolved
-                        </span>
-                        <p class="text-xs text-(--text-color)/50 mt-3">2 days ago</p>
-                    </div>
+            @if($tickets->isEmpty())
+                <div class="bg-(--card-bg) border border-(--text-color)/20 rounded-3xl p-10 text-center text-(--text-color)/70">
+                    You don't have any support tickets yet.
                 </div>
-            </div>
+            @else
+                @foreach($tickets as $ticket)
+                    <div class="bg-(--card-bg) border border-(--text-color)/20 rounded-3xl p-6 hover:shadow-md transition">
+                        <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-3">
+                                    @php
+                                        $categoryColor = match($ticket->category) {
+                                            'General Support' => 'bg-(--card-dark)/50 text-(--text-dark)',
+                                            'Technical Support' => 'bg-(--hover-color)/20 text-(--hover-color)',
+                                            default => 'bg-(--secondary-color)/20 text-(--secondary-color)',
+                                        };
+                                        $statusColor = match($ticket->status) {
+                                            'Pending' => 'bg-(--secondary-color)/20 text-(--secondary-color)',
+                                            'In Progress' => 'bg-(--hover-color)/20 text-(--hover-color)',
+                                            'Resolved' => 'bg-(--primary-color)/20 text-(--primary-color)',
+                                            default => 'bg-gray-200 text-gray-700',
+                                        };
+                                    @endphp
+                                    <span class="px-3 py-1 text-xs font-medium {{ $categoryColor }} rounded-full">{{ $ticket->category }}</span>
+                                    <span class="text-sm text-(--text-color)/60">{{ $ticket->ticket_number }}</span>
+                                </div>
+                                <h3 class="text-lg font-semibold text-(--text-color) mt-3">{{ $ticket->subject }}</h3>
+                                <p class="text-(--text-color)/70 mt-2 line-clamp-2">
+                                    {{ $ticket->description }}
+                                </p>
+                            </div>
 
-            <!-- Ticket Card 2 -->
-            <div class="bg-(--card-bg) border border-(--text-color)/20 rounded-3xl p-6 hover:shadow-md transition">
-                <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
-                    <div class="flex-1">
-                        <div class="flex items-center gap-3">
-                            <span
-                                class="px-3 py-1 text-xs font-medium bg-(--hover-color)/20 text-(--hover-color) rounded-full">Technical
-                                Support</span>
-                            <span class="text-sm text-(--text-color)/60">TK-74815</span>
+                            <div class="text-right">
+                                <span class="inline-block px-4 py-1.5 text-sm font-medium {{ $statusColor }} rounded-2xl">
+                                    {{ $ticket->status }}
+                                </span>
+                                <p class="text-xs text-(--text-color)/50 mt-3">{{ $ticket->created_at->diffForHumans() }}</p>
+                            </div>
                         </div>
-                        <h3 class="text-lg font-semibold text-(--text-color) mt-3">Unable to upload product images</h3>
-                        <p class="text-(--text-color)/70 mt-2 line-clamp-2">
-                            Getting error when trying to upload images for new products.
-                        </p>
                     </div>
-
-                    <div class="text-right">
-                        <span
-                            class="inline-block px-4 py-1.5 text-sm font-medium bg-(--hover-color)/20 text-(--hover-color) rounded-2xl">
-                            In Progress
-                        </span>
-                        <p class="text-xs text-(--text-color)/50 mt-3">5 days ago</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Ticket Card 3 -->
-            <div class="bg-(--card-bg) border border-(--text-color)/20 rounded-3xl p-6 hover:shadow-md transition">
-                <div class="flex flex-col md:flex-row md:items-start justify-between gap-4">
-                    <div class="flex-1">
-                        <div class="flex items-center gap-3">
-                            <span
-                                class="px-3 py-1 text-xs font-medium bg-(--secondary-color)/20 text-(--secondary-color) rounded-full">Order
-                                Related</span>
-                            <span class="text-sm text-(--text-color)/60">TK-74792</span>
-                        </div>
-                        <h3 class="text-lg font-semibold text-(--text-color) mt-3">Order status not updating</h3>
-                        <p class="text-(--text-color)/70 mt-2 line-clamp-2">
-                            Customer order status is stuck at "Processing" even after shipping.
-                        </p>
-                    </div>
-
-                    <div class="text-right">
-                        <span
-                            class="inline-block px-4 py-1.5 text-sm font-medium bg-(--secondary-color)/20 text-(--secondary-color) rounded-2xl">
-                            Pending
-                        </span>
-                        <p class="text-xs text-(--text-color)/50 mt-3">Oct 12, 2023</p>
-                    </div>
-                </div>
-            </div>
+                @endforeach
+            @endif
 
         </div>
 

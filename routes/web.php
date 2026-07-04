@@ -37,6 +37,7 @@ Route::middleware(['auth', 'role:vendor'])->group(function () {
     Route::get('/create-product', [SellerController::class, 'productCreate'])->name('product-create');
     Route::post('/create-product', [SellerController::class, 'store'])->name('product.store');
     Route::get('/edit-product/{id}', [SellerController::class, 'productEdit'])->name('product-edit');
+    Route::put('/product/{id}', [SellerController::class, 'update'])->name('product.update');
     Route::delete('/product/{id}', [SellerController::class, 'destroy'])->name('product.destroy');
     Route::get('/orders', [SellerController::class, 'order'])->name('order');
     Route::get('/order-details', [SellerController::class, 'orderDetails'])->name('order-details');
@@ -48,6 +49,7 @@ Route::middleware(['auth', 'role:vendor'])->group(function () {
     Route::get('/seller-payments-details', [SellerController::class, 'paymentDetails'])->name('payment-details');
     Route::get('/seller-support', [SellerController::class, 'sellerSupport'])->name('seller-support');
     Route::get('/create-ticket', [SellerController::class, 'createTicket'])->name('create-ticket');
+    Route::post('/create-ticket', [SellerController::class, 'storeTicket'])->name('store-ticket');
     Route::get('/tickets', [SellerController::class, 'sellerTicket'])->name('seller-ticket');
     Route::get('/seller-notification', [SellerController::class, 'sellerNotification'])->name('seller-notification');
 });
