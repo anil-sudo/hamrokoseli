@@ -184,7 +184,12 @@ class PageController extends Controller
             ->take(6)
             ->get();
 
-        return view('todays-deals', compact('products', 'categories', 'featuredDeals', 'trendingProducts'));
+        $dealEndsAt = \App\Models\Setting::getValue('todays_deal_ends_at');
+        if (!$dealEndsAt) {
+            $dealEndsAt = now()->endOfDay()->toDateTimeString();
+        }
+
+        return view('todays-deals', compact('products', 'categories', 'featuredDeals', 'trendingProducts', 'dealEndsAt'));
     }
 
     public function top_sellers()

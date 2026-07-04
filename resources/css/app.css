@@ -290,11 +290,11 @@ h6 {
         display: block;
     }
 
-.card-dark {
+/* .card-dark {
     background-color: var(--card-bg);
     border-radius: 12px;
     padding: 16px;
-}
+} */
 
 /* Optional subtle gradient */
 .hero-gradient {
