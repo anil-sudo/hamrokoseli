@@ -505,7 +505,7 @@ class SellerController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:100',
-            'email' => 'required|email|max:150|unique:users,email,' . $user->id,
+            'email' => 'required|email|max:150|unique:users,email,'.$user->id,
             'phone' => 'nullable|string|max:20',
             'profile_pic' => 'nullable|image|max:2048',
         ]);
