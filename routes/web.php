@@ -77,6 +77,7 @@ Route::get('/return_&_refund', [PageController::class, 'return_policy'])->name('
 Route::get('/faq', [PageController::class, 'faq'])->name('faq');
 Route::get('/seller_policy', [PageController::class, 'seller_policy'])->name('seller-policy');
 Route::get('/FAQ', [PageController::class, 'faq'])->name('faq');
+Route::get('/shipping-info', [PageController::class, 'shipping_policy'])->name('shipping-policy');
 
 // ─── Requires login (guests are redirected to /userlogin automatically) ───────
 Route::middleware('auth')->group(function () {

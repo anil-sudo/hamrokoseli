@@ -36,7 +36,7 @@
                     <ul class="flex flex-col space-y-2.5 text-sm">
                         <li><a href="{{ url('FAQ') }}"
                                 class="text-slate-300 hover:text-white transition-colors">FAQs</a></li>
-                        <li><a href="{{ url('shipping') }}"
+                        <li><a href="{{ url('shipping-info') }}"
                                 class="text-slate-300 hover:text-white transition-colors">Shipping Info</a></li>
                         <li><a href="{{ url('contact-us') }}"
                                 class="text-slate-300 hover:text-white transition-colors">Contact Us</a></li>
