@@ -64,7 +64,11 @@
                     <div class="hidden md:flex items-center gap-2 relative" id="account-menu-wrap">
                         <a href="{{ route('Userdashboard') }}" id="account-menu-btn"
                             class="inline-flex items-center gap-2 rounded-full border border-white/90 text-white font-semibold px-4 py-1.5 text-sm hover:bg-white hover:text-[#1f3d2e] transition-all duration-300 active:scale-95 shadow-sm">
-                            <i class="far fa-user-circle"></i>
+                            @if(auth()->user()->profile_pic)
+                                <img src="{{ asset('storage/' . auth()->user()->profile_pic) }}" alt="Profile" class="w-6 h-6 rounded-full object-cover">
+                            @else
+                                <i class="far fa-user-circle"></i>
+                            @endif
                             <span>Hello, {{ explode(' ', auth()->user()->name)[0] }}</span><i class="fa-solid fa-chevron-down"></i>
                         </a>
                     </div>
@@ -163,8 +167,13 @@
                 Sign Up
             </a>
         @else
-            <a href="{{ route('Userdashboard') }}" class="flex-1 text-center text-white font-semibold py-2 text-sm hover:text-emerald-200 transition-colors">
-                <i class="far fa-user-circle mr-1.5"></i>Hello, {{ explode(' ', auth()->user()->name)[0] }} <i class="fa-solid fa-chevron-down"></i>
+            <a href="{{ route('Userdashboard') }}" class="flex-1 text-center flex items-center justify-center gap-1.5 text-white font-semibold py-2 text-sm hover:text-emerald-200 transition-colors">
+                @if(auth()->user()->profile_pic)
+                    <img src="{{ asset('storage/' . auth()->user()->profile_pic) }}" alt="Profile" class="w-5 h-5 rounded-full object-cover">
+                @else
+                    <i class="far fa-user-circle"></i>
+                @endif
+                Hello, {{ explode(' ', auth()->user()->name)[0] }} <i class="fa-solid fa-chevron-down"></i>
             </a>
             <form action="{{ route('logout') }}" method="POST" class="flex-1">
                 @csrf

@@ -121,7 +121,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (saveProfileBtn) {
         saveProfileBtn.addEventListener('click', (e) => {
-            e.preventDefault();
+            // e.preventDefault();
 
             const nameInput = document.querySelector('input[placeholder="Enter your name"]');
             const emailInput = document.querySelector('input[type="email"]');
@@ -164,7 +164,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 isValid = false;
             }
 
-            if (!valid) return;
+            if (!isValid) {
+                e.preventDefault();
+                return;
+            }
 
             // Success
             // showToast("Profile updated successfully!");

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Wishlist;
+use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
@@ -157,6 +158,31 @@ class UserController extends Controller
         $user = auth()->user();
 
         return view('user.profile', compact('user'));
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $user = auth()->user();
+
+        $request->validate([
+            'name' => 'required|string|max:100',
+            'email' => 'required|email|max:150|unique:users,email,'.$user->id,
+            'phone' => 'nullable|string|max:20',
+            'profile_pic' => 'nullable|image|max:2048',
+        ]);
+
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->phone = $request->phone;
+
+        if ($request->hasFile('profile_pic')) {
+            $path = $request->file('profile_pic')->store('profiles', 'public');
+            $user->profile_pic = $path;
+        }
+
+        $user->save();
+
+        return redirect()->back()->with('success', 'Profile updated successfully.');
     }
 
     public function userNotification()

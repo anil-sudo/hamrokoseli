@@ -27,8 +27,12 @@
 
                         {{-- Profile --}}
                         <a href="{{ route('seller.profile') }}"
-                            class="w-8 h-8 bg-(--text-light) rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-transform">
-                            <i data-lucide="user" class="w-5 fill-current text-(--text-color)"></i>
+                            class="w-8 h-8 bg-(--text-light) rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-transform overflow-hidden">
+                            @if(Auth::user()->profile_pic)
+                                <img src="{{ asset('storage/' . Auth::user()->profile_pic) }}" alt="Profile" class="w-full h-full object-cover">
+                            @else
+                                <span class="text-sm font-bold text-(--text-color)">{{ strtoupper(substr(Auth::user()->name ?? 'V', 0, 1)) }}</span>
+                            @endif
                         </a>
                     </div>
                 </div>

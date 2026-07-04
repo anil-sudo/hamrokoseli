@@ -28,6 +28,7 @@ Route::middleware('guest:vendor')->group(function () {
 
 Route::post('/seller-logout', [SellerController::class, 'logout'])->name('seller.logout');
 Route::get('/seller-profile', [SellerController::class, 'sellerProfile'])->name('seller.profile');
+Route::post('/seller-profile', [SellerController::class, 'updateProfile'])->name('seller.profile.update');
 
 // ─── Seller routes (protected by vendor guard) ────────────────────────────────
 Route::middleware(['auth', 'role:vendor'])->group(function () {
@@ -149,5 +150,6 @@ Route::get('/user-orders', [UserController::class, 'orders'])->name('User-orders
 Route::get('/user-order-details', [UserController::class, 'orderDetail'])->name('order-detail');
 Route::get('/return-product', [UserController::class, 'returnProduct'])->name('return-product');
 Route::get('/user-profile', [UserController::class, 'userProfile'])->name('user-profile');
+Route::post('/user-profile', [UserController::class, 'updateProfile'])->name('user.profile.update');
 Route::get('/user-notification', [UserController::class, 'userNotification'])->name('user-notification');
 Route::redirect('/login.php', '/userlogin');
