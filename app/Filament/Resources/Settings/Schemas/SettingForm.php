@@ -4,7 +4,11 @@ namespace App\Filament\Resources\Settings\Schemas;
 
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\FileUpload;
+// use Filament\Forms\Get;
 use Filament\Schemas\Schema;
+use Filament\Schemas\Components\Utilities\Get;
+use Illuminate\Support\Str;
 
 class SettingForm
 {
@@ -14,15 +18,31 @@ class SettingForm
             ->components([
                 TextInput::make('key')
                     ->label('Setting Key')
-                    ->disabled()
-                    ->required(),
-                
+                    ->helperText('Type "_image" or "bg" in the key name to upload an image. Type "_at", "date", or "time" for a Date/Time picker. Otherwise, it will be a standard text input.')
+                    ->required()
+                    ->disabled(fn ($record) => $record !== null)
+                    ->live(),
+
                 DateTimePicker::make('value')
                     ->label('Setting Value (Date/Time)')
                     ->required()
                     ->placeholder('Select target date/time')
                     ->displayFormat('Y-m-d H:i:s')
-                    ->native(false),
+                    ->native(false)
+                    ->visible(fn (Get $get) => Str::contains($get('key') ?? '', ['date', 'time', '_at'])),
+
+                FileUpload::make('value')
+                    ->label('Setting Value (Image Upload)')
+                    ->required()
+                    ->image()
+                    ->disk('public')
+                    ->directory('settings')
+                    ->visible(fn (Get $get) => !Str::contains($get('key') ?? '', ['date', 'time', '_at']) && Str::contains($get('key') ?? '', ['image', 'bg', 'logo', 'icon', 'pic'])),
+                    
+                TextInput::make('value')
+                    ->label('Setting Value (Text)')
+                    ->required()
+                    ->visible(fn (Get $get) => $get('key') !== null && !Str::contains($get('key') ?? '', ['date', 'time', '_at', 'image', 'bg', 'logo', 'icon', 'pic'])),
             ]);
     }
 }

@@ -61,5 +61,11 @@ class DatabaseSeeder extends Seeder
             ['key' => 'todays_deal_ends_at'],
             ['value' => now()->addHours(24)->toDateTimeString()]
         );
+
+        // Seed default deal background image setting
+        \App\Models\Setting::updateOrCreate(
+            ['key' => 'deal_countdown_bg_image'],
+            ['value' => null]
+        );
     }
 }

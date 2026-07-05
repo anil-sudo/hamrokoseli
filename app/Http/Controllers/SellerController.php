@@ -157,11 +157,14 @@ class SellerController extends Controller
             ->get();
 
         $dealEndsAt = \App\Models\Setting::getValue('todays_deal_ends_at');
-        if (!$dealEndsAt) {
-            $dealEndsAt = now()->endOfDay()->toDateTimeString();
+        if ($dealEndsAt) {
+            $dealEndsAt = \Carbon\Carbon::parse($dealEndsAt)->toIso8601String();
+        } else {
+            $dealEndsAt = now()->endOfDay()->toIso8601String();
         }
+        $dealBgImage = \App\Models\Setting::getValue('deal_countdown_bg_image');
 
-        return view('seller.dashboard', compact('vendor', 'stats', 'salesTrend', 'recentItems', 'dealEndsAt'));
+        return view('seller.dashboard', compact('vendor', 'stats', 'salesTrend', 'recentItems', 'dealEndsAt', 'dealBgImage'));
     }
 
     public function product_management(Request $request)
