@@ -1,6 +1,6 @@
 <x-frontend-layout title="Top Selling Creations - Hamro Koseli"
     description="Discover the most popular and best-selling Nepali crafts and handmade treasures, curated for you."
-    ogImage="/images/og-image.jpg">
+    ogImage="/images/og-images.jpg">
 
 <div class="bg-[#F4EAE1] text-[#3A2A1F] min-h-screen py-8 sm:py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
