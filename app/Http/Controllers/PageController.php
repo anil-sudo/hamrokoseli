@@ -397,4 +397,13 @@ class PageController extends Controller
             'activeProduct' => $product,
         ]));
     }
+
+    public function sitemap()
+    {
+        $products = Product::where('status', 'active')->get(['slug', 'updated_at']);
+        $categories = Category::where('status', 'active')->get(['slug', 'updated_at']);
+
+        return response()->view('sitemap', compact('products', 'categories'))
+            ->header('Content-Type', 'application/xml');
+    }
 }

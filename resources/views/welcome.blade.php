@@ -1,5 +1,7 @@
-<x-frontend-layout>
-
+<x-frontend-layout
+    title="Hamro Koseli – Gifts & Surprises Delivered in Nepal"
+    description="Hamro Koseli is Nepal's trusted gifting platform. Send gifts, sweets, and surprises to your loved ones across Nepal."
+    ogImage="/images/og-image.jpg">
 
 
 <div class="bg-[#F4EAE1] text-brand-dark leading-relaxed flex flex-col min-h-screen">

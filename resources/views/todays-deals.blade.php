@@ -1,4 +1,6 @@
-<x-frontend-layout title="Today's Deals - Hamro Koseli">
+<x-frontend-layout title="Today's Deals - Hamro Koseli"
+    description="Check out today's limited-time offers on authentic Nepali crafts and handmade treasures."
+    ogImage="/images/og-image.jpg">
 
   <main class="bg-[#f7fafc] min-h-screen">
     <!-- Hero Section -->

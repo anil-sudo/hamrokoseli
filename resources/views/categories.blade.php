@@ -1,4 +1,6 @@
-<x-frontend-layout title="Categories - Hamro Koseli">
+<x-frontend-layout title="Categories - Hamro Koseli"
+    description="Explore the rich heritage of Nepal through our curated collection of masterfully crafted artifacts, each telling a story of ancient traditions and skilled hands."
+    ogImage="/images/og-image.jpg">
     <div class="bg-[#FFF7EF] text-[#3A2A1F] min-h-screen py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
         <div class="max-w-7xl mx-auto">
 

@@ -148,3 +148,5 @@ Route::middleware(['guest', 'throttle:auth'])->group(function () {
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::redirect('/login.php', '/userlogin');
+
+Route::get('/sitemap.xml', [PageController::class, 'sitemap'])->name('sitemap');

@@ -1,4 +1,8 @@
-@props(['title' => 'Hamro Koseli'])
+@props([
+    'title'       => 'Hamro Koseli – Gifts & Surprises Delivered in Nepal',
+    'description' => 'Hamro Koseli is Nepal\'s trusted gifting platform. Send gifts, sweets, and surprises to your loved ones across Nepal.',
+    'ogImage'     => '/images/og-image.jpg',
+])
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +10,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title }}</title>
+    <!-- SEO Meta -->
+    <meta name="description" content="{{ $description }}">
+
+    <!-- Open Graph -->
+    <meta property="og:type"        content="website">
+    <meta property="og:url"         content="{{ url()->current() }}">
+    <meta property="og:title"       content="{{ $title }}">
+    <meta property="og:description" content="{{ $description }}">
+    <meta property="og:image"       content="{{ asset($ogImage) }}">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card"        content="summary_large_image">
+    <meta name="twitter:title"       content="{{ $title }}">
+    <meta name="twitter:description" content="{{ $description }}">
+    <meta name="twitter:image"       content="{{ asset($ogImage) }}">
     <link rel="icon" type="image/png" href="{{ asset('images/logo.png') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
