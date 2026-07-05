@@ -1,6 +1,11 @@
 //
 import './seller-layout';
 document.addEventListener('DOMContentLoaded', () => {
+    function getCsrfToken() {
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        return meta ? meta.getAttribute('content') : '';
+    }
+
     const hamburger     = document.getElementById('hamburger-btn');
     const drawer        = document.getElementById('mobile-drawer');
     const overlay       = document.getElementById('drawer-overlay');
@@ -297,8 +302,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==================== WISHLIST FEATURE LOGIC ====================
-    let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-    const wishlistGridContainer = document.getElementById('wishlist-grid-container');
+let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+
+// If logged in, load wishlist from database and sync to localStorage
+if (window.isLoggedIn) {
+    fetch('/wishlist/items', {
+        headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': getCsrfToken() },
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.items) {
+            wishlist = data.items;
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+            updateWishlistBadge();
+            syncWishlistIcons();
+            renderWishlistPage();
+        }
+    })
+    .catch(() => {});
+}    const wishlistGridContainer = document.getElementById('wishlist-grid-container');
 
     // Helper: Seeding defaults on first visit if we are on the wishlist page
     if (wishlistGridContainer && wishlist.length === 0 && !localStorage.getItem('wishlist_visited')) {
@@ -419,20 +441,35 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Toggle product in wishlist
-    function toggleWishlistProduct(productData) {
-        const index = wishlist.findIndex(item => String(item.id) === String(productData.id));
-        if (index > -1) {
-            wishlist.splice(index, 1);
-            localStorage.setItem('wishlist', JSON.stringify(wishlist));
-            showToast(`${productData.name} removed from wishlist.`, 'info');
-            return false;
-        } else {
-            wishlist.push(productData);
-            localStorage.setItem('wishlist', JSON.stringify(wishlist));
-            showToast(`${productData.name} added to wishlist!`, 'success');
-            return true;
-        }
+function toggleWishlistProduct(productData) {
+    const index = wishlist.findIndex(item => String(item.id) === String(productData.id));
+    if (index > -1) {
+        wishlist.splice(index, 1);
+        localStorage.setItem('wishlist', JSON.stringify(wishlist));
+        showToast(`${productData.name} removed from wishlist.`, 'info');
+    } else {
+        wishlist.push(productData);
+        localStorage.setItem('wishlist', JSON.stringify(wishlist));
+        showToast(`${productData.name} added to wishlist!`, 'success');
     }
+
+    // Sync to database if logged in
+    if (window.isLoggedIn) {
+        fetch('/wishlist/toggle', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': getCsrfToken(),
+            },
+            body: JSON.stringify({ product_id: productData.id }),
+        }).catch(() => {
+            // Fail silently — localStorage still updated
+        });
+    }
+
+    return index === -1; // true if added, false if removed
+}
 
     // Attach listeners to wishlist buttons on the page
     document.addEventListener('click', function(e) {
@@ -568,11 +605,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const cartItemsContainer = document.getElementById('cart-items-container');
-
-    function getCsrfToken() {
-        const meta = document.querySelector('meta[name="csrf-token"]');
-        return meta ? meta.getAttribute('content') : '';
-    }
 
     // Update Header Badge Count
     function updateCartBadge() {

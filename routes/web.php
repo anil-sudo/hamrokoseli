@@ -68,7 +68,6 @@ Route::get('/new-arrivals', [PageController::class, 'new_arrival'])->name('new-a
 Route::get('/todays-deals', [PageController::class, 'todays_deals'])->name('todays-deals');
 Route::get('/top-sellers', [PageController::class, 'top_sellers'])->name('top-sellers');
 Route::get('/about-us', [PageController::class, 'about_us'])->name('about-us');
-Route::get('/wishlist', [PageController::class, 'wishlist'])->name('wishlist');
 Route::get('/privacypolicy', [PageController::class, 'privacy'])->name('privacy');
 Route::get('/contact-us', [PageController::class, 'contactus'])->name('contact-us');
 Route::get('/viewdetails/{slug}', [PageController::class, 'viewProduct'])->name('viewdetails');
@@ -82,7 +81,8 @@ Route::get('/shipping-info', [PageController::class, 'shipping_policy'])->name('
 // ─── Requires login (guests are redirected to /userlogin automatically) ───────
 Route::middleware('auth')->group(function () {
     Route::get('/wishlist', [PageController::class, 'wishlist'])->name('wishlist');
-
+    Route::post('/wishlist/toggle', [UserController::class, 'toggleWishlist'])->name('wishlist.toggle'); // ADD THIS
+    Route::get('/wishlist/items', [UserController::class, 'wishlistItems'])->name('wishlist.items');
     Route::get('/cart', [CartController::class, 'index'])->name('cart');
     Route::post('/cart/add', [CartController::class, 'store'])->name('cart.add');
     Route::patch('/cart/{cart}', [CartController::class, 'update'])->name('cart.update');
@@ -100,16 +100,24 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/order/{order}/confirmation', [CheckoutController::class, 'confirmation'])->name('order.confirmation');
 
-    // Khalti ePayment: initiate sends the customer to Khalti's hosted
-    // checkout, callback is where Khalti redirects them back to afterward.
     Route::get('/payment/khalti/{order}/initiate', [KhaltiPaymentController::class, 'initiate'])->name('khalti.initiate');
     Route::get('/payment/khalti/callback', [KhaltiPaymentController::class, 'callback'])->name('khalti.callback');
 
-    // eSewa ePay: initiate shows an auto-submitting form that posts to
-    // eSewa's hosted checkout, callback is where eSewa sends the customer
-    // back afterward (used as both its success_url and failure_url).
     Route::get('/payment/esewa/{order}/initiate', [EsewaPaymentController::class, 'initiate'])->name('esewa.initiate');
     Route::get('/payment/esewa/callback', [EsewaPaymentController::class, 'callback'])->name('esewa.callback');
+
+    // ─── User dashboard & profile (auth protected) ────────────────────────────
+    Route::get('/user-dashboard', [UserController::class, 'dashboard'])->name('Userdashboard');
+    Route::get('/user-orders', [UserController::class, 'orders'])->name('User-orders');
+    Route::get('/user-order-details', [UserController::class, 'orderDetail'])->name('order-detail');
+    Route::patch('/user-orders/{order}/cancel', [UserController::class, 'cancelOrder'])->name('order.cancel');
+    Route::get('/return-product', [UserController::class, 'returnProduct'])->name('return-product');
+    Route::get('/user-profile', [UserController::class, 'userProfile'])->name('user-profile');
+    Route::post('/user-profile', [UserController::class, 'updateProfile'])->name('user.profile.update');
+    Route::post('/user-password', [UserController::class, 'updatePassword'])->name('user.password.update');
+    Route::get('/user-notification', [UserController::class, 'userNotification'])->name('user-notification');
+    Route::post('/user-notification/mark-all-read', [UserController::class, 'markAllNotificationsRead'])->name('user.notifications.markAllRead');
+    Route::patch('/user-notification/{slug}/read', [UserController::class, 'markNotificationRead'])->name('user.notifications.read');
 });
 
 // ─── User Auth routes (guest on web guard) ────────────────────────────────────
@@ -122,7 +130,6 @@ Route::middleware('web')->group(function () {
     Route::get('/userregister', [PageController::class, 'home'])->name('userregister');
     Route::post('/userregister', [UserRegisterController::class, 'register']);
 
-    // Fallback/compatibility routes
     Route::get('/login', function () {
         return redirect()->route('userlogin');
     })->name('login');
@@ -132,35 +139,11 @@ Route::middleware('web')->group(function () {
     Route::get('/vendor/register', [VendorRegisterController::class, 'show'])->name('vendor.register');
     Route::post('/vendor/register', [VendorRegisterController::class, 'register'])->name('vendor.register.post');
 
-    // ─── Forgot / Reset Password ──────────────────────────────────────────────
-    // GET  /forgot-password        → show the "enter your email" form (standalone page)
-    Route::get('/forgot-password', [PasswordResetController::class, 'showForgotForm'])
-        ->name('password.request');
-
-    // POST /forgot-password        → send the reset link email
-    Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink'])
-        ->name('password.email');
-
-    // GET  /reset-password/{token} → show the "choose new password" form
-    Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetForm'])
-        ->name('password.reset');
-
-    // POST /reset-password         → save the new password
-    Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])
-        ->name('password.update');
+    Route::get('/forgot-password', [PasswordResetController::class, 'showForgotForm'])->name('password.request');
+    Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
+    Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('password.update');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-Route::get('/user-dashboard', [UserController::class, 'dashboard'])->name('Userdashboard');
-Route::get('/user-orders', [UserController::class, 'orders'])->name('User-orders');
-Route::get('/user-order-details', [UserController::class, 'orderDetail'])->name('order-detail');
-Route::patch('/user-orders/{order}/cancel', [UserController::class, 'cancelOrder'])->name('order.cancel');
-Route::get('/return-product', [UserController::class, 'returnProduct'])->name('return-product');
-Route::get('/user-profile', [UserController::class, 'userProfile'])->name('user-profile');
-Route::post('/user-profile', [UserController::class, 'updateProfile'])->name('user.profile.update');
-Route::post('/user-password', [UserController::class, 'updatePassword'])->name('user.password.update');
-Route::get('/user-notification', [UserController::class, 'userNotification'])->name('user-notification');
-Route::post('/user-notification/mark-all-read', [UserController::class, 'markAllNotificationsRead'])->name('user.notifications.markAllRead');
-Route::patch('/user-notification/{slug}/read', [UserController::class, 'markNotificationRead'])->name('user.notifications.read');
 Route::redirect('/login.php', '/userlogin');

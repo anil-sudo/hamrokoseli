@@ -8,7 +8,7 @@ use App\Models\OrderItem;
 use App\Models\Payment;
 use App\Models\ShippingAddress;
 use App\Models\Vendor;
-// use App\Services\NotificationService;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -153,7 +153,7 @@ class CheckoutController extends Controller
         });
 
         // NOTIFY VENDOR(S)
-        // NotificationService::orderPlaced($order);
+        NotificationService::orderPlaced($order);
 
         // COD is complete the moment the order is created. Khalti and eSewa
         // still need the customer to actually pay — send them to the
@@ -314,7 +314,7 @@ class CheckoutController extends Controller
         });
 
         // NOTIFY VENDOR(S)
-        // NotificationService::orderPlaced($order);
+        NotificationService::orderPlaced($order);
 
         if ($data['payment_method'] === 'khalti') {
             return redirect()->route('khalti.initiate', $order);
