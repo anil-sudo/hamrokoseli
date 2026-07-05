@@ -35,7 +35,7 @@ class Image extends Model
     // -------------------------------------------------------------------------
 
     /**
-     * Polymorphic owner — can be a Product, Vendor, Category, etc.
+     * Polymorphic owner -can be a Product, Vendor, Category, etc.
      */
     public function imageable(): MorphTo
     {
@@ -60,5 +60,36 @@ class Image extends Model
     public function scopeOfType($query, string $type)
     {
         return $query->where('type', $type);
+    }
+
+    protected static function booted(): void
+    {
+        static::saved(function (Image $image) {
+            $image->syncProductImagePath();
+        });
+
+        static::deleted(function (Image $image) {
+            $image->syncProductImagePath();
+        });
+    }
+
+    protected function syncProductImagePath(): void
+    {
+        if ($this->imageable_type !== Product::class) {
+            return;
+        }
+
+        $product = Product::find($this->imageable_id);
+
+        if (! $product) {
+            return;
+        }
+
+        $path = $product->images->firstWhere('is_primary', true)?->path
+            ?? $product->images->first()?->path;
+
+        $product->withoutEvents(fn () => $product->update([
+            'image' => $path,
+        ]));
     }
 }

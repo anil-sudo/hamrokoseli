@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Notification as UserNotification;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
@@ -30,6 +31,14 @@ class User extends Authenticatable implements FilamentUser
         ];
     }
 
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'phone',
+        'address',
+    ];
+
     // -------------------------------------------------------------------------
     // Relationships
     // -------------------------------------------------------------------------
@@ -52,6 +61,11 @@ class User extends Authenticatable implements FilamentUser
     public function wishlistItems(): HasMany
     {
         return $this->hasMany(Wishlist::class);
+    }
+
+    public function appNotifications(): HasMany
+    {
+        return $this->hasMany(UserNotification::class);
     }
 
     public function reviews(): HasMany

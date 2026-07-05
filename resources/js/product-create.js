@@ -37,77 +37,64 @@ function showToast(message, type = 'error') {
     }, 4000);
 }
 
+// ==================== VALIDATE FORM ====================
 function validateForm() {
     let isValid = true;
 
-    // Product Name
+    // Common fields
     const name = document.getElementById('product_name');
-    if (!name.value.trim()) {
-        showError(name, "Product name is required");
-        isValid = false;
-    } else clearError(name);
+    if (!name.value.trim()) { showError(name, "Product name is required"); isValid = false; } else clearError(name);
 
-    // Category
     const category = document.getElementById('category');
-    if (!category.value) {
-        showError(category, "Please select a category");
-        isValid = false;
-    } else clearError(category);
+    if (!category.value) { showError(category, "Please select a category"); isValid = false; } else clearError(category);
 
-    // Description
     const desc = document.getElementById('description');
-    if (!desc.value.trim()) {
-        showError(desc, "Description is required");
-        isValid = false;
-    } else clearError(desc);
-
-    // Base Price
-    const basePrice = document.getElementById('base_price');
-    if (!basePrice.value || parseFloat(basePrice.value) <= 0) {
-        showError(basePrice, "Base price must be greater than 0");
-        isValid = false;
-    } else clearError(basePrice);
-
-    // Discount Price
-    const discPrice = document.getElementById('discounted_price');
-    if (parseFloat(discPrice.value) > parseFloat(basePrice.value)) {
-        showError(discPrice, "Discount price cannot be higher than base price");
-        isValid = false;
-    } else clearError(discPrice);
-
-    // SKU
-    const sku = document.getElementById('sku');
-    if (!sku.value.trim()) {
-        showError(sku, "SKU is required");
-        isValid = false;
-    } else clearError(sku);
-
-    // Stock
-    const stock = document.getElementById('stock');
-    if (!stock.value || parseInt(stock.value) < 0) {
-        showError(stock, "Stock quantity cannot be negative");
-        isValid = false;
-    } else clearError(stock);
-
-    // At least one specification
-    const specs = document.querySelectorAll('#specifications > div');
-    if (specs.length === 0) {
-        showToast("Please add at least one specification.", 'error'); isValid = false;
-    }
-
-    // At least one variant
-    const variants = document.querySelectorAll('#variants .border');
-    if (variants.length === 0) {
-        showToast("Please add at least one variant.", 'error'); isValid = false;
-    }
+    if (!desc.value.trim()) { showError(desc, "Description is required"); isValid = false; } else clearError(desc);
 
     if (uploadedFiles.length === 0) {
         showToast("Please upload at least one image.");
         isValid = false;
     }
 
+    if (variantsEnabled) {
+        const variantRows = document.querySelectorAll('.variant-row');
+        if (variantRows.length === 0) {
+            showToast("Please add at least one variant.", 'error');
+            isValid = false;
+        }
+    } else {
+        // Normal product validation
+        const basePrice = document.getElementById('base_price');
+        if (!basePrice.value || parseFloat(basePrice.value) <= 0) {
+            showError(basePrice, "Base price must be greater than 0");
+            isValid = false;
+        } else clearError(basePrice);
+
+        const stock = document.getElementById('stock');
+        if (!stock.value || parseInt(stock.value) < 0) {
+            showError(stock, "Stock quantity cannot be negative");
+            isValid = false;
+        } else clearError(stock);
+
+        const discountedPrice = document.getElementById('discounted_price');
+        if (discountedPrice && discountedPrice.value && discountedPrice.value !== '0') {
+            const discVal = parseFloat(discountedPrice.value);
+            const baseVal = parseFloat(basePrice.value || 0);
+            if (discVal < 0) {
+                showError(discountedPrice, "Discount cannot be negative");
+                isValid = false;
+            } else if (discVal >= baseVal) {
+                showError(discountedPrice, "Discount must be less than the base price");
+                isValid = false;
+            } else {
+                clearError(discountedPrice);
+            }
+        }
+    }
+
     return isValid;
 }
+
 
 // ==================== SPECIFICATIONS ====================
 let specIndex = 0;
@@ -140,6 +127,61 @@ function addSpecification() {
     lucide.createIcons();
 }
 
+// ==================== VARIANT TOGGLE ====================
+let variantsEnabled = false;
+
+function toggleVariants() {
+    variantsEnabled = !variantsEnabled;
+    const toggleBtn = document.getElementById('variantToggleBtn');
+    const variantsSection = document.getElementById('variantsSection');
+    const pricingSection = document.getElementById('pricingSection');
+
+    // Pricing fields that should be required only when variants are OFF
+    const basePrice = document.getElementById('base_price');
+    const sku = document.getElementById('sku');
+    const stock = document.getElementById('stock');
+
+    if (variantsEnabled) {
+        toggleBtn.classList.add('bg-(--secondary-color)', 'text-white', 'hover:bg-[#B94E31]');
+        toggleBtn.classList.remove('border-(--secondary-color)', 'text-(--secondary-color)');
+        toggleBtn.innerHTML = `<i data-lucide="toggle-right" class="w-5 h-5"></i> Variants Enabled`;
+
+        variantsSection.classList.remove('hidden');
+        pricingSection.classList.add('hidden');
+
+        // Disable & remove required from pricing fields so browser won't block submit
+        basePrice.required = false;
+        basePrice.disabled = true;
+        sku.required = false;
+        sku.disabled = true;
+        stock.required = false;
+        stock.disabled = true;
+
+        if (document.getElementById('variants').children.length === 0) {
+            addVariant();
+        }
+    } else {
+        toggleBtn.classList.remove('bg-(--secondary-color)', 'text-white', 'hover:bg-[#B94E31]');
+        toggleBtn.classList.add('border-(--secondary-color)', 'text-(--secondary-color)');
+        toggleBtn.innerHTML = `<i data-lucide="toggle-left" class="w-5 h-5"></i> Add Variants`;
+
+        variantsSection.classList.add('hidden');
+        pricingSection.classList.remove('hidden');
+
+        // Re-enable & restore required on pricing fields
+        basePrice.required = true;
+        basePrice.disabled = false;
+        sku.required = true;
+        sku.disabled = false;
+        stock.required = true;
+        stock.disabled = false;
+
+        // IMPORTANT: Clear all variants when disabling to prevent validation error
+        document.getElementById('variants').innerHTML = '';
+    }
+    lucide.createIcons();
+}
+
 // ==================== VARIANTS ====================
 let variantIndex = 0;
 function addVariant() {
@@ -147,28 +189,25 @@ function addVariant() {
     const row = document.createElement('div');
     row.className = 'variant-row border border-(--text-color)/20 rounded-2xl p-5 bg-(--card-dark)/50';
     row.innerHTML = `
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
-                    <input type="text" name="variants[${variantIndex}][sku]"
-                        placeholder="SKU *"
-                        class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-                    <input type="text" name="variants[${variantIndex}][size]"
-                        placeholder="Size (e.g. M, L, XL)"
-                        class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-                    <input type="text" name="variants[${variantIndex}][color]"
-                        placeholder="Color"
-                        class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-                    <input type="number" name="variants[${variantIndex}][price]"
-                        placeholder="Price override (Rs.)" min="0" step="1"
-                        class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-                    <input type="number" name="variants[${variantIndex}][stock]"
-                        placeholder="Stock" min="0" value="0"
-                        class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-                </div>
-                <button type="button" onclick="this.closest('.variant-row').remove()"
-                    class="text-sm text-red-400 hover:text-red-600 flex items-center gap-1">
-                    <i data-lucide="trash-2" class="w-4 h-4"></i> Remove variant
-                </button>
-            `;
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
+            <input type="text" name="variants[${variantIndex}][sku]" placeholder="SKU *" required
+                class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
+            <input type="text" name="variants[${variantIndex}][size]" placeholder="Size (e.g. M, L, XL)"
+                class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
+            <input type="text" name="variants[${variantIndex}][color]" placeholder="Color"
+                class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
+            <input type="number" name="variants[${variantIndex}][price]" placeholder="Price" min="0" step="1"
+                class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
+            <input type="number" name="variants[${variantIndex}][discounted_price]" placeholder="Discount (Rs.)" min="0" step="1"
+                class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
+            <input type="number" name="variants[${variantIndex}][stock]" placeholder="Stock" min="0" value="0"
+                class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
+        </div>
+        <button type="button" onclick="this.closest('.variant-row').remove()"
+            class="text-sm text-red-400 hover:text-red-600 flex items-center gap-1">
+            <i data-lucide="trash-2" class="w-4 h-4"></i> Remove variant
+        </button>
+    `;
     container.appendChild(row);
     variantIndex++;
     lucide.createIcons();
@@ -197,6 +236,16 @@ uploadArea.addEventListener('drop', (e) => {
     handleFiles(e.dataTransfer.files);
 });
 
+function syncFileInput() {
+    // Rebuild the real <input type="file"> FileList from our tracked
+    // uploadedFiles array, since browsers won't let us assign an array
+    // directly to input.files. Without this, the form submits with no
+    // files attached and nothing gets saved to the database.
+    const dataTransfer = new DataTransfer();
+    uploadedFiles.forEach(file => dataTransfer.items.add(file));
+    mediaInput.files = dataTransfer.files;
+}
+
 function handleFiles(files) {
     Array.from(files).forEach(file => {
         if (!file.type.startsWith('image/')) {
@@ -223,7 +272,7 @@ function handleFiles(files) {
         uploadedFiles.push(file);
         renderImagePreview(file);
     });
-    mediaInput.value = '';
+    syncFileInput();
 }
 
 function renderImagePreview(file) {
@@ -251,7 +300,7 @@ function removeImage(btn) {
     uploadedFiles.splice(index, 1);
     btn.parentElement.remove();
 
-    mediaInput.value = '';
+    syncFileInput();
 }
 
 // ==================== DESCRIPTION COUNTER ====================
@@ -269,22 +318,64 @@ updateCharCount(); // run on load (for old() repopulation)
 document.getElementById('productForm').addEventListener('submit', function (e) {
     if (!validateForm()) {
         e.preventDefault();
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
-        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 });
+
+// ==================== LIVE DISCOUNT CALCULATION ====================
+function updateDiscountPreview() {
+    const basePriceInput = document.getElementById('base_price');
+    const discountedPriceInput = document.getElementById('discounted_price');
+    const discountPreviewEl = document.getElementById('discount_preview');
+
+    if (!basePriceInput || !discountedPriceInput || !discountPreviewEl) return;
+
+    const basePrice = parseFloat(basePriceInput.value) || 0;
+    const discountAmount = parseFloat(discountedPriceInput.value) || 0;
+
+    if (basePrice > 0 && discountAmount > 0) {
+        if (discountAmount >= basePrice) {
+            discountPreviewEl.textContent = "Discount must be less than the base price.";
+            discountPreviewEl.className = "text-xs text-red-500 font-medium mt-1.5";
+            discountPreviewEl.classList.remove('hidden');
+        } else {
+            const sellingPrice = basePrice - discountAmount;
+            const percentage = Math.round((discountAmount / basePrice) * 100);
+            discountPreviewEl.textContent = `Selling Price: Rs. ${sellingPrice.toLocaleString()} (${percentage}% off)`;
+            discountPreviewEl.className = "text-xs text-green-600 font-medium mt-1.5";
+            discountPreviewEl.classList.remove('hidden');
+        }
+    } else {
+        discountPreviewEl.classList.add('hidden');
+    }
+}
 
 // ==================== INITIAL LOAD ====================
 document.addEventListener('DOMContentLoaded', () => {
     const specs = document.getElementById('specifications');
-
     if (specs.children.length === 0) {
         addSpecification();
+    }
+
+    // If old variants data exists, enable variants mode
+    // variantsEnabled starts false, so calling toggleVariants() will flip it to true
+    if (document.getElementById('variants').children.length > 0) {
+        variantsEnabled = false; // ensure it starts false so toggle flips to true
+        toggleVariants();
+    }
+
+    // Live Discount Calculation listeners
+    const basePriceInput = document.getElementById('base_price');
+    const discountedPriceInput = document.getElementById('discounted_price');
+    if (basePriceInput && discountedPriceInput) {
+        basePriceInput.addEventListener('input', updateDiscountPreview);
+        discountedPriceInput.addEventListener('input', updateDiscountPreview);
+        updateDiscountPreview();
     }
 });
 
 window.addSpecification = addSpecification;
 window.addVariant = addVariant;
 window.removeImage = removeImage;
+window.toggleVariants = toggleVariants;
+window.updateDiscountPreview = updateDiscountPreview;

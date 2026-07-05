@@ -1,22 +1,44 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Inter:ital,wght@0,300..900;1,300..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap');
 @import 'tailwindcss';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../views/**/*.blade.php';
 @source '../js/**/*.js';
 
-@theme {
-    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
-    --font-serif: 'Plus Jakarta Sans', Georgia, Cambria, serif;
+:root {
+    /* Brand Colors */
+    --primary-color: #1F3D2E;
+    /* sidebar, navbar, h1 */
+    --secondary-color: #C65A3A;
+    /* buttons, links */
 
-    --color-primary: #b51822;
-    --color-primary-dark: #930013;
-    --color-secondary: #585e6c;
-    --color-tertiary: #005ea1;
-    --color-surface: #f7fafc;
-    --color-surface-container: #ebeef0;
-    --color-on-surface: #181c1e;
-    --color-outline: #8f6f6d;
+    /* Text Colors */
+    --text-color: #3A2A1F;
+    /* main text */
+    --text-light: #FFF7EF;
+    /* dashboard text / light text */
+    --text-dark: #1F2A24;
+    /* dark text */
+    --bg-color: #F5E8D6;
+    /* background Colors*/
+    --card-bg: #FFF7EF;
+    /* normal card background */
+
+    /* Special */
+    --card-dark: rgba(31, 61, 46, 0.15);
+    /* big card background */
+    --hover-color: #D4A017;
+    /* button hover */
+}
+
+@theme {
+    --font-sans: 'Plus Jakarta Sans', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-serif: 'Playfair Display', Georgia, Cambria, serif;
+
+    --color-brand-primary: #b55b3d;
+    --color-brand-secondary: #1f3d2e;
+    --color-brand-cream: #F5E8D6;
+    --color-brand-dark: #2c2523;
 }
 
 input,
@@ -33,112 +55,97 @@ textarea {
     width: 100%;
 }
 
-/* Mobile drawer */
-#mobile-drawer {
-    position: fixed;
-    top: 0;
-    left: -100%;
-    width: 80%;
-    max-width: 320px;
-    height: 100vh;
-    background: #1f3d2e;
-    z-index: 99999;
-    transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow-y: auto;
-    box-shadow: 4px 0 24px rgba(0, 0, 0, 0.35);
-}
-
-#mobile-drawer.open {
-    left: 0;
-}
-
-/* Overlay */
-#drawer-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.55);
-    z-index: 99998;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.35s;
-}
-
-#drawer-overlay.open {
-    opacity: 1;
-    pointer-events: all;
-}
-
-/* Desktop Nav link hover underline */
-.subnav-link {
-    position: relative;
-    white-space: nowrap;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    color: rgba(255, 255, 255, 0.9);
-    font-weight: 600;
-    font-size: 0.875rem;
-    transition: color 0.2s;
-    text-decoration: none;
-}
-
-.subnav-link::after {
-    content: '';
-    position: absolute;
-    bottom: -4px;
-    left: 0;
-    width: 0;
-    height: 2px;
-    background: #fff;
-    transition: width 0.25s;
-}
-
-.subnav-link:hover::after {
-    width: 100%;
-}
-
-.subnav-link:hover {
-    color: #ffffff;
-}
-
-.subnav-link i {
-    font-size: 14px;
-    opacity: 0.85;
-    display: inline-block;
-}
-
-.subnav-link:hover i {
-    opacity: 1;
-}
-
-/* Desktop navigation container - EQUAL SPACING */
-.desktop-nav-container {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    width: 100%;
-}
-
-.desktop-nav-links {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-/* Equal spacing between all nav items - same distance between each */
-.desktop-nav-links li {
-    display: inline-flex;
-}
-
-/* Responsive spacing */
-@media (min-width: 1024px) {
-    .desktop-nav-links {
-        gap: 2.2rem;
+    /* Mobile drawer */
+    #mobile-drawer {
+        position: fixed;
+        top: 0;
+        left: -100%;
+        width: 80%;
+        max-width: 320px;
+        height: 100vh;
+        background: #1f3d2e;
+        z-index: 99999;
+        transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow-y: auto;
+        box-shadow: 4px 0 24px rgba(0,0,0,0.35);
     }
-}
+    #mobile-drawer.open { left: 0; }
+
+    /* Overlay */
+    #drawer-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.55);
+        z-index: 99998;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.35s;
+    }
+    #drawer-overlay.open { opacity: 1; pointer-events: all; }
+
+    /* Desktop Nav link hover underline */
+    .subnav-link {
+        position: relative;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 600;
+        font-size: 0.875rem;
+        transition: color 0.2s;
+        text-decoration: none;
+    }
+    .subnav-link::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: #fff;
+        transition: width 0.25s;
+    }
+    .subnav-link:hover::after { width: 100%; }
+    .subnav-link:hover { color: #ffffff; }
+
+    .subnav-link i {
+        font-size: 14px;
+        opacity: 0.85;
+        display: inline-block;
+    }
+    .subnav-link:hover i {
+        opacity: 1;
+    }
+
+    /* Desktop navigation container - EQUAL SPACING */
+    .desktop-nav-container {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        width: 100%;
+    }
+
+    .desktop-nav-links {
+        display: flex;
+        align-items: center;
+        gap: 2rem;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+    }
+
+    /* Equal spacing between all nav items - same distance between each */
+    .desktop-nav-links li {
+        display: inline-flex;
+    }
+
+    /* Responsive spacing */
+    @media (min-width: 1024px) {
+        .desktop-nav-links {
+            gap: 2.2rem;
+        }
+    }
 
 
 @media (min-width: 1280px) {
@@ -177,7 +184,6 @@ textarea {
 .mob-nav-link:hover i {
     opacity: 1;
 }
-
 /* Search bar focus glow */
 .search-wrap:focus-within {
     box-shadow: 0 0 0 2px rgba(31, 61, 46, 0.35);
@@ -252,38 +258,37 @@ h6 {
 }
 
 /* Today's Deals */
-/* .today-deals-container {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-    padding: 20px;
-    width: 100%;
-    align-items: start;
-}
+    .today-deals-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+        padding: 20px;
+        width: 100%;
+        align-items: start;
+    }
+    .today-deal {
+        width: 100%;
+        height: 290px;
+        background: #e5e7eb;
+        border-radius: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        gap: 8px;
+        padding: 12px;
+        color: #374151;
+        font-size: 1.25rem;
+        font-weight: 500;
+    }
 
-.today-deal {
-    width: 100%;
-    height: 290px;
-    background: #e5e7eb;
-    border-radius: 8px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-    gap: 8px;
-    padding: 12px;
-    color: #374151;
-    font-size: 1.25rem;
-    font-weight: 500;
-} */
-
-/* .today-deal .deal-image {
-    width: 100%;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 6px;
-    display: block;
-} */
+    .today-deal .deal-image {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 6px;
+        display: block;
+    }
 
 /* .card-dark {
     background-color: var(--card-bg);
@@ -297,34 +302,25 @@ h6 {
             rgba(31, 61, 46, 0.05) 0%,
             rgba(198, 90, 58, 0.08) 100%);
 }
-
-.today-deal .deal-info {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    align-items: flex-start;
-    justify-content: flex-start;
-}
-
-/* Responsive: 3 cols <= 1280px, 2 cols <= 768px, 1 col on small screens */
-@media (max-width: 1280px) {
-    .today-deals-container {
-        grid-template-columns: repeat(3, 1fr);
+    .today-deal .deal-info {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        align-items: flex-start;
+        justify-content: flex-start;
     }
-}
 
-@media (max-width: 768px) {
-    .today-deals-container {
-        grid-template-columns: repeat(2, 1fr);
+    /* Responsive: 3 cols <= 1280px, 2 cols <= 768px, 1 col on small screens */
+    @media (max-width: 1280px) {
+        .today-deals-container { grid-template-columns: repeat(3, 1fr); }
     }
-}
-
-@media (max-width: 480px) {
-    .today-deals-container {
-        grid-template-columns: 1fr;
+    @media (max-width: 768px) {
+        .today-deals-container { grid-template-columns: repeat(2, 1fr); }
     }
-}
+    @media (max-width: 480px) {
+        .today-deals-container { grid-template-columns: 1fr; }
+    }
 
 /* --- Seller Layout Styles --- */
 /* Utility Classes */
@@ -386,12 +382,12 @@ a {
     text-decoration: none;
 }
 
-.navbar button {
+.navbar a {
     color: var(--text-light);
     text-decoration: none;
 }
 
-.navbar button:hover {
+.navbar a:hover {
     color: var(--text-color);
 }
 
@@ -422,6 +418,7 @@ a {
             rgba(31, 61, 46, 0.05) 0%,
             rgba(198, 90, 58, 0.08) 100%);
 }
+
 /* Toast Notification Style */
 .toast-container {
     position: fixed;

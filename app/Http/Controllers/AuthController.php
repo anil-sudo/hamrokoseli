@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Laravel\Socialite\Facades\Socialite;
 
 class AuthController extends Controller
 {
@@ -13,7 +16,36 @@ class AuthController extends Controller
      */
     public function showLogin()
     {
-        return view('welcome');
+        return app(PageController::class)->home();
+    }
+
+    public function redirect()
+    {
+        return Socialite::driver('google')->redirect();
+
+    }
+
+    public function callback()
+    {
+        $googleuser = Socialite::driver('google')->stateless()->user();
+
+        $old_user = User::where('email', $googleuser->email)->first();
+
+        if ($old_user) {
+            Auth::login($old_user);
+
+            return redirect()->route('home');
+        }
+
+        $new_user = new User;
+        $new_user->name = $googleuser->name;
+        $new_user->email = $googleuser->email;
+        $new_user->password = Hash::make(rand(10000, 99999));
+        $new_user->save();
+
+        Auth::login($new_user);
+
+        return redirect()->route('home');
     }
 
     /**

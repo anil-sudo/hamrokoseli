@@ -33,81 +33,130 @@ class Product extends Model
     // Relationships
     // -------------------------------------------------------------------------
 
-    /**
-     * Many-to-One: Each product belongs to one vendor.
-     */
     public function vendor(): BelongsTo
     {
         return $this->belongsTo(Vendor::class);
     }
 
-    /**
-     * Many-to-One: Each product belongs to one category.
-     */
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
-    /**
-     * One-to-Many: A product can have many variants (size, color, SKU).
-     */
     public function variants(): HasMany
     {
         return $this->hasMany(ProductVariant::class);
     }
 
-    /**
-     * One-to-Many: A product can appear in many order items.
-     */
     public function orderItems(): HasMany
     {
         return $this->hasMany(OrderItem::class);
     }
 
-    /**
-     * One-to-Many: A product can be in many cart items.
-     */
     public function cartItems(): HasMany
     {
         return $this->hasMany(Cart::class);
     }
 
-    /**
-     * One-to-Many: A product can be in many wishlists.
-     */
     public function wishlistItems(): HasMany
     {
         return $this->hasMany(Wishlist::class);
     }
 
-    /**
-     * One-to-Many: A product can have many reviews.
-     */
     public function reviews(): HasMany
     {
         return $this->hasMany(Review::class);
     }
 
-    /**
-     * Polymorphic: A product can have many images.
-     */
     public function images(): MorphMany
     {
         return $this->morphMany(Image::class, 'imageable');
     }
 
     // -------------------------------------------------------------------------
-    // Helper Methods
+    // Discount Methods (Single Implementation)
     // -------------------------------------------------------------------------
 
     /**
-     * Returns the effective selling price (discount price if set, otherwise base price).
+     * Get the resolved discount price for this product
+     * Returns null if no valid discount exists
      */
-    public function effectivePrice(): float
+    public function resolvedDiscountPrice()
     {
-        return $this->discount_price ?? $this->price;
+        // Check if product has a valid discount
+        if ($this->discount_price !== null && $this->discount_price > 0 && $this->discount_price < $this->price) {
+            return $this->discount_price;
+        }
+
+        // Check if any variant has a discount
+        if ($this->variants->isNotEmpty()) {
+            $discountedVariant = $this->variants
+                ->filter(function ($variant) {
+                    return $variant->discount_price !== null
+                        && $variant->discount_price > 0
+                        && $variant->discount_price < $variant->price;
+                })
+                ->sortBy('discount_price')
+                ->first();
+
+            if ($discountedVariant) {
+                return $discountedVariant->discount_price;
+            }
+        }
+
+        // No valid discount found
+        return null;
     }
+
+    /**
+     * Get the effective price (discount if available, otherwise regular price)
+     */
+    public function effectivePrice()
+    {
+        $discount = $this->resolvedDiscountPrice();
+
+        return $discount ?? $this->price;
+    }
+
+    public function getEffectivePrice()
+    {
+        return $this->effectivePrice();
+    }
+
+    /**
+     * Check if product has an active discount
+     */
+    public function hasDiscount(): bool
+    {
+        $discount = $this->resolvedDiscountPrice();
+
+        return $discount !== null && $discount < $this->price;
+    }
+
+    /**
+     * Get the original price (for display purposes)
+     */
+    public function originalPrice(): float
+    {
+        return (float) $this->price;
+    }
+
+    /**
+     * Get the discount percentage (if applicable)
+     */
+    public function getDiscountPercentage(): ?float
+    {
+        $discount = $this->resolvedDiscountPrice();
+        if ($discount !== null && $this->price > 0) {
+            return round((($this->price - $discount) / $this->price) * 100, 0);
+        }
+
+        return null;
+    }
+
+    // -------------------------------------------------------------------------
+    // Helper Methods
+    // -------------------------------------------------------------------------
 
     public function isActive(): bool
     {
@@ -117,5 +166,31 @@ class Product extends Model
     public function inStock(): bool
     {
         return $this->stock > 0;
+    }
+
+    public function primaryImageUrl(): string
+    {
+        $image = $this->images->firstWhere('is_primary', true)
+            ?? $this->images->first();
+
+        return $image
+            ? asset('storage/'.$image->path)
+            : asset('images/placeholder.png');
+    }
+
+    public function getImageAttribute(?string $value): ?string
+    {
+        if (filled($value)) {
+            return $value;
+        }
+
+        return $this->images->firstWhere('is_primary', true)?->path
+            ?? $this->images->first()?->path;
+    }
+
+    public function getPrimaryImagePathAttribute(): ?string
+    {
+        return $this->images->firstWhere('is_primary', true)?->path
+            ?? $this->images->first()?->path;
     }
 }

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('cat_name', 100);
             $table->string('slug', 120)->unique();
+            $table->string('image')->nullable();
             $table->foreignId('parent_cat_id')
                 ->nullable()
                 ->constrained('categories')
@@ -29,6 +30,7 @@ return new class extends Migration
      */
     public function down(): void
     {
+        $table->dropColumn('image');
         Schema::dropIfExists('categories');
     }
 };

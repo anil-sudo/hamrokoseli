@@ -5,14 +5,38 @@
             <h1 class="text-3xl font-bold text-(--text-color)">Account Settings</h1>
             <p class="text-sm text-(--text-color)/70 mt-1">Manage your profile information </p>
         </div>
-
+        <!-- Flash Messages -->
+        @if (session('success'))
+            <div class="flex items-center gap-3 px-5 py-4 rounded-2xl bg-(--primary-color)/10 border border-(--primary-color)/25 text-(--primary-color) text-sm font-medium">
+                <i data-lucide="check-circle-2" class="w-5 h-5 shrink-0"></i>
+                {{ session('success') }}
+            </div>
+        @endif
+        @if (session('password_success'))
+            <div class="flex items-center gap-3 px-5 py-4 rounded-2xl bg-green-500/10 border border-green-500/25 text-green-700 text-sm font-medium">
+                <i data-lucide="check-circle-2" class="w-5 h-5 shrink-0"></i>
+                {{ session('password_success') }}
+            </div>
+        @endif
+        @if ($errors->any())
+            <div class="flex items-start gap-3 px-5 py-4 rounded-2xl bg-red-500/10 border border-red-500/25 text-red-600 text-sm font-medium">
+                <i data-lucide="alert-circle" class="w-5 h-5 shrink-0 mt-0.5"></i>
+                <ul class="list-disc pl-4 space-y-1">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         <div class="space-y-6">
+        <form action="{{ route('seller.profile.update') }}" method="POST" enctype="multipart/form-data" id="profileForm">
+            @csrf
             <!-- Profile Information -->
             <div class="bg-(--card-bg) rounded-2xl shadow-sm p-6 hover:shadow-md transition-all duration-300">
                 <div class="flex items-start gap-6">
                     <!-- Profile Picture -->
                     <div id="profileContainer" class="relative group cursor-pointer">
-                        <img id="profilePreview" src="https://api.iconify.design/lucide/user.svg?color=%236b7280"
+                        <img id="profilePreview" src="{{ $user->profile_pic ? asset('storage/' . $user->profile_pic) : 'https://api.iconify.design/lucide/user.svg?color=%236b7280' }}"
                             alt="Profile"
                             class="w-24 h-24 rounded-full object-cover border border-(--text-color)/10 shadow bg-(--card-dark)">
 
@@ -29,45 +53,104 @@
                         </button>
 
                         <!-- Hidden File Input -->
-                        <input type="file" id="profileImage" accept="image/*" class="hidden">
+                        <input type="file" name="profile_pic" id="profileImage" accept="image/*" class="hidden">
                     </div>
 
                     <!-- Form Fields -->
                     <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                        <!-- Full Name -->
                         <div>
-                            <label class="block text-sm font-medium text-brand-dark mb-2">Full Name <span
-                                    class="text-(--secondary-color)">*</span></label>
-                            <input type="text" placeholder="Enter your name"
+                            <label class="block text-sm font-medium text-brand-dark mb-2">
+                                Full Name <span class="text-(--secondary-color)">*</span>
+                            </label>
+                            <input type="text" name="name" value="{{ old('name', $user->name) }}"
+                                placeholder="Enter your name"
                                 class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
                         </div>
-                        <div>
-                            <label class="block text-sm font-medium text-brand-dark mb-1">Email Address <span
-                                    class="text-(--secondary-color)">*</span></label>
-                            <input type="email" placeholder="e.g. example22@gmail.com"
-                                class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-brand-dark mb-1">Phone Number <span
-                                    class="text-(--secondary-color)">*</span></label>
-                            <input type="tel" placeholder="e.g. 1234567890"
-                                class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-brand-dark mb-1">Preferred Delivery
-                                Region<span class="text-(--secondary-color)">*</span></label>
-                            <input type="text" placeholder="e.g. kathmandu valley"
-                                class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
-                        </div>
+
+                        <!-- Email -->
                         <div>
                             <label class="block text-sm font-medium text-brand-dark mb-1">
-                                Default Delivery Address
+                                Email Address <span class="text-(--secondary-color)">*</span>
                             </label>
-                            <input type="text" placeholder="e.g. Ward 3, Jhamsikhel, Lalitpur, Nepal"
+                            <input type="email" name="email" value="{{ old('email', $user->email) }}"
+                                placeholder="e.g. example22@gmail.com"
+                                class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
+                        </div>
+
+                        <!-- Phone -->
+                        <div>
+                            <label class="block text-sm font-medium text-brand-dark mb-1">
+                                Phone Number <span class="text-(--secondary-color)">*</span>
+                            </label>
+                            <input type="tel" name="phone" value="{{ old('phone', $user->phone) }}"
+                                placeholder="e.g. 1234567890"
+                                class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-brand-dark mb-2">Address <span
+                                    class="text-(--secondary-color)">*</span></label>
+                            <input type="text" name="address" value="{{ old('address', $vendor?->vendor_address) }}"
+                                class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-brand-dark mb-2">City <span
+                                    class="text-(--secondary-color)">*</span></label>
+                            <input type="text" name="city" value="{{ old('city', $vendor?->city) }}"
+                                class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-brand-dark mb-2">Province <span
+                                    class="text-(--secondary-color)">*</span></label>
+                            <input type="text" name="province" value="{{ old('province', $vendor?->province) }}"
                                 class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
                         </div>
                     </div>
                 </div>
+            </div>
 
+            <!-- Shop Details -->
+            <div class="bg-(--card-bg) rounded-2xl shadow-sm p-6 mt-6">
+                    <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
+                        <i data-lucide="store"></i>
+                        Shop Details
+                    </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-brand-dark mb-2">Shop Name <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" name="vendor_name" value="{{ old('vendor_name', $vendor?->vendor_name) }}"
+                            required
+                            class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-brand-dark mb-2">Owner Name <span
+                                class="text-red-500">*</span></label>
+                        <input type="text" name="owner_name" value="{{ old('owner_name', $vendor?->owner_name) }}"
+                            required
+                            class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-brand-dark mb-2">Shop Email <span
+                                class="text-(--secondary-color)">*</span></label>
+                        <input type="email" name="vendor_email" value="{{ old('vendor_email', $vendor?->email) }}"
+                            class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-brand-dark mb-2">Shop Phone <span
+                                class="text-(--secondary-color)">*</span></label>
+                        <input type="tel" name="vendor_phone" value="{{ old('vendor_phone', $vendor?->phone) }}"
+                            class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
+                    </div>
+
+                </div>
                 <!-- Buttons -->
                 <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mt-8">
 
@@ -82,48 +165,73 @@
 
                 </div>
             </div>
-
+        </form>
             <!-- Security & Privacy -->
-            <div class="bg-(--card-bg) rounded-2xl shadow-sm p-6 hover:shadow-md transition-all duration-300">
-                <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
-                    <i data-lucide="lock-keyhole"></i>
-                    Security & Privacy
-                </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <!-- Current Password -->
-                    <div>
-                        <label class="block text-sm font-medium text-brand-dark mb-1">Current Password</label>
-                        <div class="relative">
-                            <input type="password" id="currentPassword"
-                                class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color) pr-12">
-                            <button type="button" id="toggleCurrent"
-                                class="absolute right-4 top-1/2 -translate-y-1/2 text-(--text-color)/60 hover:text-(--text-color) transition">
-                                <i data-lucide="eye" class="w-5 h-5"></i>
-                            </button>
+            <form action="{{ route('seller.profile.password') }}" method="POST" id="passwordUpdateForm">
+                @csrf
+                <div class="bg-(--card-bg) rounded-2xl shadow-sm p-6 hover:shadow-md transition-all duration-300">
+                    <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
+                        <i data-lucide="lock-keyhole"></i>
+                        Security & Privacy
+                    </h2>
+
+                    @if(session('success'))
+                        <div class="mb-4 text-sm text-green-600 bg-green-100 p-3 rounded">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Current Password -->
+                        <div>
+                            <label class="block text-sm font-medium text-brand-dark mb-1">Current Password</label>
+                            <div class="relative">
+                                <input type="password" id="currentPassword" name="current_password" required
+                                    class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color) pr-12">
+                                <button type="button" id="toggleCurrent"
+                                    class="absolute right-4 top-1/2 -translate-y-1/2 text-(--text-color)/60 hover:text-(--text-color) transition">
+                                    <i data-lucide="eye" class="w-5 h-5"></i>
+                                </button>
+                            </div>
+                            @error('current_password') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        </div>
+
+                        <!-- New Password -->
+                        <div>
+                            <label class="block text-sm font-medium text-brand-dark mb-1">New Password</label>
+                            <div class="relative">
+                                <input type="password" id="newPassword" name="new_password" required
+                                    class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color) pr-12">
+                                <button type="button" id="toggleNew"
+                                    class="absolute right-4 top-1/2 -translate-y-1/2 text-(--text-color)/60 hover:text-(--text-color) transition">
+                                    <i data-lucide="eye" class="w-5 h-5"></i>
+                                </button>
+                            </div>
+                            @error('new_password') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div>
+                            <label class="block text-sm font-medium text-brand-dark mb-1">Confirm Password</label>
+                            <div class="relative">
+                                <input type="password" id="confirmPassword" name="new_password_confirmation" required
+                                    class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color) pr-12">
+                                <button type="button" id="toggleConfirm"
+                                    class="absolute right-4 top-1/2 -translate-y-1/2 text-(--text-color)/60 hover:text-(--text-color) transition">
+                                    <i data-lucide="eye" class="w-5 h-5"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- New Password -->
-                    <div>
-                        <label class="block text-sm font-medium text-brand-dark mb-1">New Password</label>
-                        <div class="relative">
-                            <input type="password" id="newPassword"
-                                class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color) pr-12">
-                            <button type="button" id="toggleNew"
-                                class="absolute right-4 top-1/2 -translate-y-1/2 text-(--text-color)/60 hover:text-(--text-color) transition">
-                                <i data-lucide="eye" class="w-5 h-5"></i>
-                            </button>
-                        </div>
+                    <div class="flex justify-end mt-8">
+                        <button type="submit" id="savePasswordBtn"
+                            class="inline-flex items-center gap-2 px-8 py-3.5 bg-(--secondary-color) hover:bg-[#B94E31] text-(--text-light) rounded-2xl font-semibold transition">
+                            Save &nbsp; Password
+                        </button>
                     </div>
                 </div>
-
-                <div class="flex justify-end mt-8">
-                    <button type="submit" id="savePasswordBtn"
-                        class="inline-flex items-center gap-2 px-8 py-3.5 bg-(--secondary-color) hover:bg-[#B94E31] text-(--text-light) rounded-2xl font-semibold transition">
-                        Save &nbsp; Password
-                    </button>
-                </div>
-            </div>
+            </form>
             <!-- Bank Information -->
 
             <div class="bg-(--card-bg) rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 p-6">
@@ -198,7 +306,87 @@
             </div>
         </div>
     </div>
-
     @vite('resources/js/seller-profile.js')
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Toggle for confirm password
+            const toggleConfirmBtn = document.getElementById('toggleConfirm');
+            if(toggleConfirmBtn) {
+                toggleConfirmBtn.addEventListener('click', function() {
+                    const confirmInput = document.getElementById('confirmPassword');
+                    const icon = this.querySelector('i');
+                    if (confirmInput.type === 'password') {
+                        confirmInput.type = 'text';
+                        icon.setAttribute('data-lucide', 'eye-off');
+                    } else {
+                        confirmInput.type = 'password';
+                        icon.setAttribute('data-lucide', 'eye');
+                    }
+                    lucide.createIcons();
+                });
+            }
+
+            const passwordForm = document.getElementById('passwordUpdateForm');
+            if (passwordForm) {
+                passwordForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    const form = this;
+                    const formData = new FormData(form);
+                    const submitBtn = document.getElementById('savePasswordBtn');
+
+                    const originalText = submitBtn.innerHTML;
+                    submitBtn.disabled = true;
+                    submitBtn.innerHTML = 'Processing...';
+
+                    try {
+                        const response = await fetch(form.action, {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest',
+                                'Accept': 'application/json'
+                            }
+                        });
+
+                        const result = await response.json();
+
+                        if (response.ok) {
+                            Swal.fire({
+                                title: 'Success!',
+                                text: result.message || 'Password updated successfully.',
+                                icon: 'success',
+                                confirmButtonColor: '#B94E31',
+                                allowOutsideClick: false
+                            }).then(() => {
+                                window.location.href = "{{ route('seller.login') }}";
+                            });
+                        } else {
+                            // handle validation errors
+                            let errorMsg = result.message || 'Something went wrong';
+                            if (result.errors) {
+                                errorMsg = Object.values(result.errors).flat().join('\n');
+                            }
+                            Swal.fire({
+                                title: 'Error!',
+                                text: errorMsg,
+                                icon: 'error',
+                                confirmButtonColor: '#B94E31'
+                            });
+                        }
+                    } catch (error) {
+                        Swal.fire({
+                            title: 'Error!',
+                            text: 'Network error occurred.',
+                            icon: 'error',
+                            confirmButtonColor: '#B94E31'
+                        });
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = originalText;
+                    }
+                });
+            }
+        });
+    </script>
 </x-seller_layout>
