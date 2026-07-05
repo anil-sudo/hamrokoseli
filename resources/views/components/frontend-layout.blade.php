@@ -45,5 +45,6 @@
 <x-frontend-footer />
 <x-login-modal />
 <x-product-details-modal />
+<x-chatbot />
 </body>
 </html>

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\ChatBotController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\EsewaPaymentController;
 use App\Http\Controllers\KhaltiPaymentController;
@@ -150,3 +151,4 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::redirect('/login.php', '/userlogin');
 
 Route::get('/sitemap.xml', [PageController::class, 'sitemap'])->name('sitemap');
+Route::post('/chatbot/send', [ChatBotController::class, 'send'])->name('chatbot.send');
