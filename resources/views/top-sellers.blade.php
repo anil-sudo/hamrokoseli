@@ -1,4 +1,4 @@
-<x-frontend-layout>
+<x-frontend-layout title="Top Selling Creations - Hamro Koseli">
 
 <div class="bg-[#F4EAE1] text-[#3A2A1F] min-h-screen py-8 sm:py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -76,6 +76,7 @@
 
                 <div class="product-card bg-white rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group"
                      data-id="{{ $product->id }}"
+                               data-slug="{{ $product->slug }}"
                      data-name="{{ $product->name }}"
                      data-price="{{ $displayPrice }}"
                      data-category="{{ strtolower($catName) }}"
@@ -133,9 +134,10 @@
 
                         <!-- View Details triggers modal -->
                         <div class="flex gap-2 mt-auto">
-                            <a href="{{ route('viewdetails', $product->id) }}"
+                            <a href="{{ route('viewdetails', $product->slug) }}"
                                class="view-details-btn flex-1 flex items-center justify-center gap-2 bg-[#1F3D2E] hover:bg-[#16301f] text-white text-sm font-semibold py-3 px-3 rounded-xl shadow-sm hover:shadow transition duration-300"
                                data-id="{{ $product->id }}"
+                               data-slug="{{ $product->slug }}"
                                data-name="{{ $product->name }}"
                                data-price="{{ $displayPrice }}"
                                data-original-price="{{ $price }}"
@@ -391,7 +393,7 @@ document.addEventListener('DOMContentLoaded', function () {
         wb.dataset.productCategory = d.category;
 
         // Full page link
-        document.getElementById('modal-full-link').href = '/viewdetails/' + d.id;
+        document.getElementById('modal-full-link').href = '/viewdetails/' + d.slug;
 
         // Show modal
         modal.classList.remove('hidden');

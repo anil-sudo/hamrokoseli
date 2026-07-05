@@ -1,4 +1,4 @@
-<x-frontend-layout>
+<x-frontend-layout title="Seller Policy - Hamro Koseli">
 
     <section class="bg-[#FFF7EF] min-h-screen">
 

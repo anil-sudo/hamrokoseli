@@ -374,9 +374,11 @@ class PageController extends Controller
         return view('shipping-policy');
     }
 
-    public function viewProduct($id)
+    public function viewProduct($slug)
     {
-        $product = Product::with(['category', 'vendor', 'images', 'variants'])->findOrFail($id);
+        $product = Product::with(['category', 'vendor', 'images', 'variants'])
+            ->where('slug', $slug)
+            ->firstOrFail();
 
         $product->effective_price = method_exists($product, 'effectivePrice') ? $product->effectivePrice() : $product->price;
         $product->original_price = method_exists($product, 'originalPrice') ? $product->originalPrice() : $product->price;
@@ -385,13 +387,9 @@ class PageController extends Controller
         $product->category_name = $product->category?->cat_name ?? $product->category?->name ?? 'Crafts';
         $product->vendor_name = $product->vendor?->vendor_name ?? $product->vendor?->name ?? 'Local Artisan';
 
-        // Track recently viewed products in session (store product IDs)
         $recentlyViewed = session()->get('recently_viewed', []);
-        // Remove if already exists to avoid duplicates
-        $recentlyViewed = array_filter($recentlyViewed, fn ($pid) => $pid != $id);
-        // Prepend current product
-        array_unshift($recentlyViewed, (int) $id);
-        // Keep only last 20
+        $recentlyViewed = array_filter($recentlyViewed, fn ($pid) => $pid != $product->id);
+        array_unshift($recentlyViewed, $product->id);
         $recentlyViewed = array_slice($recentlyViewed, 0, 20);
         session()->put('recently_viewed', $recentlyViewed);
 

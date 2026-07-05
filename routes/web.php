@@ -37,9 +37,9 @@ Route::middleware(['auth', 'role:vendor'])->group(function () {
     Route::get('/product-management', [SellerController::class, 'product_management'])->name('product-management');
     Route::get('/create-product', [SellerController::class, 'productCreate'])->name('product-create');
     Route::post('/create-product', [SellerController::class, 'store'])->name('product.store');
-    Route::get('/edit-product/{id}', [SellerController::class, 'productEdit'])->name('product-edit');
-    Route::put('/product/{id}', [SellerController::class, 'update'])->name('product.update');
-    Route::delete('/product/{id}', [SellerController::class, 'destroy'])->name('product.destroy');
+    Route::get('/edit-product/{slug}', [SellerController::class, 'productEdit'])->name('product-edit');
+    Route::put('/product/{slug}', [SellerController::class, 'update'])->name('product.update');
+    Route::delete('/product/{slug}', [SellerController::class, 'destroy'])->name('product.destroy');
     Route::get('/orders', [SellerController::class, 'order'])->name('order');
     Route::get('/order-details', [SellerController::class, 'orderDetails'])->name('order-details');
     Route::post('/order-details/{order}/payment-status', [SellerController::class, 'updatePaymentStatus'])->name('order-details.payment-status');
@@ -54,7 +54,7 @@ Route::middleware(['auth', 'role:vendor'])->group(function () {
     Route::get('/tickets', [SellerController::class, 'sellerTicket'])->name('seller-ticket');
     Route::get('/seller-notification', [SellerController::class, 'sellerNotification'])->name('seller-notification');
     Route::patch('/seller-notification/read-all', [SellerController::class, 'markAllNotificationsRead'])->name('seller.notifications.markAllRead');
-    Route::patch('/seller-notification/{id}/read', [SellerController::class, 'markNotificationRead'])->name('seller.notifications.read');
+    Route::patch('/seller-notification/{slug}/read', [SellerController::class, 'markNotificationRead'])->name('seller.notifications.read');
 });
 
 // ─── Seller registration (public) ─────────────────────────────────────────────
@@ -71,7 +71,7 @@ Route::get('/about-us', [PageController::class, 'about_us'])->name('about-us');
 Route::get('/wishlist', [PageController::class, 'wishlist'])->name('wishlist');
 Route::get('/privacypolicy', [PageController::class, 'privacy'])->name('privacy');
 Route::get('/contact-us', [PageController::class, 'contactus'])->name('contact-us');
-Route::get('/viewdetails/{id}', [PageController::class, 'viewProduct'])->name('viewdetails');
+Route::get('/viewdetails/{slug}', [PageController::class, 'viewProduct'])->name('viewdetails');
 Route::get('/terms_&_conditions', [PageController::class, 'terms_conditions'])->name('terms&conditions');
 Route::get('/return_&_refund', [PageController::class, 'return_policy'])->name('return&refund');
 Route::get('/faq', [PageController::class, 'faq'])->name('faq');
@@ -162,5 +162,5 @@ Route::post('/user-profile', [UserController::class, 'updateProfile'])->name('us
 Route::post('/user-password', [UserController::class, 'updatePassword'])->name('user.password.update');
 Route::get('/user-notification', [UserController::class, 'userNotification'])->name('user-notification');
 Route::post('/user-notification/mark-all-read', [UserController::class, 'markAllNotificationsRead'])->name('user.notifications.markAllRead');
-Route::patch('/user-notification/{id}/read', [UserController::class, 'markNotificationRead'])->name('user.notifications.read');
+Route::patch('/user-notification/{slug}/read', [UserController::class, 'markNotificationRead'])->name('user.notifications.read');
 Route::redirect('/login.php', '/userlogin');

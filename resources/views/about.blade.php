@@ -1,4 +1,4 @@
-<x-frontend-layout>
+<x-frontend-layout title="about - Hamro Koseli">
 
 <section class="bg-[#F4EAE1] text-brand-dark leading-relaxed">
 

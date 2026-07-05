@@ -443,6 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const productData = {
                 id: btn.getAttribute('data-product-id'),
                 name: btn.getAttribute('data-product-name'),
+                slug: btn.getAttribute('data-slug'),
                 price: btn.getAttribute('data-product-price'),
                 image: btn.getAttribute('data-product-image'),
                 desc: btn.getAttribute('data-product-desc'),
@@ -930,16 +931,17 @@ document.addEventListener('DOMContentLoaded', () => {
         originalUrlBeforeProduct = '/shop'; // Default fallback
     }
 
-    function updateProductUrlState(productId) {
-        const path = `/viewdetails/${productId}`;
-        if (window.location.pathname !== path) {
-            const currentPath = window.location.pathname + window.location.search;
-            if (!currentPath.startsWith('/viewdetails/')) {
-                originalUrlBeforeProduct = currentPath;
-            }
-            history.pushState({ productModal: productId }, '', path);
+    function updateProductUrlState(productId, productSlug) {
+    const identifier = productSlug || productId;
+    const path = `/viewdetails/${identifier}`;
+    if (window.location.pathname !== path) {
+        const currentPath = window.location.pathname + window.location.search;
+        if (!currentPath.startsWith('/viewdetails/')) {
+            originalUrlBeforeProduct = currentPath;
         }
+        history.pushState({ productModal: identifier }, '', path);
     }
+}
 
     function restoreProductUrlState() {
         if (window.location.pathname.startsWith('/viewdetails/')) {
@@ -1090,6 +1092,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const productData = {
                 id: btn.getAttribute('data-id'),
+                slug: btn.getAttribute('data-slug'),
                 name: btn.getAttribute('data-name'),
                 price: btn.getAttribute('data-price'),
                 originalPrice: btn.getAttribute('data-original-price'),
@@ -1105,7 +1108,8 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             populateAndShowProductModal(productData);
-            updateProductUrlState(productData.id);
+            updateProductUrlState(productData.id, productData.slug);
+
         }
     });
 
@@ -1219,17 +1223,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        const match = path.match(/^\/viewdetails\/(\d+)$/);
-        if (match) {
-            if (window.activeProductOnLoad && String(window.activeProductOnLoad.id) === match[1]) {
-                populateAndShowProductModal(window.activeProductOnLoad);
-            } else {
-                const btn = document.querySelector(`.view-details-btn[data-id="${match[1]}"], .wishlist-btn[data-product-id="${match[1]}"]`);
-                if (btn) {
-                    btn.click();
-                }
-            }
-        } else {
+const match = path.match(/^\/viewdetails\/([^/]+)$/);
+if (match) {
+    if (window.activeProductOnLoad && (String(window.activeProductOnLoad.slug) === match[1] || String(window.activeProductOnLoad.id) === match[1])) {
+        populateAndShowProductModal(window.activeProductOnLoad);
+    } else {
+        const btn = document.querySelector(`.view-details-btn[data-slug="${match[1]}"], .view-details-btn[data-id="${match[1]}"]`);
+        if (btn) {
+            btn.click();
+        }
+    }
+} else {
             if (productModal && !productModal.classList.contains('hidden')) {
                 closeProductDetailsModal();
             }

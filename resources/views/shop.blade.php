@@ -1,4 +1,4 @@
-<x-frontend-layout>
+<x-frontend-layout title="Shop - Hamro Koseli">
 
     <style>
         /* Hide browser number-input spinner arrows */
@@ -225,9 +225,10 @@
                 </div>
 
                     <div class="flex flex-col xs:flex-row gap-1 sm:gap-2 mt-auto">
-                        <a href="{{ route('viewdetails', $product->id) }}"
+                        <a href="{{ route('viewdetails', $product->slug) }}"
                            class="view-details-btn flex-grow flex items-center justify-center gap-1 sm:gap-2 bg-[#1F3D2E] hover:bg-[#16301f] text-white text-[8px] sm:text-xs md:text-sm font-semibold py-1.5 px-1 sm:py-3 sm:px-3 rounded-lg sm:rounded-xl shadow-sm hover:shadow transition duration-300"
                            data-id="{{ $product->id }}"
+                           data-slug="{{ $product->slug }}"
                            data-name="{{ $product->name }}"
                            data-price="{{ $product->effectivePrice() }}"
                            data-original-price="{{ $product->originalPrice() }}"
