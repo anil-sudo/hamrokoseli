@@ -1,3 +1,4 @@
+@vite('resources/js/today-deals.js')
 <x-frontend-layout>
 
   <main class="bg-[#f7fafc] min-h-screen">
