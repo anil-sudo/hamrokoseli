@@ -14,24 +14,21 @@ use App\Http\Controllers\VendorPasswordResetController;
 use App\Http\Controllers\VendorRegisterController;
 use Illuminate\Support\Facades\Route;
 
-// ─── Seller Auth (guest on vendor guard only) ─────────────────────────────────
-Route::middleware('guest:vendor')->group(function () {
+// ─── Seller Auth (guest only, rate limited) ───────────────────────────────────
+Route::middleware(['guest:vendor', 'throttle:auth'])->group(function () {
     Route::get('/seller-login', [SellerController::class, 'login'])->name('seller.login');
     Route::post('/seller-login', [SellerController::class, 'loginSubmit'])->name('seller.login.submit');
 
-    // ─── Seller Forgot / Reset Password ──────────────────────────────────────
     Route::get('/seller/forgot-password', [VendorPasswordResetController::class, 'showForgotForm'])->name('seller.password.request');
     Route::post('/seller/forgot-password', [VendorPasswordResetController::class, 'sendResetLink'])->name('seller.password.email');
     Route::get('/seller/reset-password/{token}', [VendorPasswordResetController::class, 'showResetForm'])->name('seller.password.reset');
     Route::post('/seller/reset-password', [VendorPasswordResetController::class, 'resetPassword'])->name('seller.password.update');
 });
 
+// ─── Seller logout (outside guest guard so logged-in vendor can hit it) ───────
 Route::post('/seller-logout', [SellerController::class, 'logout'])->name('seller.logout');
-Route::get('/seller-profile', [SellerController::class, 'sellerProfile'])->name('seller.profile');
-Route::post('/seller-profile', [SellerController::class, 'updateProfile'])->name('seller.profile.update');
-Route::post('/seller-password', [SellerController::class, 'updatePassword'])->name('seller.profile.password');
 
-// ─── Seller routes (protected by vendor guard) ────────────────────────────────
+// ─── Seller profile & password (auth protected — fix #3) ─────────────────────
 Route::middleware(['auth', 'role:vendor'])->group(function () {
     Route::get('/seller-dashboard', [SellerController::class, 'dashboard'])->name('dashboard');
     Route::get('/product-management', [SellerController::class, 'product_management'])->name('product-management');
@@ -55,6 +52,11 @@ Route::middleware(['auth', 'role:vendor'])->group(function () {
     Route::get('/seller-notification', [SellerController::class, 'sellerNotification'])->name('seller-notification');
     Route::patch('/seller-notification/read-all', [SellerController::class, 'markAllNotificationsRead'])->name('seller.notifications.markAllRead');
     Route::patch('/seller-notification/{slug}/read', [SellerController::class, 'markNotificationRead'])->name('seller.notifications.read');
+
+    // ── Profile & password moved here so they're auth-guarded (was QA issue #3) ─
+    Route::get('/seller-profile', [SellerController::class, 'sellerProfile'])->name('seller.profile');
+    Route::post('/seller-profile', [SellerController::class, 'updateProfile'])->name('seller.profile.update');
+    Route::post('/seller-password', [SellerController::class, 'updatePassword'])->name('seller.profile.password');
 });
 
 // ─── Seller registration (public) ─────────────────────────────────────────────
@@ -74,39 +76,40 @@ Route::get('/viewdetails/{slug}', [PageController::class, 'viewProduct'])->name(
 Route::get('/terms_&_conditions', [PageController::class, 'terms_conditions'])->name('terms&conditions');
 Route::get('/return_&_refund', [PageController::class, 'return_policy'])->name('return&refund');
 Route::get('/faq', [PageController::class, 'faq'])->name('faq');
+Route::get('/FAQ', fn () => redirect()->route('faq')); // ← duplicate fixed: redirect instead of re-registering
 Route::get('/seller_policy', [PageController::class, 'seller_policy'])->name('seller-policy');
-Route::get('/FAQ', [PageController::class, 'faq'])->name('faq');
 Route::get('/shipping-info', [PageController::class, 'shipping_policy'])->name('shipping-policy');
 
-// ─── Requires login (guests are redirected to /userlogin automatically) ───────
+// ─── Requires login ───────────────────────────────────────────────────────────
 Route::middleware('auth')->group(function () {
     Route::get('/wishlist', [PageController::class, 'wishlist'])->name('wishlist');
-    Route::post('/wishlist/toggle', [UserController::class, 'toggleWishlist'])->name('wishlist.toggle'); // ADD THIS
+    Route::post('/wishlist/toggle', [UserController::class, 'toggleWishlist'])->name('wishlist.toggle');
     Route::get('/wishlist/items', [UserController::class, 'wishlistItems'])->name('wishlist.items');
     Route::get('/cart', [CartController::class, 'index'])->name('cart');
     Route::post('/cart/add', [CartController::class, 'store'])->name('cart.add');
     Route::patch('/cart/{cart}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/{cart}', [CartController::class, 'destroy'])->name('cart.remove');
 
-    // Checkout is per cart line by default — one product = one order.
+    // ── Checkout ──────────────────────────────────────────────────────────────
     Route::get('/checkout/{cart}', [CheckoutController::class, 'show'])->name('checkout.show');
     Route::post('/checkout/{cart}', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::post('/checkout/{cart}/save-user-info', [CheckoutController::class, 'saveUserInfo'])->name('checkout.save-user-info');
 
-    // Bulk checkout — combines every cart line from one vendor into a single order.
     Route::get('/checkout/vendor/{vendor}', [CheckoutController::class, 'showVendor'])->name('checkout.show.vendor');
     Route::post('/checkout/vendor/{vendor}', [CheckoutController::class, 'storeVendor'])->name('checkout.store.vendor');
     Route::post('/checkout/vendor/{vendor}/save-user-info', [CheckoutController::class, 'saveVendorUserInfo'])->name('checkout.save-user-info.vendor');
 
     Route::get('/order/{order}/confirmation', [CheckoutController::class, 'confirmation'])->name('order.confirmation');
 
-    Route::get('/payment/khalti/{order}/initiate', [KhaltiPaymentController::class, 'initiate'])->name('khalti.initiate');
-    Route::get('/payment/khalti/callback', [KhaltiPaymentController::class, 'callback'])->name('khalti.callback');
+    // ── Payments (rate limited separately) ────────────────────────────────────
+    Route::middleware('throttle:payment')->group(function () {
+        Route::get('/payment/khalti/{order}/initiate', [KhaltiPaymentController::class, 'initiate'])->name('khalti.initiate');
+        Route::get('/payment/khalti/callback', [KhaltiPaymentController::class, 'callback'])->name('khalti.callback');
+        Route::get('/payment/esewa/{order}/initiate', [EsewaPaymentController::class, 'initiate'])->name('esewa.initiate');
+        Route::get('/payment/esewa/callback', [EsewaPaymentController::class, 'callback'])->name('esewa.callback');
+    });
 
-    Route::get('/payment/esewa/{order}/initiate', [EsewaPaymentController::class, 'initiate'])->name('esewa.initiate');
-    Route::get('/payment/esewa/callback', [EsewaPaymentController::class, 'callback'])->name('esewa.callback');
-
-    // ─── User dashboard & profile (auth protected) ────────────────────────────
+    // ── User dashboard & profile ───────────────────────────────────────────────
     Route::get('/user-dashboard', [UserController::class, 'dashboard'])->name('Userdashboard');
     Route::get('/user-orders', [UserController::class, 'orders'])->name('User-orders');
     Route::get('/user-order-details', [UserController::class, 'orderDetail'])->name('order-detail');
@@ -120,8 +123,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/user-notification/{slug}/read', [UserController::class, 'markNotificationRead'])->name('user.notifications.read');
 });
 
-// ─── User Auth routes (guest on web guard) ────────────────────────────────────
-Route::middleware('web')->group(function () {
+// ─── User Auth (guest only, rate limited) ─────────────────────────────────────
+Route::middleware(['guest', 'throttle:auth'])->group(function () {
     Route::get('/google/redirect', [AuthController::class, 'redirect'])->name('google.redirect');
     Route::get('/google/callback', [AuthController::class, 'callback'])->name('google.callback');
     Route::get('/userlogin', [AuthController::class, 'showLogin'])->name('userlogin');
@@ -130,9 +133,7 @@ Route::middleware('web')->group(function () {
     Route::get('/userregister', [PageController::class, 'home'])->name('userregister');
     Route::post('/userregister', [UserRegisterController::class, 'register']);
 
-    Route::get('/login', function () {
-        return redirect()->route('userlogin');
-    })->name('login');
+    Route::get('/login', fn () => redirect()->route('userlogin'))->name('login');
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/register', [UserRegisterController::class, 'register'])->name('register');
 
