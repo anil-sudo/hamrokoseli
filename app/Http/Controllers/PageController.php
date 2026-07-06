@@ -387,7 +387,7 @@ class PageController extends Controller
         // Track recently viewed products in session (store product IDs)
         $recentlyViewed = session()->get('recently_viewed', []);
         // Remove if already exists to avoid duplicates
-        $recentlyViewed = array_filter($recentlyViewed, fn($pid) => $pid != $id);
+        $recentlyViewed = array_filter($recentlyViewed, fn ($pid) => $pid != $id);
         // Prepend current product
         array_unshift($recentlyViewed, (int) $id);
         // Keep only last 20
@@ -425,7 +425,7 @@ class PageController extends Controller
                 'last_page' => $reviews->lastPage(),
                 'per_page' => $reviews->perPage(),
                 'total' => $reviews->total(),
-            ]
+            ],
         ]);
     }
 
@@ -434,10 +434,10 @@ class PageController extends Controller
         // Purchase verify check
         $verified = OrderItem::where('product_id', $productId)
             ->whereNotIn('status', ['cancelled', 'returned'])
-            ->whereHas('order', fn($q) => $q->where('user_id', $userId))
+            ->whereHas('order', fn ($q) => $q->where('user_id', $userId))
             ->exists();
 
-        if (!$verified) {
+        if (! $verified) {
             return [
                 'eligible' => false,
                 'message' => 'You must purchase this product before writing a review.',
@@ -464,7 +464,7 @@ class PageController extends Controller
     {
         $userId = auth()->id();
 
-        if (!$userId) {
+        if (! $userId) {
             return response()->json([
                 'eligible' => false,
                 'message' => 'Please login to write a review.',
@@ -485,7 +485,7 @@ class PageController extends Controller
 
         $userId = auth()->id();
 
-        if (!$userId) {
+        if (! $userId) {
             return response()->json([
                 'success' => false,
                 'message' => 'Please login first.',
@@ -494,7 +494,7 @@ class PageController extends Controller
 
         $result = $this->checkReviewEligibility($id, $userId);
 
-        if (!$result['eligible']) {
+        if (! $result['eligible']) {
             return response()->json([
                 'success' => false,
                 'message' => $result['message'],
