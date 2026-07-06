@@ -505,8 +505,8 @@
     </script>
 
     @if(isset($activeProduct))
-        <script>
-            window.activeProductOnLoad = @json($activeProduct);
-        </script>
-    @endif
+    <script>
+        window.activeProductOnLoad = @json($activeProduct);
+    </script>
+@endif
 </x-frontend-layout>

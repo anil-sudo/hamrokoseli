@@ -46,6 +46,7 @@ Route::middleware(['auth', 'role:vendor'])->group(function () {
     Route::get('/return', [SellerController::class, 'returnProducts'])->name('seller.returns');
     Route::get('/return-details', [SellerController::class, 'returnDetails'])->name('return-details');
     Route::get('/seller-review', [SellerController::class, 'sellerReview'])->name('seller.review');
+    Route::post('/seller-review/{id}/reply', [SellerController::class, 'replyToReview'])->name('seller.review.reply');
     Route::get('/seller-payments', [SellerController::class, 'sellerPayment'])->name('seller.payment');
     Route::get('/seller-payments-details', [SellerController::class, 'paymentDetails'])->name('payment-details');
     Route::get('/seller-support', [SellerController::class, 'sellerSupport'])->name('seller-support');
@@ -72,10 +73,12 @@ Route::get('/wishlist', [PageController::class, 'wishlist'])->name('wishlist');
 Route::get('/privacypolicy', [PageController::class, 'privacy'])->name('privacy');
 Route::get('/contact-us', [PageController::class, 'contactus'])->name('contact-us');
 Route::get('/viewdetails/{id}', [PageController::class, 'viewProduct'])->name('viewdetails');
+Route::get('/product/{id}/reviews', [PageController::class, 'getProductReviews'])->name('product.reviews');
 Route::get('/terms_&_conditions', [PageController::class, 'terms_conditions'])->name('terms&conditions');
 Route::get('/return_&_refund', [PageController::class, 'return_policy'])->name('return&refund');
 Route::get('/faq', [PageController::class, 'faq'])->name('faq');
 Route::get('/seller_policy', [PageController::class, 'seller_policy'])->name('seller-policy');
+Route::get('/product/{id}/can-review', [PageController::class, 'canReviewProduct'])->name('product.reviews.check');
 
 // ─── Requires login (guests are redirected to /userlogin automatically) ───────
 Route::middleware('auth')->group(function () {
@@ -83,6 +86,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/cart', [CartController::class, 'index'])->name('cart');
     Route::post('/cart/add', [CartController::class, 'store'])->name('cart.add');
+    Route::post('/product/{id}/reviews', [PageController::class, 'storeProductReview'])->name('product.reviews.store');
     Route::patch('/cart/{cart}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/{cart}', [CartController::class, 'destroy'])->name('cart.remove');
 
