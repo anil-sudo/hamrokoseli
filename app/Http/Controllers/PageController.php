@@ -552,6 +552,7 @@ class PageController extends Controller
             ],
         ]);
     }
+
     public function sitemap()
     {
         $products = Product::where('status', 'active')->get(['slug', 'updated_at']);
