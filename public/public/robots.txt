@@ -1,0 +1,10 @@
+User-agent: *
+Disallow: /admin/
+Disallow: /seller-dashboard
+Disallow: /seller-login
+Disallow: /cart
+Disallow: /checkout
+Disallow: /user/
+Disallow: /seller/
+
+Sitemap: https://www.workplace.webtoolnest.dev/sitemap.xml

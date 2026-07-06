@@ -1,4 +1,6 @@
-<x-frontend-layout>
+<x-frontend-layout title="Today's Deals - Hamro Koseli"
+    description="Check out today's limited-time offers on authentic Nepali crafts and handmade treasures."
+    ogImage="/images/og-images.jpg">
 
   <main class="bg-[#f7fafc] min-h-screen">
     <!-- Hero Section -->
@@ -136,9 +138,10 @@
                     </div>
                   </div>
                   <div class="flex gap-2 mt-auto">
-                    <a href="{{ route('viewdetails', $product->id) }}"
+                    <a href="{{ route('viewdetails', $product->slug) }}"
                        class="view-details-btn flex-1 flex items-center justify-center gap-2 bg-[#1F3D2E] hover:bg-[#16301f] text-white text-sm font-semibold py-3 px-3 rounded-xl shadow-sm hover:shadow transition duration-300"
                        data-id="{{ $product->id }}"
+                       data-slug="{{ $product->slug }}"
                        data-name="{{ $product->name }}"
                        data-price="{{ $displayPrice }}"
                        data-original-price="{{ $price }}"
@@ -273,10 +276,10 @@
                     @endif
                     <p class="text-4xl font-bold mb-4 font-['Plus_Jakarta_Sans']">Rs. {{ number_format($dDisplayPrice) }}</p>
                     <div class="flex gap-3">
-                      <a href="{{ route('viewdetails', $deal->id) }}" class="bg-[#d4a017] hover:bg-[#b38a0a] text-black font-bold px-6 py-2 rounded-full transition flex items-center gap-2 font-['Plus_Jakarta_Sans'] text-sm">
+                      <a href="{{ route('viewdetails', $deal->slug) }}" class="bg-[#d4a017] hover:bg-[#b38a0a] text-black font-bold px-6 py-2 rounded-full transition flex items-center gap-2 font-['Plus_Jakarta_Sans'] text-sm">
                         Buy Now <span>→</span>
                       </a>
-                      <a href="{{ route('viewdetails', $deal->id) }}" class="border border-white text-white font-bold px-6 py-2 rounded-full hover:bg-white hover:text-[#2d3133] transition text-sm">Details</a>
+                      <a href="{{ route('viewdetails', $deal->slug) }}" class="border border-white text-white font-bold px-6 py-2 rounded-full hover:bg-white hover:text-[#2d3133] transition text-sm">Details</a>
                     </div>
                   </div>
                 </div>
@@ -311,7 +314,7 @@
           <div id="trending-carousel" class="flex gap-6 transition-transform duration-500 ease-out">
             @foreach($trendingProducts as $trend)
               <div class="trending-card flex-shrink-0 w-full md:w-1/2 lg:w-1/4">
-                <a href="{{ route('viewdetails', $trend->id) }}" class="block bg-white rounded-[16px] border border-[#e0e3e5] overflow-hidden hover:shadow-lg transition-all">
+                <a href="{{ route('viewdetails', $trend->slug) }}" class="block bg-white rounded-[16px] border border-[#e0e3e5] overflow-hidden hover:shadow-lg transition-all">
                   <div class="aspect-square bg-gray-200 flex items-center justify-center">
                     <img src="{{ $trend->primaryImageUrl() }}" alt="{{ $trend->name }}" class="w-full h-full object-cover">
                   </div>

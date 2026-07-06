@@ -36,7 +36,6 @@ class RolesAndPermissionsSeeder extends Seeder
             'view products', 'manage products',
             'view orders',
         ]);
-
         $user = Role::firstOrCreate(['name' => 'user']);
         $user->syncPermissions(['view products', 'view orders']);
     }

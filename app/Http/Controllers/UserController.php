@@ -138,6 +138,61 @@ class UserController extends Controller
         ));
     }
 
+    public function toggleWishlist(Request $request)
+    {
+        $request->validate([
+            'product_id' => ['required', 'exists:products,id'],
+        ]);
+
+        $userId = auth()->id();
+        $productId = $request->product_id;
+
+        $existing = Wishlist::where('user_id', $userId)
+            ->where('product_id', $productId)
+            ->first();
+
+        if ($existing) {
+            $existing->delete();
+            $inWishlist = false;
+            $message = 'Removed from wishlist.';
+        } else {
+            Wishlist::create([
+                'user_id' => $userId,
+                'product_id' => $productId,
+            ]);
+            $inWishlist = true;
+            $message = 'Added to wishlist.';
+        }
+
+        return response()->json([
+            'success' => true,
+            'in_wishlist' => $inWishlist,
+            'message' => $message,
+        ]);
+    }
+
+    public function wishlistItems()
+    {
+        $items = Wishlist::where('user_id', auth()->id())
+            ->with('product.images')
+            ->get()
+            ->map(function ($w) {
+                $product = $w->product;
+
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'price' => $product->effectivePrice(),
+                    'image' => $product->primaryImageUrl(),
+                    'desc' => $product->description,
+                    'category' => $product->category?->cat_name ?? '',
+                    'slug' => $product->slug,
+                ];
+            });
+
+        return response()->json(['items' => $items]);
+    }
+
     public function orders(Request $request)
     {
         $user = auth()->user();

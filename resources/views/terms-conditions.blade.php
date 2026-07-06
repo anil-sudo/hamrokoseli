@@ -1,4 +1,4 @@
-<x-frontend-layout>
+<x-frontend-layout title="Terms & Conditions - Hamro Koseli">
     <section class="bg-[#FFF7EF] min-h-screen">
 
     <!-- Hero Section -->
