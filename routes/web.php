@@ -44,6 +44,7 @@ Route::middleware(['auth', 'role:vendor'])->group(function () {
     Route::get('/return', [SellerController::class, 'returnProducts'])->name('seller.returns');
     Route::get('/return-details', [SellerController::class, 'returnDetails'])->name('return-details');
     Route::get('/seller-review', [SellerController::class, 'sellerReview'])->name('seller.review');
+    Route::post('/seller-review/{id}/reply', [SellerController::class, 'replyToReview'])->name('seller.review.reply');
     Route::get('/seller-payments', [SellerController::class, 'sellerPayment'])->name('seller.payment');
     Route::get('/seller-payments-details', [SellerController::class, 'paymentDetails'])->name('payment-details');
     Route::get('/seller-support', [SellerController::class, 'sellerSupport'])->name('seller-support');
@@ -52,6 +53,7 @@ Route::middleware(['auth', 'role:vendor'])->group(function () {
     Route::get('/tickets', [SellerController::class, 'sellerTicket'])->name('seller-ticket');
     Route::get('/seller-notification', [SellerController::class, 'sellerNotification'])->name('seller-notification');
     Route::patch('/seller-notification/read-all', [SellerController::class, 'markAllNotificationsRead'])->name('seller.notifications.markAllRead');
+    Route::patch('/seller-notification/{id}/read', [SellerController::class, 'markNotificationRead'])->name('seller.notifications.read');
     Route::patch('/seller-notification/{slug}/read', [SellerController::class, 'markNotificationRead'])->name('seller.notifications.read');
 
     // ── Profile & password moved here so they're auth-guarded (was QA issue #3) ─
@@ -73,12 +75,15 @@ Route::get('/top-sellers', [PageController::class, 'top_sellers'])->name('top-se
 Route::get('/about-us', [PageController::class, 'about_us'])->name('about-us');
 Route::get('/privacypolicy', [PageController::class, 'privacy'])->name('privacy');
 Route::get('/contact-us', [PageController::class, 'contactus'])->name('contact-us');
+Route::get('/viewdetails/{id}', [PageController::class, 'viewProduct'])->name('viewdetails');
+Route::get('/product/{id}/reviews', [PageController::class, 'getProductReviews'])->name('product.reviews');
 Route::get('/viewdetails/{slug}', [PageController::class, 'viewProduct'])->name('viewdetails');
 Route::get('/terms_&_conditions', [PageController::class, 'terms_conditions'])->name('terms&conditions');
 Route::get('/return_&_refund', [PageController::class, 'return_policy'])->name('return&refund');
 Route::get('/faq', [PageController::class, 'faq'])->name('faq');
 Route::get('/FAQ', fn () => redirect()->route('faq')); // ← duplicate fixed: redirect instead of re-registering
 Route::get('/seller_policy', [PageController::class, 'seller_policy'])->name('seller-policy');
+Route::get('/product/{id}/can-review', [PageController::class, 'canReviewProduct'])->name('product.reviews.check');
 Route::get('/shipping-info', [PageController::class, 'shipping_policy'])->name('shipping-policy');
 
 // ─── Requires login ───────────────────────────────────────────────────────────
@@ -88,6 +93,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/wishlist/items', [UserController::class, 'wishlistItems'])->name('wishlist.items');
     Route::get('/cart', [CartController::class, 'index'])->name('cart');
     Route::post('/cart/add', [CartController::class, 'store'])->name('cart.add');
+    Route::post('/product/{id}/reviews', [PageController::class, 'storeProductReview'])->name('product.reviews.store');
     Route::patch('/cart/{cart}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/{cart}', [CartController::class, 'destroy'])->name('cart.remove');
 

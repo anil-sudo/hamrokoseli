@@ -9,6 +9,7 @@ use App\Models\Payment;
 use App\Models\Payout;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Models\Review;
 use App\Models\SupportTicket;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -666,9 +667,87 @@ class SellerController extends Controller
         return redirect()->back()->with('password_success', 'Password changed successfully.');
     }
 
-    public function sellerReview()
+    public function sellerReview(Request $request)
     {
-        return view('seller.review');
+        $vendor = auth()->user()->vendor;
+
+        if (! $vendor) {
+            return redirect()->route('dashboard')
+                ->with('error', 'Vendor profile not found. Please contact support.');
+        }
+
+        $vendorId = $vendor->id;
+
+        // Fetch products owned by this vendor
+        $productIds = Product::where('vendor_id', $vendorId)->pluck('id');
+
+        $query = Review::with(['user', 'product'])->whereIn('product_id', $productIds);
+
+        // Filter by rating
+        if ($request->filled('rating')) {
+            $query->where('rating', $request->rating);
+        }
+
+        // Search by keyword in comments or product names or user names
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('comment', 'like', "%{$search}%")
+                    ->orWhereHas('product', function ($pq) use ($search) {
+                        $pq->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('user', function ($uq) use ($search) {
+                        $uq->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $reviews = $query->orderBy('created_at', 'desc')->paginate(5);
+
+        // Calculate statistics based on ALL reviews for this vendor's products
+        $allReviews = Review::whereIn('product_id', $productIds)->get();
+        $totalReviews = $allReviews->count();
+        $avgRating = $totalReviews > 0 ? round($allReviews->avg('rating'), 2) : 0;
+
+        // Response rate: percentage of reviews with a reply
+        $repliedCount = $allReviews->whereNotNull('reply')->count();
+        $responseRate = $totalReviews > 0 ? round(($repliedCount / $totalReviews) * 100) : 0;
+
+        // Pending Replies
+        $pendingReplies = $totalReviews - $repliedCount;
+
+        return view('seller.review', compact(
+            'reviews',
+            'totalReviews',
+            'avgRating',
+            'responseRate',
+            'pendingReplies'
+        ));
+    }
+
+    public function replyToReview(Request $request, $id)
+    {
+        $request->validate([
+            'reply' => 'required|string|max:1000',
+        ]);
+
+        $vendor = auth()->user()->vendor;
+        if (! $vendor) {
+            return redirect()->back()->with('error', 'Vendor profile not found.');
+        }
+
+        $review = Review::findOrFail($id);
+
+        // Ensure the review belongs to this vendor's products
+        if ($review->product->vendor_id !== $vendor->id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $review->reply = $request->reply;
+        $review->replied_at = now();
+        $review->save();
+
+        return redirect()->back()->with('success', 'Reply submitted successfully.');
     }
 
     public function sellerPayment(Request $request)
