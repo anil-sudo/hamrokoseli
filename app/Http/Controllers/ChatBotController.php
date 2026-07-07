@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class ChatbotController extends Controller
+class ChatBotController extends Controller
 {
     public function send(Request $request)
     {
