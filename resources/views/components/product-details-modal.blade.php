@@ -237,143 +237,152 @@
                                     class="bg-[#1F3D2E] text-white px-8 py-3 rounded-2xl font-semibold">
                                     Login / Register
                                 </button>
-                            @endauth
-                        </div>
-                    </div>
-
-                    <!-- Reviews List -->
-                    <div id="modal-reviews-list"
-                        class="grid grid-cols-1 md:grid-cols-3 gap-4 max-h-[420px] overflow-y-auto pr-3 custom-scroll">
-                        <!-- Review cards will be injected here -->
-                    </div>
-
-                    <!-- Reviews Pagination -->
-                    <div id="modal-reviews-pagination" class="flex justify-center gap-2 mt-6 pb-2">
+                            </div>
+                        @endauth
                     </div>
                 </div>
+
+                <!-- Reviews List -->
+                <div id="modal-reviews-list"
+                    class="grid grid-cols-1 md:grid-cols-3 gap-4 max-h-[420px] overflow-y-auto pr-3 custom-scroll">
+                    <!-- Review cards will be injected here -->
+                </div>
+
+                <!-- Reviews Pagination -->
+                <div id="modal-reviews-pagination" class="flex justify-center gap-2 mt-6 pb-2">
+                </div>
             </div>
+        </div>
+    </div>
+</div>
 
-            @if (isset($activeProduct))
-                <script>
-                    window.activeProductOnLoad = @json($activeProduct);
-                </script>
-            @endif
+@if (isset($activeProduct))
+    <script>
+        window.activeProductOnLoad = @json($activeProduct);
+    </script>
+@endif
 
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    const toggleBtn = document.getElementById('toggle-add-review-btn');
-                    const reviewSection = document.getElementById('modal-add-review-section');
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleBtn = document.getElementById('toggle-add-review-btn');
+        const reviewSection = document.getElementById('modal-add-review-section');
 
-                    if (toggleBtn && reviewSection) {
-                        toggleBtn.addEventListener('click', function() {
-                            if (reviewSection.classList.contains('hidden')) {
-                                // Before showing the form, check if they are eligible
-                                let productId = (window.activeProduct && window.activeProduct.id)
-                                    ? window.activeProduct.id
-                                    : (window.activeProductOnLoad ? window.activeProductOnLoad.id : null);
+        if (toggleBtn && reviewSection) {
+            toggleBtn.addEventListener('click', function() {
+                if (reviewSection.classList.contains('hidden')) {
+                    // Before showing the form, check if they are eligible
+                    let productId = (window.activeProduct && window.activeProduct.id) ?
+                        window.activeProduct.id :
+                        (window.activeProductOnLoad ? window.activeProductOnLoad.id : null);
 
-                                if (!productId) {
-                                    if (window.showToast) window.showToast('Product not found.', 'error');
-                                    return;
-                                }
-
-                                // Disable button temporarily
-                                const originalHtml = toggleBtn.innerHTML;
-                                toggleBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> loading';
-                                toggleBtn.disabled = true;
-
-                                fetch('/product/' + productId + '/can-review')
-                                    .then(res => res.json())
-                                    .then(data => {
-                                        toggleBtn.innerHTML = originalHtml;
-                                        toggleBtn.disabled = false;
-
-                                        if (data.eligible) {
-                                            reviewSection.classList.remove('hidden');
-                                            reviewSection.scrollIntoView({
-                                                behavior: 'smooth',
-                                                block: 'center'
-                                            });
-
-                                            // Pre-fill existing review if editing
-                                            const formTitle = document.getElementById('add-review-title');
-                                            const submitBtn = document.getElementById('submit-review-btn');
-                                            const ratingInput = document.getElementById('review-rating-value');
-                                            const commentInput = document.getElementById('review-comment');
-                                            const starButtons = document.querySelectorAll('.star-select-btn');
-
-                                            if (data.existing && data.review) {
-                                                if (formTitle) formTitle.innerHTML = '<i class="fas fa-edit text-[#C65A3A]"></i> Edit Your Review';
-                                                if (submitBtn) submitBtn.textContent = 'Update Review';
-                                                if (ratingInput) ratingInput.value = data.review.rating;
-                                                if (commentInput) commentInput.value = data.review.comment || '';
-
-                                                // Update star visuals
-                                                starButtons.forEach((b, index) => {
-                                                    const icon = b.querySelector('i');
-                                                    if (index < data.review.rating) {
-                                                        icon.className = 'fas fa-star text-[#C65A3A]';
-                                                        b.classList.add('text-yellow-400');
-                                                    } else {
-                                                        icon.className = 'far fa-star text-[#3A2A1F]/40';
-                                                        b.classList.remove('text-yellow-400');
-                                                    }
-                                                });
-                                            } else {
-                                                if (formTitle) formTitle.innerHTML = '<i class="fas fa-pen-fancy text-[#C65A3A]"></i> Share Your Experience';
-                                                if (submitBtn) submitBtn.textContent = 'Submit Review';
-                                                if (ratingInput) ratingInput.value = '';
-                                                if (commentInput) commentInput.value = '';
-
-                                                // Reset stars
-                                                starButtons.forEach((b) => {
-                                                    const icon = b.querySelector('i');
-                                                    icon.className = 'far fa-star text-[#3A2A1F]/40';
-                                                    b.classList.remove('text-yellow-400');
-                                                });
-                                            }
-                                        } else {
-                                            if (window.showToast) {
-                                                window.showToast(data.message || 'You cannot review this product.', 'error');
-                                            } else {
-                                                alert(data.message || 'You cannot review this product.');
-                                            }
-                                        }
-                                    })
-                                    .catch(err => {
-                                        toggleBtn.innerHTML = originalHtml;
-                                        toggleBtn.disabled = false;
-                                        if (window.showToast) window.showToast('Something went wrong. Please try again.', 'error');
-                                    });
-                            } else {
-                                reviewSection.classList.add('hidden');
-                            }
-                        });
+                    if (!productId) {
+                        if (window.showToast) window.showToast('Product not found.', 'error');
+                        return;
                     }
 
-                    // Star selection
-                    const starButtons = document.querySelectorAll('.star-select-btn');
-                    const ratingInput = document.getElementById('review-rating-value');
+                    // Disable button temporarily
+                    const originalHtml = toggleBtn.innerHTML;
+                    toggleBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> loading';
+                    toggleBtn.disabled = true;
 
-                    starButtons.forEach(btn => {
-                        btn.addEventListener('click', () => {
-                            const rating = btn.dataset.rating;
-                            ratingInput.value = rating;
+                    fetch('/product/' + productId + '/can-review')
+                        .then(res => res.json())
+                        .then(data => {
+                            toggleBtn.innerHTML = originalHtml;
+                            toggleBtn.disabled = false;
 
-                            // Update star visuals
-                            starButtons.forEach((b, index) => {
-                                const icon = b.querySelector('i');
-                                if (index < rating) {
-                                    icon.classList.remove('far');
-                                    icon.classList.add('fas');
-                                    b.classList.add('text-yellow-400');
+                            if (data.eligible) {
+                                reviewSection.classList.remove('hidden');
+                                reviewSection.scrollIntoView({
+                                    behavior: 'smooth',
+                                    block: 'center'
+                                });
+
+                                // Pre-fill existing review if editing
+                                const formTitle = document.getElementById('add-review-title');
+                                const submitBtn = document.getElementById('submit-review-btn');
+                                const ratingInput = document.getElementById('review-rating-value');
+                                const commentInput = document.getElementById('review-comment');
+                                const starButtons = document.querySelectorAll('.star-select-btn');
+
+                                if (data.existing && data.review) {
+                                    if (formTitle) formTitle.innerHTML =
+                                        '<i class="fas fa-edit text-[#C65A3A]"></i> Edit Your Review';
+                                    if (submitBtn) submitBtn.textContent = 'Update Review';
+                                    if (ratingInput) ratingInput.value = data.review.rating;
+                                    if (commentInput) commentInput.value = data.review.comment ||
+                                        '';
+
+                                    // Update star visuals
+                                    starButtons.forEach((b, index) => {
+                                        const icon = b.querySelector('i');
+                                        if (index < data.review.rating) {
+                                            icon.className = 'fas fa-star text-[#C65A3A]';
+                                            b.classList.add('text-yellow-400');
+                                        } else {
+                                            icon.className =
+                                                'far fa-star text-[#3A2A1F]/40';
+                                            b.classList.remove('text-yellow-400');
+                                        }
+                                    });
                                 } else {
-                                    icon.classList.remove('fas');
-                                    icon.classList.add('far');
-                                    b.classList.remove('text-yellow-400');
+                                    if (formTitle) formTitle.innerHTML =
+                                        '<i class="fas fa-pen-fancy text-[#C65A3A]"></i> Share Your Experience';
+                                    if (submitBtn) submitBtn.textContent = 'Submit Review';
+                                    if (ratingInput) ratingInput.value = '';
+                                    if (commentInput) commentInput.value = '';
+
+                                    // Reset stars
+                                    starButtons.forEach((b) => {
+                                        const icon = b.querySelector('i');
+                                        icon.className = 'far fa-star text-[#3A2A1F]/40';
+                                        b.classList.remove('text-yellow-400');
+                                    });
                                 }
-                            });
+                            } else {
+                                if (window.showToast) {
+                                    window.showToast(data.message ||
+                                        'You cannot review this product.', 'error');
+                                } else {
+                                    alert(data.message || 'You cannot review this product.');
+                                }
+                            }
+                        })
+                        .catch(err => {
+                            toggleBtn.innerHTML = originalHtml;
+                            toggleBtn.disabled = false;
+                            if (window.showToast) window.showToast(
+                                'Something went wrong. Please try again.', 'error');
                         });
-                    });
+                } else {
+                    reviewSection.classList.add('hidden');
+                }
+            });
+        }
+
+        // Star selection
+        const starButtons = document.querySelectorAll('.star-select-btn');
+        const ratingInput = document.getElementById('review-rating-value');
+
+        starButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const rating = btn.dataset.rating;
+                ratingInput.value = rating;
+
+                // Update star visuals
+                starButtons.forEach((b, index) => {
+                    const icon = b.querySelector('i');
+                    if (index < rating) {
+                        icon.classList.remove('far');
+                        icon.classList.add('fas');
+                        b.classList.add('text-yellow-400');
+                    } else {
+                        icon.classList.remove('fas');
+                        icon.classList.add('far');
+                        b.classList.remove('text-yellow-400');
+                    }
                 });
-            </script>
+            });
+        });
+    });
+</script>

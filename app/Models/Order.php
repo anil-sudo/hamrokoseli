@@ -165,4 +165,16 @@ class Order extends Model
     {
         return $query->where('user_id', $userId);
     }
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted()
+    {
+        static::updated(function ($order) {
+            if ($order->wasChanged('status')) {
+                \App\Services\NotificationService::userOrderStatusChanged($order);
+            }
+        });
+    }
 }

@@ -117,4 +117,16 @@ class Payout extends Model
     {
         return $this->update(['status' => self::STATUS_FAILED]);
     }
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted()
+    {
+        static::saved(function ($payout) {
+            if ($payout->wasRecentlyCreated || $payout->wasChanged('status')) {
+                \App\Services\NotificationService::vendorPayoutStatusChanged($payout);
+            }
+        });
+    }
 }

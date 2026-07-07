@@ -129,4 +129,18 @@ class Payment extends Model
     {
         return $query->where('gateway', $gateway);
     }
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted()
+    {
+        static::saved(function ($payment) {
+            if ($payment->wasRecentlyCreated || $payment->wasChanged('status')) {
+                if ($payment->status !== 'pending' || $payment->wasChanged('status')) {
+                    \App\Services\NotificationService::userPaymentStatusChanged($payment);
+                }
+            }
+        });
+    }
 }

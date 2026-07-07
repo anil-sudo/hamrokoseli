@@ -11,6 +11,7 @@ use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\Review;
 use App\Models\SupportTicket;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -644,6 +645,8 @@ class SellerController extends Controller
 
         $user->save();
 
+        NotificationService::profileUpdated($user, 'profile', true);
+
         return redirect()->back()->with('success', 'Profile updated successfully.');
     }
 
@@ -663,6 +666,8 @@ class SellerController extends Controller
 
         $user->password = \Hash::make($request->new_password);
         $user->save();
+
+        NotificationService::profileUpdated($user, 'password', true);
 
         return redirect()->back()->with('password_success', 'Password changed successfully.');
     }
@@ -854,19 +859,32 @@ class SellerController extends Controller
     public function sellerNotification()
     {
         $user = auth()->user();
+        $sellerTypes = [
+            'order_placed',
+            'vendor_order_placed',
+            'return_requested',
+            'return_approved',
+            'payout_processed',
+            'vendor_payment_received',
+            'vendor_profile_updated',
+            'support_ticket_status'
+        ];
 
-        $notifications = $user->appNotifications()->latest()->paginate(10);
+        $notifications = $user->appNotifications()
+            ->whereIn('type', $sellerTypes)
+            ->latest()
+            ->paginate(10);
 
         $counts = [
-            'all' => $user->appNotifications()->where('is_read', false)->count(),
+            'all' => $user->appNotifications()->whereIn('type', $sellerTypes)->where('is_read', false)->count(),
             'orders' => $user->appNotifications()->where('is_read', false)->whereIn('type', [
-                'order_placed', 'order_confirmed', 'order_shipped', 'order_delivered', 'order_cancelled', 'return_requested', 'return_approved',
+                'order_placed', 'vendor_order_placed', 'return_requested', 'return_approved',
             ])->count(),
             'payouts' => $user->appNotifications()->where('is_read', false)->whereIn('type', [
-                'payout_processed', 'payment_received',
+                'payout_processed', 'vendor_payment_received',
             ])->count(),
-            'store' => $user->appNotifications()->where('is_read', false)->whereNotIn('type', [
-                'order_placed', 'order_confirmed', 'order_shipped', 'order_delivered', 'order_cancelled', 'return_requested', 'return_approved', 'payout_processed', 'payment_received',
+            'store' => $user->appNotifications()->where('is_read', false)->whereIn('type', [
+                'vendor_profile_updated', 'support_ticket_status',
             ])->count(),
         ];
 
@@ -883,10 +901,24 @@ class SellerController extends Controller
 
     public function markAllNotificationsRead()
     {
-        auth()->user()->appNotifications()->where('is_read', false)->update([
-            'is_read' => true,
-            'read_at' => now(),
-        ]);
+        $sellerTypes = [
+            'order_placed',
+            'vendor_order_placed',
+            'return_requested',
+            'return_approved',
+            'payout_processed',
+            'vendor_payment_received',
+            'vendor_profile_updated',
+            'support_ticket_status'
+        ];
+
+        auth()->user()->appNotifications()
+            ->whereIn('type', $sellerTypes)
+            ->where('is_read', false)
+            ->update([
+                'is_read' => true,
+                'read_at' => now(),
+            ]);
 
         return response()->json(['success' => true]);
     }

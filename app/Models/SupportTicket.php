@@ -19,4 +19,16 @@ class SupportTicket extends Model
     {
         return $this->belongsTo(Vendor::class);
     }
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted()
+    {
+        static::saved(function ($ticket) {
+            if ($ticket->wasRecentlyCreated || $ticket->wasChanged('status')) {
+                \App\Services\NotificationService::vendorSupportTicketStatusChanged($ticket);
+            }
+        });
+    }
 }

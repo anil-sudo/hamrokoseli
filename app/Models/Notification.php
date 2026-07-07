@@ -49,6 +49,8 @@ class Notification extends Model
 
     const TYPE_PAYOUT_PROCESSED = 'payout_processed';
 
+    const TYPE_PROFILE_UPDATED = 'profile_updated';
+
     // ─── Relationships ────────────────────────────────────────────────────────
 
     /**
