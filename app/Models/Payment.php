@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\NotificationService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -138,7 +139,7 @@ class Payment extends Model
         static::saved(function ($payment) {
             if ($payment->wasRecentlyCreated || $payment->wasChanged('status')) {
                 if ($payment->status !== 'pending' || $payment->wasChanged('status')) {
-                    \App\Services\NotificationService::userPaymentStatusChanged($payment);
+                    NotificationService::userPaymentStatusChanged($payment);
                 }
             }
         });

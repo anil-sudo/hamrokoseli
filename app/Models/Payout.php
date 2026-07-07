@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\NotificationService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -125,7 +126,7 @@ class Payout extends Model
     {
         static::saved(function ($payout) {
             if ($payout->wasRecentlyCreated || $payout->wasChanged('status')) {
-                \App\Services\NotificationService::vendorPayoutStatusChanged($payout);
+                NotificationService::vendorPayoutStatusChanged($payout);
             }
         });
     }

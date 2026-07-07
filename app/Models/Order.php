@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\NotificationService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -173,7 +174,7 @@ class Order extends Model
     {
         static::updated(function ($order) {
             if ($order->wasChanged('status')) {
-                \App\Services\NotificationService::userOrderStatusChanged($order);
+                NotificationService::userOrderStatusChanged($order);
             }
         });
     }

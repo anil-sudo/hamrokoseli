@@ -867,7 +867,7 @@ class SellerController extends Controller
             'payout_processed',
             'vendor_payment_received',
             'vendor_profile_updated',
-            'support_ticket_status'
+            'support_ticket_status',
         ];
 
         $notifications = $user->appNotifications()
@@ -909,7 +909,7 @@ class SellerController extends Controller
             'payout_processed',
             'vendor_payment_received',
             'vendor_profile_updated',
-            'support_ticket_status'
+            'support_ticket_status',
         ];
 
         auth()->user()->appNotifications()

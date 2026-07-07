@@ -162,7 +162,7 @@ class NotificationService
         };
 
         $message = match ($payment->status) {
-            'completed' => "Your payment of Rs. ".number_format($payment->total_amount, 2)." for order {$orderRef} has been completed successfully.",
+            'completed' => 'Your payment of Rs. '.number_format($payment->total_amount, 2)." for order {$orderRef} has been completed successfully.",
             'failed' => "Your payment for order {$orderRef} has failed.",
             'refunded' => "Your payment for order {$orderRef} has been refunded.",
             default => "Your payment status for order {$orderRef} has been updated to {$payment->status}.",
@@ -219,9 +219,9 @@ class NotificationService
         };
 
         $message = match ($payout->status) {
-            'completed' => "Your payout of Rs. ".number_format($payout->amount, 2)." has been completed successfully via {$payout->method}.",
-            'processing' => "Your payout of Rs. ".number_format($payout->amount, 2)." is now processing.",
-            'failed' => "Your payout of Rs. ".number_format($payout->amount, 2)." has failed.",
+            'completed' => 'Your payout of Rs. '.number_format($payout->amount, 2)." has been completed successfully via {$payout->method}.",
+            'processing' => 'Your payout of Rs. '.number_format($payout->amount, 2).' is now processing.',
+            'failed' => 'Your payout of Rs. '.number_format($payout->amount, 2).' has failed.',
             default => "Your payout status has been updated to {$payout->status}.",
         };
 

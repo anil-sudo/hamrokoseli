@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\NotificationService;
 use Illuminate\Database\Eloquent\Model;
 
 class SupportTicket extends Model
@@ -27,7 +28,7 @@ class SupportTicket extends Model
     {
         static::saved(function ($ticket) {
             if ($ticket->wasRecentlyCreated || $ticket->wasChanged('status')) {
-                \App\Services\NotificationService::vendorSupportTicketStatusChanged($ticket);
+                NotificationService::vendorSupportTicketStatusChanged($ticket);
             }
         });
     }

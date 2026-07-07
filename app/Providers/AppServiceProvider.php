@@ -20,7 +20,7 @@ class AppServiceProvider extends ServiceProvider
         // ─── Rate Limiters ────────────────────────────────────────────────────
         RateLimiter::for('auth', function (Request $request) {
             return Limit::perMinute(5)
-                ->by($request->input('email') . '|' . $request->ip())
+                ->by($request->input('email').'|'.$request->ip())
                 ->response(function () {
                     return back()->withErrors([
                         'email' => 'Too many attempts. Please wait a minute before trying again.',
