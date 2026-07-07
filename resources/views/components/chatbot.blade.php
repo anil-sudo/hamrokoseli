@@ -53,7 +53,7 @@
 </div>
 
 <style>
-#hkc-wrap{position:fixed;bottom:28px;right:28px;z-index:9999;font-family:'Plus Jakarta Sans',system-ui,sans-serif}
+#hkc-wrap{position:fixed;bottom:28px;right:28px;z-index:999999;font-family:'Plus Jakarta Sans',system-ui,sans-serif}
 
 #hkc-fab{
     width:58px;height:58px;border-radius:50%;border:none;

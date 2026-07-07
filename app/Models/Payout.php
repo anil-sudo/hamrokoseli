@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\NotificationService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -116,5 +117,17 @@ class Payout extends Model
     public function markAsFailed(): bool
     {
         return $this->update(['status' => self::STATUS_FAILED]);
+    }
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted()
+    {
+        static::saved(function ($payout) {
+            if ($payout->wasRecentlyCreated || $payout->wasChanged('status')) {
+                NotificationService::vendorPayoutStatusChanged($payout);
+            }
+        });
     }
 }

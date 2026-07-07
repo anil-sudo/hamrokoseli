@@ -1,7 +1,7 @@
 <x-frontend-layout title="Shop - Hamro Koseli"
  description="Discover authentic Nepali crafts and handmade treasures. Shop our curated collection of unique products, supporting local artisans and preserving cultural heritage."
     ogImage="/images/og-images.jpg">
->
+
 
     <style>
         /* Hide browser number-input spinner arrows */
