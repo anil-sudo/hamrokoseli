@@ -158,3 +158,5 @@ Route::redirect('/login.php', '/userlogin');
 
 Route::get('/sitemap.xml', [PageController::class, 'sitemap'])->name('sitemap');
 Route::post('/chatbot/send', [ChatBotController::class, 'send'])->name('chatbot.send');
+
+Route::post('/contact-us', [PageController::class, 'contactusSubmit'])->name('contact-us.submit');
