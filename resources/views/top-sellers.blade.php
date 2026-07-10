@@ -95,7 +95,7 @@
                         </span>
 
                         @if($product->vendor)
-                            <div class="absolute top-4 right-14 bg-white/95 text-[#1F3D2E] text-[10px] font-bold tracking-wider uppercase px-3 py-1.5 rounded-full shadow-sm z-10">
+                            <div class="absolute top-4 right-4 bg-white/95 text-[#1F3D2E] text-[10px] font-bold tracking-wider uppercase px-3 py-1.5 rounded-full shadow-sm z-10">
                                 {{ $vendorName }}
                             </div>
                         @endif

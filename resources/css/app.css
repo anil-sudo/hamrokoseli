@@ -108,6 +108,8 @@ textarea {
     }
     .subnav-link:hover::after { width: 100%; }
     .subnav-link:hover { color: #ffffff; }
+    .subnav-link.active::after { width: 100%; }
+    .subnav-link.active { color: #ffffff; }
 
     .subnav-link i {
         font-size: 14px;
@@ -182,6 +184,14 @@ textarea {
 }
 
 .mob-nav-link:hover i {
+    opacity: 1;
+}
+.mob-nav-link.active {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    border-left: 4px solid #C65A3A;
+}
+.mob-nav-link.active i {
     opacity: 1;
 }
 /* Search bar focus glow */

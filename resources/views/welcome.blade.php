@@ -43,7 +43,7 @@
                         $discountPrice = $hasDiscount ? $dDiscount : $product->price;
                     @endphp
                     <!-- Product Card -->
-                    <div class="bg-[#FDFBF7] rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-amber-900/5 hover:shadow-md transition group {{ $loop->index >= 4 ? 'hidden sm:block' : '' }}">
+                    <div class="product-card bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group {{ $loop->index >= 2 ? 'hidden sm:block' : '' }}">
                         <div class="h-36 xs:h-40 sm:h-44 md:h-48 lg:h-56 overflow-hidden bg-slate-100 relative cursor-pointer view-details-btn"
                              data-id="{{ $product->id }}"
                              data-name="{{ $product->name }}"
@@ -329,7 +329,7 @@
                             </div>
                         </div>
                     </div>                    <!-- Deal Card 3 -->
-                    <div class="product-card bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group">
+                    <div class="product-card bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group hidden sm:flex">
                         <div class="relative w-full aspect-[4/5] overflow-hidden rounded-t-2xl sm:rounded-t-3xl bg-slate-100 cursor-pointer view-details-btn"
                              data-id="107"
                              data-name="Teak Wood Side Table"
@@ -399,7 +399,7 @@
                             </div>
                         </div>
                     </div>                    <!-- Deal Card 4 -->
-                    <div class="product-card bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group">
+                    <div class="product-card bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group hidden sm:flex">
                         <div class="relative w-full aspect-[4/5] overflow-hidden rounded-t-2xl sm:rounded-t-3xl bg-slate-100 cursor-pointer view-details-btn"
                              data-id="108"
                              data-name="Ceramic Bowl Set"
@@ -657,7 +657,7 @@
                             $hasDiscount = !is_null($dDiscount) && $dDiscount > 0 && $dDiscount < $product->price;
                             $discountPrice = $hasDiscount ? $dDiscount : $product->price;
                         @endphp
-                        <div class="product-card bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group {{ $index >= 4 ? 'hidden sm:block' : '' }}">
+                        <div class="product-card bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group {{ $index >= 2 ? 'hidden sm:block' : '' }}">
                             <div class="relative w-full aspect-[4/5] overflow-hidden rounded-t-2xl sm:rounded-t-3xl bg-slate-100">
                                 <img src="{{ $imageUrl }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                                 
