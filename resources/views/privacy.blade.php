@@ -1,4 +1,4 @@
-<x-frontend-layout>
+<x-frontend-layout title="Privacy Policy - Hamro Koseli">
 
     <!-- Hero Section -->
     <section class="bg-[#FFF7EF] border-b">

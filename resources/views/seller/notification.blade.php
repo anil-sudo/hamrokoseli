@@ -150,8 +150,43 @@
             @endforelse
         </div>
 
-        @if($notifications->hasPages())
-            <div class="mt-8">{{ $notifications->links() }}</div>
+        <!-- Pagination -->
+        @if ($notifications->hasPages())
+            <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+                <p class="text-sm text-(--text-dark)/50">
+                    Showing <span class="font-medium text-(--text-dark)">{{ $notifications->firstItem() }}–{{ $notifications->lastItem() }}</span>
+                    of <span class="font-medium text-(--text-dark)">{{ $notifications->total() }}</span>
+                </p>
+                <div class="flex items-center gap-2">
+                    @if ($notifications->onFirstPage())
+                        <button disabled class="w-10 h-10 flex items-center justify-center border border-gray-300 rounded-2xl opacity-40 cursor-not-allowed">
+                            <i data-lucide="chevron-left" class="w-3 h-3"></i>
+                        </button>
+                    @else
+                        <a href="{{ $notifications->previousPageUrl() }}" class="w-10 h-10 flex items-center justify-center border border-gray-300 rounded-2xl hover:bg-[#1F3D2E] hover:text-white transition">
+                            <i data-lucide="chevron-left" class="w-3 h-3"></i>
+                        </a>
+                    @endif
+
+                    @foreach ($notifications->getUrlRange(max(1, $notifications->currentPage() - 2), min($notifications->lastPage(), $notifications->currentPage() + 2)) as $page => $url)
+                        @if ($page == $notifications->currentPage())
+                            <button class="w-10 h-10 bg-[#1F3D2E] text-white rounded-2xl font-medium text-sm">{{ $page }}</button>
+                        @else
+                            <a href="{{ $url }}" class="w-10 h-10 flex items-center justify-center border border-gray-300 rounded-2xl hover:bg-[#1F3D2E] hover:text-white transition">{{ $page }}</a>
+                        @endif
+                    @endforeach
+
+                    @if ($notifications->hasMorePages())
+                        <a href="{{ $notifications->nextPageUrl() }}" class="w-10 h-10 flex items-center justify-center border border-gray-300 rounded-2xl hover:bg-[#1F3D2E] hover:text-white transition">
+                            <i data-lucide="chevron-right" class="w-3 h-3"></i>
+                        </a>
+                    @else
+                        <button disabled class="w-10 h-10 flex items-center justify-center border border-gray-300 rounded-2xl opacity-40 cursor-not-allowed">
+                            <i data-lucide="chevron-right" class="w-3 h-3"></i>
+                        </button>
+                    @endif
+                </div>
+            </div>
         @endif
     </div>
 

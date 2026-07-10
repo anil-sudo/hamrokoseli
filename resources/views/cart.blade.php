@@ -1,4 +1,4 @@
-<x-frontend-layout>
+<x-frontend-layout title="Cart - Hamro Koseli">
 <div class="bg-[#F4EAE1] text-[#3A2A1F] min-h-screen py-10 sm:py-16 px-4 sm:px-6 lg:px-8">
     <div class="max-w-7xl mx-auto">
 
@@ -235,7 +235,7 @@
     </div>
 </div>
 
-</x-frontend-layout>
+
 
 <!-- ============= SCRIPTS ============= -->
 <script>
@@ -397,3 +397,4 @@ document.querySelectorAll('.cart-item').forEach(row => {
     });
 });
 </script>
+</x-frontend-layout>

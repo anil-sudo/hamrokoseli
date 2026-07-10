@@ -257,7 +257,11 @@ h6 {
     transform: scale(1.15);
 }
 
+<<<<<<< HEAD
     /* Today's Deals */
+=======
+/* Today's Deals */
+>>>>>>> origin/main
     .today-deals-container {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
