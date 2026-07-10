@@ -241,46 +241,85 @@
     <script>
         const sellerForm = document.getElementById('sellerForm');
 
+        // ── Helpers ─────────────────────────────────────────────────────────
+        const phoneRegex    = /^\d{10}$/;
+        const pwUpperRegex  = /[A-Z]/;
+        const pwLowerRegex  = /[a-z]/;
+        const pwDigitRegex  = /[0-9]/;
+        const pwSpecialRegex = /[\^$*.\[\]{}()?\-"!@#%&\/\\,><':;|_~`+=]/;
+
+        // ── Restrict phone inputs to digits only, max 10 ────────────────────
+        ['phone', 'vendor_phone'].forEach(function(id) {
+            const input = document.getElementById(id);
+            if (!input) return;
+            input.addEventListener('input', function() {
+                let value = this.value.replace(/\D/g, '');
+                if (value.length > 10) value = value.substring(0, 10);
+                this.value = value;
+            });
+        });
+
+        // ── Submit validation ────────────────────────────────────────────────
         sellerForm.addEventListener('submit', function(e) {
-            const name          = document.getElementById('name').value.trim();
-            const vendorName    = document.getElementById('vendor_name').value.trim();
-            const email         = document.getElementById('email').value.trim();
-            const phone         = document.getElementById('phone').value.trim();
-            const ownerName     = document.getElementById('owner_name').value.trim();
-            const vendorEmail   = document.getElementById('vendor_email').value.trim();
-            const vendorPhone   = document.getElementById('vendor_phone').value.trim();
-            const password      = document.getElementById('password').value;
-            const passwordConf  = document.getElementById('password_confirmation').value;
-            const termsChecked  = document.getElementById('terms').checked;
+            const name         = document.getElementById('name').value.trim();
+            const vendorName   = document.getElementById('vendor_name').value.trim();
+            const email        = document.getElementById('email').value.trim();
+            const phone        = document.getElementById('phone').value.trim();
+            const ownerName    = document.getElementById('owner_name').value.trim();
+            const vendorEmail  = document.getElementById('vendor_email').value.trim();
+            const vendorPhone  = document.getElementById('vendor_phone').value.trim();
+            const password     = document.getElementById('password').value;
+            const passwordConf = document.getElementById('password_confirmation').value;
+            const termsChecked = document.getElementById('terms').checked;
 
             let errors = [];
 
-            if (!name)        errors.push("Full Name is required.");
-            if (!vendorName)  errors.push("Shop Name is required.");
-            if (!email || !email.includes('@')) errors.push("A valid Email Address is required.");
-            if (!phone)       errors.push("Phone Number is required.");
-            if (!ownerName)   errors.push("Owner Name is required.");
-            if (!vendorEmail || !vendorEmail.includes('@')) errors.push("A valid Shop Email is required.");
-            if (!vendorPhone) errors.push("Shop Phone is required.");
-            if (!password || password.length < 8) errors.push("Password must be at least 8 characters.");
-            if (password !== passwordConf) errors.push("Passwords do not match.");
-            if (!termsChecked) errors.push("You must agree to the Terms and Conditions.");
+            // Required text fields
+            if (!name)       errors.push('Full Name is required.');
+            if (!vendorName) errors.push('Shop Name is required.');
+            if (!email || !email.includes('@')) errors.push('A valid Email Address is required.');
+            if (!ownerName)  errors.push('Owner Name is required.');
+            if (!vendorEmail || !vendorEmail.includes('@')) errors.push('A valid Shop Email is required.');
+
+            // Phone — digits only, exactly 10
+            if (!phone) {
+                errors.push('Phone Number is required.');
+            } else if (!/^\d+$/.test(phone)) {
+                errors.push('Phone Number must contain numbers only (no letters or special characters).');
+            } else if (phone.length !== 10) {
+                errors.push('Phone Number must be exactly 10 digits.');
+            }
+
+            if (!vendorPhone) {
+                errors.push('Shop Phone is required.');
+            } else if (!/^\d+$/.test(vendorPhone)) {
+                errors.push('Shop Phone must contain numbers only (no letters or special characters).');
+            } else if (vendorPhone.length !== 10) {
+                errors.push('Shop Phone must be exactly 10 digits.');
+            }
+
+            // Password complexity
+            if (!password) {
+                errors.push('Password is required.');
+            } else {
+                if (password.length < 8)            errors.push('Password must be at least 8 characters.');
+                if (!pwUpperRegex.test(password))   errors.push('Password must contain at least one uppercase letter (A–Z).');
+                if (!pwLowerRegex.test(password))   errors.push('Password must contain at least one lowercase letter (a–z).');
+                if (!pwDigitRegex.test(password))   errors.push('Password must contain at least one number (0–9).');
+                if (!pwSpecialRegex.test(password)) errors.push('Password must contain at least one special character (e.g. ! @ # $ % ^ & *).');
+            }
+
+            if (!passwordConf) {
+                errors.push('Confirm Password cannot be empty.');
+            } else if (password !== passwordConf) {
+                errors.push('Passwords do not match.');
+            }
+
+            if (!termsChecked) errors.push('You must agree to the Terms and Conditions.');
 
             if (errors.length > 0) {
                 e.preventDefault();
-                alert(errors.join("\n"));
-            }
-        });
-
-        // Restrict phone inputs to digits only, max 10
-        ['phone', 'vendor_phone'].forEach(function(id) {
-            const input = document.getElementById(id);
-            if (input) {
-                input.addEventListener('input', function() {
-                    let value = this.value.replace(/\D/g, '');
-                    if (value.length > 10) value = value.substring(0, 10);
-                    this.value = value;
-                });
+                alert(errors.join('\n'));
             }
         });
     </script>

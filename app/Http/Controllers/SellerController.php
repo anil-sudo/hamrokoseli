@@ -238,7 +238,7 @@ class SellerController extends Controller
             'product_type' => 'nullable|string|max:100',
             'description' => 'required|string|max:2000',
             'base_price' => 'nullable|numeric|min:0',
-            'discount_amount' => 'nullable|numeric|min:0', // Changed from discount_price
+            'discount_amount' => 'nullable|numeric|min:0|max:99', // Changed from discount_price
             'sku' => 'nullable|string|max:100|unique:products,sku,'.$product->id,
             'stock' => 'nullable|integer|min:0',
             'specifications' => 'nullable|array',
@@ -250,18 +250,13 @@ class SellerController extends Controller
             'variants.*.size' => 'nullable|string|max:50',
             'variants.*.color' => 'nullable|string|max:50',
             'variants.*.price' => 'nullable|numeric|min:0',
-            'variants.*.discount_amount' => 'nullable|numeric|min:0', // Changed
+            'variants.*.discount_amount' => 'nullable|numeric|min:0|max:99', // Changed
             'variants.*.stock' => 'nullable|integer|min:0',
             'images' => 'nullable|array|max:4',
             'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:10240',
             'remove_images' => 'nullable|array',
             'remove_images.*' => 'integer|exists:images,id',
         ]);
-
-        $basePrice = $validated['base_price'] ?? $product->price;
-        if (! empty($validated['discount_amount']) && $validated['discount_amount'] >= $basePrice) {
-            return back()->withErrors(['discount_amount' => 'Discount must be less than the base price.'])->withInput();
-        }
 
         $product->update([
             'category_id' => $validated['category'],
@@ -271,7 +266,7 @@ class SellerController extends Controller
             'description' => $validated['description'],
             'specifications' => ! empty($validated['specifications']) ? $this->filterSpecs($validated['specifications']) : null,
             'price' => $validated['base_price'] ?? $product->price,
-            'discount_price' => ($validated['discount_amount'] ?? 0) > 0 ? (($validated['base_price'] ?? $product->price) - $validated['discount_amount']) : null,
+            'discount_price' => ($validated['discount_amount'] ?? 0) > 0 ? (($validated['base_price'] ?? $product->price) * (1 - $validated['discount_amount'] / 100)) : null,
             'stock' => $validated['stock'] ?? $product->stock,
             'sku' => $validated['sku'] ?? $product->sku,
         ]);
@@ -293,7 +288,9 @@ class SellerController extends Controller
                         'size' => $variantData['size'] ?? null,
                         'color' => $variantData['color'] ?? null,
                         'price' => ! empty($variantData['price']) ? $variantData['price'] : null,
-                        'discount_price' => ! empty($variantData['discount_amount']) ? ($variantData['price'] - $variantData['discount_amount']) : null,
+                        'discount_price' => (! empty($variantData['discount_amount']) && (! empty($variantData['price']) || ($validated['base_price'] ?? $product->price)))
+                            ? ((! empty($variantData['price']) ? $variantData['price'] : ($validated['base_price'] ?? $product->price)) * (1 - $variantData['discount_amount'] / 100))
+                            : null,
                         'stock' => $variantData['stock'] ?? 0,
                     ]);
                     $updatedVariantIds[] = $variant->id;
@@ -304,7 +301,9 @@ class SellerController extends Controller
                         'size' => $variantData['size'] ?? null,
                         'color' => $variantData['color'] ?? null,
                         'price' => ! empty($variantData['price']) ? $variantData['price'] : null,
-                        'discount_price' => ! empty($variantData['discount_amount']) ? ($variantData['price'] - $variantData['discount_amount']) : null,
+                        'discount_price' => (! empty($variantData['discount_amount']) && (! empty($variantData['price']) || ($validated['base_price'] ?? $product->price)))
+                            ? ((! empty($variantData['price']) ? $variantData['price'] : ($validated['base_price'] ?? $product->price)) * (1 - $variantData['discount_amount'] / 100))
+                            : null,
                         'stock' => $variantData['stock'] ?? 0,
                         'status' => 'active',
                     ]);
@@ -355,7 +354,7 @@ class SellerController extends Controller
             'product_type' => 'nullable|string|max:100',
             'description' => 'required|string|max:2000',
             'base_price' => 'required|numeric|min:0',
-            'discounted_price' => 'nullable|numeric|min:0|lt:base_price',
+            'discounted_price' => 'nullable|numeric|min:0|max:99',
             'sku' => 'required|string|max:100|unique:products,sku',
             'stock' => 'required|integer|min:0',
             'specifications' => 'nullable|array',
@@ -366,6 +365,7 @@ class SellerController extends Controller
             'variants.*.size' => 'nullable|string|max:50',
             'variants.*.color' => 'nullable|string|max:50',
             'variants.*.price' => 'nullable|numeric|min:0',
+            'variants.*.discounted_price' => 'nullable|numeric|min:0|max:99',
             'variants.*.stock' => 'nullable|integer|min:0',
             'images' => 'nullable|array|max:4',
             'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:10240',
@@ -384,7 +384,7 @@ class SellerController extends Controller
                 : null,
             'price' => $validated['base_price'],
             'discount_price' => ($validated['discounted_price'] ?? 0) > 0
-                                    ? ($validated['base_price'] - $validated['discounted_price'])
+                                    ? ($validated['base_price'] * (1 - $validated['discounted_price'] / 100))
                                     : null,
             'stock' => $validated['stock'],
             'sku' => $validated['sku'],
@@ -404,6 +404,9 @@ class SellerController extends Controller
                     'size' => $variant['size'] ?? null,
                     'color' => $variant['color'] ?? null,
                     'price' => ! empty($variant['price']) ? $variant['price'] : null,
+                    'discount_price' => (! empty($variant['discounted_price']) && (! empty($variant['price']) || $validated['base_price']))
+                        ? ((! empty($variant['price']) ? $variant['price'] : $validated['base_price']) * (1 - $variant['discounted_price'] / 100))
+                        : null,
                     'stock' => $variant['stock'] ?? 0,
                     'status' => 'active',
                 ]);

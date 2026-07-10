@@ -110,14 +110,14 @@ class ProductForm
                     ->step(0.01)
                     ->rules(['regex:/^\d+(\.\d{1,2})?$/']),
                 TextInput::make('discount_price')
+                    ->label('Discount (%)')
                     ->numeric()
                     ->default(null)
-                    ->prefix('NPR')
-                    ->minValue(1)
-                    ->maxValue(9999999)
-                    ->step(0.01)
-                    ->rules(['regex:/^\d+(\.\d{1,2})?$/'])
-                    ->lt('price'),
+                    ->suffix('%')
+                    ->minValue(0)
+                    ->maxValue(99)
+                    ->dehydrateStateUsing(fn ($state, $get) => $state ? ((float) $get('price') - ((float) $get('price') * (float) $state / 100)) : null)
+                    ->formatStateUsing(fn ($state, $get) => ($state && (float) $get('price') > 0) ? round((((float) $get('price') - (float) $state) / (float) $get('price')) * 100) : null),
                 TextInput::make('stock')
                     ->required()
                     ->numeric()

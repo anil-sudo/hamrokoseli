@@ -178,7 +178,7 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-6">
+                    <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-6">
 
     @forelse($products as $product)
         <div
@@ -192,6 +192,13 @@
                     alt="{{ $product->name }}"
                     class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
 
+                @if($product->hasDiscount())
+                    @php $discPct = $product->getDiscountPercentage(); @endphp
+                    <span class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-[#C65A3A] text-white text-[7px] xs:text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-full shadow-sm z-10">
+                        -{{ $discPct }}% OFF
+                    </span>
+                @endif
+
                 @if($product->vendor)
                     <div class="absolute top-2 right-2 sm:top-4 sm:right-4 bg-white/95 text-[#1F3D2E] text-[6px] xs:text-[9px] sm:text-[10px] font-bold tracking-wider uppercase px-1.5 py-0.5 sm:px-3 sm:py-1.5 rounded-full shadow-sm">
                         {{ $product->vendor->business_name ?? $product->vendor->name }}
@@ -199,19 +206,19 @@
                 @endif
 
                 <button
-                    class="wishlist-btn absolute bottom-2 right-2 sm:bottom-4 sm:right-4 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-xs sm:text-xl drop-shadow"
+                    class="wishlist-btn absolute bottom-2 right-2 sm:bottom-4 sm:right-4 bg-white/90 hover:bg-white text-[#C65A3A] hover:text-[#b04a2c] w-7 h-7 sm:w-10 sm:h-10 rounded-full shadow-md transition-all flex items-center justify-center z-10 focus:outline-none"
                     data-product-id="{{ $product->id }}"
                     data-product-name="{{ $product->name }}"
                     data-product-price="{{ $product->effectivePrice() }}"
                     data-product-image="{{ $product->primaryImageUrl() }}"
                     data-product-desc="{{ $product->description }}"
                     data-product-category="{{ $product->category?->cat_name }}">
-                    <i class="far fa-heart"></i>
+                    <i class="far fa-heart text-[10px] sm:text-lg"></i>
                 </button>
 
             </div>
 
-            <div class="p-2.5 sm:p-5 flex-grow flex flex-col justify-between">
+            <div class="p-3 sm:p-5 flex-grow flex flex-col justify-between">
 
                 <div>
                     <span class="text-[8px] sm:text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-0.5 sm:mb-1">
@@ -227,7 +234,7 @@
                     </span>
                 </div>
 
-                    <div class="flex flex-col xs:flex-row gap-1 sm:gap-2 mt-auto">
+                    <div class="flex gap-1 sm:gap-2 mt-auto">
                         <a href="{{ route('viewdetails', $product->slug) }}"
                            class="view-details-btn flex-grow flex items-center justify-center gap-1 sm:gap-2 bg-[#1F3D2E] hover:bg-[#16301f] text-white text-[8px] sm:text-xs md:text-sm font-semibold py-1.5 px-1 sm:py-3 sm:px-3 rounded-lg sm:rounded-xl shadow-sm hover:shadow transition duration-300"
                            data-id="{{ $product->id }}"

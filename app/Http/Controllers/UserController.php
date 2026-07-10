@@ -273,9 +273,12 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:100',
             'email' => 'required|email|max:150|unique:users,email,'.$user->id,
-            'phone' => 'nullable|string|max:20',
+            'phone' => ['nullable', 'digits:10', 'unique:users,phone,'.$user->id],
             'address' => 'nullable|string|max:255',
             'profile_pic' => 'nullable|image|max:2048',
+        ], [
+            'phone.digits' => 'Phone number must be exactly 10 digits.',
+            'phone.unique' => 'This phone number is already registered by another user.',
         ]);
 
         $user->name = $request->name;
@@ -307,7 +310,19 @@ class UserController extends Controller
     {
         $request->validate([
             'current_password' => 'required',
-            'new_password' => 'required|min:8|confirmed',
+            'new_password' => [
+                'required',
+                'min:8',
+                'confirmed',
+                'regex:/[A-Z]/',
+                'regex:/[a-z]/',
+                'regex:/[0-9]/',
+                'regex:/[\^$*.\[\]{}()?\-"!@#%&\/\\,><\':;|_~`+=]/',
+            ],
+        ], [
+            'new_password.regex' => 'Password must include at least one uppercase letter, one lowercase letter, one number, and one special character.',
+            'new_password.min' => 'Password must be at least 8 characters.',
+            'new_password.confirmed' => 'The password confirmation does not match.',
         ]);
 
         $user = auth()->user();

@@ -80,8 +80,10 @@
                         <div class="bg-[#F5E8D6]/60 border border-[#ebd7be]/60 rounded-xl px-4 py-3 text-[11px] text-[#3A2A1F]/70 space-y-1">
                             <p class="font-bold text-[#1F3D2E] text-xs mb-1.5">Password must contain:</p>
                             <p id="hint-length" class="flex items-center gap-2"><i class="fas fa-circle text-[6px] text-slate-300"></i> At least 8 characters</p>
-                            <p id="hint-upper"  class="flex items-center gap-2"><i class="fas fa-circle text-[6px] text-slate-300"></i> One uppercase letter</p>
-                            <p id="hint-number" class="flex items-center gap-2"><i class="fas fa-circle text-[6px] text-slate-300"></i> One number</p>
+                            <p id="hint-upper"  class="flex items-center gap-2"><i class="fas fa-circle text-[6px] text-slate-300"></i> At least 1 uppercase letter (A–Z)</p>
+                            <p id="hint-lower"  class="flex items-center gap-2"><i class="fas fa-circle text-[6px] text-slate-300"></i> At least 1 lowercase letter (a–z)</p>
+                            <p id="hint-number" class="flex items-center gap-2"><i class="fas fa-circle text-[6px] text-slate-300"></i> At least 1 number (0–9)</p>
+                            <p id="hint-special" class="flex items-center gap-2"><i class="fas fa-circle text-[6px] text-slate-300"></i> At least 1 special character (e.g. ! @ # $ % ^ & *)</p>
                         </div>
 
                         <button type="submit"
@@ -112,7 +114,8 @@
     <script>
     // Toggle password visibility
     function togglePw(btnId, inputId) {
-        document.getElementById(btnId)?.addEventListener('click', function() {
+        document.getElementById(btnId)?.addEventListener('click', function(e) {
+            e.preventDefault();
             const input = document.getElementById(inputId);
             const icon  = this.querySelector('i');
             if (input.type === 'password') {
@@ -128,6 +131,11 @@
     togglePw('toggle-confirm', 'password_confirmation');
 
     // Live password strength hints
+    const pwUpperRegex   = /[A-Z]/;
+    const pwLowerRegex   = /[a-z]/;
+    const pwDigitRegex   = /[0-9]/;
+    const pwSpecialRegex = /[\^$*.\[\]{}()?\-"!@#%&\/\\,><':;|_~`+=]/;
+
     document.getElementById('password')?.addEventListener('input', function() {
         const val = this.value;
         function setHint(id, pass) {
@@ -143,8 +151,41 @@
             }
         }
         setHint('hint-length', val.length >= 8);
-        setHint('hint-upper',  /[A-Z]/.test(val));
-        setHint('hint-number', /[0-9]/.test(val));
+        setHint('hint-upper',  pwUpperRegex.test(val));
+        setHint('hint-lower',  pwLowerRegex.test(val));
+        setHint('hint-number', pwDigitRegex.test(val));
+        setHint('hint-special', pwSpecialRegex.test(val));
     });
+
+    // Client-side validation on submit
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const password = document.getElementById('password').value;
+            const confirm = document.getElementById('password_confirmation').value;
+            let errors = [];
+
+            if (!password) {
+                errors.push('Password is required.');
+            } else {
+                if (password.length < 8)            errors.push('Password must be at least 8 characters.');
+                if (!pwUpperRegex.test(password))   errors.push('Password must contain at least one uppercase letter (A–Z).');
+                if (!pwLowerRegex.test(password))   errors.push('Password must contain at least one lowercase letter (a–z).');
+                if (!pwDigitRegex.test(password))   errors.push('Password must contain at least one number (0–9).');
+                if (!pwSpecialRegex.test(password)) errors.push('Password must contain at least one special character (e.g. ! @ # $ % ^ & *).');
+            }
+
+            if (!confirm) {
+                errors.push('Confirm Password cannot be empty.');
+            } else if (password !== confirm) {
+                errors.push('Passwords do not match.');
+            }
+
+            if (errors.length > 0) {
+                e.preventDefault();
+                alert(errors.join('\n'));
+            }
+        });
+    }
     </script>
 </x-frontend-layout>

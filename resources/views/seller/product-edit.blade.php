@@ -162,25 +162,42 @@
                                             value="{{ $variant['price'] ?? '' }}" placeholder="Base Price"
                                             min="0" step="1"
                                             class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
+                                        @php
+                                            $vPercent = '';
+                                            if (is_array($variant)) {
+                                                $vPercent = $variant['discount_amount'] ?? '';
+                                            } else {
+                                                $vPrice = $variant->price ?? $product->price;
+                                                if ($variant->discount_price && $variant->discount_price > 0 && $vPrice > 0) {
+                                                    $vPercent = round((($vPrice - $variant->discount_price) / $vPrice) * 100);
+                                                }
+                                            }
+                                        @endphp
                                         <input type="number" name="variants[{{ $i }}][discount_amount]"
-                                            value="{{ $variant['discount_amount'] ?? '' }}" placeholder="Discount Amount (Rs.)"
-                                            min="0" step="1"
+                                            value="{{ old('variants.'.$i.'.discount_amount', $vPercent) }}" placeholder="Discount (%)"
+                                            min="0" max="99" step="1"
                                             class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
                                         <input type="number" name="variants[{{ $i }}][stock]"
-                                            value="{{ $variant['stock'] ?? 0 }}" placeholder="Stock" min="0"
+                                            value="{{ is_array($variant) ? ($variant['stock'] ?? 0) : ($variant->stock ?? 0) }}" placeholder="Stock" min="0"
                                             class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
                                     </div>
                                     @php
-                                        $variantPrice = $variant['price'] ?? 0;
-                                        $variantDiscount = $variant['discount_amount'] ?? 0;
-                                        $variantFinalPrice = $variantPrice - $variantDiscount;
-                                        $hasVariantDiscount = $variantDiscount > 0 && $variantFinalPrice < $variantPrice;
+                                        if (is_array($variant)) {
+                                            $variantPrice = $variant['price'] ?? $product->price;
+                                            $variantDiscountPercent = $variant['discount_amount'] ?? 0;
+                                            $variantDiscountPrice = ($variantDiscountPercent > 0) ? ($variantPrice * (1 - $variantDiscountPercent / 100)) : null;
+                                        } else {
+                                            $variantPrice = $variant->price ?? $product->price;
+                                            $variantDiscountPrice = $variant->discount_price;
+                                        }
+                                        $hasVariantDiscount = $variantDiscountPrice !== null && $variantDiscountPrice > 0 && $variantDiscountPrice < $variantPrice;
+                                        $variantDiscountPercent = $hasVariantDiscount ? round((($variantPrice - $variantDiscountPrice) / $variantPrice) * 100) : 0;
                                     @endphp
                                     @if($hasVariantDiscount)
                                         <div class="text-sm text-green-600 mb-2">
-                                            Final Price: Rs.{{ number_format($variantFinalPrice, 2) }}
+                                            Final Price: Rs.{{ number_format($variantDiscountPrice, 2) }}
                                             <span class="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full ml-2">
-                                                -{{ number_format(($variantDiscount / $variantPrice) * 100, 0) }}%
+                                                -{{ $variantDiscountPercent }}%
                                             </span>
                                         </div>
                                     @endif
@@ -252,9 +269,10 @@
                     <!-- Current Price Display -->
                     @php
                         $basePrice = $product->price;
-                        $discountAmount = $product->discount_price ?? 0;
-                        $finalPrice = $basePrice - $discountAmount;
-                        $hasDiscount = $discountAmount > 0 && $finalPrice < $basePrice;
+                        $discountedPrice = $product->discount_price;
+                        $hasDiscount = $discountedPrice !== null && $discountedPrice > 0 && $discountedPrice < $basePrice;
+                        $discountPercent = $hasDiscount ? round((($basePrice - $discountedPrice) / $basePrice) * 100) : 0;
+                        $discountAmount = $hasDiscount ? ($basePrice - $discountedPrice) : 0;
                     @endphp
                     
                     @if($hasDiscount)
@@ -262,14 +280,14 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-sm text-gray-600">Final Price</p>
-                                    <p class="text-2xl font-bold text-green-700">Rs.{{ number_format($finalPrice, 2) }}</p>
+                                    <p class="text-2xl font-bold text-green-700">Rs.{{ number_format($discountedPrice, 2) }}</p>
                                 </div>
                                 <div class="text-right">
                                     <p class="text-sm text-gray-500 line-through">Rs.{{ number_format($basePrice, 2) }}</p>
                                     <p class="text-xs text-green-600 font-semibold">
                                         You Save: Rs.{{ number_format($discountAmount, 2) }}
                                         <span class="ml-1 bg-green-200 text-green-800 px-2 py-0.5 rounded-full">
-                                            -{{ number_format(($discountAmount / $basePrice) * 100, 0) }}%
+                                            -{{ $discountPercent }}%
                                         </span>
                                     </p>
                                 </div>
@@ -300,14 +318,13 @@
 
                     <div>
                         <label class="block text-sm font-medium text-(--text-dark) mb-2">
-                            Discount Amount (Rs.)
-                            <span class="text-xs text-gray-400 font-normal"></span>
+                            Discount (%)
                         </label>
                         <input type="number" id="discount_amount" name="discount_amount" 
-                            value="{{ old('discount_amount', ($product->discount_price && $product->discount_price > 0 && $product->discount_price < $product->price) ? ($product->price - $product->discount_price) : '') }}" 
-                            min="0" step="0.01"
+                            value="{{ old('discount_amount', ($product->discount_price && $product->discount_price > 0 && $product->discount_price < $product->price) ? round((($product->price - $product->discount_price) / $product->price) * 100) : '') }}" 
+                            min="0" max="99" step="1"
                             class="w-full px-5 py-4 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-base focus:outline-none focus:border-(--secondary-color) transition duration-200"
-                            placeholder="Enter discount amount (e.g. 500 off)"
+                            placeholder="Enter discount percentage (e.g. 10 for 10% off)"
                             oninput="updateDiscountPreview()">
                         <div id="pricePreview" class="mt-2 text-sm text-gray-600"></div>
                         @error('discount_amount')
@@ -388,12 +405,11 @@
         // Calculate and preview final price
         function calculateFinalPrice() {
             const basePrice = parseFloat(document.getElementById('base_price').value) || 0;
-            const discountAmount = parseFloat(document.getElementById('discount_amount').value) || 0;
-            const finalPrice = basePrice - discountAmount;
+            const discountPercent = parseFloat(document.getElementById('discount_amount').value) || 0;
             const preview = document.getElementById('pricePreview');
             
-            if (discountAmount > 0 && finalPrice > 0 && finalPrice < basePrice) {
-                const discountPercent = ((discountAmount / basePrice) * 100).toFixed(0);
+            if (discountPercent > 0 && discountPercent <= 99) {
+                const finalPrice = basePrice - (basePrice * discountPercent / 100);
                 preview.innerHTML = `
                     <div class="flex items-center gap-4">
                         <span class="font-semibold text-green-600">
@@ -404,11 +420,11 @@
                         </span>
                     </div>
                     <div class="text-xs text-gray-400">
-                        Base: Rs.${basePrice.toFixed(2)} - Discount: Rs.${discountAmount.toFixed(2)}
+                        Base: Rs.${basePrice.toFixed(2)} - Discount: ${discountPercent}%
                     </div>
                 `;
-            } else if (discountAmount > 0 && finalPrice <= 0) {
-                preview.innerHTML = `<span class="text-red-500">Discount cannot be greater than or equal to base price</span>`;
+            } else if (discountPercent > 99 || discountPercent < 0) {
+                preview.innerHTML = `<span class="text-red-500">Discount percentage must be between 0 and 99</span>`;
             } else {
                 preview.innerHTML = `<span class="text-gray-400">No discount applied</span>`;
             }
@@ -495,7 +511,7 @@
                         class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
                     <input type="number" name="variants[${index}][price]" placeholder="Base Price" min="0" step="1"
                         class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-                    <input type="number" name="variants[${index}][discount_amount]" placeholder="Discount Amount (Rs.)" min="0" step="1"
+                    <input type="number" name="variants[${index}][discount_amount]" placeholder="Discount (%)" min="0" max="99" step="1"
                         class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
                     <input type="number" name="variants[${index}][stock]" placeholder="Stock" min="0"
                         class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
@@ -524,18 +540,17 @@
         // Calculate variant final price
         function calculateVariantPrice(row) {
             const price = parseFloat(row.querySelector('input[name*="[price]"]').value) || 0;
-            const discount = parseFloat(row.querySelector('input[name*="[discount_amount]"]').value) || 0;
-            const finalPrice = price - discount;
+            const discountPercent = parseFloat(row.querySelector('input[name*="[discount_amount]"]').value) || 0;
             const preview = row.querySelector('[id^="variantPreview_"]');
             
-            if (discount > 0 && finalPrice > 0 && finalPrice < price) {
-                const percent = ((discount / price) * 100).toFixed(0);
+            if (discountPercent > 0 && discountPercent <= 99) {
+                const finalPrice = price - (price * discountPercent / 100);
                 preview.innerHTML = `
                     <span class="font-semibold text-green-600">Final: Rs.${finalPrice.toFixed(2)}</span>
-                    <span class="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full ml-2">-${percent}%</span>
+                    <span class="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full ml-2">-${discountPercent}%</span>
                 `;
-            } else if (discount > 0 && finalPrice <= 0) {
-                preview.innerHTML = `<span class="text-red-500">Discount cannot exceed base price</span>`;
+            } else if (discountPercent > 99 || discountPercent < 0) {
+                preview.innerHTML = `<span class="text-red-500">Discount percentage must be between 0 and 99</span>`;
             } else {
                 preview.innerHTML = `<span class="text-gray-400">No discount applied</span>`;
             }
