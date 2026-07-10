@@ -185,7 +185,7 @@
             data-category="{{ $product->category?->slug ?? 'uncategorized' }}"
             class="product-card bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group">
 
-            <div class="relative w-full aspect-[4/5] overflow-hidden rounded-t-2xl sm:rounded-t-3xl">
+            <div class="relative w-full aspect-square overflow-hidden rounded-t-2xl sm:rounded-t-3xl">
 
                 <img
                     src="{{ $product->primaryImageUrl() }}"
@@ -200,7 +200,7 @@
                 @endif
 
                 @if($product->vendor)
-                    <div class="absolute top-2 right-2 sm:top-4 sm:right-4 bg-white/95 text-[#1F3D2E] text-[6px] xs:text-[9px] sm:text-[10px] font-bold tracking-wider uppercase px-1.5 py-0.5 sm:px-3 sm:py-1.5 rounded-full shadow-sm">
+                    <div class="absolute left-2 sm:left-4 bg-white/95 text-[#1F3D2E] text-[6px] xs:text-[9px] sm:text-[10px] font-bold tracking-wider uppercase px-1.5 py-0.5 sm:px-3 sm:py-1.5 rounded-full shadow-sm max-w-[55%] truncate {{ $product->hasDiscount() ? 'top-8 sm:top-10' : 'top-2 sm:top-4' }}">
                         {{ $product->vendor->business_name ?? $product->vendor->name }}
                     </div>
                 @endif
