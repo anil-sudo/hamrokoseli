@@ -372,6 +372,16 @@ class PageController extends Controller
         return view('seller-policy');
     }
 
+    public function faq()
+    {
+        return view('faq');
+    }
+
+    public function shipping_policy()
+    {
+        return view('shipping-policy');
+    }
+
     public function viewProduct($id)
     {
         $product = Product::with(['category', 'vendor', 'images', 'variants'])->findOrFail($id);
