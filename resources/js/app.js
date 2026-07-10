@@ -1057,11 +1057,10 @@ function toggleWishlistProduct(productData) {
         if (modalBreadcrumbCat) modalBreadcrumbCat.textContent = categoryName;
         if (modalProductDesc) modalProductDesc.textContent = productData.desc || productData.description || '';
         if (modalVendorName) {
-            const vendorCard = modalVendorName.closest('.bg-\[#FFF7EF\]');
+            const vendorCard = document.getElementById('modal-vendor-card');
+            const avatarEl = document.getElementById('modal-vendor-avatar');
             if (vendorName) {
                 modalVendorName.textContent = vendorName;
-                // Update avatar initial
-                const avatarEl = vendorCard ? vendorCard.querySelector('.rounded-full.bg-\[#1F3D2E\]') : null;
                 if (avatarEl) avatarEl.textContent = vendorName.charAt(0).toUpperCase();
                 if (vendorCard) vendorCard.classList.remove('hidden');
             } else {

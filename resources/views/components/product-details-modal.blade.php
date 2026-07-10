@@ -91,17 +91,17 @@
                     </p>
 
                     <!-- Vendor/Artist Card -->
-                    <div
+                    <div id="modal-vendor-card"
                         class="bg-[#FFF7EF] border border-[#ebd7be]/40 rounded-2xl p-4 flex items-center justify-between shadow-sm">
                         <div class="flex items-center gap-3">
-                            <div
+                            <div id="modal-vendor-avatar"
                                 class="w-10 h-10 rounded-full bg-[#1F3D2E] text-white flex items-center justify-center font-bold text-lg border border-[#ebd7be]">
                                 A
                             </div>
                             <div>
                                 <h3 class="text-xs font-bold text-[#C65A3A] leading-tight" id="modal-vendor-name">
                                     Artist/Store Name</h3>
-                                <p class="text-[10px] text-[#3A2A1F]/60 font-semibold mt-0.5">Master Artisan from Nepal
+                                <p class="text-[10px] text-[#3A2A1F]/60 font-semibold mt-0.5">Verified Seller on Hamro Koseli
                                 </p>
                             </div>
                         </div>
