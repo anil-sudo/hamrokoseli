@@ -5,9 +5,11 @@
 
         <!-- Hero Section -->
         <section
-            @if (isset($dealBgImage) && $dealBgImage) style="background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('{{ asset('storage/deal-backgrounds/' . $dealBgImage) }}'); background-size: cover; background-position: center;"
-    @else
-        style="background-color: #e76055;" @endif
+            @if (isset($dealBgImage) && $dealBgImage)
+                style="background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('{{ asset('storage/' . $dealBgImage) }}'); background-size: cover; background-position: center;"
+            @else
+                style="background-image: url('{{ asset('images/Potteqry.png') }}'); background-size: cover; background-position: center;"
+            @endif
             class="text-white py-16 px-4 md:px-8 lg:px-16">
 
 
@@ -58,8 +60,8 @@
                 </div>
 
                 <div class="flex justify-center">
-                    <img src="{{ asset('images/Pottery.png') }}" alt="Authentic Nepali Heritage"
-                        class="max-w-md rounded-2xl shadow-lg">
+                    {{-- <img src="{{ asset('images/Pottery.png') }}" alt="Authentic Nepali Heritage"
+                        class="max-w-md rounded-2xl shadow-lg"> --}}
                 </div>
             </div>
         </section>
