@@ -56,7 +56,7 @@
                              data-desc="{{ Str::limit($product->description, 100) }}"
                              data-stock="{{ $product->stock }}">
                             <img src="{{ $imageUrl }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                            <button class="wishlist-btn absolute top-2 right-2 bg-white/90 hover:bg-white text-[#C65A3A] hover:text-[#b04a2c] w-7 h-7 sm:w-9 sm:h-9 rounded-full shadow-md transition-all flex items-center justify-center z-10 focus:outline-none"
+                            <button class="wishlist-btn absolute bottom-2 right-2 sm:bottom-4 sm:right-4 bg-white/90 hover:bg-white text-[#C65A3A] hover:text-[#b04a2c] w-7 h-7 sm:w-9 sm:h-9 rounded-full shadow-md transition-all flex items-center justify-center z-10 focus:outline-none"
                                     data-product-id="{{ $product->id }}"
                                     data-product-name="{{ $product->name }}"
                                     data-product-price="{{ intval($discountPrice) }}"
@@ -204,7 +204,7 @@
                              data-reviews="124"
                              data-stock="20">
                             <img src="{{ asset('images/Sweaters.png') }}" alt="Deal 1" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                            <button class="wishlist-btn absolute top-2 right-2 bg-white/90 hover:bg-white text-[#C65A3A] hover:text-[#b04a2c] w-7 h-7 rounded-full shadow-md transition-all flex items-center justify-center z-10 focus:outline-none"
+                            <button class="wishlist-btn absolute bottom-2 right-2 sm:bottom-4 sm:right-4 bg-white/90 hover:bg-white text-[#C65A3A] hover:text-[#b04a2c] w-7 h-7 sm:w-9 sm:h-9 rounded-full shadow-md transition-all flex items-center justify-center z-10 focus:outline-none"
                                     data-product-id="105"
                                     data-product-name="Merino Wool Sweater"
                                     data-product-price="1299"
@@ -274,7 +274,7 @@
                              data-reviews="89"
                              data-stock="30">
                             <img src="{{ asset('images/SunGlass.png') }}" alt="Deal 2" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                            <button class="wishlist-btn absolute top-2 right-2 bg-white/90 hover:bg-white text-[#C65A3A] hover:text-[#b04a2c] w-7 h-7 rounded-full shadow-md transition-all flex items-center justify-center z-10 focus:outline-none"
+                            <button class="wishlist-btn absolute bottom-2 right-2 sm:bottom-4 sm:right-4 bg-white/90 hover:bg-white text-[#C65A3A] hover:text-[#b04a2c] w-7 h-7 sm:w-9 sm:h-9 rounded-full shadow-md transition-all flex items-center justify-center z-10 focus:outline-none"
                                     data-product-id="106"
                                     data-product-name="Bamboo Sunglasses"
                                     data-product-price="899"
@@ -344,7 +344,7 @@
                              data-reviews="56"
                              data-stock="8">
                             <img src="{{ asset('images/Table.png') }}" alt="Deal 3" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                            <button class="wishlist-btn absolute top-2 right-2 bg-white/90 hover:bg-white text-[#C65A3A] hover:text-[#b04a2c] w-7 h-7 rounded-full shadow-md transition-all flex items-center justify-center z-10 focus:outline-none"
+                            <button class="wishlist-btn absolute bottom-2 right-2 sm:bottom-4 sm:right-4 bg-white/90 hover:bg-white text-[#C65A3A] hover:text-[#b04a2c] w-7 h-7 sm:w-9 sm:h-9 rounded-full shadow-md transition-all flex items-center justify-center z-10 focus:outline-none"
                                     data-product-id="107"
                                     data-product-name="Teak Wood Side Table"
                                     data-product-price="8999"
@@ -414,7 +414,7 @@
                              data-reviews="203"
                              data-stock="12">
                             <img src="{{ asset('images/Pottery.png') }}" alt="Deal 4" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                            <button class="wishlist-btn absolute top-2 right-2 bg-white/90 hover:bg-white text-[#C65A3A] hover:text-[#b04a2c] w-7 h-7 rounded-full shadow-md transition-all flex items-center justify-center z-10 focus:outline-none"
+                            <button class="wishlist-btn absolute bottom-2 right-2 sm:bottom-4 sm:right-4 bg-white/90 hover:bg-white text-[#C65A3A] hover:text-[#b04a2c] w-7 h-7 sm:w-9 sm:h-9 rounded-full shadow-md transition-all flex items-center justify-center z-10 focus:outline-none"
                                     data-product-id="108"
                                     data-product-name="Ceramic Bowl Set"
                                     data-product-price="3499"
@@ -708,7 +708,7 @@
                                        data-discount-price="{{ $dDiscount ?? '' }}"
                                        data-image="{{ $imageUrl }}"
                                        data-category="{{ $product->category?->cat_name ?? 'Crafts' }}"
-                                       data-vendor="{{ $product->vendor->business_name ?? $product->vendor->name ?? 'Local Artisan' }}"
+                                       data-vendor="{{ $product->vendor->business_name ?? $product->vendor->name ?? '' }}"
                                        data-desc="{{ $product->description }}"
                                        data-rating="{{ $product->rating ?? 5 }}"
                                        data-reviews="{{ $product->reviews_count ?? 24 }}"
