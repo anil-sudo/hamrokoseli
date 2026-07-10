@@ -9,6 +9,7 @@ use App\Models\Payment;
 use App\Models\ShippingAddress;
 use App\Models\Vendor;
 use App\Services\NotificationService;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -35,15 +36,22 @@ class CheckoutController extends Controller
         $this->authorizeCartItem($cart);
 
         $validated = $request->validate([
-            'phone' => ['required', 'string', 'max:20'],
+            'phone' => ['required', 'string', 'max:20', 'digits:10'],
             'address' => ['required', 'string', 'max:255'],
         ]);
 
-        auth()->user()->update($validated);
+        try {
+            auth()->user()->update($validated);
 
-        return redirect()
-            ->route('checkout.show', $cart)
-            ->with('success', 'Delivery information saved successfully!');
+            return redirect()
+                ->route('checkout.show', $cart)
+                ->with('success', 'Delivery information saved successfully!');
+        } catch (QueryException $e) {
+            if ($e->errorInfo[1] == 1062 && str_contains($e->getMessage(), 'users_phone_unique')) {
+                return back()->withErrors(['phone' => 'This phone number is already taken. Please use a different phone number.']);
+            }
+            throw $e;
+        }
     }
 
     public function store(Request $request, Cart $cart)
@@ -55,7 +63,7 @@ class CheckoutController extends Controller
         // separate shipping-address-book selection.
         $data = $request->validate([
             'payment_method' => ['required', 'in:cod,esewa,khalti'],
-            'phone' => ['required', 'string', 'max:20'],
+            'phone' => ['required', 'string', 'max:20', 'digits:10'],
             'address' => ['required', 'string', 'max:255'],
         ]);
 
@@ -206,15 +214,22 @@ class CheckoutController extends Controller
         $this->vendorCartItems($vendor);
 
         $validated = $request->validate([
-            'phone' => ['required', 'string', 'max:20'],
+            'phone' => ['required', 'string', 'max:20', 'digits:10'],
             'address' => ['required', 'string', 'max:255'],
         ]);
 
-        auth()->user()->update($validated);
+        try {
+            auth()->user()->update($validated);
 
-        return redirect()
-            ->route('checkout.show.vendor', $vendor)
-            ->with('success', 'Delivery information saved successfully!');
+            return redirect()
+                ->route('checkout.show.vendor', $vendor)
+                ->with('success', 'Delivery information saved successfully!');
+        } catch (QueryException $e) {
+            if ($e->errorInfo[1] == 1062 && str_contains($e->getMessage(), 'users_phone_unique')) {
+                return back()->withErrors(['phone' => 'This phone number is already taken. Please use a different phone number.']);
+            }
+            throw $e;
+        }
     }
 
     public function storeVendor(Request $request, Vendor $vendor)
@@ -223,7 +238,7 @@ class CheckoutController extends Controller
 
         $data = $request->validate([
             'payment_method' => ['required', 'in:cod,esewa,khalti'],
-            'phone' => ['required', 'string', 'max:20'],
+            'phone' => ['required', 'string', 'max:20', 'digits:10'],
             'address' => ['required', 'string', 'max:255'],
         ]);
 
@@ -242,91 +257,97 @@ class CheckoutController extends Controller
 
         $total = $cartItems->sum(fn (Cart $item) => $item->subtotal());
         $user = auth()->user();
+        try {
+            $order = DB::transaction(function () use ($cartItems, $data, $total, $user) {
 
-        $order = DB::transaction(function () use ($cartItems, $data, $total, $user) {
-
-            $user->update([
-                'phone' => $data['phone'],
-                'address' => $data['address'],
-            ]);
-
-            $shippingAddress = ShippingAddress::updateOrCreate(
-                ['user_id' => $user->id, 'is_default' => 1],
-                [
-                    'address' => $data['address'],
+                $user->update([
                     'phone' => $data['phone'],
-                    'city' => 'N/A',
-                    'province' => 'N/A',
-                    'country' => 'Nepal',
-                    'is_default' => 1,
-                ]
-            );
+                    'address' => $data['address'],
+                ]);
 
-            $order = Order::create([
-                'user_id' => $user->id,
-                'shipping_address_id' => $shippingAddress->id,
-                'total_amount' => $total,
-                'discount' => 0,
-                'payment_method' => $data['payment_method'],
-                'status' => 'pending',
-            ]);
+                $shippingAddress = ShippingAddress::updateOrCreate(
+                    ['user_id' => $user->id, 'is_default' => 1],
+                    [
+                        'address' => $data['address'],
+                        'phone' => $data['phone'],
+                        'city' => 'N/A',
+                        'province' => 'N/A',
+                        'country' => 'Nepal',
+                        'is_default' => 1,
+                    ]
+                );
 
-            foreach ($cartItems as $cartItem) {
-                $product = $cartItem->product;
-                $variant = $cartItem->variant;
-                $unitPrice = $cartItem->unitPrice();
-                $subtotal = $cartItem->subtotal();
-
-                OrderItem::create([
-                    'order_id' => $order->id,
-                    'product_id' => $product->id,
-                    'variant_id' => $variant?->id,
-                    'vendor_id' => $product->vendor_id,
-                    'quantity' => $cartItem->quantity,
-                    'price' => $unitPrice,
-                    'subtotal' => $subtotal,
+                $order = Order::create([
+                    'user_id' => $user->id,
+                    'shipping_address_id' => $shippingAddress->id,
+                    'total_amount' => $total,
+                    'discount' => 0,
+                    'payment_method' => $data['payment_method'],
                     'status' => 'pending',
                 ]);
 
-                if ($variant) {
-                    $variant->decrement('stock', $cartItem->quantity);
-                } else {
-                    $product->decrement('stock', $cartItem->quantity);
+                foreach ($cartItems as $cartItem) {
+                    $product = $cartItem->product;
+                    $variant = $cartItem->variant;
+                    $unitPrice = $cartItem->unitPrice();
+                    $subtotal = $cartItem->subtotal();
+
+                    OrderItem::create([
+                        'order_id' => $order->id,
+                        'product_id' => $product->id,
+                        'variant_id' => $variant?->id,
+                        'vendor_id' => $product->vendor_id,
+                        'quantity' => $cartItem->quantity,
+                        'price' => $unitPrice,
+                        'subtotal' => $subtotal,
+                        'status' => 'pending',
+                    ]);
+
+                    if ($variant) {
+                        $variant->decrement('stock', $cartItem->quantity);
+                    } else {
+                        $product->decrement('stock', $cartItem->quantity);
+                    }
+
+                    $cartItem->delete();
                 }
 
-                $cartItem->delete();
+                // CREATE PENDING PAYMENT FOR COD (vendor bulk checkout)
+                // Same reasoning as store() above — Esewa/Khalti handle their
+                // own rows; COD needs one created here.
+                if ($data['payment_method'] === 'cod') {
+                    Payment::create([
+                        'order_id' => $order->id,
+                        'user_id' => $user->id,
+                        'gateway' => 'cod',
+                        'total_amount' => $total,
+                        'status' => 'pending',
+                    ]);
+                }
+
+                return $order;
+            });
+
+            // NOTIFY VENDOR(S)
+            NotificationService::orderPlaced($order);
+
+            if ($data['payment_method'] === 'khalti') {
+                return redirect()->route('khalti.initiate', $order);
             }
 
-            // CREATE PENDING PAYMENT FOR COD (vendor bulk checkout)
-            // Same reasoning as store() above — Esewa/Khalti handle their
-            // own rows; COD needs one created here.
-            if ($data['payment_method'] === 'cod') {
-                Payment::create([
-                    'order_id' => $order->id,
-                    'user_id' => $user->id,
-                    'gateway' => 'cod',
-                    'total_amount' => $total,
-                    'status' => 'pending',
-                ]);
+            if ($data['payment_method'] === 'esewa') {
+                return redirect()->route('esewa.initiate', $order);
             }
 
-            return $order;
-        });
-
-        // NOTIFY VENDOR(S)
-        NotificationService::orderPlaced($order);
-
-        if ($data['payment_method'] === 'khalti') {
-            return redirect()->route('khalti.initiate', $order);
+            return redirect()
+                ->route('order.confirmation', $order)
+                ->with('success', 'Order placed successfully!');
+        } catch (QueryException $e) {
+            if ($e->errorInfo[1] == 1062 && str_contains($e->getMessage(), 'users_phone_unique')) {
+                return back()->withErrors(['phone' => 'This phone number is already taken. Please use a different phone number.']);
+            }
+            throw $e;
         }
-
-        if ($data['payment_method'] === 'esewa') {
-            return redirect()->route('esewa.initiate', $order);
-        }
-
-        return redirect()
-            ->route('order.confirmation', $order)
-            ->with('success', 'Order placed successfully!');
     }
 
     /**

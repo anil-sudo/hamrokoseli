@@ -516,3 +516,9 @@ a {
     color: #FFF7EF;
     box-shadow: 0 4px 10px rgba(31, 61, 46, 0.2);
 }
+
+/* Hide Edge's default password reveal eye icon and clear button */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none;
+}

@@ -41,12 +41,14 @@ Route::middleware(['auth', 'role:vendor'])->group(function () {
     Route::get('/orders', [SellerController::class, 'order'])->name('order');
     Route::get('/order-details', [SellerController::class, 'orderDetails'])->name('order-details');
     Route::post('/order-details/{order}/payment-status', [SellerController::class, 'updatePaymentStatus'])->name('order-details.payment-status');
-    Route::get('/return', [SellerController::class, 'returnProducts'])->name('seller.returns');
-    Route::get('/return-details', [SellerController::class, 'returnDetails'])->name('return-details');
+    Route::post('/order-details/{order}/order-status', [SellerController::class, 'updateOrderStatus'])->name('order-details.order-status');
     Route::get('/seller-review', [SellerController::class, 'sellerReview'])->name('seller.review');
     Route::post('/seller-review/{id}/reply', [SellerController::class, 'replyToReview'])->name('seller.review.reply');
     Route::get('/seller-payments', [SellerController::class, 'sellerPayment'])->name('seller.payment');
-    Route::get('/seller-payments-details', [SellerController::class, 'paymentDetails'])->name('payment-details');
+    Route::get('/seller-payments/pay-commission', [SellerController::class, 'payCommission'])->name('seller.pay-commission.get');
+    Route::post('/seller-payments/pay-commission', [SellerController::class, 'payCommission'])->name('seller.pay-commission');
+    Route::get('/seller-payments/khalti/callback', [SellerController::class, 'khaltiCallback'])->name('seller.payment.khalti.callback');
+    Route::get('/seller/payment/{id}/details', [SellerController::class, 'paymentDetails'])->name('payment-details');
     Route::get('/seller-support', [SellerController::class, 'sellerSupport'])->name('seller-support');
     Route::get('/create-ticket', [SellerController::class, 'createTicket'])->name('create-ticket');
     Route::post('/create-ticket', [SellerController::class, 'storeTicket'])->name('store-ticket');

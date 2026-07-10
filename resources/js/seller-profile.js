@@ -33,18 +33,32 @@ document.addEventListener('DOMContentLoaded', () => {
         const error = document.createElement("p");
         error.className = "text-red-500 text-xs mt-1 error";
         error.innerText = message;
-        input.parentElement.appendChild(error);
+
+        const container = input.parentElement;
+        if (container && container.classList.contains("relative")) {
+            container.after(error);
+        } else {
+            input.after(error);
+        }
+
         input.classList.add("border-red-500", "focus:ring-red-500");
     }
 
     function removeError(input) {
-        const error = input.parentElement.querySelector(".error");
-        if (error) error.remove();
+        if (!input) return;
+        const container = input.parentElement;
+        if (container && container.classList.contains("relative")) {
+            const nextSibling = container.nextElementSibling;
+            if (nextSibling && nextSibling.classList.contains("error")) {
+                nextSibling.remove();
+            }
+        } else {
+            const nextSibling = input.nextElementSibling;
+            if (nextSibling && nextSibling.classList.contains("error")) {
+                nextSibling.remove();
+            }
+        }
         input.classList.remove("border-red-500", "focus:ring-red-500");
-    }
-
-    function clearAllErrors(form) {
-        form.querySelectorAll('input, select').forEach(input => removeError(input));
     }
 
     // ====================== PROFILE PICTURE ======================
@@ -55,53 +69,51 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    fileInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+    if (fileInput) {
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
 
-        if (!file.type.startsWith('image/')) {
-            showToast('Please select a valid image file.', 'error');
-            return;
-        }
-        if (file.size > 100 * 1024) {
-            showToast('Profile picture must be less than 100KB.', 'error');
-            fileInput.value = '';
-            return;
-        }
+            if (!file.type.startsWith('image/')) {
+                showToast('Please select a valid image file.', 'error');
+                return;
+            }
+            if (file.size > 2048 * 1024) { // 2MB matches controller
+                showToast('Profile picture must be less than 2MB.', 'error');
+                fileInput.value = '';
+                return;
+            }
 
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            profilePreview.src = event.target.result;
-            deleteBtn.classList.remove('hidden');
-        };
-        reader.readAsDataURL(file);
-    });
-
-    deleteBtn.addEventListener('click', () => {
-        profilePreview.src = defaultAvatar;
-        fileInput.value = '';
-        deleteBtn.classList.add('hidden');
-    });
-
-    // ====================== PASSWORD TOGGLE ======================
-    function setupPasswordToggle(inputId, buttonId) {
-        const input = document.getElementById(inputId);
-        const button = document.getElementById(buttonId);
-
-        button.addEventListener('click', () => {
-            const isHidden = input.type === 'password';
-            input.type = isHidden ? 'text' : 'password';
-
-            button.innerHTML = isHidden
-                ? '<i data-lucide="eye-off" class="w-5 h-5"></i>'
-                : '<i data-lucide="eye" class="w-5 h-5"></i>';
-
-            lucide.createIcons();
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                profilePreview.src = event.target.result;
+                if (deleteBtn) deleteBtn.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
         });
     }
 
-    setupPasswordToggle('currentPassword', 'toggleCurrent');
-    setupPasswordToggle('newPassword', 'toggleNew');
+    if (deleteBtn) {
+        deleteBtn.addEventListener('click', () => {
+            profilePreview.src = defaultAvatar;
+            fileInput.value = '';
+            deleteBtn.classList.add('hidden');
+        });
+    }
+
+    // ====================== PASSWORD TOGGLE (GLOBAL) ======================
+    window.togglePassword = function (inputId, btn) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+        const isHidden = input.type === 'password';
+        input.type = isHidden ? 'text' : 'password';
+
+        btn.innerHTML = isHidden
+            ? '<i data-lucide="eye-off" class="w-5 h-5"></i>'
+            : '<i data-lucide="eye" class="w-5 h-5"></i>';
+
+        lucide.createIcons();
+    };
 
     // ====================== VALIDATION HELPERS ======================
     function isValidEmail(email) {
@@ -117,167 +129,139 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ====================== PROFILE FORM VALIDATION ======================
-    const saveProfileBtn = document.getElementById('saveProfileBtn');
+    const profileForm = document.getElementById('profileForm');
 
-    if (saveProfileBtn) {
-        saveProfileBtn.addEventListener('click', (e) => {
-            // e.preventDefault();
-
-            const nameInput = document.querySelector('input[placeholder="Enter your name"]');
-            const emailInput = document.querySelector('input[type="email"]');
-            const phoneInput = document.querySelector('input[type="tel"]');
-            const regionInput = document.querySelector('input[placeholder="e.g. kathmandu valley"]');
-            const addressInput = document.querySelector('input[placeholder="e.g. Ward 3, Jhamsikhel, Lalitpur, Nepal"]');
+    if (profileForm) {
+        profileForm.addEventListener('submit', (e) => {
+            const nameInput = profileForm.querySelector('input[name="name"]');
+            const emailInput = profileForm.querySelector('input[name="email"]');
+            const phoneInput = profileForm.querySelector('input[name="phone"]');
+            const vendorNameInput = profileForm.querySelector('input[name="vendor_name"]');
+            const ownerNameInput = profileForm.querySelector('input[name="owner_name"]');
+            const vendorEmailInput = profileForm.querySelector('input[name="vendor_email"]');
+            const vendorPhoneInput = profileForm.querySelector('input[name="vendor_phone"]');
 
             let isValid = true;
 
+            // Clear previous errors
+            [nameInput, emailInput, phoneInput, vendorNameInput, ownerNameInput, vendorEmailInput, vendorPhoneInput].forEach(removeError);
+
             // Full Name
-            if (!nameInput.value.trim()) {
-                showError(nameInput, "Full name is required");
-                isValid = false;
-            } else if (!isValidName(nameInput.value)) {
-                showError(nameInput, "Please enter a valid name");
-                isValid = false;
+            if (nameInput) {
+                if (!nameInput.value.trim()) {
+                    showError(nameInput, "Full name is required");
+                    isValid = false;
+                } else if (!isValidName(nameInput.value)) {
+                    showError(nameInput, "Please enter a valid name");
+                    isValid = false;
+                }
             }
 
             // Email
-            if (!emailInput.value.trim()) {
-                showError(emailInput, "Email is required");
-                isValid = false;
-            } else if (!isValidEmail(emailInput.value)) {
-                showError(emailInput, "Please enter a valid email address");
-                isValid = false;
+            if (emailInput) {
+                if (!emailInput.value.trim()) {
+                    showError(emailInput, "Email is required");
+                    isValid = false;
+                } else if (!isValidEmail(emailInput.value)) {
+                    showError(emailInput, "Please enter a valid email address");
+                    isValid = false;
+                }
             }
 
             // Phone
-            if (!phoneInput.value.trim()) {
-                showError(phoneInput, "Phone number is required");
-                isValid = false;
-            } else if (!isValidPhone(phoneInput.value)) {
-                showError(phoneInput, "Please enter a valid 10-digit phone number");
+            if (phoneInput) {
+                if (phoneInput.value.trim() && !isValidPhone(phoneInput.value)) {
+                    showError(phoneInput, "Please enter a valid 10-digit phone number");
+                    isValid = false;
+                }
+            }
+
+            // Shop/Vendor Name
+            if (vendorNameInput) {
+                if (!vendorNameInput.value.trim()) {
+                    showError(vendorNameInput, "Shop name is required");
+                    isValid = false;
+                }
+            }
+
+            // Owner Name
+            if (ownerNameInput) {
+                if (!ownerNameInput.value.trim()) {
+                    showError(ownerNameInput, "Owner name is required");
+                    isValid = false;
+                }
+            }
+
+            // Vendor Email
+            if (vendorEmailInput && vendorEmailInput.value.trim()) {
+                if (!isValidEmail(vendorEmailInput.value)) {
+                    showError(vendorEmailInput, "Please enter a valid email address");
+                    isValid = false;
+                }
+            }
+
+            // Vendor Phone
+            if (vendorPhoneInput && vendorPhoneInput.value.trim()) {
+                if (!isValidPhone(vendorPhoneInput.value)) {
+                    showError(vendorPhoneInput, "Please enter a valid 10-digit phone number");
+                    isValid = false;
+                }
+            }
+
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+    }
+
+    // ====================== PASSWORD FORM VALIDATION & SUBMISSION ======================
+    const passwordForm = document.getElementById('passwordUpdateForm');
+
+    if (passwordForm) {
+        passwordForm.addEventListener('submit', (e) => {
+            const currentPass = document.getElementById('currentPassword');
+            const newPass = document.getElementById('newPassword');
+            const confirmPass = document.getElementById('confirmPassword');
+
+            // Clear previous errors
+            removeError(currentPass);
+            removeError(newPass);
+            removeError(confirmPass);
+
+            let isValid = true;
+
+            // Current Password
+            if (!currentPass.value.trim()) {
+                showError(currentPass, "Current password is required");
                 isValid = false;
             }
 
-            // Region
-            if (!regionInput.value.trim()) {
-                showError(regionInput, "Preferred delivery region is required");
+            // New Password
+            if (!newPass.value.trim()) {
+                showError(newPass, "New password is required");
+                isValid = false;
+            } else if (newPass.value.length < 8) {
+                showError(newPass, "New password must be at least 8 characters long");
+                isValid = false;
+            }
+            else if (currentPass.value.trim() && newPass.value === currentPass.value) {
+                showError(newPass, "New password must be different from your current password");
+                isValid = false;
+            }
+
+            // Confirm Password
+            if (!confirmPass.value.trim()) {
+                showError(confirmPass, "Confirm password is required");
+                isValid = false;
+            } else if (newPass.value !== confirmPass.value) {
+                showError(confirmPass, "Passwords do not match");
                 isValid = false;
             }
 
             if (!isValid) {
                 e.preventDefault();
-                return;
             }
-
-            // Success
-            // showToast("Profile updated successfully!");
         });
     }
 
-    // ====================== PASSWORD FORM VALIDATION ======================
-    const savePasswordBtn = document.getElementById('savePasswordBtn');
-
-    if (savePasswordBtn) {
-        savePasswordBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-
-            const currentPass = document.getElementById('currentPassword');
-            const newPass = document.getElementById('newPassword');
-
-            // Clear previous errors
-            removeError(currentPass);
-            removeError(newPass);
-
-            let isValid = true;
-
-            // Current Password → Optional
-            if (currentPass.value.trim() !== "") {
-                if (currentPass.value.length < 6) {
-                    showError(currentPass, "Current password must be at least 6 characters");
-                    isValid = false;
-                }
-            }
-
-            // New Password → Required
-            if (!newPass.value.trim()) {
-                showError(newPass, "New password is required");
-                isValid = false;
-            }
-            else if (newPass.value.length < 8) {
-                showError(newPass, "New password must be at least 8 characters long");
-                isValid = false;
-            }
-            else if (!/[A-Z]/.test(newPass.value)) {
-                showError(newPass, "Password must contain at least one uppercase letter");
-                isValid = false;
-            }
-            else if (!/[0-9]/.test(newPass.value)) {
-                showError(newPass, "Password must contain at least one number");
-                isValid = false;
-            }
-
-            // Check if both filled and same
-            if (currentPass.value.trim() && newPass.value.trim() &&
-                currentPass.value === newPass.value) {
-                showError(newPass, "New password cannot be the same as current password");
-                isValid = false;
-            }
-
-            if (!isValid) return;
-
-            // Submit the form
-            e.target.closest('form').submit();
-        });
-    }
-    // ====================== BANK FORM VALIDATION ======================
-    const saveBankBtn = document.getElementById('saveBankBtn');
-
-    if (saveBankBtn) {
-        saveBankBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-
-            const accName = document.getElementById('accName');
-            const bankName = document.getElementById('bankName');
-            const accNumber = document.getElementById('accNumber');
-            const accType = document.getElementById('accType');
-            const branchName = document.getElementById('branchName');
-
-            let isValid = true;
-
-            // Clear previous errors
-            [accName, bankName, accNumber, accType, branchName].forEach(removeError);
-
-            // Account Holder Name
-            if (!accName.value.trim()) {
-                showError(accName, "Account holder name is required");
-                isValid = false;
-            }
-
-            // Bank Name
-            if (!bankName.value.trim()) {
-                showError(bankName, "Bank name is required");
-                isValid = false;
-            }
-
-            // Account Number
-            if (!accNumber.value.trim()) {
-                showError(accNumber, "Account number is required");
-                isValid = false;
-            } else if (!/^\d{8,20}$/.test(accNumber.value.replace(/\s/g, ''))) {
-                showError(accNumber, "Account number must be 8-20 digits");
-                isValid = false;
-            }
-
-            // Account Type
-            if (!accType.value) {
-                showError(accType, "Please select an account type");
-                isValid = false;
-            }
-
-            if (!isValid) return;
-
-            // Submit the form
-            e.target.closest('form').submit();
-        });
-    }
 });

@@ -65,15 +65,6 @@
             <span class="font-medium transition-all duration-300 group-hover:translate-x-1">Orders</span>
         </a>
 
-        <!-- Returns -->
-        <a href="{{ route('seller.returns') }}"
-            class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017] group transition-all duration-300 ease-out active:scale-[0.98]
-           {{ Request::routeIs('seller.returns') ? 'bg-(--hover-color)' : '' }}">
-            <i data-lucide="refresh-ccw"
-                class="w-5 text-lg transition-transform duration-300 group-hover:scale-110"></i>
-            <span class="font-medium transition-all duration-300 group-hover:translate-x-1">Returns</span>
-        </a>
-
         <!-- Payments -->
         <a href="{{ route('seller.payment') }}"
             class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl  hover:bg-[#D4A017]  group transition-all duration-300 ease-out active:scale-[0.98]

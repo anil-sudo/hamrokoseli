@@ -22,8 +22,6 @@
                 $sellerTypes = [
                     'order_placed',
                     'vendor_order_placed',
-                    'return_requested',
-                    'payout_processed',
                     'vendor_payment_received',
                     'vendor_profile_updated',
                     'support_ticket_status',

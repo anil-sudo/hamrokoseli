@@ -315,15 +315,26 @@ class UserController extends Controller
         if (! \Hash::check($request->current_password, $user->password)) {
             return redirect()->back()
                 ->withErrors(['current_password' => 'Current password is incorrect.'])
-                ->withInput();
+                ->withInput()
+                ->withFragment('password-section');
         }
 
+        if (\Hash::check($request->new_password, $user->password)) {
+            return redirect()->back()
+                ->withErrors(['new_password' => 'New password must be different from your current password.'])
+                ->withInput()
+                ->withFragment('password-section');
+        }
+
+        // Change password
         $user->password = \Hash::make($request->new_password);
         $user->save();
 
         NotificationService::profileUpdated($user, 'password');
 
-        return redirect()->back()->with('password_success', 'Password changed successfully.');
+        return redirect()->back()
+            ->with('password_success', 'Password changed successfully.')
+            ->withFragment('password-section');
     }
 
     public function userNotification(Request $request)

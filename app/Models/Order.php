@@ -174,6 +174,7 @@ class Order extends Model
     {
         static::updated(function ($order) {
             if ($order->wasChanged('status')) {
+                $order->orderItems()->update(['status' => $order->status]);
                 NotificationService::userOrderStatusChanged($order);
             }
         });
