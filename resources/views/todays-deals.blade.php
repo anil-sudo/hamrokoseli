@@ -1,7 +1,7 @@
 @vite('resources/js/today-deals.js')
 <x-frontend-layout>
 
-    <main class="bg-[#fcf9f7] min-h-screen">
+    <main class="bg-[#c05d1b] min-h-screen">
 
         <!-- Hero Section -->
         <section
