@@ -208,7 +208,7 @@
             data-category="{{ $product->category?->slug ?? 'uncategorized' }}"
             class="product-card bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group">
 
-            <div class="relative w-full aspect-[4/5] overflow-hidden rounded-t-2xl sm:rounded-t-3xl">
+            <div class="relative w-full aspect-square overflow-hidden rounded-t-2xl sm:rounded-t-3xl">
 
                 <img
                     src="{{ $product->primaryImageUrl() }}"
@@ -264,7 +264,7 @@
                            data-discount-price="{{ $product->resolvedDiscountPrice() ?? '' }}"
                            data-image="{{ $product->primaryImageUrl() }}"
                            data-category="{{ $product->category?->cat_name ?? 'Crafts' }}"
-                           data-vendor="{{ $product->vendor->business_name ?? $product->vendor->name ?? 'Local Artisan' }}"
+                           data-vendor="{{ $product->vendor->business_name ?? $product->vendor->name ?? '' }}"
                            data-desc="{{ $product->description }}"
                            data-rating="{{ $product->rating ?? 5 }}"
                            data-reviews="{{ $product->reviews_count ?? 24 }}"
