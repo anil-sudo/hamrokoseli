@@ -145,33 +145,19 @@
             <div class="pt-8 border-t border-[#ebd7be]/40 space-y-6">
                 <div class="flex border-b border-[#ebd7be]/40 gap-3 sm:gap-6 overflow-x-auto">
                     <button
-                        class="tab-btn pb-3 text-sm font-bold text-[#C65A3A] border-b-2 border-[#C65A3A] focus:outline-none transition cursor-pointer"
-                        data-tab="details">
+                        class="pb-3 text-sm font-bold text-[#C65A3A] border-b-2 border-[#C65A3A] focus:outline-none transition cursor-default">
                         Product Specifications
-                    </button>
-                    <button
-                        class="tab-btn pb-3 text-sm font-semibold text-[#3A2A1F]/60 hover:text-[#3A2A1F] focus:outline-none transition cursor-pointer"
-                        data-tab="story">
-                        Craftsmanship Story
                     </button>
                 </div>
 
-                <div class="tab-panel text-sm text-[#3A2A1F]/80 leading-relaxed font-medium space-y-3"
-                    data-panel="details">
-                    <p>Detailed material specifications and sizes for this hand-crafted masterpiece. Locally sourced
-                        materials, eco-friendly processing, and traditional furnace/kiln techniques.</p>
+                <div class="tab-panel text-sm text-[#3A2A1F]/80 leading-relaxed font-medium space-y-3">
+                    <p id="modal-product-desc-spec" class="leading-relaxed"></p>
                     <ul class="list-disc pl-5 space-y-1.5 text-xs text-[#3A2A1F]/70">
                         <li><strong>Material:</strong> 100% Authentic Nepalese sourced raw materials</li>
                         <li><strong>Origin:</strong> Hand-crafted by local families under fair trade standards</li>
                         <li><strong>Certification:</strong> Handcrafted Artisan Registry Certified</li>
                     </ul>
                 </div>
-
-                <div class="tab-panel text-sm text-[#3A2A1F]/80 leading-relaxed font-medium space-y-3 hidden"
-                    data-panel="story" id="modal-product-story">
-                    <p>Product craftsmanship story goes here...</p>
-                </div>
-
             </div>
             <!-- Reviews Section -->
             <div class="pt-8 border-t border-[#ebd7be]/40 space-y-6" id="modal-reviews-section">

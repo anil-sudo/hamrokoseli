@@ -256,12 +256,12 @@
                                 {{-- Actions --}}
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
-                                        <a href="{{ route('product-edit', $product->slug) }}"
+                                        <a href="{{ route('product-edit', $product->id) }}"
                                             class="text-(--text-color)/60 hover:text-(--hover-color) transition"
                                             title="Edit">
                                             <i data-lucide="edit" class="w-5 h-5"></i>
                                         </a>
-                                        <form method="POST" action="{{ route('product.destroy', $product->slug) }}"
+                                        <form method="POST" action="{{ route('product.destroy', $product->id) }}"
                                             onsubmit="return confirm('Are you sure you want to delete {{ addslashes($product->name) }}?')">
                                             @csrf
                                             @method('DELETE')

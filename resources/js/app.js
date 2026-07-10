@@ -1055,9 +1055,10 @@ function toggleWishlistProduct(productData) {
             modalMainImage.alt = productData.name;
         }
         if (modalBreadcrumbCat) modalBreadcrumbCat.textContent = categoryName;
-        if (modalProductDesc) modalProductDesc.textContent = productData.desc || productData.description || '';
         const modalProductStory = document.getElementById('modal-product-story');
-        if (modalProductStory) modalProductStory.textContent = productData.desc || productData.description || '';
+        const descText = productData.desc || productData.description || '';
+        if (modalProductDesc) modalProductDesc.textContent = descText;
+        if (modalProductStory) modalProductStory.textContent = descText;
         if (modalVendorName) {
             const vendorCard = document.getElementById('modal-vendor-card');
             const avatarEl = document.getElementById('modal-vendor-avatar');

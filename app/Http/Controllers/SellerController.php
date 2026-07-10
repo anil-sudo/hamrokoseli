@@ -216,21 +216,20 @@ class SellerController extends Controller
         return view('seller.product-create', compact('categories'));
     }
 
-    public function productEdit($slug)
+    public function productEdit($id)
     {
         $product = Product::with(['category', 'images', 'variants'])
             ->where('vendor_id', auth()->user()->vendor->id)
-            ->where('slug', $slug)
-            ->firstOrFail();
+            ->findOrFail($id);
 
         $categories = Category::where('status', 'active')->get();
 
         return view('seller.product-edit', compact('product', 'categories'));
     }
 
-    public function update(Request $request, $slug)
+    public function update(Request $request, $id)
     {
-        $product = Product::where('vendor_id', auth()->user()->vendor->id)->where('slug', $slug)->firstOrFail();
+        $product = Product::where('vendor_id', auth()->user()->vendor->id)->findOrFail($id);
 
         $validated = $request->validate([
             'product_name' => 'required|string|max:200',
@@ -431,11 +430,10 @@ class SellerController extends Controller
             ->with('success', 'Product "'.$product->name.'" created successfully!');
     }
 
-    public function destroy($slug)
+    public function destroy($id)
     {
         $product = Product::where('vendor_id', auth()->user()->vendor->id)
-            ->where('slug', $slug)
-            ->firstOrFail();
+            ->findOrFail($id);
 
         $product->images()->delete();
         $product->variants()->delete();

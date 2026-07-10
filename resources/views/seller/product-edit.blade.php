@@ -22,7 +22,7 @@
 
     <div id="toastContainer" class="fixed top-5 right-5 z-50 space-y-3"></div>
 
-    <form id="productForm" method="POST" action="{{ route('product.update', $product->slug) }}" enctype="multipart/form-data"
+    <form id="productForm" method="POST" action="{{ route('product.update', $product->id) }}" enctype="multipart/form-data"
         class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         @csrf
         @method('PUT')
