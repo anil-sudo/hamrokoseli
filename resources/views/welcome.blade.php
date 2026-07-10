@@ -81,22 +81,40 @@
                                 data-stock="{{ $product->stock }}">
                                 {{ $product->name }}
                             </h3>
-                            <div class="flex items-center justify-between mt-2 pt-2 border-t border-slate-100/60">
-                                <div class="flex flex-col">
+                            <div class="mt-2 pt-2 border-t border-slate-100/60">
+                                <div class="flex items-baseline gap-1.5 mb-1.5">
                                     <span class="text-brand-primary font-bold text-[10px] sm:text-xs md:text-sm">Rs. {{ number_format($discountPrice, 0) }}</span>
                                     @if($hasDiscount)
-                                        <span class="text-slate-400 text-[8px] sm:text-[9px] md:text-xs line-through">Rs. {{ number_format($product->price, 0) }}</span>
+                                        <span class="text-slate-400 text-[8px] sm:text-[9px] line-through">Rs. {{ number_format($product->price, 0) }}</span>
                                     @endif
                                 </div>
-                                <button class="add-to-cart-btn bg-[#b55b3d] hover:bg-[#a04f33] text-white text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs font-semibold px-2 py-1 rounded-lg transition"
-                                        data-product-id="{{ $product->id }}"
-                                        data-product-name="{{ $product->name }}"
-                                        data-product-price="{{ intval($discountPrice) }}"
-                                        data-product-image="{{ $imageUrl }}"
-                                        data-product-desc="{{ Str::limit($product->description, 100) }}"
-                                        data-product-category="{{ $product->category?->cat_name ?? 'Uncategorized' }}">
-                                    Add
-                                </button>
+                                <div class="flex gap-1 sm:gap-1.5">
+                                    <a href="{{ route('viewdetails', $product->slug) }}"
+                                       class="view-details-btn flex-1 flex items-center justify-center gap-1 bg-[#1F3D2E] hover:bg-[#16301f] text-white text-[8px] sm:text-[9px] md:text-[10px] font-semibold py-1 sm:py-1.5 rounded-lg transition"
+                                       data-id="{{ $product->id }}"
+                                       data-name="{{ $product->name }}"
+                                       data-price="{{ intval($discountPrice) }}"
+                                       data-original-price="{{ intval($product->price) }}"
+                                       data-discount="{{ $hasDiscount ? 'true' : 'false' }}"
+                                       data-image="{{ $imageUrl }}"
+                                       data-category="{{ $product->category?->cat_name ?? 'Uncategorized' }}"
+                                       data-vendor="{{ $product->vendor?->vendor_name ?? 'Unknown' }}"
+                                       data-desc="{{ Str::limit($product->description, 100) }}"
+                                       data-stock="{{ $product->stock }}">
+                                        <i class="fa-solid fa-circle-info"></i> Details
+                                    </a>
+                                    <button class="add-to-cart-btn flex-1 flex items-center justify-center gap-1 bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-[8px] sm:text-[9px] md:text-[10px] font-semibold py-1 sm:py-1.5 rounded-lg transition disabled:opacity-60 disabled:cursor-not-allowed"
+                                            data-product-id="{{ $product->id }}"
+                                            data-product-name="{{ $product->name }}"
+                                            data-product-price="{{ intval($discountPrice) }}"
+                                            data-product-image="{{ $imageUrl }}"
+                                            data-product-desc="{{ Str::limit($product->description, 100) }}"
+                                            data-product-category="{{ $product->category?->cat_name ?? 'Uncategorized' }}"
+                                            {{ ($product->stock ?? 0) < 1 ? 'disabled' : '' }}>
+                                        <i class="fa-solid fa-cart-plus"></i>
+                                        {{ ($product->stock ?? 0) < 1 ? 'Out' : 'Add' }}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -221,17 +239,21 @@
                                 </span>
                                 <span class="hidden xs:inline">(124)</span>
                             </div>
-                            <div class="flex items-center justify-between mt-1 sm:mt-1.5 md:mt-2 pt-1 sm:pt-1.5 border-t border-slate-100">
-                                <span class="text-brand-primary font-bold text-[9px] sm:text-[10px] md:text-xs lg:text-sm">Rs. 1,299</span>
-                                <button class="add-to-cart-btn bg-[#b55b3d] hover:bg-[#a04f33] text-white text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs font-semibold px-1.5 sm:px-2 py-0.5 sm:py-1 md:px-2.5 md:py-1 rounded-lg transition"
-                                        data-product-id="105"
-                                        data-product-name="Merino Wool Sweater"
-                                        data-product-price="1299"
-                                        data-product-image="{{ asset('images/Sweaters.png') }}"
-                                        data-product-desc="High-quality merino wool sweater woven by local weavers."
-                                        data-product-category="Artisan Weaves">
-                                    Add
-                                </button>
+                            <div class="mt-1 sm:mt-1.5 pt-1 sm:pt-1.5 border-t border-slate-100">
+                                <span class="text-brand-primary font-bold text-[9px] sm:text-[10px] md:text-xs lg:text-sm block mb-1">Rs. 1,299</span>
+                                <div class="flex gap-1">
+                                    <button class="view-details-btn flex-1 flex items-center justify-center gap-1 bg-[#1F3D2E] hover:bg-[#16301f] text-white text-[8px] sm:text-[9px] font-semibold py-1 sm:py-1.5 rounded-lg transition"
+                                            data-id="105" data-name="Merino Wool Sweater" data-price="1299" data-original-price="1624"
+                                            data-discount="true" data-image="{{ asset('images/Sweaters.png') }}" data-category="Artisan Weaves"
+                                            data-vendor="Artisan Weaves" data-desc="High-quality merino wool sweater woven by local weavers." data-stock="20">
+                                        <i class="fa-solid fa-circle-info"></i> Details
+                                    </button>
+                                    <button class="add-to-cart-btn flex-1 flex items-center justify-center gap-1 bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-[8px] sm:text-[9px] font-semibold py-1 sm:py-1.5 rounded-lg transition"
+                                            data-product-id="105" data-product-name="Merino Wool Sweater" data-product-price="1299"
+                                            data-product-image="{{ asset('images/Sweaters.png') }}" data-product-desc="High-quality merino wool sweater." data-product-category="Artisan Weaves">
+                                        <i class="fa-solid fa-cart-plus"></i> Add
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -287,17 +309,21 @@
                                 </span>
                                 <span class="hidden xs:inline">(89)</span>
                             </div>
-                            <div class="flex items-center justify-between mt-1 sm:mt-1.5 md:mt-2 pt-1 sm:pt-1.5 border-t border-slate-100">
-                                <span class="text-brand-primary font-bold text-[9px] sm:text-[10px] md:text-xs lg:text-sm">Rs. 899</span>
-                                <button class="add-to-cart-btn bg-[#b55b3d] hover:bg-[#a04f33] text-white text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs font-semibold px-1.5 sm:px-2 py-0.5 sm:py-1 md:px-2.5 md:py-1 rounded-lg transition"
-                                        data-product-id="106"
-                                        data-product-name="Bamboo Sunglasses"
-                                        data-product-price="899"
-                                        data-product-image="{{ asset('images/SunGlass.png') }}"
-                                        data-product-desc="Stylish sunglasses crafted from sustainable natural bamboo wood."
-                                        data-product-category="Eco Eyewear">
-                                    Add
-                                </button>
+                            <div class="mt-1 sm:mt-1.5 pt-1 sm:pt-1.5 border-t border-slate-100">
+                                <span class="text-brand-primary font-bold text-[9px] sm:text-[10px] md:text-xs lg:text-sm block mb-1">Rs. 899</span>
+                                <div class="flex gap-1">
+                                    <button class="view-details-btn flex-1 flex items-center justify-center gap-1 bg-[#1F3D2E] hover:bg-[#16301f] text-white text-[8px] sm:text-[9px] font-semibold py-1 sm:py-1.5 rounded-lg transition"
+                                            data-id="106" data-name="Bamboo Sunglasses" data-price="899" data-original-price="1124"
+                                            data-discount="true" data-image="{{ asset('images/SunGlass.png') }}" data-category="Eco Eyewear"
+                                            data-vendor="Eco Eyewear" data-desc="Stylish sunglasses crafted from sustainable natural bamboo wood." data-stock="30">
+                                        <i class="fa-solid fa-circle-info"></i> Details
+                                    </button>
+                                    <button class="add-to-cart-btn flex-1 flex items-center justify-center gap-1 bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-[8px] sm:text-[9px] font-semibold py-1 sm:py-1.5 rounded-lg transition"
+                                            data-product-id="106" data-product-name="Bamboo Sunglasses" data-product-price="899"
+                                            data-product-image="{{ asset('images/SunGlass.png') }}" data-product-desc="Stylish sunglasses crafted from sustainable bamboo." data-product-category="Eco Eyewear">
+                                        <i class="fa-solid fa-cart-plus"></i> Add
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -353,17 +379,21 @@
                                 </span>
                                 <span class="hidden xs:inline">(56)</span>
                             </div>
-                            <div class="flex items-center justify-between mt-1 sm:mt-1.5 md:mt-2 pt-1 sm:pt-1.5 border-t border-slate-100">
-                                <span class="text-brand-primary font-bold text-[9px] sm:text-[10px] md:text-xs lg:text-sm">Rs. 8,999</span>
-                                <button class="add-to-cart-btn bg-[#b55b3d] hover:bg-[#a04f33] text-white text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs font-semibold px-1.5 sm:px-2 py-0.5 sm:py-1 md:px-2.5 md:py-1 rounded-lg transition"
-                                        data-product-id="107"
-                                        data-product-name="Teak Wood Side Table"
-                                        data-product-price="8999"
-                                        data-product-image="{{ asset('images/Table.png') }}"
-                                        data-product-desc="Sturdy, hand-crafted teak wood side table with rustic charm."
-                                        data-product-category="Woodcraft">
-                                    Add
-                                </button>
+                            <div class="mt-1 sm:mt-1.5 pt-1 sm:pt-1.5 border-t border-slate-100">
+                                <span class="text-brand-primary font-bold text-[9px] sm:text-[10px] md:text-xs lg:text-sm block mb-1">Rs. 8,999</span>
+                                <div class="flex gap-1">
+                                    <button class="view-details-btn flex-1 flex items-center justify-center gap-1 bg-[#1F3D2E] hover:bg-[#16301f] text-white text-[8px] sm:text-[9px] font-semibold py-1 sm:py-1.5 rounded-lg transition"
+                                            data-id="107" data-name="Teak Wood Side Table" data-price="8999" data-original-price="11249"
+                                            data-discount="true" data-image="{{ asset('images/Table.png') }}" data-category="Woodcraft"
+                                            data-vendor="Woodcraft Nepal" data-desc="Sturdy, hand-crafted teak wood side table with rustic charm." data-stock="8">
+                                        <i class="fa-solid fa-circle-info"></i> Details
+                                    </button>
+                                    <button class="add-to-cart-btn flex-1 flex items-center justify-center gap-1 bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-[8px] sm:text-[9px] font-semibold py-1 sm:py-1.5 rounded-lg transition"
+                                            data-product-id="107" data-product-name="Teak Wood Side Table" data-product-price="8999"
+                                            data-product-image="{{ asset('images/Table.png') }}" data-product-desc="Sturdy, hand-crafted teak wood side table with rustic charm." data-product-category="Woodcraft">
+                                        <i class="fa-solid fa-cart-plus"></i> Add
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -419,17 +449,21 @@
                                 </span>
                                 <span class="hidden xs:inline">(203)</span>
                             </div>
-                            <div class="flex items-center justify-between mt-1 sm:mt-1.5 md:mt-2 pt-1 sm:pt-1.5 border-t border-slate-100">
-                                <span class="text-brand-primary font-bold text-[9px] sm:text-[10px] md:text-xs lg:text-sm">Rs. 3,499</span>
-                                <button class="add-to-cart-btn bg-[#b55b3d] hover:bg-[#a04f33] text-white text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs font-semibold px-1.5 sm:px-2 py-0.5 sm:py-1 md:px-2.5 md:py-1 rounded-lg transition"
-                                        data-product-id="108"
-                                        data-product-name="Ceramic Bowl Set"
-                                        data-product-price="3499"
-                                        data-product-image="{{ asset('images/Pottery.png') }}"
-                                        data-product-desc="Set of handmade ceramic bowls, clay-fired and glazed by local potters."
-                                        data-product-category="Clay Studio">
-                                    Add
-                                </button>
+                            <div class="mt-1 sm:mt-1.5 pt-1 sm:pt-1.5 border-t border-slate-100">
+                                <span class="text-brand-primary font-bold text-[9px] sm:text-[10px] md:text-xs lg:text-sm block mb-1">Rs. 3,499</span>
+                                <div class="flex gap-1">
+                                    <button class="view-details-btn flex-1 flex items-center justify-center gap-1 bg-[#1F3D2E] hover:bg-[#16301f] text-white text-[8px] sm:text-[9px] font-semibold py-1 sm:py-1.5 rounded-lg transition"
+                                            data-id="108" data-name="Ceramic Bowl Set" data-price="3499" data-original-price="4374"
+                                            data-discount="true" data-image="{{ asset('images/Pottery.png') }}" data-category="Clay Studio"
+                                            data-vendor="Clay Studio Nepal" data-desc="Set of handmade ceramic bowls, clay-fired and glazed by local potters." data-stock="12">
+                                        <i class="fa-solid fa-circle-info"></i> Details
+                                    </button>
+                                    <button class="add-to-cart-btn flex-1 flex items-center justify-center gap-1 bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-[8px] sm:text-[9px] font-semibold py-1 sm:py-1.5 rounded-lg transition"
+                                            data-product-id="108" data-product-name="Ceramic Bowl Set" data-product-price="3499"
+                                            data-product-image="{{ asset('images/Pottery.png') }}" data-product-desc="Handmade ceramic bowls by local potters." data-product-category="Clay Studio">
+                                        <i class="fa-solid fa-cart-plus"></i> Add
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

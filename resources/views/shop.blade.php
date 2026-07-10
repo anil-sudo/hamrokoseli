@@ -192,6 +192,13 @@
                     alt="{{ $product->name }}"
                     class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
 
+                @if($product->hasDiscount())
+                    @php $discPct = $product->getDiscountPercentage(); @endphp
+                    <span class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-[#C65A3A] text-white text-[7px] xs:text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-full shadow-sm z-10">
+                        -{{ $discPct }}% OFF
+                    </span>
+                @endif
+
                 @if($product->vendor)
                     <div class="absolute top-2 right-2 sm:top-4 sm:right-4 bg-white/95 text-[#1F3D2E] text-[6px] xs:text-[9px] sm:text-[10px] font-bold tracking-wider uppercase px-1.5 py-0.5 sm:px-3 sm:py-1.5 rounded-full shadow-sm">
                         {{ $product->vendor->business_name ?? $product->vendor->name }}

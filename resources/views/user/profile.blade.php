@@ -85,8 +85,8 @@
                                 <label class="block text-sm font-medium text-brand-dark mb-1">
                                     Phone Number
                                 </label>
-                                <input type="tel" name="phone" value="{{ old('phone', $user->phone) }}"
-                                    placeholder="e.g. 9800000000"
+                                <input type="tel" name="phone" id="profile-phone" value="{{ old('phone', $user->phone) }}"
+                                    placeholder="e.g. 9800000000" maxlength="10"
                                     class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
                             </div>
                             <div>
@@ -169,6 +169,16 @@
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>
+
+                        <!-- Password strength hints -->
+                        <div class="md:col-span-2 bg-[#ebd7be]/20 border border-[#ebd7be]/60 rounded-2xl p-4 text-xs text-[#3A2A1F]/70 space-y-1.5">
+                            <p class="font-bold text-[#1F3D2E] text-sm mb-1.5">Password must contain:</p>
+                            <p id="hint-length" class="flex items-center gap-2"><span class="w-3.5 h-3.5 flex items-center justify-center rounded-full bg-slate-200 text-[8px] font-bold text-slate-500">○</span> At least 8 characters</p>
+                            <p id="hint-upper"  class="flex items-center gap-2"><span class="w-3.5 h-3.5 flex items-center justify-center rounded-full bg-slate-200 text-[8px] font-bold text-slate-500">○</span> At least 1 uppercase letter (A–Z)</p>
+                            <p id="hint-lower"  class="flex items-center gap-2"><span class="w-3.5 h-3.5 flex items-center justify-center rounded-full bg-slate-200 text-[8px] font-bold text-slate-500">○</span> At least 1 lowercase letter (a–z)</p>
+                            <p id="hint-number" class="flex items-center gap-2"><span class="w-3.5 h-3.5 flex items-center justify-center rounded-full bg-slate-200 text-[8px] font-bold text-slate-500">○</span> At least 1 number (0–9)</p>
+                            <p id="hint-special" class="flex items-center gap-2"><span class="w-3.5 h-3.5 flex items-center justify-center rounded-full bg-slate-200 text-[8px] font-bold text-slate-500">○</span> At least 1 special character (e.g. ! @ # $ % ^ & *)</p>
+                        </div>
                     </div>
 
                     <div class="flex justify-end mt-8">
@@ -211,6 +221,106 @@
                 ? '<i data-lucide="eye-off" class="w-5 h-5"></i>'
                 : '<i data-lucide="eye" class="w-5 h-5"></i>';
             lucide.createIcons();
+        }
+
+        // Restrict phone input to digits only, max 10
+        const phoneInput = document.getElementById('profile-phone');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function() {
+                let value = this.value.replace(/\D/g, '');
+                if (value.length > 10) value = value.substring(0, 10);
+                this.value = value;
+            });
+        }
+
+        // Profile Form Validation
+        const profileForm = document.getElementById('profileForm');
+        if (profileForm) {
+            profileForm.addEventListener('submit', function(e) {
+                const phone = phoneInput ? phoneInput.value.trim() : '';
+                let errors = [];
+
+                if (phone) {
+                    if (!/^\d+$/.test(phone)) {
+                        errors.push("Phone Number must contain numbers only.");
+                    } else if (phone.length !== 10) {
+                        errors.push("Phone Number must be exactly 10 digits.");
+                    }
+                }
+
+                if (errors.length > 0) {
+                    e.preventDefault();
+                    alert(errors.join("\n"));
+                }
+            });
+        }
+
+        // Live strength check for new password
+        const pwUpperRegex   = /[A-Z]/;
+        const pwLowerRegex   = /[a-z]/;
+        const pwDigitRegex   = /[0-9]/;
+        const pwSpecialRegex = /[\^$*.\[\]{}()?\-"!@#%&\/\\,><':;|_~`+=]/;
+
+        const newPasswordInput = document.getElementById('newPassword');
+        if (newPasswordInput) {
+            newPasswordInput.addEventListener('input', function() {
+                const val = this.value;
+                function setHint(id, pass) {
+                    const el = document.getElementById(id);
+                    const indicator = el?.querySelector('span');
+                    if (!el || !indicator) return;
+                    if (pass) {
+                        indicator.className = 'w-3.5 h-3.5 flex items-center justify-center rounded-full bg-green-500 text-[8px] font-bold text-white';
+                        indicator.textContent = '✓';
+                        el.classList.add('text-green-600', 'font-semibold');
+                    } else {
+                        indicator.className = 'w-3.5 h-3.5 flex items-center justify-center rounded-full bg-slate-200 text-[8px] font-bold text-slate-500';
+                        indicator.textContent = '○';
+                        el.classList.remove('text-green-600', 'font-semibold');
+                    }
+                }
+                setHint('hint-length', val.length >= 8);
+                setHint('hint-upper',  pwUpperRegex.test(val));
+                setHint('hint-lower',  pwLowerRegex.test(val));
+                setHint('hint-number', pwDigitRegex.test(val));
+                setHint('hint-special', pwSpecialRegex.test(val));
+            });
+        }
+
+        // Password Form Validation on Submit
+        const passwordForm = document.getElementById('passwordForm');
+        if (passwordForm) {
+            passwordForm.addEventListener('submit', function(e) {
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                let errors = [];
+
+                if (!currentPassword) {
+                    errors.push('Current Password is required.');
+                }
+
+                if (!newPassword) {
+                    errors.push('New Password is required.');
+                } else {
+                    if (newPassword.length < 8)            errors.push('Password must be at least 8 characters.');
+                    if (!pwUpperRegex.test(newPassword))   errors.push('Password must contain at least one uppercase letter (A–Z).');
+                    if (!pwLowerRegex.test(newPassword))   errors.push('Password must contain at least one lowercase letter (a–z).');
+                    if (!pwDigitRegex.test(newPassword))   errors.push('Password must contain at least one number (0–9).');
+                    if (!pwSpecialRegex.test(newPassword)) errors.push('Password must contain at least one special character (e.g. ! @ # $ % ^ & *).');
+                }
+
+                if (!confirmPassword) {
+                    errors.push('Confirm New Password cannot be empty.');
+                } else if (newPassword !== confirmPassword) {
+                    errors.push('New passwords do not match.');
+                }
+
+                if (errors.length > 0) {
+                    e.preventDefault();
+                    alert(errors.join('\n'));
+                }
+            });
         }
     </script>
 </x-user-layout>

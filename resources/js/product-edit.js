@@ -76,15 +76,11 @@ function validateForm() {
             isValid = false;
         } else clearError(stock);
 
-        const discountedPrice = document.getElementById('discounted_price');
-        if (discountedPrice && discountedPrice.value && discountedPrice.value !== '0') {
+        const discountedPrice = document.getElementById('discount_amount');
+        if (discountedPrice && discountedPrice.value && discountedPrice.value !== '') {
             const discVal = parseFloat(discountedPrice.value);
-            const baseVal = parseFloat(basePrice.value || 0);
-            if (discVal < 0) {
-                showError(discountedPrice, "Discount cannot be negative");
-                isValid = false;
-            } else if (discVal >= baseVal) {
-                showError(discountedPrice, "Discount must be less than the base price");
+            if (discVal < 0 || discVal > 99) {
+                showError(discountedPrice, "Discount percentage must be between 0 and 99");
                 isValid = false;
             } else {
                 clearError(discountedPrice);
@@ -198,7 +194,7 @@ function addVariant() {
                 class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
             <input type="number" name="variants[${variantIndex}][price]" placeholder="Price" min="0" step="1"
                 class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-            <input type="number" name="variants[${variantIndex}][discounted_price]" placeholder="Discount (Rs.)" min="0" step="1"
+            <input type="number" name="variants[${variantIndex}][discount_amount]" placeholder="Discount (%)" min="0" max="99" step="1"
                 class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
             <input type="number" name="variants[${variantIndex}][stock]" placeholder="Stock" min="0" value="0"
                 class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
@@ -337,15 +333,14 @@ function updateDiscountPreview() {
     if (!basePriceInput || !discountInput || !previewEl) return;
 
     const basePrice = parseFloat(basePriceInput.value) || 0;
-    const discountAmount = parseFloat(discountInput.value) || 0;
+    const discountPercent = parseFloat(discountInput.value) || 0;
 
-    if (basePrice > 0 && discountAmount > 0) {
-        if (discountAmount >= basePrice) {
-            previewEl.innerHTML = '<span class="text-red-500">Discount must be less than the base price.</span>';
+    if (basePrice > 0 && discountPercent > 0) {
+        if (discountPercent > 99 || discountPercent < 0) {
+            previewEl.innerHTML = '<span class="text-red-500">Discount percentage must be between 0 and 99.</span>';
         } else {
-            const sellingPrice = basePrice - discountAmount;
-            const percentage = Math.round((discountAmount / basePrice) * 100);
-            previewEl.innerHTML = `<span class="font-semibold text-green-600">Final Price: Rs.${sellingPrice.toLocaleString()}</span> <span class="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full ml-1">${percentage}% off</span>`;
+            const sellingPrice = basePrice - (basePrice * discountPercent / 100);
+            previewEl.innerHTML = `<span class="font-semibold text-green-600">Final Price: Rs.${sellingPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span> <span class="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full ml-1">${discountPercent}% off</span>`;
         }
     } else {
         previewEl.innerHTML = '<span class="text-gray-400">No discount applied</span>';

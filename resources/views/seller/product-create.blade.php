@@ -159,8 +159,8 @@
                                             min="0" step="1"
                                             class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
                                         <input type="number" name="variants[{{ $i }}][discounted_price]"
-                                            value="{{ $variant['discounted_price'] ?? '' }}" placeholder="Discount (Rs.)"
-                                            min="0" step="1"
+                                            value="{{ $variant['discounted_price'] ?? '' }}" placeholder="Discount (%)"
+                                            min="0" max="99" step="1"
                                             class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
                                         <input type="number" name="variants[{{ $i }}][stock]"
                                             value="{{ $variant['stock'] ?? 0 }}" placeholder="Stock" min="0"
@@ -235,9 +235,10 @@
 
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-(--text-dark) mb-2">Discount (Rs.)</label>
+                            <label class="block text-sm font-medium text-(--text-dark) mb-2">Discount (%)</label>
                             <input type="number" id="discounted_price" name="discounted_price"
-                                value="{{ old('discounted_price', 0) }}" step="1" min="0"
+                                value="{{ old('discounted_price', 0) }}" step="1" min="0" max="99"
+                                placeholder="e.g. 10 for 10% off"
                                 class="w-full px-5 py-4 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-base focus:outline-none focus:border-(--secondary-color) transition duration-200">
                             <p id="discount_preview" class="text-xs text-green-600 font-medium mt-1.5 hidden"></p>
                             @error('discounted_price')
