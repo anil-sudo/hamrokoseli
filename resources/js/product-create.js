@@ -173,6 +173,33 @@ document.getElementById('productForm').addEventListener('submit', function (e) {
     }
 });
 
+// ==================== LIVE DISCOUNT CALCULATION ====================
+function updateDiscountPreview() {
+    const basePriceInput = document.getElementById('base_price');
+    const discountedPriceInput = document.getElementById('discounted_price');
+    const discountPreviewEl = document.getElementById('discount_preview');
+
+    if (!basePriceInput || !discountedPriceInput || !discountPreviewEl) return;
+
+    const basePrice = parseFloat(basePriceInput.value) || 0;
+    const discountPercent = parseFloat(discountedPriceInput.value) || 0;
+
+    if (basePrice > 0 && discountPercent > 0) {
+        if (discountPercent > 99 || discountPercent < 0) {
+            discountPreviewEl.textContent = "Discount percentage must be between 0 and 99.";
+            discountPreviewEl.className = "text-xs text-red-500 font-medium mt-1.5";
+            discountPreviewEl.classList.remove('hidden');
+        } else {
+            const sellingPrice = basePrice - (basePrice * discountPercent / 100);
+            discountPreviewEl.textContent = `Selling Price: Rs. ${sellingPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})} (${discountPercent}% off)`;
+            discountPreviewEl.className = "text-xs text-green-600 font-medium mt-1.5";
+            discountPreviewEl.classList.remove('hidden');
+        }
+    } else {
+        discountPreviewEl.classList.add('hidden');
+    }
+}
+
 // ==================== INITIAL LOAD ====================
 document.addEventListener('DOMContentLoaded', () => {
     // Add one specification by default

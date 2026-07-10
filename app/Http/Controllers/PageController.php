@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ContactFormSubmitted;
 use App\Models\Category;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Review;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class PageController extends Controller
 {
@@ -560,5 +562,27 @@ class PageController extends Controller
 
         return response()->view('sitemap', compact('products', 'categories'))
             ->header('Content-Type', 'application/xml');
+    }
+
+    public function contactusSubmit(Request $request)
+    {
+        $request->validate([
+            'first_name' => 'required|string|max:100',
+            'last_name' => 'required|string|max:100',
+            'email' => 'required|email|max:255',
+            'subject' => 'required|string|max:255',
+            'message' => 'required|string|max:2000',
+        ]);
+
+        Mail::to(env('ADMIN_EMAIL'))
+            ->send(new ContactFormSubmitted(
+                firstName: $request->first_name,
+                lastName: $request->last_name,
+                email: $request->email,
+                messageSubject: $request->subject,
+                messageBody: $request->message,
+            ));
+
+        return back()->with('success', 'Thank you! Your message has been sent. We\'ll get back to you soon.');
     }
 }

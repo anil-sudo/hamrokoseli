@@ -19,8 +19,22 @@ class UserRegisterController extends Controller
             $data = $request->validate([
                 'name' => ['required', 'string', 'max:255'],
                 'email' => ['required', 'email', 'max:150', 'unique:users,email'],
-                'phone' => ['nullable', 'string', 'max:20', 'unique:users,phone'],
-                'password' => ['required', 'string', 'min:8', 'confirmed'],
+                'phone' => ['nullable', 'digits:10', 'unique:users,phone'],
+                'password' => [
+                    'required',
+                    'string',
+                    'min:8',
+                    'confirmed',
+                    'regex:/[A-Z]/',
+                    'regex:/[a-z]/',
+                    'regex:/[0-9]/',
+                    'regex:/[\\^$*.\\[\\]{}()?\\-"!@#%&\/\\\\,><\'\':;|_~`+\\=]/',
+                ],
+            ], [
+                'phone.digits' => 'Phone number must be exactly 10 digits.',
+                'password.regex' => 'Password must include at least one uppercase letter, one lowercase letter, one number, and one special character.',
+                'password.min' => 'Password must be at least 8 characters.',
+                'password.confirmed' => 'The password confirmation does not match.',
             ]);
 
             $user = User::create([

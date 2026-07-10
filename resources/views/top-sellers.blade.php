@@ -95,12 +95,12 @@
                         </span>
 
                         @if($product->vendor)
-                            <div class="absolute top-4 right-14 bg-white/95 text-[#1F3D2E] text-[10px] font-bold tracking-wider uppercase px-3 py-1.5 rounded-full shadow-sm z-10">
+                            <div class="absolute top-4 right-4 bg-white/95 text-[#1F3D2E] text-[10px] font-bold tracking-wider uppercase px-3 py-1.5 rounded-full shadow-sm z-10">
                                 {{ $vendorName }}
                             </div>
                         @endif
 
-                        <button class="wishlist-btn absolute bottom-4 right-4 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-xl drop-shadow z-10"
+                        <button class="wishlist-btn absolute bottom-4 right-4 bg-white/90 hover:bg-white text-[#C65A3A] hover:text-[#b04a2c] w-10 h-10 rounded-full shadow-md transition-all flex items-center justify-center z-10 focus:outline-none"
                                 data-product-id="{{ $product->id }}"
                                 data-product-name="{{ $product->name }}"
                                 data-product-price="{{ $displayPrice }}"
@@ -108,7 +108,7 @@
                                 data-product-desc="{{ $product->description }}"
                                 data-product-category="{{ $catName }}"
                                 data-product-tag="{{ $product->tag ?? '' }}">
-                            <i class="far fa-heart"></i>
+                            <i class="far fa-heart text-lg"></i>
                         </button>
                     </div>
 

@@ -452,5 +452,68 @@
         @if (session('success'))
             if (window.openLoginModal) window.openLoginModal(null, 'login');
         @endif
+
+        // ── Phone: restrict to digits only, max 10 ──────────────────────────
+        const modalPhone = document.getElementById('modal-register-phone');
+        if (modalPhone) {
+            modalPhone.addEventListener('input', function() {
+                let v = this.value.replace(/\D/g, '');
+                if (v.length > 10) v = v.substring(0, 10);
+                this.value = v;
+            });
+        }
+
+        // ── Register form submit validation ─────────────────────────────────
+        const regForm = document.querySelector('#register-view form');
+        if (regForm) {
+            const pwUpperRegex   = /[A-Z]/;
+            const pwLowerRegex   = /[a-z]/;
+            const pwDigitRegex   = /[0-9]/;
+            const pwSpecialRegex = /[\^$*.\[\]{}()?\-"!@#%&\/\\,><':;|_~`+=]/;
+
+            regForm.addEventListener('submit', function(e) {
+                const name     = document.getElementById('modal-register-name')?.value.trim() ?? '';
+                const email    = document.getElementById('modal-register-email')?.value.trim() ?? '';
+                const phone    = document.getElementById('modal-register-phone')?.value.trim() ?? '';
+                const password = document.getElementById('modal-register-password')?.value ?? '';
+                const confirm  = document.getElementById('modal-register-password_confirmation')?.value ?? '';
+
+                let errors = [];
+
+                if (!name)  errors.push('Full Name is required.');
+                if (!email || !email.includes('@')) errors.push('A valid Email Address is required.');
+
+                // Phone — digits only, exactly 10 (optional field but validated if provided)
+                if (phone) {
+                    if (!/^\d+$/.test(phone)) {
+                        errors.push('Phone Number must contain numbers only (no letters or special characters).');
+                    } else if (phone.length !== 10) {
+                        errors.push('Phone Number must be exactly 10 digits.');
+                    }
+                }
+
+                // Password complexity
+                if (!password) {
+                    errors.push('Password is required.');
+                } else {
+                    if (password.length < 8)            errors.push('Password must be at least 8 characters.');
+                    if (!pwUpperRegex.test(password))   errors.push('Password must contain at least one uppercase letter (A–Z).');
+                    if (!pwLowerRegex.test(password))   errors.push('Password must contain at least one lowercase letter (a–z).');
+                    if (!pwDigitRegex.test(password))   errors.push('Password must contain at least one number (0–9).');
+                    if (!pwSpecialRegex.test(password)) errors.push('Password must contain at least one special character (e.g. ! @ # $ % ^ & *).');
+                }
+
+                if (!confirm) {
+                    errors.push('Confirm Password cannot be empty.');
+                } else if (password !== confirm) {
+                    errors.push('Passwords do not match.');
+                }
+
+                if (errors.length > 0) {
+                    e.preventDefault();
+                    alert(errors.join('\n'));
+                }
+            });
+        }
     });
 </script>

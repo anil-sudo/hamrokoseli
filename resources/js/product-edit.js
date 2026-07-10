@@ -88,9 +88,33 @@ if (desc) {
     desc.addEventListener('input', () => charCount.textContent = `${desc.value.length}/2000`);
 }
 
-// Validation
-document.getElementById('productForm').addEventListener('submit', function(e) {
-    if (!uploadedFile && previewGrid.children.length === 0) {
+// ==================== LIVE DISCOUNT CALCULATION ====================
+function updateDiscountPreview() {
+    const basePriceInput = document.getElementById('base_price');
+    const discountInput = document.getElementById('discount_amount');
+    const previewEl = document.getElementById('pricePreview');
+
+    if (!basePriceInput || !discountInput || !previewEl) return;
+
+    const basePrice = parseFloat(basePriceInput.value) || 0;
+    const discountPercent = parseFloat(discountInput.value) || 0;
+
+    if (basePrice > 0 && discountPercent > 0) {
+        if (discountPercent > 99 || discountPercent < 0) {
+            previewEl.innerHTML = '<span class="text-red-500">Discount percentage must be between 0 and 99.</span>';
+        } else {
+            const sellingPrice = basePrice - (basePrice * discountPercent / 100);
+            previewEl.innerHTML = `<span class="font-semibold text-green-600">Final Price: Rs.${sellingPrice.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2})}</span> <span class="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full ml-1">${discountPercent}% off</span>`;
+        }
+    } else {
+        previewEl.innerHTML = '<span class="text-gray-400">No discount applied</span>';
+    }
+}
+
+
+// ==================== FORM SUBMISSION ====================
+document.getElementById('productForm').addEventListener('submit', function (e) {
+    if (!validateForm()) {
         e.preventDefault();
         showToast("Please upload one product image");
     }

@@ -249,7 +249,7 @@ class SellerController extends Controller
             'product_type' => 'nullable|string|max:100',
             'description' => 'required|string|max:2000',
             'base_price' => 'nullable|numeric|min:0',
-            'discount_amount' => 'nullable|numeric|min:0', // Changed from discount_price
+            'discount_amount' => 'nullable|numeric|min:0|max:99', // Changed from discount_price
             'sku' => 'nullable|string|max:100|unique:products,sku,'.$product->id,
             'stock' => 'nullable|integer|min:0',
             'specifications' => 'nullable|array',
@@ -262,11 +262,6 @@ class SellerController extends Controller
             'status' => 'required|in:active,draft',
         ]);
 
-        $basePrice = $validated['base_price'] ?? $product->price;
-        if (! empty($validated['discount_amount']) && $validated['discount_amount'] >= $basePrice) {
-            return back()->withErrors(['discount_amount' => 'Discount must be less than the price.'])->withInput();
-        }
-
         $product->update([
             'category_id' => $validated['category'],
             'name' => $validated['product_name'],
@@ -275,7 +270,7 @@ class SellerController extends Controller
             'description' => $validated['description'],
             'specifications' => ! empty($validated['specifications']) ? $this->filterSpecs($validated['specifications']) : null,
             'price' => $validated['base_price'] ?? $product->price,
-            'discount_price' => ($validated['discount_amount'] ?? 0) > 0 ? (($validated['base_price'] ?? $product->price) - $validated['discount_amount']) : null,
+            'discount_price' => ($validated['discount_amount'] ?? 0) > 0 ? (($validated['base_price'] ?? $product->price) * (1 - $validated['discount_amount'] / 100)) : null,
             'stock' => $validated['stock'] ?? $product->stock,
             'sku' => $validated['sku'] ?? $product->sku,
             'status' => $validated['status'],
@@ -318,7 +313,7 @@ class SellerController extends Controller
             'product_type' => 'nullable|string|max:100',
             'description' => 'required|string|max:2000',
             'base_price' => 'required|numeric|min:0',
-            'discounted_price' => 'nullable|numeric|min:0|lt:base_price',
+            'discounted_price' => 'nullable|numeric|min:0|max:99',
             'sku' => 'required|string|max:100|unique:products,sku',
             'stock' => 'required|integer|min:0',
             'status' => 'required|in:active,draft',
@@ -342,8 +337,8 @@ class SellerController extends Controller
                 : null,
             'price' => $validated['base_price'],
             'discount_price' => ($validated['discounted_price'] ?? 0) > 0
-                ? ($validated['base_price'] - $validated['discounted_price'])
-                : null,
+                                    ? ($validated['base_price'] * (1 - $validated['discounted_price'] / 100))
+                                    : null,
             'stock' => $validated['stock'],
             'sku' => $validated['sku'],
             'status' => $validated['status'],

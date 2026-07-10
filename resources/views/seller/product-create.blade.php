@@ -181,9 +181,10 @@
 
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium text-(--text-dark) mb-2">Discount (Rs.)</label>
+                            <label class="block text-sm font-medium text-(--text-dark) mb-2">Discount (%)</label>
                             <input type="number" id="discounted_price" name="discounted_price"
-                                value="{{ old('discounted_price', 0) }}" step="1" min="0"
+                                value="{{ old('discounted_price', 0) }}" step="1" min="0" max="99"
+                                placeholder="e.g. 10 for 10% off"
                                 class="w-full px-5 py-4 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-base focus:outline-none focus:border-(--secondary-color) transition duration-200">
                             <p id="discount_preview" class="text-xs text-green-600 font-medium mt-1.5 hidden"></p>
                             @error('discounted_price')

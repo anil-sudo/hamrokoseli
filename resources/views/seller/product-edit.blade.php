@@ -180,9 +180,10 @@
                     <!-- Current Price Display -->
                     @php
                         $basePrice = $product->price;
-                        $discountAmount = $product->discount_price ?? 0;
-                        $finalPrice = $basePrice - $discountAmount;
-                        $hasDiscount = $discountAmount > 0 && $finalPrice < $basePrice;
+                        $discountedPrice = $product->discount_price;
+                        $hasDiscount = $discountedPrice !== null && $discountedPrice > 0 && $discountedPrice < $basePrice;
+                        $discountPercent = $hasDiscount ? round((($basePrice - $discountedPrice) / $basePrice) * 100) : 0;
+                        $discountAmount = $hasDiscount ? ($basePrice - $discountedPrice) : 0;
                     @endphp
 
                     @if ($hasDiscount)
@@ -190,8 +191,7 @@
                             <div class="flex items-center justify-between">
                                 <div>
                                     <p class="text-sm text-gray-600">Final Price</p>
-                                    <p class="text-2xl font-bold text-green-700">
-                                        Rs.{{ number_format($finalPrice, 2) }}</p>
+                                    <p class="text-2xl font-bold text-green-700">Rs.{{ number_format($discountedPrice, 2) }}</p>
                                 </div>
                                 <div class="text-right">
                                     <p class="text-sm text-gray-500 line-through">
@@ -199,7 +199,7 @@
                                     <p class="text-xs text-green-600 font-semibold">
                                         You Save: Rs.{{ number_format($discountAmount, 2) }}
                                         <span class="ml-1 bg-green-200 text-green-800 px-2 py-0.5 rounded-full">
-                                            -{{ number_format(($discountAmount / $basePrice) * 100, 0) }}%
+                                            -{{ $discountPercent }}%
                                         </span>
                                     </p>
                                 </div>
@@ -229,14 +229,14 @@
 
                     <div>
                         <label class="block text-sm font-medium text-(--text-dark) mb-2">
-                            Discount Amount (Rs.)
-                            <span class="text-xs text-gray-400 font-normal"></span>
+                            Discount (%)
                         </label>
                         <input type="number" id="discount_amount" name="discount_amount"
-                            value="{{ old('discount_amount', $product->discount_price && $product->discount_price > 0 && $product->discount_price < $product->price ? $product->price - $product->discount_price : '') }}"
-                            min="0" step="0.01"
+                            value="{{ old('discount_amount', ($product->discount_price && $product->discount_price > 0 && $product->discount_price < $product->price) ? round((($product->price - $product->discount_price) / $product->price) * 100) : '') }}"
+                            min="0" max="99" step="1"
                             class="w-full px-5 py-4 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-base focus:outline-none focus:border-(--secondary-color) transition duration-200"
-                            placeholder="Enter discount amount (e.g. 500 off)" oninput="updateDiscountPreview()">
+                            placeholder="Enter discount percentage (e.g. 10 for 10% off)"
+                            oninput="updateDiscountPreview()">
                         <div id="pricePreview" class="mt-2 text-sm text-gray-600"></div>
                         @error('discount_amount')
                             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -300,6 +300,285 @@
         </div>
     </form>
 
+    @push('scripts')
+    <script>
+        // Calculate and preview final price
+        function calculateFinalPrice() {
+            const basePrice = parseFloat(document.getElementById('base_price').value) || 0;
+            const discountPercent = parseFloat(document.getElementById('discount_amount').value) || 0;
+            const preview = document.getElementById('pricePreview');
+
+            if (discountPercent > 0 && discountPercent <= 99) {
+                const finalPrice = basePrice - (basePrice * discountPercent / 100);
+                preview.innerHTML = `
+                    <div class="flex items-center gap-4">
+                        <span class="font-semibold text-green-600">
+                            Final Price: Rs.${finalPrice.toFixed(2)}
+                        </span>
+                        <span class="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">
+                            Save ${discountPercent}%
+                        </span>
+                    </div>
+                    <div class="text-xs text-gray-400">
+                        Base: Rs.${basePrice.toFixed(2)} - Discount: ${discountPercent}%
+                    </div>
+                `;
+            } else if (discountPercent > 99 || discountPercent < 0) {
+                preview.innerHTML = `<span class="text-red-500">Discount percentage must be between 0 and 99</span>`;
+            } else {
+                preview.innerHTML = `<span class="text-gray-400">No discount applied</span>`;
+            }
+        }
+
+        // Character counter for description
+        document.addEventListener('DOMContentLoaded', function() {
+            const description = document.getElementById('description');
+            const charCount = document.getElementById('charCount');
+
+            function updateCharCount() {
+                const count = description.value.length;
+                charCount.textContent = count + '/2000';
+                if (count > 1900) {
+                    charCount.classList.add('text-red-500');
+                    charCount.classList.remove('text-gray-400');
+                } else {
+                    charCount.classList.remove('text-red-500');
+                    charCount.classList.add('text-gray-400');
+                }
+            }
+
+            description.addEventListener('input', updateCharCount);
+            updateCharCount();
+
+            // Initialize price preview
+            calculateFinalPrice();
+        });
+
+        // Toggle variants section
+        function toggleVariants() {
+            const variantsSection = document.getElementById('variantsSection');
+            const toggleBtn = document.getElementById('variantToggleBtn');
+
+            if (variantsSection.classList.contains('hidden')) {
+                variantsSection.classList.remove('hidden');
+                toggleBtn.innerHTML = '<i data-lucide="toggle-right" class="w-5 h-5"></i> Hide Variants';
+            } else {
+                variantsSection.classList.add('hidden');
+                toggleBtn.innerHTML = '<i data-lucide="toggle-left" class="w-5 h-5"></i> Add Variants';
+            }
+
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+
+        // Add new specification
+        function addSpecification() {
+            const container = document.getElementById('specifications');
+            const index = container.children.length;
+            const row = document.createElement('div');
+            row.className = 'flex gap-3 items-center spec-row';
+            row.innerHTML = `
+                <input type="text" name="specifications[${index}][key]" placeholder="e.g. Material"
+                    class="flex-1 px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
+                <input type="text" name="specifications[${index}][value]" placeholder="e.g. 100% Wool"
+                    class="flex-1 px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
+                <button type="button" onclick="this.closest('.spec-row').remove()"
+                    class="p-2 text-red-400 hover:text-red-600 transition">
+                    <i data-lucide="trash-2" class="w-5 h-5"></i>
+                </button>
+            `;
+            container.appendChild(row);
+
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+
+        // Add new variant
+        function addVariant() {
+            const container = document.getElementById('variants');
+            const index = container.children.length;
+            const row = document.createElement('div');
+            row.className = 'variant-row border border-(--text-color)/20 rounded-2xl p-5 bg-(--card-dark)/50';
+            row.innerHTML = `
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
+                    <input type="text" name="variants[${index}][sku]" placeholder="SKU *"
+                        class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
+                    <input type="text" name="variants[${index}][size]" placeholder="Size (e.g. M, L, XL)"
+                        class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
+                    <input type="text" name="variants[${index}][color]" placeholder="Color"
+                        class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
+                    <input type="number" name="variants[${index}][price]" placeholder="Base Price" min="0" step="1"
+                        class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
+                    <input type="number" name="variants[${index}][discount_amount]" placeholder="Discount (%)" min="0" max="99" step="1"
+                        class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
+                    <input type="number" name="variants[${index}][stock]" placeholder="Stock" min="0"
+                        class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
+                </div>
+                <div id="variantPreview_${index}" class="text-sm text-gray-600 mb-2"></div>
+                <button type="button" onclick="this.closest('.variant-row').remove()"
+                    class="text-sm text-red-400 hover:text-red-600 flex items-center gap-1">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i> Remove variant
+                </button>
+            `;
+            container.appendChild(row);
+
+            // Add real-time calculation for variant
+            const inputs = row.querySelectorAll('input[type="number"]');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    calculateVariantPrice(this.closest('.variant-row'));
+                });
+            });
+
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+
+        // Calculate variant final price
+        function calculateVariantPrice(row) {
+            const price = parseFloat(row.querySelector('input[name*="[price]"]').value) || 0;
+            const discountPercent = parseFloat(row.querySelector('input[name*="[discount_amount]"]').value) || 0;
+            const preview = row.querySelector('[id^="variantPreview_"]');
+
+            if (discountPercent > 0 && discountPercent <= 99) {
+                const finalPrice = price - (price * discountPercent / 100);
+                preview.innerHTML = `
+                    <span class="font-semibold text-green-600">Final: Rs.${finalPrice.toFixed(2)}</span>
+                    <span class="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full ml-2">-${discountPercent}%</span>
+                `;
+            } else if (discountPercent > 99 || discountPercent < 0) {
+                preview.innerHTML = `<span class="text-red-500">Discount percentage must be between 0 and 99</span>`;
+            } else {
+                preview.innerHTML = `<span class="text-gray-400">No discount applied</span>`;
+            }
+        }
+
+        // Remove existing image
+        function removeExistingImage(button, imageId) {
+            const container = document.getElementById('removedImagesContainer');
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'remove_images[]';
+            input.value = imageId;
+            container.appendChild(input);
+
+            const imageDiv = button.closest('.existing-image');
+            imageDiv.style.opacity = '0.5';
+            imageDiv.style.pointerEvents = 'none';
+            button.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i>';
+            button.classList.remove('bg-red-500');
+            button.classList.add('bg-green-500');
+
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+
+        // Image upload preview
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadArea = document.getElementById('uploadArea');
+            const mediaInput = document.getElementById('mediaInput');
+            const previewGrid = document.getElementById('previewGrid');
+            const existingCount = {{ $product->images->count() }};
+            let uploadedFiles = [];
+
+            function updatePreview() {
+                const existingImages = previewGrid.querySelectorAll('.existing-image');
+                const newFiles = previewGrid.querySelectorAll('.new-image');
+                newFiles.forEach(el => el.remove());
+
+                uploadedFiles.forEach((file, index) => {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const div = document.createElement('div');
+                        div.className = 'aspect-square border-2 border-green-400 rounded-2xl overflow-hidden relative new-image';
+                        div.innerHTML = `
+                            <img src="${e.target.result}" class="w-full h-full object-cover">
+                            <button type="button" onclick="removeNewImage(this, ${index})"
+                                class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5">
+                                <i data-lucide="x" class="w-4 h-4"></i>
+                            </button>
+                            <div class="absolute bottom-2 left-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
+                                ${file.name.length > 15 ? file.name.substring(0, 15) + '...' : file.name}
+                            </div>
+                        `;
+                        previewGrid.appendChild(div);
+
+                        if (typeof lucide !== 'undefined') {
+                            lucide.createIcons();
+                        }
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            window.removeNewImage = function(button, index) {
+                uploadedFiles.splice(index, 1);
+                button.closest('.new-image').remove();
+
+                const dt = new DataTransfer();
+                uploadedFiles.forEach(file => dt.items.add(file));
+                mediaInput.files = dt.files;
+            };
+
+            uploadArea.addEventListener('click', function() {
+                mediaInput.click();
+            });
+
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('border-(--secondary-color)');
+            });
+
+            uploadArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.classList.remove('border-(--secondary-color)');
+            });
+
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('border-(--secondary-color)');
+
+                const files = e.dataTransfer.files;
+                const totalFiles = existingCount + uploadedFiles.length + files.length;
+
+                if (totalFiles > 4) {
+                    alert('Maximum 4 images allowed. You already have ' + existingCount + ' images and ' + uploadedFiles.length + ' new files.');
+                    return;
+                }
+
+                for (let file of files) {
+                    if (file.type.startsWith('image/')) {
+                        uploadedFiles.push(file);
+                    }
+                }
+
+                const dt = new DataTransfer();
+                uploadedFiles.forEach(file => dt.items.add(file));
+                mediaInput.files = dt.files;
+
+                updatePreview();
+            });
+
+            mediaInput.addEventListener('change', function() {
+                const files = Array.from(this.files);
+                const totalFiles = existingCount + uploadedFiles.length + files.length;
+
+                if (totalFiles > 4) {
+                    alert('Maximum 4 images allowed. You already have ' + existingCount + ' images.');
+                    this.value = '';
+                    return;
+                }
+
+                uploadedFiles = files;
+                updatePreview();
+            });
+        });
+    </script>
+    @endpush
 
     @vite('resources/js/product-edit.js')
 </x-seller_layout>

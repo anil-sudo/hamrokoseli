@@ -96,8 +96,8 @@
                                 <label class="block text-sm font-medium text-brand-dark mb-1">
                                     Phone Number
                                 </label>
-                                <input type="tel" name="phone" value="{{ old('phone', $user->phone) }}"
-                                    placeholder="e.g. 9800000000"
+                                <input type="tel" name="phone" id="profile-phone" value="{{ old('phone', $user->phone) }}"
+                                    placeholder="e.g. 9800000000" maxlength="10"
                                     class="w-full bg-(--card-dark) rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-(--secondary-color)">
                             </div>
                             <div>
@@ -184,6 +184,16 @@
                             @error('new_password_confirmation')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
+                        </div>
+
+                        <!-- Password strength hints -->
+                        <div class="md:col-span-2 bg-[#ebd7be]/20 border border-[#ebd7be]/60 rounded-2xl p-4 text-xs text-[#3A2A1F]/70 space-y-1.5">
+                            <p class="font-bold text-[#1F3D2E] text-sm mb-1.5">Password must contain:</p>
+                            <p id="hint-length" class="flex items-center gap-2"><span class="w-3.5 h-3.5 flex items-center justify-center rounded-full bg-slate-200 text-[8px] font-bold text-slate-500">○</span> At least 8 characters</p>
+                            <p id="hint-upper"  class="flex items-center gap-2"><span class="w-3.5 h-3.5 flex items-center justify-center rounded-full bg-slate-200 text-[8px] font-bold text-slate-500">○</span> At least 1 uppercase letter (A–Z)</p>
+                            <p id="hint-lower"  class="flex items-center gap-2"><span class="w-3.5 h-3.5 flex items-center justify-center rounded-full bg-slate-200 text-[8px] font-bold text-slate-500">○</span> At least 1 lowercase letter (a–z)</p>
+                            <p id="hint-number" class="flex items-center gap-2"><span class="w-3.5 h-3.5 flex items-center justify-center rounded-full bg-slate-200 text-[8px] font-bold text-slate-500">○</span> At least 1 number (0–9)</p>
+                            <p id="hint-special" class="flex items-center gap-2"><span class="w-3.5 h-3.5 flex items-center justify-center rounded-full bg-slate-200 text-[8px] font-bold text-slate-500">○</span> At least 1 special character (e.g. ! @ # $ % ^ & *)</p>
                         </div>
                     </div>
 

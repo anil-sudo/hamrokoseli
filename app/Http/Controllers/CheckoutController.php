@@ -58,9 +58,8 @@ class CheckoutController extends Controller
     {
         $this->authorizeCartItem($cart);
 
-        // ✅ VALIDATION — phone & address are taken directly from the
-        // checkout form (pre-filled from the user's profile), not from a
-        // separate shipping-address-book selection.
+        // VALIDATION — phone & address are taken directly from the checkout form.
+        // Format/length is enforced client-side; server only checks non-empty.
         $data = $request->validate([
             'payment_method' => ['required', 'in:cod,esewa,khalti'],
             'phone' => ['required', 'string', 'max:20', 'digits:10'],
@@ -87,17 +86,13 @@ class CheckoutController extends Controller
         // ✅ TRANSACTION
         $order = DB::transaction(function () use ($cart, $product, $variant, $data, $unitPrice, $subtotal, $user) {
 
-            // Keep the user's profile in sync with whatever they confirmed
-            // at checkout, so next time it's already pre-filled correctly.
-            $user->update([
-                'phone' => $data['phone'],
-                'address' => $data['address'],
-            ]);
+            // Sync address to user profile. We do NOT update users.phone here
+            // because the users_phone_unique constraint would reject a phone that
+            // already belongs to another account; the phone is stored on the
+            // shipping_addresses row instead.
+            $user->update(['address' => $data['address']]);
 
-            // Orders still need a row in `shipping_addresses` (that's what
-            // the `shipping_address_id` column points to). We pull it
-            // straight from the user table instead of asking the shopper
-            // to manage a separate address book.
+            // Orders still need a row in `shipping_addresses`.
             $shippingAddress = ShippingAddress::updateOrCreate(
                 ['user_id' => $user->id, 'is_default' => 1],
                 [
