@@ -167,6 +167,11 @@
                     </ul>
                 </div>
 
+                <div class="tab-panel text-sm text-[#3A2A1F]/80 leading-relaxed font-medium space-y-3 hidden"
+                    data-panel="story" id="modal-product-story">
+                    <p>Product craftsmanship story goes here...</p>
+                </div>
+
             </div>
             <!-- Reviews Section -->
             <div class="pt-8 border-t border-[#ebd7be]/40 space-y-6" id="modal-reviews-section">
