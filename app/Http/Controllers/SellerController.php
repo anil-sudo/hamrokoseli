@@ -8,13 +8,15 @@ use App\Models\OrderItem;
 use App\Models\Payment;
 use App\Models\Payout;
 use App\Models\Product;
-use App\Models\ProductVariant;
 use App\Models\Review;
 use App\Models\SupportTicket;
 use App\Services\NotificationService;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -122,12 +124,20 @@ class SellerController extends Controller
         $soldItems = OrderItem::where('vendor_id', $vendorId)
             ->whereNotIn('status', ['cancelled', 'returned']);
 
+        // ─── Review Statistics ───────────────────────────────
+        $productIds = Product::where('vendor_id', $vendorId)->pluck('id');
+
+        $allReviews = Review::whereIn('product_id', $productIds);
+
+        $reviewCount = $allReviews->count();
+        $avgRating = $reviewCount > 0 ? round($allReviews->avg('rating'), 2) : 0;
+
         $stats = [
             'total_sales' => (clone $soldItems)->sum('subtotal'),
             'total_orders' => (clone $soldItems)->select('order_id')->distinct()->count('order_id'),
             'active_products' => Product::where('vendor_id', $vendorId)->where('status', 'active')->count(),
-            'avg_rating' => (float) ($vendor->rating ?? 0),
-            'review_count' => $vendor->reviews()->count(),
+            'avg_rating' => (float) $avgRating,
+            'review_count' => $reviewCount,
         ];
 
         // ─── Sales trend for the last 7 days ───────────────────────────────
@@ -188,13 +198,14 @@ class SellerController extends Controller
                 'in_stock' => $query->where('stock', '>', 5),
                 'low_stock' => $query->whereBetween('stock', [1, 5]),
                 'out_of_stock' => $query->where('stock', 0),
+                'draft' => $query->where('status', 'draft'),
                 default => null,
             };
         }
 
         $products = $query->latest()->paginate(10);
         $totalProducts = Product::where('vendor_id', $vendorId)->count();
-        $activeProducts = Product::where('vendor_id', $vendorId)->where('status', 'active')->count();
+        $lowStock = Product::where('vendor_id', $vendorId)->whereBetween('stock', [1, 5])->count();
         $outOfStock = Product::where('vendor_id', $vendorId)->where('stock', 0)->count();
         $draftProducts = Product::where('vendor_id', $vendorId)->where('status', 'draft')->count();
         $categories = Category::where('status', 'active')->get();
@@ -202,7 +213,7 @@ class SellerController extends Controller
         return view('seller.product-management', compact(
             'products',
             'totalProducts',
-            'activeProducts',
+            'lowStock',
             'outOfStock',
             'draftProducts',
             'categories'
@@ -244,18 +255,11 @@ class SellerController extends Controller
             'specifications' => 'nullable|array',
             'specifications.*.key' => 'nullable|string|max:100',
             'specifications.*.value' => 'nullable|string|max:255',
-            'variants' => 'nullable|array',
-            'variants.*.id' => 'nullable|integer',
-            'variants.*.sku' => 'required_with:variants|string|max:100|distinct',
-            'variants.*.size' => 'nullable|string|max:50',
-            'variants.*.color' => 'nullable|string|max:50',
-            'variants.*.price' => 'nullable|numeric|min:0',
-            'variants.*.discount_amount' => 'nullable|numeric|min:0|max:99', // Changed
-            'variants.*.stock' => 'nullable|integer|min:0',
-            'images' => 'nullable|array|max:4',
+            'images' => 'nullable|array|max:1',
             'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:10240',
             'remove_images' => 'nullable|array',
             'remove_images.*' => 'integer|exists:images,id',
+            'status' => 'required|in:active,draft',
         ]);
 
         $product->update([
@@ -269,78 +273,33 @@ class SellerController extends Controller
             'discount_price' => ($validated['discount_amount'] ?? 0) > 0 ? (($validated['base_price'] ?? $product->price) * (1 - $validated['discount_amount'] / 100)) : null,
             'stock' => $validated['stock'] ?? $product->stock,
             'sku' => $validated['sku'] ?? $product->sku,
+            'status' => $validated['status'],
         ]);
 
-        // Update variants
-        if (! empty($validated['variants'])) {
-            $existingVariantIds = $product->variants()->pluck('id')->toArray();
-            $updatedVariantIds = [];
-
-            foreach ($validated['variants'] as $variantData) {
-                if (empty($variantData['sku'])) {
-                    continue;
-                }
-
-                if (! empty($variantData['id']) && in_array($variantData['id'], $existingVariantIds)) {
-                    $variant = ProductVariant::find($variantData['id']);
-                    $variant->update([
-                        'sku' => $variantData['sku'],
-                        'size' => $variantData['size'] ?? null,
-                        'color' => $variantData['color'] ?? null,
-                        'price' => ! empty($variantData['price']) ? $variantData['price'] : null,
-                        'discount_price' => (! empty($variantData['discount_amount']) && (! empty($variantData['price']) || ($validated['base_price'] ?? $product->price)))
-                            ? ((! empty($variantData['price']) ? $variantData['price'] : ($validated['base_price'] ?? $product->price)) * (1 - $variantData['discount_amount'] / 100))
-                            : null,
-                        'stock' => $variantData['stock'] ?? 0,
-                    ]);
-                    $updatedVariantIds[] = $variant->id;
-                } else {
-                    $newVariant = ProductVariant::create([
-                        'product_id' => $product->id,
-                        'sku' => $variantData['sku'],
-                        'size' => $variantData['size'] ?? null,
-                        'color' => $variantData['color'] ?? null,
-                        'price' => ! empty($variantData['price']) ? $variantData['price'] : null,
-                        'discount_price' => (! empty($variantData['discount_amount']) && (! empty($variantData['price']) || ($validated['base_price'] ?? $product->price)))
-                            ? ((! empty($variantData['price']) ? $variantData['price'] : ($validated['base_price'] ?? $product->price)) * (1 - $variantData['discount_amount'] / 100))
-                            : null,
-                        'stock' => $variantData['stock'] ?? 0,
-                        'status' => 'active',
-                    ]);
-                    $updatedVariantIds[] = $newVariant->id;
-                }
-            }
-            $variantsToDelete = array_diff($existingVariantIds, $updatedVariantIds);
-            ProductVariant::whereIn('id', $variantsToDelete)->delete();
-        } else {
-            $product->variants()->delete();
-        }
+        $product->variants()->delete();
 
         if (! empty($validated['remove_images'])) {
             $imagesToRemove = $product->images()->whereIn('id', $validated['remove_images'])->get();
             foreach ($imagesToRemove as $img) {
-                if (Storage::disk('public')->exists($img->path)) {
-                    Storage::disk('public')->delete($img->path);
-                }
+                Storage::disk('public')->delete($img->path);
                 $img->delete();
             }
         }
 
         if ($request->hasFile('images')) {
-            $remainingCount = $product->images()->count();
-            foreach ($request->file('images') as $index => $file) {
-                if ($remainingCount >= 4) {
-                    break;
-                }
-
-                $path = $file->store('products', 'public');
-                $product->images()->create([
-                    'path' => $path,
-                    'type' => 'gallery',
-                    'is_primary' => $remainingCount === 0 && $index === 0 ? 1 : 0,
-                ]);
-                $remainingCount++;
+            foreach ($product->images as $oldImage) {
+                Storage::disk('public')->delete($oldImage->path);
+                $oldImage->delete();
             }
+
+            $file = $request->file('images')[0];
+            $path = $file->store('products', 'public');
+
+            $product->images()->create([
+                'path' => $path,
+                'type' => 'gallery',
+                'is_primary' => 1,
+            ]);
         }
 
         return redirect()->route('product-management')->with('success', 'Product updated successfully!');
@@ -357,17 +316,11 @@ class SellerController extends Controller
             'discounted_price' => 'nullable|numeric|min:0|max:99',
             'sku' => 'required|string|max:100|unique:products,sku',
             'stock' => 'required|integer|min:0',
+            'status' => 'required|in:active,draft',
             'specifications' => 'nullable|array',
             'specifications.*.key' => 'nullable|string|max:100',
             'specifications.*.value' => 'nullable|string|max:255',
-            'variants' => 'nullable|array',
-            'variants.*.sku' => 'required_with:variants|string|max:100|distinct|unique:product_variants,sku',
-            'variants.*.size' => 'nullable|string|max:50',
-            'variants.*.color' => 'nullable|string|max:50',
-            'variants.*.price' => 'nullable|numeric|min:0',
-            'variants.*.discounted_price' => 'nullable|numeric|min:0|max:99',
-            'variants.*.stock' => 'nullable|integer|min:0',
-            'images' => 'nullable|array|max:4',
+            'images' => 'nullable|array|max:1',
             'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:10240',
         ]);
 
@@ -388,42 +341,19 @@ class SellerController extends Controller
                                     : null,
             'stock' => $validated['stock'],
             'sku' => $validated['sku'],
-            'status' => 'active',
+            'status' => $validated['status'],
         ]);
-
-        // 2. Save variants
-        if (! empty($validated['variants'])) {
-            foreach ($validated['variants'] as $variant) {
-                if (empty($variant['sku'])) {
-                    continue;
-                }
-
-                ProductVariant::create([
-                    'product_id' => $product->id,
-                    'sku' => $variant['sku'],
-                    'size' => $variant['size'] ?? null,
-                    'color' => $variant['color'] ?? null,
-                    'price' => ! empty($variant['price']) ? $variant['price'] : null,
-                    'discount_price' => (! empty($variant['discounted_price']) && (! empty($variant['price']) || $validated['base_price']))
-                        ? ((! empty($variant['price']) ? $variant['price'] : $validated['base_price']) * (1 - $variant['discounted_price'] / 100))
-                        : null,
-                    'stock' => $variant['stock'] ?? 0,
-                    'status' => 'active',
-                ]);
-            }
-        }
 
         // 3. Save images
         if ($request->hasFile('images')) {
-            foreach ($request->file('images') as $index => $file) {
-                $path = $file->store('products', 'public');
+            $file = $request->file('images')[0];
+            $path = $file->store('products', 'public');
 
-                $product->images()->create([
-                    'path' => $path,
-                    'type' => 'gallery',
-                    'is_primary' => $index === 0 ? 1 : 0,
-                ]);
-            }
+            $product->images()->create([
+                'path' => $path,
+                'type' => 'gallery',
+                'is_primary' => 1,
+            ]);
         }
 
         return redirect()
@@ -437,13 +367,39 @@ class SellerController extends Controller
             ->where('slug', $slug)
             ->firstOrFail();
 
-        $product->images()->delete();
-        $product->variants()->delete();
-        $product->delete();
+        try {
+            // Check if this product is linked to any orders
+            $orderItemsCount = OrderItem::where('product_id', $product->id)->count();
 
-        return redirect()
-            ->route('product-management')
-            ->with('success', 'Product deleted successfully.');
+            if ($orderItemsCount > 0) {
+                return redirect()
+                    ->route('product-management')
+                    ->with('error', "This product cannot be deleted. It is used in {$orderItemsCount} order(s).");
+            }
+
+            // Safe to delete
+            $product->images()->delete();
+            $product->variants()->delete();
+            $product->delete();
+
+            return redirect()
+                ->route('product-management')
+                ->with('success', 'Product deleted successfully.');
+        } catch (\Exception $e) {
+            // Catch foreign key constraint error
+            if ($e instanceof QueryException && $e->getCode() === '23000') {
+                return redirect()
+                    ->route('product-management')
+                    ->with('error', 'This product cannot be deleted because it is linked to existing orders.');
+            }
+
+            // Log unexpected errors
+            Log::error('Product deletion failed: '.$e->getMessage());
+
+            return redirect()
+                ->route('product-management')
+                ->with('error', 'Something went wrong. Please try again later.');
+        }
     }
 
     public function order(Request $request)
@@ -608,14 +564,41 @@ class SellerController extends Controller
             ->with('success', 'Payment status updated to '.$labels[$validated['payment_status']].'.');
     }
 
-    public function returnProducts()
+    public function updateOrderStatus(Request $request, Order $order)
     {
-        return view('seller.return');
-    }
+        $vendor = auth()->user()->vendor;
 
-    public function returnDetails()
-    {
-        return view('seller.return-details');
+        if (! $vendor) {
+            return redirect()->route('dashboard')
+                ->with('error', 'Vendor profile not found. Please contact support.');
+        }
+
+        // Make sure this order actually belongs to the current vendor.
+        $belongsToVendor = $order->orderItems()->where('vendor_id', $vendor->id)->exists();
+
+        if (! $belongsToVendor) {
+            abort(404);
+        }
+
+        $validated = $request->validate([
+            'order_status' => 'required|in:pending,confirmed,shipped,delivered,cancelled',
+        ]);
+
+        if ($order->status !== $validated['order_status']) {
+            $order->update(['status' => $validated['order_status']]);
+        }
+
+        $labels = [
+            'pending' => 'New',
+            'confirmed' => 'Processing',
+            'shipped' => 'Shipped',
+            'delivered' => 'Delivered',
+            'cancelled' => 'Cancelled',
+        ];
+
+        return redirect()
+            ->route('order-details', ['order' => $order->id])
+            ->with('success', 'Order status updated to '.$labels[$validated['order_status']].'.');
     }
 
     public function sellerProfile()
@@ -635,6 +618,13 @@ class SellerController extends Controller
             'email' => 'required|email|max:150|unique:users,email,'.$user->id,
             'phone' => 'nullable|string|max:20',
             'profile_pic' => 'nullable|image|max:2048',
+            'vendor_name' => 'required|string|max:100',
+            'owner_name' => 'required|string|max:100',
+            'vendor_email' => 'nullable|email|max:150',
+            'vendor_phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string|max:255',
+            'city' => 'nullable|string|max:100',
+            'province' => 'nullable|string|max:100',
         ]);
 
         $user->name = $request->name;
@@ -648,6 +638,18 @@ class SellerController extends Controller
 
         $user->save();
 
+        $vendor = $user->vendor;
+        if ($vendor) {
+            $vendor->vendor_name = $request->vendor_name;
+            $vendor->owner_name = $request->owner_name;
+            $vendor->email = $request->vendor_email;
+            $vendor->phone = $request->vendor_phone;
+            $vendor->vendor_address = $request->address;
+            $vendor->city = $request->city;
+            $vendor->province = $request->province;
+            $vendor->save();
+        }
+
         NotificationService::profileUpdated($user, 'profile', true);
 
         return redirect()->back()->with('success', 'Profile updated successfully.');
@@ -656,15 +658,24 @@ class SellerController extends Controller
     public function updatePassword(Request $request)
     {
         $request->validate([
-            'current_password' => 'required|current_password',
+            'current_password' => 'required',
             'new_password' => 'required|min:8|confirmed',
         ]);
 
         $user = auth()->user();
+
         if (! \Hash::check($request->current_password, $user->password)) {
             return redirect()->back()
                 ->withErrors(['current_password' => 'Current password is incorrect.'])
-                ->withInput();
+                ->withInput()
+                ->withFragment('password-section');
+        }
+
+        if (\Hash::check($request->new_password, $user->password)) {
+            return redirect()->back()
+                ->withErrors(['new_password' => 'New password must be different from your current password.'])
+                ->withInput()
+                ->withFragment('password-section');
         }
 
         $user->password = \Hash::make($request->new_password);
@@ -782,9 +793,10 @@ class SellerController extends Controller
         // ─── Total Earnings: sum of subtotals from paid, non-cancelled items ─
         $totalEarnings = (clone $paidItemsBase)->sum('order_items.subtotal');
 
-        // ─── Total Payouts: sum of completed payouts for this vendor ─────────
+        // ─── Total Payouts (Commission Paid): sum of completed platform fees/commissions paid to admin ─────────
         $totalPayouts = Payout::where('vendor_id', $vendorId)
             ->where('status', 'completed')
+            ->where('platform_fee', 0)
             ->sum('amount');
 
         // ─── Pending Settlement: orders confirmed/shipped but not yet paid ───
@@ -796,14 +808,14 @@ class SellerController extends Controller
             ->where('payments.status', 'pending')
             ->sum('order_items.subtotal');
 
-        // ─── Current Balance: total earned minus total paid out ───────────────
-        $currentBalance = max(0, $totalEarnings - $totalPayouts);
+        // ─── Current Balance (Commission Owed to Admin): 3% of total earnings minus total commission paid ───
+        $totalCommissionOwed = round($totalEarnings * 0.03, 2);
+        $currentBalance = max(0, $totalCommissionOwed - $totalPayouts);
 
         // ─── Payment transaction history (from the payments table) ───────────
         // Each row here represents a customer payment for an order containing
         // this vendor's items. We show these as the "payout history" since
         // the payouts table may still be empty for new setups.
-        $period = $request->query('period', '30');
 
         $paymentHistoryQuery = Payment::select(
             'payments.id',
@@ -814,7 +826,9 @@ class SellerController extends Controller
             'payments.reference_id',
             'payments.paid_at',
             'payments.created_at',
-            DB::raw('SUM(order_items.subtotal) as vendor_subtotal')
+            DB::raw('SUM(order_items.subtotal) as vendor_subtotal'),
+            DB::raw('ROUND(SUM(order_items.subtotal) * 0.03, 2) as commission_amount'),
+            DB::raw('ROUND(SUM(order_items.subtotal) * 0.97, 2) as net_amount')
         )
             ->join('orders', 'orders.id', '=', 'payments.order_id')
             ->join('order_items', 'order_items.order_id', '=', 'orders.id')
@@ -833,11 +847,7 @@ class SellerController extends Controller
             )
             ->latest('payments.created_at');
 
-        if ($period !== 'all') {
-            $paymentHistoryQuery->where('payments.created_at', '>=', now()->subDays((int) $period));
-        }
-
-        $paymentHistory = $paymentHistoryQuery->paginate(10)->withQueryString();
+        $paymentHistory = $paymentHistoryQuery->paginate(8)->withQueryString();
 
         // ─── Payout requests (admin-initiated payouts to the vendor) ─────────
         $payouts = Payout::where('vendor_id', $vendorId)->latest()->get();
@@ -850,13 +860,262 @@ class SellerController extends Controller
             'currentBalance',
             'paymentHistory',
             'payouts',
-            'period'
         ));
     }
 
-    public function paymentDetails()
+    public function paymentDetails($id)
     {
-        return view('seller.payment-details');
+        $vendor = auth()->user()->vendor;
+
+        if (! $vendor) {
+            return redirect()->route('dashboard')
+                ->with('error', 'Vendor profile not found.');
+        }
+
+        // Fetch payment with full order and buyer info
+        $payment = Payment::with([
+            'order.user',
+            'order.shippingAddress',
+            'order.orderItems' => function ($q) use ($vendor) {
+                $q->where('vendor_id', $vendor->id)
+                    ->with(['product.images', 'variant']);
+            },
+        ])
+            ->whereHas('order.orderItems', function ($q) use ($vendor) {
+                $q->where('vendor_id', $vendor->id);
+            })
+            ->findOrFail($id);
+
+        $order = $payment->order;
+        $items = $order->orderItems; // Only this vendor's items
+
+        $vendorSubtotal = $items->sum('subtotal');
+        $commission = round($vendorSubtotal * 0.03, 2);
+
+        // Buyer Payment History Summary
+        $buyerPaymentInfo = [
+            'total_paid_by_buyer' => $payment->total_amount,
+            'payment_method' => $payment->gateway,
+            'transaction_id' => $payment->transaction_id ?? $payment->reference_id,
+            'paid_at' => $payment->paid_at ?? $payment->created_at,
+            'status' => $payment->status,
+        ];
+
+        return view('seller.payment-details', compact(
+            'payment',
+            'order',
+            'items',
+            'vendorSubtotal',
+            'commission',
+            'buyerPaymentInfo'
+        ));
+    }
+
+    public function payCommission(Request $request)
+    {
+        $vendor = auth()->user()->vendor;
+        if (! $vendor) {
+            return redirect()->route('dashboard')->with('error', 'Vendor profile not found.');
+        }
+
+        $validated = $request->validate([
+            'amount' => 'required|numeric|min:10|max:100000',
+        ]);
+
+        $amount = (float) $validated['amount'];
+
+        // Create Payout Record (transaction_id will be set to Khalti pidx after initiation)
+        $payout = Payout::create([
+            'vendor_id' => $vendor->id,
+            'gross_amount' => $amount,
+            'platform_fee' => 0,
+            'amount' => $amount,
+            'method' => 'Khalti',
+            'status' => 'pending',
+            'notes' => 'Admin Commission Payment via Khalti',
+        ]);
+
+        return $this->initiateKhaltiPayment($payout, $amount);
+    }
+
+    private function initiateKhaltiPayment(Payout $payout, float $amount)
+    {
+        $secretKey = config('services.khalti.secret_key');
+        $baseUrl = rtrim(config('services.khalti.base_url', 'https://dev.khalti.com/api/v2'), '/').'/';
+
+        Log::info('Khalti Debug - Config', [
+            'secret_key_present' => ! empty($secretKey),
+            'base_url' => $baseUrl,
+            'env_key' => env('KHALTI_SECRET_KEY') ? 'YES' : 'NO',
+            'amount' => $amount,
+        ]);
+
+        if (empty($secretKey)) {
+            $payout->delete();
+
+            return back()->with('error', 'Khalti secret key is missing.');
+        }
+
+        $internalTxnId = $payout->id.'-'.Str::uuid();
+        $payout->update(['transaction_id' => $internalTxnId]);  // temporary
+
+        $payload = [
+            'return_url' => route('seller.payment.khalti.callback'),
+            'website_url' => config('app.url'),
+            'amount' => (int) round($amount * 100),
+            'purchase_order_id' => $internalTxnId,
+            'purchase_order_name' => "Commission #{$payout->id}",
+            'customer_info' => [
+                'name' => auth()->user()->name ?? 'Vendor',
+                'email' => auth()->user()->email,
+                'phone' => auth()->user()->phone ?? '9800000000',
+            ],
+        ];
+
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'Key '.$secretKey,
+                'Content-Type' => 'application/json',
+            ])
+                ->withOptions(['verify' => false])
+                ->post($baseUrl.'epayment/initiate/', $payload);
+
+            Log::info('Khalti Raw Response', [
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                if (! empty($data['payment_url']) && ! empty($data['pidx'])) {
+                    // ← Save Khalti pidx into transaction_id
+                    $payout->update(['transaction_id' => $data['pidx']]);
+
+                    return redirect($data['payment_url']);
+                }
+            }
+
+            $error = $response->json('detail') ?? $response->body() ?? 'No detail';
+            Log::error('Khalti Initiate Failed', ['error' => $error]);
+            $payout->update(['status' => 'failed']);
+
+            return back()->with('error', 'Khalti Error: '.$error);
+        } catch (\Exception $e) {
+            $payout->delete();
+            Log::error('Khalti Exception', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return back()->with('error', 'Something went wrong with Khalti.');
+        }
+    }
+
+    public function khaltiCallback(Request $request)
+    {
+        $pidx = $request->query('pidx');
+        if (! $pidx) {
+            return redirect()->route('seller.payment')
+                ->with('error', 'Invalid Khalti payment response.');
+        }
+
+        $payout = Payout::where('transaction_id', $pidx)->first();
+
+        if (! $payout) {
+            Log::warning('Khalti callback: Payout not found for pidx', ['pidx' => $pidx]);
+
+            return redirect()->route('seller.payment')
+                ->with('error', 'Payment record not found.');
+        }
+
+        if ($payout->status === 'completed') {
+            return redirect()->route('seller.payment')
+                ->with('success', 'Commission payment already processed.');
+        }
+
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'Key '.config('services.khalti.secret_key'),
+            ])
+                ->withOptions(['verify' => false])
+                ->post(rtrim(config('services.khalti.base_url'), '/').'/epayment/lookup/', [
+                    'pidx' => $pidx,
+                ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                if (isset($data['status']) && $data['status'] === 'Completed') {
+                    $payout->update([
+                        'status' => 'completed',
+                        'paid_at' => now(),
+                        'transaction_id' => $data['transaction_id'] ?? $pidx,
+                    ]);
+
+                    return redirect()->route('seller.payment')
+                        ->with('success', 'Commission payment of Rs. '.number_format($payout->amount, 2).' settled successfully.');
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error('Khalti lookup exception', ['message' => $e->getMessage()]);
+        }
+
+        $payout->update(['status' => 'failed']);
+
+        return redirect()->route('seller.payment')
+            ->with('error', 'Commission payment verification failed.');
+    }
+
+    public function esewaCallback(Request $request)
+    {
+        $encoded = $request->query('data');
+        if (! $encoded) {
+            return redirect()->route('seller.payment')->with('error', 'Invalid eSewa payment response.');
+        }
+
+        $decoded = json_decode(base64_decode($encoded), true);
+        if (! is_array($decoded) || empty($decoded['transaction_uuid'])) {
+            return redirect()->route('seller.payment')->with('error', 'Invalid eSewa response.');
+        }
+
+        $payout = Payout::where('transaction_id', $decoded['transaction_uuid'])->first();
+        if (! $payout) {
+            return redirect()->route('seller.payment')->with('error', 'Payment record not found.');
+        }
+
+        if ($payout->status === 'completed') {
+            return redirect()->route('seller.payment')->with('success', 'Commission payment already processed.');
+        }
+
+        try {
+            $config = config('services.esewa');
+            $response = Http::get($config['status_url'], [
+                'product_code' => $config['product_code'],
+                'total_amount' => number_format((float) $payout->amount, 2, '.', ''),
+                'transaction_uuid' => $decoded['transaction_uuid'],
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                $status = $data['status'] ?? null;
+
+                if ($status === 'COMPLETE') {
+                    $payout->update([
+                        'status' => 'completed',
+                        'paid_at' => now(),
+                        'transaction_id' => $data['ref_id'] ?? $decoded['transaction_uuid'],
+                    ]);
+
+                    return redirect()->route('seller.payment')->with('success', 'Commission payment of Rs. '.number_format($payout->amount, 2).' settled successfully.');
+                }
+            }
+        } catch (\Exception $e) {
+            Log::error('eSewa lookup exception', ['message' => $e->getMessage()]);
+        }
+
+        $payout->update(['status' => 'failed']);
+
+        return redirect()->route('seller.payment')->with('error', 'Commission payment failed.');
     }
 
     public function sellerNotification()
@@ -867,8 +1126,6 @@ class SellerController extends Controller
             'vendor_order_placed',
             'return_requested',
             'return_approved',
-            'payout_processed',
-            'vendor_payment_received',
             'vendor_profile_updated',
             'support_ticket_status',
         ];
@@ -881,13 +1138,14 @@ class SellerController extends Controller
         $counts = [
             'all' => $user->appNotifications()->whereIn('type', $sellerTypes)->where('is_read', false)->count(),
             'orders' => $user->appNotifications()->where('is_read', false)->whereIn('type', [
-                'order_placed', 'vendor_order_placed', 'return_requested', 'return_approved',
-            ])->count(),
-            'payouts' => $user->appNotifications()->where('is_read', false)->whereIn('type', [
-                'payout_processed', 'vendor_payment_received',
+                'order_placed',
+                'vendor_order_placed',
+                'return_requested',
+                'return_approved',
             ])->count(),
             'store' => $user->appNotifications()->where('is_read', false)->whereIn('type', [
-                'vendor_profile_updated', 'support_ticket_status',
+                'vendor_profile_updated',
+                'support_ticket_status',
             ])->count(),
         ];
 
@@ -909,8 +1167,6 @@ class SellerController extends Controller
             'vendor_order_placed',
             'return_requested',
             'return_approved',
-            'payout_processed',
-            'vendor_payment_received',
             'vendor_profile_updated',
             'support_ticket_status',
         ];

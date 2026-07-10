@@ -36,6 +36,23 @@ class VendorsTable
                     ->sortable(),
                 TextColumn::make('status')
                     ->badge(),
+                TextColumn::make('total_earnings')
+                    ->label('Total Sales')
+                    ->money('NPR')
+                    ->getStateUsing(fn ($record) => $record->getTotalEarnings()),
+                TextColumn::make('commission_owed')
+                    ->label('Commission Owed (3%)')
+                    ->money('NPR')
+                    ->getStateUsing(fn ($record) => $record->getCommissionOwed()),
+                TextColumn::make('commission_paid')
+                    ->label('Commission Paid')
+                    ->money('NPR')
+                    ->getStateUsing(fn ($record) => $record->getCommissionPaid()),
+                TextColumn::make('commission_balance')
+                    ->label('Commission Due')
+                    ->money('NPR')
+                    ->getStateUsing(fn ($record) => $record->getCommissionBalance())
+                    ->color(fn ($state) => $state > 0 ? 'danger' : 'success'),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

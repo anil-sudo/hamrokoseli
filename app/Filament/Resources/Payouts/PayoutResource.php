@@ -19,6 +19,12 @@ class PayoutResource extends Resource
 {
     protected static ?string $model = Payout::class;
 
+    protected static ?string $navigationLabel = 'Commission Payments';
+
+    protected static ?string $modelLabel = 'Commission Payment';
+
+    protected static ?string $pluralModelLabel = 'Commission Payments';
+
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBanknotes;
 
     protected static string|UnitEnum|null $navigationGroup = 'Sales & Transactions';

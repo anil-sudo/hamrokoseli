@@ -22,8 +22,8 @@
 
     <div id="toastContainer" class="fixed top-5 right-5 z-50 space-y-3"></div>
 
-    <form id="productForm" method="POST" action="{{ route('product.update', $product->id) }}" enctype="multipart/form-data"
-        class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+    <form id="productForm" method="POST" action="{{ route('product.update', $product->slug) }}"
+        enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         @csrf
         @method('PUT')
 
@@ -31,7 +31,8 @@
         <div class="lg:col-span-8 space-y-6">
 
             <!-- General Information -->
-            <div class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6 lg:p-8">
+            <div
+                class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6 lg:p-8">
                 <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
                     <i data-lucide="info" class="w-6 h-6 text-(--primary-color)"></i>
                     General Information
@@ -95,7 +96,8 @@
             </div>
 
             <!-- Product Specifications -->
-            <div class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6 lg:p-8">
+            <div
+                class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6 lg:p-8">
                 <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
                     <i data-lucide="settings" class="w-6 h-6 text-(--primary-color)"></i>
                     Product Specifications <span class="text-(--secondary-color)">*</span>
@@ -130,104 +132,17 @@
                     Add New Specification
                 </button>
             </div>
-
-            <!-- Variants Section -->
-            <div id="variantsSection" class="{{ $product->variants->count() > 0 ? '' : 'hidden' }}">
-                <div class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6 lg:p-8">
-                    <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
-                        <i data-lucide="layers" class="w-6 h-6 text-(--primary-color)"></i>
-                        Product Variants
-                    </h2>
-                    <p class="text-sm text-(--text-color)/70 mb-4">Add different combinations of size, color, etc.</p>
-
-                    <div id="variants" class="space-y-4">
-                        @php
-                            $variants = old('variants', $product->variants ?? []);
-                        @endphp
-                        @if (count($variants) > 0)
-                            @foreach ($variants as $i => $variant)
-                                <div class="variant-row border border-(--text-color)/20 rounded-2xl p-5 bg-(--card-dark)/50">
-                                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
-                                        <input type="hidden" name="variants[{{ $i }}][id]" value="{{ $variant['id'] ?? '' }}">
-                                        <input type="text" name="variants[{{ $i }}][sku]"
-                                            value="{{ $variant['sku'] ?? '' }}" placeholder="SKU *"
-                                            class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-                                        <input type="text" name="variants[{{ $i }}][size]"
-                                            value="{{ $variant['size'] ?? '' }}" placeholder="Size (e.g. M, L, XL)"
-                                            class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-                                        <input type="text" name="variants[{{ $i }}][color]"
-                                            value="{{ $variant['color'] ?? '' }}" placeholder="Color"
-                                            class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-                                        <input type="number" name="variants[{{ $i }}][price]"
-                                            value="{{ $variant['price'] ?? '' }}" placeholder="Base Price"
-                                            min="0" step="1"
-                                            class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-                                        @php
-                                            $vPercent = '';
-                                            if (is_array($variant)) {
-                                                $vPercent = $variant['discount_amount'] ?? '';
-                                            } else {
-                                                $vPrice = $variant->price ?? $product->price;
-                                                if ($variant->discount_price && $variant->discount_price > 0 && $vPrice > 0) {
-                                                    $vPercent = round((($vPrice - $variant->discount_price) / $vPrice) * 100);
-                                                }
-                                            }
-                                        @endphp
-                                        <input type="number" name="variants[{{ $i }}][discount_amount]"
-                                            value="{{ old('variants.'.$i.'.discount_amount', $vPercent) }}" placeholder="Discount (%)"
-                                            min="0" max="99" step="1"
-                                            class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-                                        <input type="number" name="variants[{{ $i }}][stock]"
-                                            value="{{ is_array($variant) ? ($variant['stock'] ?? 0) : ($variant->stock ?? 0) }}" placeholder="Stock" min="0"
-                                            class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-                                    </div>
-                                    @php
-                                        if (is_array($variant)) {
-                                            $variantPrice = $variant['price'] ?? $product->price;
-                                            $variantDiscountPercent = $variant['discount_amount'] ?? 0;
-                                            $variantDiscountPrice = ($variantDiscountPercent > 0) ? ($variantPrice * (1 - $variantDiscountPercent / 100)) : null;
-                                        } else {
-                                            $variantPrice = $variant->price ?? $product->price;
-                                            $variantDiscountPrice = $variant->discount_price;
-                                        }
-                                        $hasVariantDiscount = $variantDiscountPrice !== null && $variantDiscountPrice > 0 && $variantDiscountPrice < $variantPrice;
-                                        $variantDiscountPercent = $hasVariantDiscount ? round((($variantPrice - $variantDiscountPrice) / $variantPrice) * 100) : 0;
-                                    @endphp
-                                    @if($hasVariantDiscount)
-                                        <div class="text-sm text-green-600 mb-2">
-                                            Final Price: Rs.{{ number_format($variantDiscountPrice, 2) }}
-                                            <span class="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full ml-2">
-                                                -{{ $variantDiscountPercent }}%
-                                            </span>
-                                        </div>
-                                    @endif
-                                    <button type="button" onclick="this.closest('.variant-row').remove()"
-                                        class="text-sm text-red-400 hover:text-red-600 flex items-center gap-1">
-                                        <i data-lucide="trash-2" class="w-4 h-4"></i> Remove variant
-                                    </button>
-                                </div>
-                            @endforeach
-                        @endif
-                    </div>
-
-                    <button type="button" onclick="addVariant()"
-                        class="mt-6 inline-flex items-center gap-2 px-6 py-3 border border-(--secondary-color) hover:bg-(--card-dark) bg-(--card-dark)/80 text-(--text-color) rounded-2xl font-medium">
-                        <i data-lucide="plus" class="w-5 h-5"></i>
-                        Add New Variant
-                    </button>
-                </div>
-            </div>
-
         </div>
 
         <!-- Right Sidebar -->
         <div class="lg:col-span-4 space-y-6">
 
             <!-- Product Media -->
-            <div class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6 lg:p-8">
+            <div
+                class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6 lg:p-8">
                 <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
                     <i data-lucide="image" class="w-6 h-6 text-(--primary-color)"></i>
-                    Product Media <span class="text-(--secondary-color)">*</span>
+                    Product Image <span class="text-(--secondary-color)">*</span>
                 </h2>
 
                 <div id="uploadArea"
@@ -236,30 +151,26 @@
                         <i data-lucide="upload-cloud" class="w-6 h-6 text-(--text-color)"></i>
                     </div>
                     <p class="font-medium">Click to upload or drag and drop</p>
-                    <p class="text-sm text-(--text-color)/70 mt-1">PNG, JPG up to 10MB (Max 4 images)</p>
-                    <input type="file" id="mediaInput" name="images[]" multiple accept="image/*" class="hidden">
+                    <p class="text-sm text-(--text-color)/70 mt-1">PNG, JPG, WebP (Max 100KB)</p>
+                    <input type="file" id="mediaInput" name="images[]" accept="image/*" class="hidden">
                 </div>
 
-                <div id="removedImagesContainer"></div>
-                <div id="previewGrid" class="grid grid-cols-4 gap-4">
-                    @foreach ($product->images as $image)
-                        <div class="aspect-square border border-(--text-color)/20 rounded-2xl overflow-hidden relative group existing-image" data-image-id="{{ $image->id }}">
-                            <img src="{{ asset('storage/' . $image->path) }}" class="w-full h-full object-cover">
-                            <button type="button" onclick="removeExistingImage(this, {{ $image->id }})" 
-                                class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-all">
-                                <i data-lucide="x" class="w-4 h-4"></i>
-                            </button>
+                <div id="previewGrid" class="mt-6 grid grid-cols-1 gap-4">
+                    @if ($product->images->first())
+                        <div class="aspect-square border rounded-2xl overflow-hidden relative">
+                            <img src="{{ asset('storage/' . $product->images->first()->path) }}"
+                                class="w-full h-full object-cover">
                         </div>
-                    @endforeach
+                    @endif
                 </div>
-                <p class="text-xs text-(--text-color)/50 mt-2">Maximum 4 images allowed</p>
                 @error('images.*')
                     <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
                 @enderror
             </div>
 
             <!-- Pricing & Inventory -->
-            <div id="pricingSection" class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6 lg:p-8">
+            <div id="pricingSection"
+                class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6 lg:p-8">
                 <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
                     <i data-lucide="dollar-sign" class="w-6 h-6 text-(--primary-color)"></i>
                     Pricing & Inventory <span class="text-(--secondary-color)">*</span>
@@ -274,8 +185,8 @@
                         $discountPercent = $hasDiscount ? round((($basePrice - $discountedPrice) / $basePrice) * 100) : 0;
                         $discountAmount = $hasDiscount ? ($basePrice - $discountedPrice) : 0;
                     @endphp
-                    
-                    @if($hasDiscount)
+
+                    @if ($hasDiscount)
                         <div class="bg-green-50 border border-green-200 rounded-xl p-4">
                             <div class="flex items-center justify-between">
                                 <div>
@@ -283,7 +194,8 @@
                                     <p class="text-2xl font-bold text-green-700">Rs.{{ number_format($discountedPrice, 2) }}</p>
                                 </div>
                                 <div class="text-right">
-                                    <p class="text-sm text-gray-500 line-through">Rs.{{ number_format($basePrice, 2) }}</p>
+                                    <p class="text-sm text-gray-500 line-through">
+                                        Rs.{{ number_format($basePrice, 2) }}</p>
                                     <p class="text-xs text-green-600 font-semibold">
                                         You Save: Rs.{{ number_format($discountAmount, 2) }}
                                         <span class="ml-1 bg-green-200 text-green-800 px-2 py-0.5 rounded-full">
@@ -296,7 +208,7 @@
                     @else
                         <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
                             <p class="text-sm text-gray-600">
-                                <span class="font-semibold">Current Price:</span> 
+                                <span class="font-semibold">Current Price:</span>
                                 Rs.{{ number_format($basePrice, 2) }}
                             </p>
                         </div>
@@ -306,9 +218,8 @@
                         <label class="block text-sm font-medium text-(--text-dark) mb-2">
                             Base Price (Rs.) <span class="text-(--secondary-color)">*</span>
                         </label>
-                        <input type="number" id="base_price" name="base_price" 
-                            value="{{ old('base_price', $product->price) }}" 
-                            min="0" required step="0.01"
+                        <input type="number" id="base_price" name="base_price"
+                            value="{{ old('base_price', $product->price) }}" min="0" required step="0.01"
                             class="w-full px-5 py-4 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-base focus:outline-none focus:border-(--secondary-color) transition duration-200"
                             oninput="calculateFinalPrice()">
                         @error('base_price')
@@ -320,8 +231,8 @@
                         <label class="block text-sm font-medium text-(--text-dark) mb-2">
                             Discount (%)
                         </label>
-                        <input type="number" id="discount_amount" name="discount_amount" 
-                            value="{{ old('discount_amount', ($product->discount_price && $product->discount_price > 0 && $product->discount_price < $product->price) ? round((($product->price - $product->discount_price) / $product->price) * 100) : '') }}" 
+                        <input type="number" id="discount_amount" name="discount_amount"
+                            value="{{ old('discount_amount', ($product->discount_price && $product->discount_price > 0 && $product->discount_price < $product->price) ? round((($product->price - $product->discount_price) / $product->price) * 100) : '') }}"
                             min="0" max="99" step="1"
                             class="w-full px-5 py-4 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-base focus:outline-none focus:border-(--secondary-color) transition duration-200"
                             placeholder="Enter discount percentage (e.g. 10 for 10% off)"
@@ -337,7 +248,7 @@
                             <label class="block text-sm font-medium text-(--text-dark) mb-2">
                                 SKU <span class="text-(--secondary-color)">*</span>
                             </label>
-                            <input type="text" id="sku" name="sku" required 
+                            <input type="text" id="sku" name="sku" required
                                 value="{{ old('sku', $product->sku) }}"
                                 class="w-full px-5 py-4 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-base focus:outline-none focus:border-(--secondary-color) transition duration-200">
                             @error('sku')
@@ -348,9 +259,8 @@
                             <label class="block text-sm font-medium text-(--text-dark) mb-2">
                                 Stock Quantity <span class="text-(--secondary-color)">*</span>
                             </label>
-                            <input type="number" id="stock" name="stock" 
-                                value="{{ old('stock', $product->stock) }}" 
-                                min="0" required
+                            <input type="number" id="stock" name="stock"
+                                value="{{ old('stock', $product->stock) }}" min="0" required
                                 class="w-full px-5 py-4 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-base focus:outline-none focus:border-(--secondary-color) transition duration-200">
                             @error('stock')
                                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
@@ -359,22 +269,19 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Variant Toggle -->
-            <div class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6">
-                <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
-                    <i data-lucide="layers" class="w-6 h-6 text-(--primary-color)"></i>
-                    Product Variants
-                </h2>
-                <p class="text-sm text-(--text-color)/70 mb-4">Add different combinations of size, color, etc.</p>
-                <button type="button" id="variantToggleBtn" onclick="toggleVariants()"
-                    class="w-full inline-flex items-center justify-center gap-2 px-6 py-4 border border-(--secondary-color) text-(--secondary-color) hover:bg-(--card-dark) rounded-2xl font-medium transition">
-                    <i data-lucide="{{ $product->variants->count() > 0 ? 'toggle-right' : 'toggle-left' }}" class="w-5 h-5"></i>
-                    {{ $product->variants->count() > 0 ? 'Hide Variants' : 'Add Variants' }}
-                </button>
-                @if($product->variants->count() > 0)
-                    <p class="text-xs text-gray-400 mt-2 text-center">{{ $product->variants->count() }} variant(s) configured</p>
-                @endif
+            <div>
+                <label class="block text-sm font-medium text-(--text-dark) mb-2">
+                    Product Status <span class="text-(--secondary-color)">*</span>
+                </label>
+                <select name="status" required
+                    class="w-full px-5 py-4 bg-(--card-bg) border border-(--bg-color)/30 rounded-xl text-base focus:outline-none focus:border-(--secondary-color)">
+                    <option value="active" {{ old('status', $product->status) == 'active' ? 'selected' : '' }}>
+                        Active (Publish Now)
+                    </option>
+                    <option value="draft" {{ old('status', $product->status) == 'draft' ? 'selected' : '' }}>
+                        Draft (Save for Later)
+                    </option>
+                </select>
             </div>
         </div>
 
@@ -385,18 +292,11 @@
                 Cancel
             </a>
 
-            <div class="flex gap-3">
-                <button type="button" onclick="window.location.href='{{ route('product-management') }}'"
-                    class="inline-flex items-center gap-2 px-8 py-3.5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-2xl font-semibold transition w-fit sm:w-auto">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                    Cancel
-                </button>
-                <button type="submit"
-                    class="inline-flex items-center gap-2 px-8 py-3.5 bg-(--secondary-color)/95 hover:bg-(--secondary-color) text-(--text-light) rounded-2xl font-semibold transition w-fit sm:w-auto">
-                    <i data-lucide="save" class="w-5 h-5"></i>
-                    Update Product
-                </button>
-            </div>
+            <button type="submit"
+                class="inline-flex items-center gap-2 px-8 py-3.5 bg-(--secondary-color)/95 hover:bg-(--secondary-color) text-(--text-light) rounded-2xl font-semibold transition w-fit sm:w-auto">
+                <i data-lucide="save" class="w-5 h-5"></i>
+                Update Product
+            </button>
         </div>
     </form>
 
@@ -407,7 +307,7 @@
             const basePrice = parseFloat(document.getElementById('base_price').value) || 0;
             const discountPercent = parseFloat(document.getElementById('discount_amount').value) || 0;
             const preview = document.getElementById('pricePreview');
-            
+
             if (discountPercent > 0 && discountPercent <= 99) {
                 const finalPrice = basePrice - (basePrice * discountPercent / 100);
                 preview.innerHTML = `
@@ -434,7 +334,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             const description = document.getElementById('description');
             const charCount = document.getElementById('charCount');
-            
+
             function updateCharCount() {
                 const count = description.value.length;
                 charCount.textContent = count + '/2000';
@@ -446,10 +346,10 @@
                     charCount.classList.add('text-gray-400');
                 }
             }
-            
+
             description.addEventListener('input', updateCharCount);
             updateCharCount();
-            
+
             // Initialize price preview
             calculateFinalPrice();
         });
@@ -458,7 +358,7 @@
         function toggleVariants() {
             const variantsSection = document.getElementById('variantsSection');
             const toggleBtn = document.getElementById('variantToggleBtn');
-            
+
             if (variantsSection.classList.contains('hidden')) {
                 variantsSection.classList.remove('hidden');
                 toggleBtn.innerHTML = '<i data-lucide="toggle-right" class="w-5 h-5"></i> Hide Variants';
@@ -466,7 +366,7 @@
                 variantsSection.classList.add('hidden');
                 toggleBtn.innerHTML = '<i data-lucide="toggle-left" class="w-5 h-5"></i> Add Variants';
             }
-            
+
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons();
             }
@@ -489,7 +389,7 @@
                 </button>
             `;
             container.appendChild(row);
-            
+
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons();
             }
@@ -523,7 +423,7 @@
                 </button>
             `;
             container.appendChild(row);
-            
+
             // Add real-time calculation for variant
             const inputs = row.querySelectorAll('input[type="number"]');
             inputs.forEach(input => {
@@ -531,7 +431,7 @@
                     calculateVariantPrice(this.closest('.variant-row'));
                 });
             });
-            
+
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons();
             }
@@ -542,7 +442,7 @@
             const price = parseFloat(row.querySelector('input[name*="[price]"]').value) || 0;
             const discountPercent = parseFloat(row.querySelector('input[name*="[discount_amount]"]').value) || 0;
             const preview = row.querySelector('[id^="variantPreview_"]');
-            
+
             if (discountPercent > 0 && discountPercent <= 99) {
                 const finalPrice = price - (price * discountPercent / 100);
                 preview.innerHTML = `
@@ -564,14 +464,14 @@
             input.name = 'remove_images[]';
             input.value = imageId;
             container.appendChild(input);
-            
+
             const imageDiv = button.closest('.existing-image');
             imageDiv.style.opacity = '0.5';
             imageDiv.style.pointerEvents = 'none';
             button.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i>';
             button.classList.remove('bg-red-500');
             button.classList.add('bg-green-500');
-            
+
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons();
             }
@@ -589,7 +489,7 @@
                 const existingImages = previewGrid.querySelectorAll('.existing-image');
                 const newFiles = previewGrid.querySelectorAll('.new-image');
                 newFiles.forEach(el => el.remove());
-                
+
                 uploadedFiles.forEach((file, index) => {
                     const reader = new FileReader();
                     reader.onload = function(e) {
@@ -597,7 +497,7 @@
                         div.className = 'aspect-square border-2 border-green-400 rounded-2xl overflow-hidden relative new-image';
                         div.innerHTML = `
                             <img src="${e.target.result}" class="w-full h-full object-cover">
-                            <button type="button" onclick="removeNewImage(this, ${index})" 
+                            <button type="button" onclick="removeNewImage(this, ${index})"
                                 class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5">
                                 <i data-lucide="x" class="w-4 h-4"></i>
                             </button>
@@ -606,7 +506,7 @@
                             </div>
                         `;
                         previewGrid.appendChild(div);
-                        
+
                         if (typeof lucide !== 'undefined') {
                             lucide.createIcons();
                         }
@@ -618,7 +518,7 @@
             window.removeNewImage = function(button, index) {
                 uploadedFiles.splice(index, 1);
                 button.closest('.new-image').remove();
-                
+
                 const dt = new DataTransfer();
                 uploadedFiles.forEach(file => dt.items.add(file));
                 mediaInput.files = dt.files;
@@ -641,38 +541,38 @@
             uploadArea.addEventListener('drop', function(e) {
                 e.preventDefault();
                 this.classList.remove('border-(--secondary-color)');
-                
+
                 const files = e.dataTransfer.files;
                 const totalFiles = existingCount + uploadedFiles.length + files.length;
-                
+
                 if (totalFiles > 4) {
                     alert('Maximum 4 images allowed. You already have ' + existingCount + ' images and ' + uploadedFiles.length + ' new files.');
                     return;
                 }
-                
+
                 for (let file of files) {
                     if (file.type.startsWith('image/')) {
                         uploadedFiles.push(file);
                     }
                 }
-                
+
                 const dt = new DataTransfer();
                 uploadedFiles.forEach(file => dt.items.add(file));
                 mediaInput.files = dt.files;
-                
+
                 updatePreview();
             });
 
             mediaInput.addEventListener('change', function() {
                 const files = Array.from(this.files);
                 const totalFiles = existingCount + uploadedFiles.length + files.length;
-                
+
                 if (totalFiles > 4) {
                     alert('Maximum 4 images allowed. You already have ' + existingCount + ' images.');
                     this.value = '';
                     return;
                 }
-                
+
                 uploadedFiles = files;
                 updatePreview();
             });

@@ -208,7 +208,7 @@
             <div class="p-6 space-y-4">
                 <div>
                     <label class="block text-xs font-bold text-[#1F3D2E] uppercase tracking-wider mb-1.5">Phone Number</label>
-                    <input type="text" name="phone" placeholder="98XXXXXXXX"
+                    <input type="number" name="phone" id="phoneInput" placeholder="98XXXXXXXX" maxlength="10"
                            class="w-full border border-[#ebd7be] rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C65A3A]/30 transition"
                            required>
                 </div>
@@ -254,6 +254,14 @@ function closeCheckoutModal() {
 document.getElementById('checkoutModal').addEventListener('click', function(e) {
     if (e.target === this) closeCheckoutModal();
 });
+
+// Phone input - only numbers + max 10 digits
+const phoneInput = document.getElementById('phoneInput');
+if (phoneInput) {
+    phoneInput.addEventListener('input', function () {
+        this.value = this.value.replace(/\D/g, '').slice(0, 10);
+    });
+}
 
 // ── Quantity controls ─────────────────────────────────────────────
 const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? '';

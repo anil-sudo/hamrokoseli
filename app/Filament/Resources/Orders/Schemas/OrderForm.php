@@ -41,7 +41,8 @@ class OrderForm
                         'cancelled' => 'Cancelled',
                     ])
                     ->default('pending')
-                    ->required(),
+                    ->required()
+                    ->disabled(),
             ]);
     }
 }

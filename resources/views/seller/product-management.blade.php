@@ -7,7 +7,11 @@
                 {{ session('success') }}
             </div>
         @endif
-
+        @if (session('error'))
+            <div class="p-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl text-sm">
+                {{ session('error') }}
+            </div>
+        @endif
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-center md:justify-between items-start gap-4">
             <div>
@@ -34,14 +38,14 @@
                 </p>
             </div>
 
+            <!-- Low Stock -->
             <div
                 class="bg-(--card-bg) border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300">
-                <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center mb-3">
-                    <i data-lucide="check-circle" class="w-5 h-5 text-green-600"></i>
+                <div class="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center mb-3">
+                    <i data-lucide="alert-triangle" class="w-5 h-5 text-(--secondary-color)"></i>
                 </div>
-                <p class="text-sm font-medium text-(--text-color) uppercase tracking-widest">Active Listings</p>
-                <p class="text-3xl font-extrabold text-(--text-dark) mt-2 font-sans">
-                    {{ number_format($activeProducts) }}</p>
+                <p class="text-sm font-medium text-(--text-color) uppercase tracking-widest">Low Stock</p>
+                <p class="text-3xl font-extrabold text-(--secondary-color) mt-2 font-sans">{{ number_format($lowStock) }}</p>
             </div>
 
             <div
@@ -54,15 +58,17 @@
                 </p>
             </div>
 
+            <!-- Draft Products -->
             <div
                 class="bg-(--card-bg) border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300">
-                <div class="w-10 h-10 rounded-xl bg-(--hover-color)/20 flex items-center justify-center mb-3">
-                    <i data-lucide="star" class="w-5 h-5 text-(--hover-color)"></i>
+                <div class="w-10 h-10 rounded-xl bg-yellow-100 flex items-center justify-center mb-3">
+                    <i data-lucide="file-text" class="w-5 h-5 text-yellow-600"></i>
                 </div>
-                <p class="text-sm font-medium text-(--text-color) uppercase tracking-widest">Draft Products</p>
+                <p class="text-sm font-medium text-(--text-color) uppercase tracking-widest">Draft</p>
                 <p class="text-3xl font-extrabold text-(--text-dark) mt-2 font-sans">{{ number_format($draftProducts) }}
                 </p>
             </div>
+
         </div>
 
         <!-- Filters -->
@@ -104,7 +110,8 @@
                             </option>
                             <option value="inactive"{{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive
                             </option>
-                            <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft
+                            <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>
+                                Draft
                             </option>
                         </select>
                     </div>
@@ -186,32 +193,33 @@
                                 </td>
 
                                 {{-- Price --}}
-               <td class="px-6 py-4">
-    @php
-        $discountPrice = $product->resolvedDiscountPrice();
-        $hasDiscount = $discountPrice !== null && $discountPrice < $product->price;
-    @endphp
+                                <td class="px-6 py-4">
+                                    @php
+                                        $discountPrice = $product->resolvedDiscountPrice();
+                                        $hasDiscount = $discountPrice !== null && $discountPrice < $product->price;
+                                    @endphp
 
-    @if ($hasDiscount)
-        <div class="flex flex-col">
-            <div class="flex items-center gap-2">
-                <span class="font-semibold text-green-600">
-                    Rs.{{ number_format($discountPrice, 2) }}
-                </span>
-                <span class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">
-                    -{{ $product->getDiscountPercentage() ?? 0 }}%
-                </span>
-            </div>
-            <span class="text-xs text-gray-400 line-through">
-                Rs.{{ number_format($product->price, 2) }}
-            </span>
-        </div>
-    @else
-        <p class="font-semibold text-(--text-dark)">
-            Rs.{{ number_format($product->price, 2) }}
-        </p>
-    @endif
-</td>
+                                    @if ($hasDiscount)
+                                        <div class="flex flex-col">
+                                            <div class="flex items-center gap-2">
+                                                <span class="font-semibold text-green-600">
+                                                    Rs.{{ number_format($discountPrice, 2) }}
+                                                </span>
+                                                <span
+                                                    class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">
+                                                    -{{ $product->getDiscountPercentage() ?? 0 }}%
+                                                </span>
+                                            </div>
+                                            <span class="text-xs text-gray-400 line-through">
+                                                Rs.{{ number_format($product->price, 2) }}
+                                            </span>
+                                        </div>
+                                    @else
+                                        <p class="font-semibold text-(--text-dark)">
+                                            Rs.{{ number_format($product->price, 2) }}
+                                        </p>
+                                    @endif
+                                </td>
                                 </td>
                                 {{-- Status --}}
                                 <td class="px-6 py-4">
@@ -256,21 +264,18 @@
                                 {{-- Actions --}}
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
-                                        <a href="{{ route('product-edit', $product->id) }}"
+                                        <a href="{{ route('product-edit', $product->slug) }}"
                                             class="text-(--text-color)/60 hover:text-(--hover-color) transition"
                                             title="Edit">
                                             <i data-lucide="edit" class="w-5 h-5"></i>
                                         </a>
-                                        <form method="POST" action="{{ route('product.destroy', $product->id) }}"
-                                            onsubmit="return confirm('Are you sure you want to delete {{ addslashes($product->name) }}?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                class="text-(--text-color)/60 hover:text-red-500 transition"
-                                                title="Delete">
-                                                <i data-lucide="trash-2" class="w-5 h-5"></i>
-                                            </button>
-                                        </form>
+                                        <!-- SweetAlert Delete -->
+                                        <button type="button"
+                                            onclick="confirmDelete('{{ $product->slug }}', '{{ addslashes($product->name) }}')"
+                                            class="text-(--text-color)/60 hover:text-red-500 transition"
+                                            title="Delete">
+                                            <i data-lucide="trash-2" class="w-5 h-5"></i>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -311,4 +316,37 @@
         </div>
 
     </div>
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    function confirmDelete(slug, productName) {
+        Swal.fire({
+            title: 'Are you sure?',
+            html: `You want to delete <strong>${productName}</strong>?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#B94E31',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Yes, Delete It',
+            cancelButtonText: 'Cancel',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `/product/${slug}`; // Direct URL based on your route
+
+                form.innerHTML = `
+                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="_method" value="DELETE">
+            `;
+
+                document.body.appendChild(form);
+                form.submit();
+            }
+        });
+    }
+</script>
 </x-seller_layout>
+

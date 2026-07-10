@@ -129,60 +129,6 @@
                 </button>
             </div>
 
-            <!-- Variants Section -->
-            <div id="variantsSection" class="hidden">
-                <div
-                    class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6 lg:p-8">
-                    <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
-                        <i data-lucide="layers" class="w-6 h-6 text-(--primary-color)"></i>
-                        Product Variants <span class="text-(--secondary-color)">*</span>
-                    </h2>
-                    <p class="text-sm text-(--text-color)/70 mb-4">Add different combinations of size, color, etc.</p>
-
-                    <div id="variants" class="space-y-4">
-                        @if (old('variants'))
-                            @foreach (old('variants') as $i => $variant)
-                                <div
-                                    class="variant-row border border-(--text-color)/20 rounded-2xl p-5 bg-(--card-dark)/50">
-                                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-3">
-                                        <input type="text" name="variants[{{ $i }}][sku]"
-                                            value="{{ $variant['sku'] ?? '' }}" placeholder="SKU *"
-                                            class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-                                        <input type="text" name="variants[{{ $i }}][size]"
-                                            value="{{ $variant['size'] ?? '' }}" placeholder="Size (e.g. M, L, XL)"
-                                            class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-                                        <input type="text" name="variants[{{ $i }}][color]"
-                                            value="{{ $variant['color'] ?? '' }}" placeholder="Color"
-                                            class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-                                        <input type="number" name="variants[{{ $i }}][price]"
-                                            value="{{ $variant['price'] ?? '' }}" placeholder="Price"
-                                            min="0" step="1"
-                                            class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-                                        <input type="number" name="variants[{{ $i }}][discounted_price]"
-                                            value="{{ $variant['discounted_price'] ?? '' }}" placeholder="Discount (%)"
-                                            min="0" max="99" step="1"
-                                            class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-                                        <input type="number" name="variants[{{ $i }}][stock]"
-                                            value="{{ $variant['stock'] ?? 0 }}" placeholder="Stock" min="0"
-                                            class="px-4 py-3 bg-(--card-dark) border border-(--bg-color)/30 rounded-xl text-sm focus:outline-none focus:border-(--secondary-color)">
-                                    </div>
-                                    <button type="button" onclick="this.closest('.variant-row').remove()"
-                                        class="text-sm text-red-400 hover:text-red-600 flex items-center gap-1">
-                                        <i data-lucide="trash-2" class="w-4 h-4"></i> Remove variant
-                                    </button>
-                                </div>
-                            @endforeach
-                        @endif
-                    </div>
-
-                    <button type="button" onclick="addVariant()"
-                        class="mt-6 inline-flex items-center gap-2 px-6 py-3 border border-(--secondary-color) hover:bg-(--card-dark) bg-(--card-dark)/80 text-(--text-color) rounded-2xl font-medium">
-                        <i data-lucide="plus" class="w-5 h-5"></i>
-                        Add New Variant
-                    </button>
-                </div>
-            </div>
-
         </div>
 
         <!-- Right Sidebar -->
@@ -193,7 +139,7 @@
                 class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6 lg:p-8">
                 <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
                     <i data-lucide="image" class="w-6 h-6 text-(--primary-color)"></i>
-                    Product Media <span class="text-(--secondary-color)">*</span>
+                    Product Image <span class="text-(--secondary-color)">*</span>
                 </h2>
 
                 <div id="uploadArea"
@@ -202,17 +148,17 @@
                         <i data-lucide="upload-cloud" class="w-6 h-6 text-(--text-color)"></i>
                     </div>
                     <p class="font-medium">Click to upload or drag and drop</p>
-                    <p class="text-sm text-(--text-color)/70 mt-1">PNG, JPG up to 100kB (Max 4 images)</p>
-                    <input type="file" id="mediaInput" name="images[]" multiple accept="image/*" class="hidden">
+                    <p class="text-sm text-(--text-color)/70 mt-1">PNG, JPG (Max 100kB )</p>
+                    <input type="file" id="mediaInput" name="images[]" accept="image/*" class="hidden">
                 </div>
 
-                <div id="previewGrid" class="grid grid-cols-4 gap-2"></div>
+                <div id="previewGrid" class="mt-6"></div>
                 @error('images.*')
                     <p class="text-red-500 text-sm mt-2">{{ $message }}</p>
                 @enderror
             </div>
 
-            <!-- Pricing & Inventory (Normal Product) -->
+            <!-- Pricing & Inventory  -->
             <div id="pricingSection"
                 class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6 lg:p-8">
                 <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
@@ -271,18 +217,17 @@
                     </div>
                 </div>
             </div>
-            <!-- Variant Toggle -->
-            <div class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6">
-                <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
-                    <i data-lucide="layers" class="w-6 h-6 text-(--primary-color)"></i>
-                    Product Variants
-                </h2>
-                <p class="text-sm text-(--text-color)/70 mb-4">Add different combinations of size, color, etc.</p>
-                <button type="button" id="variantToggleBtn" onclick="toggleVariants()"
-                    class="w-full inline-flex items-center justify-center gap-2 px-6 py-4 border border-(--secondary-color) text-(--secondary-color) hover:bg-(--card-dark) rounded-2xl font-medium transition">
-                    <i data-lucide="toggle-left" class="w-5 h-5"></i>
-                    Add Variants
-                </button>
+            <div>
+                <label class="block text-sm font-medium text-(--text-dark) mb-2">
+                    Product Status <span class="text-(--secondary-color)">*</span>
+                </label>
+                <select name="status" id="status" required
+                    class="w-full px-5 py-4 bg-(--card-bg) border border-(--bg-color)/30 rounded-xl text-base focus:outline-none focus:border-(--secondary-color)">
+                    <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active (Publish Now)
+                    </option>
+                    <option value="draft" {{ old('status') == 'draft' ? 'selected' : '' }}>Draft (Save for Later)
+                    </option>
+                </select>
             </div>
         </div>
 
