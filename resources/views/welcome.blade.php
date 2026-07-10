@@ -33,8 +33,8 @@
                 </div>
             </div>
             
-            <!-- Grid: 3 columns on mobile, 4 on desktop -->
-            <div class="grid grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
+            <!-- Grid: 2 columns on mobile, 4 on desktop -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
                 @forelse($featuredProducts as $product)
                     @php
                         $imageUrl = $product->primaryImageUrl();
@@ -43,8 +43,8 @@
                         $discountPrice = $hasDiscount ? $dDiscount : $product->price;
                     @endphp
                     <!-- Product Card -->
-                    <div class="bg-[#FDFBF7] rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-amber-900/5 hover:shadow-md transition group {{ $loop->index >= 3 ? 'hidden lg:block' : '' }}">
-                        <div class="h-28 xs:h-32 sm:h-40 md:h-48 lg:h-56 overflow-hidden bg-slate-100 relative cursor-pointer view-details-btn"
+                    <div class="bg-[#FDFBF7] rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-amber-900/5 hover:shadow-md transition group {{ $loop->index >= 4 ? 'hidden sm:block' : '' }}">
+                        <div class="h-36 xs:h-40 sm:h-44 md:h-48 lg:h-56 overflow-hidden bg-slate-100 relative cursor-pointer view-details-btn"
                              data-id="{{ $product->id }}"
                              data-name="{{ $product->name }}"
                              data-price="{{ intval($discountPrice) }}"
@@ -56,17 +56,17 @@
                              data-desc="{{ Str::limit($product->description, 100) }}"
                              data-stock="{{ $product->stock }}">
                             <img src="{{ $imageUrl }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                            <button class="wishlist-btn absolute top-3 right-3 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-lg sm:text-xl drop-shadow focus:outline-none"
+                            <button class="wishlist-btn absolute top-2 right-2 bg-white/90 hover:bg-white text-[#C65A3A] hover:text-[#b04a2c] w-7 h-7 sm:w-9 sm:h-9 rounded-full shadow-md transition-all flex items-center justify-center z-10 focus:outline-none"
                                     data-product-id="{{ $product->id }}"
                                     data-product-name="{{ $product->name }}"
                                     data-product-price="{{ intval($discountPrice) }}"
                                     data-product-image="{{ $imageUrl }}"
                                     data-product-desc="{{ Str::limit($product->description, 100) }}"
                                     data-product-category="{{ $product->category?->cat_name ?? 'Uncategorized' }}">
-                                <i class="far fa-heart"></i>
+                                <i class="far fa-heart text-[11px] sm:text-sm"></i>
                             </button>
                         </div>
-                        <div class="p-1.5 sm:p-2 md:p-3 lg:p-4">
+                        <div class="p-2 sm:p-3 md:p-3 lg:p-4">
                             <h4 class="text-slate-500 font-semibold text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-wider mb-0.5 sm:mb-1 truncate">{{ $product->category?->cat_name ?? 'Uncategorized' }}</h4>
                             <h3 class="text-[10px] sm:text-xs md:text-sm lg:text-base font-bold text-brand-dark mb-1 sm:mb-2 line-clamp-2 cursor-pointer hover:text-brand-primary transition-colors view-details-btn"
                                 data-id="{{ $product->id }}"
@@ -204,14 +204,14 @@
                              data-reviews="124"
                              data-stock="20">
                             <img src="{{ asset('images/Sweaters.png') }}" alt="Deal 1" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                            <button class="wishlist-btn absolute top-2 right-2 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-base drop-shadow focus:outline-none"
+                            <button class="wishlist-btn absolute top-2 right-2 bg-white/90 hover:bg-white text-[#C65A3A] hover:text-[#b04a2c] w-7 h-7 rounded-full shadow-md transition-all flex items-center justify-center z-10 focus:outline-none"
                                     data-product-id="105"
                                     data-product-name="Merino Wool Sweater"
                                     data-product-price="1299"
                                     data-product-image="{{ asset('images/Sweaters.png') }}"
                                     data-product-desc="High-quality merino wool sweater woven by local weavers."
                                     data-product-category="Artisan Weaves">
-                                <i class="far fa-heart"></i>
+                                <i class="far fa-heart text-xs"></i>
                             </button>
                         </div>
                         <div class="p-1.5 sm:p-2 md:p-3 lg:p-4">
@@ -281,7 +281,7 @@
                                     data-product-image="{{ asset('images/SunGlass.png') }}"
                                     data-product-desc="Stylish sunglasses crafted from sustainable natural bamboo wood."
                                     data-product-category="Eco Eyewear">
-                                <i class="far fa-heart"></i>
+                                <i class="far fa-heart text-xs"></i>
                             </button>
                         </div>
                         <div class="p-1.5 sm:p-2 md:p-3 lg:p-4">
@@ -351,7 +351,7 @@
                                     data-product-image="{{ asset('images/Table.png') }}"
                                     data-product-desc="Sturdy, hand-crafted teak wood side table with rustic charm."
                                     data-product-category="Woodcraft">
-                                <i class="far fa-heart"></i>
+                                <i class="far fa-heart text-xs"></i>
                             </button>
                         </div>
                         <div class="p-1.5 sm:p-2 md:p-3 lg:p-4">
@@ -421,7 +421,7 @@
                                     data-product-image="{{ asset('images/Pottery.png') }}"
                                     data-product-desc="Set of handmade ceramic bowls, clay-fired and glazed by local potters."
                                     data-product-category="Clay Studio">
-                                <i class="far fa-heart"></i>
+                                <i class="far fa-heart text-xs"></i>
                             </button>
                         </div>
                         <div class="p-1.5 sm:p-2 md:p-3 lg:p-4">
@@ -639,8 +639,8 @@
                     </a>
                 </div>
 
-                <!-- Grid: 3 columns on mobile, 4 on desktop -->
-                <div class="grid grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
+                <!-- Grid: 2 columns on mobile, 4 on desktop -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
                     @forelse($topSellers as $index => $product)
                         @php
                             $rank = $index + 1;
@@ -655,7 +655,7 @@
                             $hasDiscount = !is_null($dDiscount) && $dDiscount > 0 && $dDiscount < $product->price;
                             $discountPrice = $hasDiscount ? $dDiscount : $product->price;
                         @endphp
-                        <div class="product-card bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group {{ $index >= 3 ? 'hidden lg:block' : '' }}">
+                        <div class="product-card bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group {{ $index >= 4 ? 'hidden sm:block' : '' }}">
                             <div class="relative w-full aspect-[4/5] overflow-hidden rounded-t-2xl sm:rounded-t-3xl bg-slate-100">
                                 <img src="{{ $imageUrl }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                                 
@@ -670,14 +670,14 @@
                                 @endif
 
                                 <button
-                                    class="wishlist-btn absolute bottom-2 right-2 sm:bottom-4 sm:right-4 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-xs sm:text-xl drop-shadow z-10"
+                                    class="wishlist-btn absolute bottom-2 right-2 sm:bottom-4 sm:right-4 bg-white/90 hover:bg-white text-[#C65A3A] hover:text-[#b04a2c] w-7 h-7 sm:w-10 sm:h-10 rounded-full shadow-md transition-all flex items-center justify-center z-10 focus:outline-none"
                                     data-product-id="{{ $product->id }}"
                                     data-product-name="{{ $product->name }}"
                                     data-product-price="{{ $discountPrice }}"
                                     data-product-image="{{ $imageUrl }}"
                                     data-product-desc="{{ $product->description }}"
                                     data-product-category="{{ $product->category?->cat_name }}">
-                                    <i class="far fa-heart"></i>
+                                    <i class="far fa-heart text-[10px] sm:text-lg"></i>
                                 </button>
                             </div>
                             <div class="p-2.5 sm:p-4 md:p-5 flex-grow flex flex-col justify-between">
