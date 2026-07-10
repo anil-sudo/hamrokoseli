@@ -246,7 +246,7 @@
                            data-discount-price="{{ $product->resolvedDiscountPrice() ?? '' }}"
                            data-image="{{ $product->primaryImageUrl() }}"
                            data-category="{{ $product->category?->cat_name ?? 'Crafts' }}"
-                           data-vendor="{{ $product->vendor->business_name ?? $product->vendor->name ?? 'Local Artisan' }}"
+                           data-vendor="{{ $product->vendor->business_name ?? $product->vendor->name ?? '' }}"
                            data-desc="{{ $product->description }}"
                            data-rating="{{ $product->rating ?? 5 }}"
                            data-reviews="{{ $product->reviews_count ?? 24 }}"

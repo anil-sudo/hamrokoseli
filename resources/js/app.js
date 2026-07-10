@@ -1022,7 +1022,7 @@ function toggleWishlistProduct(productData) {
         });
 
         let categoryName = typeof productData.category === 'string' ? productData.category : (productData.category?.cat_name || productData.category?.name || productData.category_name || 'Crafts');
-        let vendorName = typeof productData.vendor === 'string' ? productData.vendor : (productData.vendor?.vendor_name || productData.vendor?.business_name || productData.vendor?.name || productData.vendor_name || 'Local Artisan');
+        let vendorName = typeof productData.vendor === 'string' ? productData.vendor : (productData.vendor?.vendor_name || productData.vendor?.business_name || productData.vendor?.name || productData.vendor_name || '');
         let imageUrl = productData.primary_image_url || (typeof productData.image === 'string' && productData.image.startsWith('http') ? productData.image : (productData.image ? '/' + productData.image.replace(/^\/+/, '') : ''));
 
         window.activeProduct = {
@@ -1056,7 +1056,18 @@ function toggleWishlistProduct(productData) {
         }
         if (modalBreadcrumbCat) modalBreadcrumbCat.textContent = categoryName;
         if (modalProductDesc) modalProductDesc.textContent = productData.desc || productData.description || '';
-        if (modalVendorName) modalVendorName.textContent = vendorName;
+        if (modalVendorName) {
+            const vendorCard = modalVendorName.closest('.bg-\[#FFF7EF\]');
+            if (vendorName) {
+                modalVendorName.textContent = vendorName;
+                // Update avatar initial
+                const avatarEl = vendorCard ? vendorCard.querySelector('.rounded-full.bg-\[#1F3D2E\]') : null;
+                if (avatarEl) avatarEl.textContent = vendorName.charAt(0).toUpperCase();
+                if (vendorCard) vendorCard.classList.remove('hidden');
+            } else {
+                if (vendorCard) vendorCard.classList.add('hidden');
+            }
+        }
         if (modalReviewsCount) modalReviewsCount.textContent = productData.reviews || productData.reviews_count || '0';
 
         // Pricing
