@@ -116,36 +116,6 @@
                         </div>
                     </div>
                   </div>
-                  <div class="flex gap-2 mt-auto">
-                    <a href="{{ route('viewdetails', $product->slug) }}"
-                       class="view-details-btn flex-1 flex items-center justify-center gap-2 bg-[#1F3D2E] hover:bg-[#16301f] text-white text-sm font-semibold py-3 px-3 rounded-xl shadow-sm hover:shadow transition duration-300"
-                       data-id="{{ $product->id }}"
-                       data-slug="{{ $product->slug }}"
-                       data-name="{{ $product->name }}"
-                       data-price="{{ $displayPrice }}"
-                       data-original-price="{{ $price }}"
-                       data-discount="{{ $hasDiscount ? 'true' : 'false' }}"
-                       data-discount-price="{{ $discountPrice ?? '' }}"
-                       data-image="{{ $product->primaryImageUrl() }}"
-                       data-category="{{ $product->category?->cat_name ?? 'Crafts' }}"
-                       data-vendor="{{ $product->vendor->business_name ?? $product->vendor->name ?? '' }}"
-                       data-desc="{{ $product->description }}"
-                       data-rating="{{ $avgRating ?? 5 }}"
-                       data-reviews="{{ $reviewCount ?? 24 }}"
-                       data-stock="{{ $product->stock ?? 10 }}">
-                      <i class="fa-solid fa-circle-info text-xs"></i>
-                      Details
-                    </a>
-                    <button
-                      type="button"
-                      class="add-to-cart-btn flex-1 flex items-center justify-center gap-2 bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-sm font-semibold py-3 px-3 rounded-xl shadow-sm hover:shadow transition duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
-                      data-product-id="{{ $product->id }}"
-                      data-product-name="{{ $product->name }}"
-                      {{ ($product->stock ?? 0) < 1 ? 'disabled' : '' }}>
-                      <i class="fa-solid fa-cart-plus text-xs"></i>
-                      {{ ($product->stock ?? 0) < 1 ? 'Sold Out' : 'Add' }}
-                    </button>
-                  </div>
                 </div>
 
                 <!-- Product Grid -->
