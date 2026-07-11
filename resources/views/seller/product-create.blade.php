@@ -99,7 +99,7 @@
                 class="bg-(--card-bg) rounded-3xl shadow-sm hover:shadow-md border border-(--text-color)/20 p-6 lg:p-8">
                 <h2 class="text-xl font-semibold mb-6 flex items-center gap-2">
                     <i data-lucide="settings" class="w-6 h-6 text-(--primary-color)"></i>
-                    Product Specifications <span class="text-(--secondary-color)">*</span>
+                    Product Specifications
                 </h2>
                 <p class="text-sm text-(--text-color)/70 mb-4">Add specifications like Material, Weight, Size, etc.</p>
 
