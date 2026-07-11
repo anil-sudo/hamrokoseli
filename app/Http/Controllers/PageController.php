@@ -585,4 +585,9 @@ class PageController extends Controller
 
         return back()->with('success', 'Thank you! Your message has been sent. We\'ll get back to you soon.');
     }
+
+    public function meet_the_team()
+    {
+        return view('meet-the-team');
+    }
 }

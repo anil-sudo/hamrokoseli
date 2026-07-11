@@ -9,6 +9,11 @@
                     Preserving Nepal's rich artistic heritage by connecting local master craftspeople with global
                     connoisseurs of authenticity.
                 </p>
+                <div class="pt-1">
+                    <a href="{{ route('meet-the-team') }}"
+                        class="text-[#b55b3d] px-3 py-0.5 rounded-xl hover:rounded-xl hover:bg-[#a04e33] hover:text-[#fff7ef] text-sm font-semibold underline underline-offset-4 transition-colors">Meet
+                        the Team <i class="fa-solid fa-arrow-right pl-2"></i></a>
+                </div>
             </div>
 
             <!-- Columns 2, 3, 4: Quick Link + Support + Legal (side-by-side grid) -->
