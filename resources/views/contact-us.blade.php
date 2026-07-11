@@ -1,4 +1,4 @@
-<x-frontend-layout>
+<x-frontend-layout title="Contact Us - Hamro Koseli">
     <section class="bg-[#FFF7EF] min-h-screen">
 
         <!-- Hero -->
@@ -85,58 +85,88 @@
                 </div>
 
                 <!-- Right -->
-                <form class="bg-white rounded-3xl shadow-sm p-5 sm:p-8">
+                <form method="POST" action="{{ route('contact-us.submit') }}"
+                    class="bg-white rounded-3xl shadow-sm p-5 sm:p-8">
+
+                    @csrf
+
+                    {{-- Success Message --}}
+                    @if (session('success'))
+                        <div class="mb-6 bg-green-50 border border-green-200 text-green-800 rounded-xl px-4 py-3 text-sm">
+                            ✅ {{ session('success') }}
+                        </div>
+                    @endif
+
+                    {{-- Validation Errors --}}
+                    @if ($errors->any())
+                        <div class="mb-6 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm">
+                            <ul class="list-disc list-inside space-y-1">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
 
                         <div>
                             <label class="block mb-2 font-medium">
-                                First Name
+                                First Name <span class="text-red-500">*</span>
                             </label>
 
-                            <input type="text"
-                                class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C65A3A]">
+                            <input type="text" name="first_name"
+                                value="{{ old('first_name') }}"
+                                class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C65A3A] @error('first_name') border-red-400 @enderror"
+                                placeholder="Hari">
                         </div>
 
                         <div>
                             <label class="block mb-2 font-medium">
-                                Last Name
+                                Last Name <span class="text-red-500">*</span>
                             </label>
 
-                            <input type="text"
-                                class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C65A3A]">
+                            <input type="text" name="last_name"
+                                value="{{ old('last_name') }}"
+                                class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C65A3A] @error('last_name') border-red-400 @enderror"
+                                placeholder="Prasad">
                         </div>
 
                     </div>
 
                     <div class="mt-5">
                         <label class="block mb-2 font-medium">
-                            Email
+                            Email <span class="text-red-500">*</span>
                         </label>
 
-                        <input type="email"
-                            class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C65A3A]">
+                        <input type="email" name="email"
+                            value="{{ old('email') }}"
+                            class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C65A3A] @error('email') border-red-400 @enderror"
+                            placeholder="hari@example.com">
                     </div>
 
                     <div class="mt-5">
                         <label class="block mb-2 font-medium">
-                            Subject
+                            Subject <span class="text-red-500">*</span>
                         </label>
 
-                        <input type="text"
-                            class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C65A3A]">
+                        <input type="text" name="subject"
+                            value="{{ old('subject') }}"
+                            class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C65A3A] @error('subject') border-red-400 @enderror"
+                            placeholder="Question about my order...">
                     </div>
 
                     <div class="mt-5">
                         <label class="block mb-2 font-medium">
-                            Message
+                            Message <span class="text-red-500">*</span>
                         </label>
 
-                        <textarea rows="6"
-                            class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C65A3A]"></textarea>
+                        <textarea rows="6" name="message"
+                            class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C65A3A] @error('message') border-red-400 @enderror"
+                            placeholder="Write your message here...">{{ old('message') }}</textarea>
                     </div>
 
-                    <button
+                    <button type="submit"
                         class="mt-6 bg-[#C65A3A] hover:bg-[#b34f31] transition text-white px-8 py-4 rounded-xl font-medium">
                         Send Message
                     </button>

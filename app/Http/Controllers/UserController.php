@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Wishlist;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -138,6 +139,61 @@ class UserController extends Controller
         ));
     }
 
+    public function toggleWishlist(Request $request)
+    {
+        $request->validate([
+            'product_id' => ['required', 'exists:products,id'],
+        ]);
+
+        $userId = auth()->id();
+        $productId = $request->product_id;
+
+        $existing = Wishlist::where('user_id', $userId)
+            ->where('product_id', $productId)
+            ->first();
+
+        if ($existing) {
+            $existing->delete();
+            $inWishlist = false;
+            $message = 'Removed from wishlist.';
+        } else {
+            Wishlist::create([
+                'user_id' => $userId,
+                'product_id' => $productId,
+            ]);
+            $inWishlist = true;
+            $message = 'Added to wishlist.';
+        }
+
+        return response()->json([
+            'success' => true,
+            'in_wishlist' => $inWishlist,
+            'message' => $message,
+        ]);
+    }
+
+    public function wishlistItems()
+    {
+        $items = Wishlist::where('user_id', auth()->id())
+            ->with('product.images')
+            ->get()
+            ->map(function ($w) {
+                $product = $w->product;
+
+                return [
+                    'id' => $product->id,
+                    'name' => $product->name,
+                    'price' => $product->effectivePrice(),
+                    'image' => $product->primaryImageUrl(),
+                    'desc' => $product->description,
+                    'category' => $product->category?->cat_name ?? '',
+                    'slug' => $product->slug,
+                ];
+            });
+
+        return response()->json(['items' => $items]);
+    }
+
     public function orders(Request $request)
     {
         $user = auth()->user();
@@ -242,6 +298,8 @@ class UserController extends Controller
 
         $user->save();
 
+        NotificationService::profileUpdated($user, 'profile');
+
         return redirect()->back()->with('success', 'Profile updated successfully.');
     }
 
@@ -263,6 +321,8 @@ class UserController extends Controller
         $user->password = \Hash::make($request->new_password);
         $user->save();
 
+        NotificationService::profileUpdated($user, 'password');
+
         return redirect()->back()->with('password_success', 'Password changed successfully.');
     }
 
@@ -272,19 +332,21 @@ class UserController extends Controller
         $type = $request->query('type'); // orders | deliveries | account | null = all
 
         $typeGroups = [
-            'orders' => ['order_placed', 'order_confirmed', 'order_cancelled'],
-            'deliveries' => ['order_shipped', 'order_delivered', 'return_requested', 'return_approved'],
-            'account' => ['payment_received', 'payout_processed'],
+            'orders' => ['order_confirmed', 'order_cancelled'],
+            'deliveries' => ['order_shipped', 'order_delivered', 'return_approved'],
+            'account' => ['profile_updated'],
         ];
 
-        $query = $user->appNotifications()->latest('created_at');
+        $allUserTypes = array_merge(...array_values($typeGroups));
+
+        $query = $user->appNotifications()->whereIn('type', $allUserTypes)->latest('created_at');
 
         if ($type && isset($typeGroups[$type])) {
             $query->whereIn('type', $typeGroups[$type]);
         }
 
-        $notifications = $query->paginate(10)->withQueryString();
-        $unreadCount = $user->appNotifications()->where('is_read', false)->count();
+        $notifications = $query->paginate(7)->withQueryString();
+        $unreadCount = $user->appNotifications()->whereIn('type', $allUserTypes)->where('is_read', false)->count();
 
         return view('user.notification', compact('notifications', 'unreadCount', 'type'));
     }
@@ -299,7 +361,15 @@ class UserController extends Controller
 
     public function markAllNotificationsRead(Request $request)
     {
+        $typeGroups = [
+            'orders' => ['order_confirmed', 'order_cancelled'],
+            'deliveries' => ['order_shipped', 'order_delivered', 'return_requested', 'return_approved'],
+            'account' => ['payment_received', 'profile_updated'],
+        ];
+        $allUserTypes = array_merge(...array_values($typeGroups));
+
         auth()->user()->appNotifications()
+            ->whereIn('type', $allUserTypes)
             ->where('is_read', false)
             ->update(['is_read' => true, 'read_at' => now()]);
 

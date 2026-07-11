@@ -1,4 +1,7 @@
-<x-frontend-layout>
+<x-frontend-layout title="about - Hamro Koseli"
+    description="Shop handmade gift boxes and hampers for every occasion. Delivered across Nepal."
+    ogImage="/images/og-images.jpg"
+>
 
 <section class="bg-[#F4EAE1] text-brand-dark leading-relaxed">
 

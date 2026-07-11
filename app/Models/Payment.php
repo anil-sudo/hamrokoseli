@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\NotificationService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -128,5 +129,19 @@ class Payment extends Model
     public function scopeViaGateway($query, string $gateway)
     {
         return $query->where('gateway', $gateway);
+    }
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted()
+    {
+        static::saved(function ($payment) {
+            if ($payment->wasRecentlyCreated || $payment->wasChanged('status')) {
+                if ($payment->status !== 'pending' || $payment->wasChanged('status')) {
+                    NotificationService::userPaymentStatusChanged($payment);
+                }
+            }
+        });
     }
 }

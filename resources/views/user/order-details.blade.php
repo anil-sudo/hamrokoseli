@@ -83,8 +83,8 @@
                                 @php $done = $currentStep !== false && $currentStep >= $i; @endphp
 
                                 <div class="flex lg:flex-col items-center text-center">
-                                    <div class="w-12 h-12 {{ $done ? 'bg-green-100' : 'bg-gray-100' }} rounded-full flex items-center justify-center">
-                                        <i data-lucide="{{ $step['icon'] }}" class="w-5 h-5 {{ $done ? 'text-green-600' : 'text-gray-400' }}"></i>
+                                    <div class="w-12 h-12 {{ $done ? 'bg-[#3b5e4c]' : 'bg-gray-100' }} rounded-full flex items-center justify-center">
+                                        <i data-lucide="{{ $step['icon'] }}" class="w-5 h-5 {{ $done ? 'text-[#fafbfa]' : 'text-gray-400' }}"></i>
                                     </div>
                                     <div class="ml-4 lg:ml-0 lg:mt-2">
                                         <p class="text-sm font-medium {{ $done ? '' : 'text-gray-400' }}">{{ $step['label'] }}</p>
@@ -95,7 +95,7 @@
                                 </div>
 
                                 @if (! $loop->last)
-                                    @php $lineColor = ($currentStep !== false && $currentStep > $i) ? 'bg-green-500' : 'bg-gray-300'; @endphp
+                                    @php $lineColor = ($currentStep !== false && $currentStep > $i) ? 'bg-[#3b5e4c]' : 'bg-gray-300'; @endphp
                                     <div class="w-0.5 h-10 {{ $lineColor }} ml-6 my-2 lg:hidden"></div>
                                     <div class="hidden lg:block flex-1 h-0.5 {{ $lineColor }} mt-6 mx-4"></div>
                                 @endif
@@ -104,7 +104,7 @@
 
                         @php
                             $statusMessages = [
-                                'pending'   => ['color' => 'blue',  'icon' => 'clock',      'msg' => 'Your order has been placed and is awaiting confirmation.'],
+                                'pending'   => ['color' => 'orange',  'icon' => 'clock',      'msg' => 'Your order has been placed and is awaiting confirmation.'],
                                 'confirmed' => ['color' => 'blue',  'icon' => 'package',    'msg' => 'Your order has been confirmed and is being prepared.'],
                                 'shipped'   => ['color' => 'green', 'icon' => 'truck',      'msg' => 'Your order is on the way! It has been shipped and will be delivered soon.'],
                                 'delivered' => ['color' => 'green', 'icon' => 'check',      'msg' => 'Your order has been delivered. Enjoy your purchase!'],

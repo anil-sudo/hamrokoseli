@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ContactFormSubmitted;
 use App\Models\Category;
+use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\Review;
 use App\Models\Vendor;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 
 class PageController extends Controller
 {
@@ -97,13 +102,17 @@ class PageController extends Controller
         }
 
         switch (request('sort')) {
-            case 'price_asc':   $query->orderBy('price', 'asc');
+            case 'price_asc':
+                $query->orderBy('price', 'asc');
                 break;
-            case 'price_desc':  $query->orderBy('price', 'desc');
+            case 'price_desc':
+                $query->orderBy('price', 'desc');
                 break;
-            case 'popularity':  $query->withCount('orderItems')->orderBy('order_items_count', 'desc');
+            case 'popularity':
+                $query->withCount('orderItems')->orderBy('order_items_count', 'desc');
                 break;
-            default:            $query->latest();
+            default:
+                $query->latest();
         }
 
         return [
@@ -128,7 +137,6 @@ class PageController extends Controller
             ->withQueryString();
 
         return view('new_arrival', compact('products'));
-
     }
 
     public function todays_deals()
@@ -148,11 +156,14 @@ class PageController extends Controller
         }
 
         switch (request('sort')) {
-            case 'price-asc':  $dealsBase->orderBy('discount_price', 'asc');
+            case 'price-asc':
+                $dealsBase->orderBy('discount_price', 'asc');
                 break;
-            case 'price-desc': $dealsBase->orderBy('discount_price', 'desc');
+            case 'price-desc':
+                $dealsBase->orderBy('discount_price', 'desc');
                 break;
-            default:           $dealsBase->orderByRaw('((price - discount_price) / price) DESC');
+            default:
+                $dealsBase->orderByRaw('((price - discount_price) / price) DESC');
         }
 
         $products = $dealsBase->paginate(8)->withQueryString();
@@ -382,9 +393,11 @@ class PageController extends Controller
         return view('shipping-policy');
     }
 
-    public function viewProduct($id)
+    public function viewProduct($slug)
     {
-        $product = Product::with(['category', 'vendor', 'images', 'variants'])->findOrFail($id);
+        $product = Product::with(['category', 'vendor', 'images', 'variants'])
+            ->where('slug', $slug)
+            ->firstOrFail();
 
         $product->effective_price = method_exists($product, 'effectivePrice') ? $product->effectivePrice() : $product->price;
         $product->original_price = method_exists($product, 'originalPrice') ? $product->originalPrice() : $product->price;
@@ -393,18 +406,191 @@ class PageController extends Controller
         $product->category_name = $product->category?->cat_name ?? $product->category?->name ?? 'Crafts';
         $product->vendor_name = $product->vendor?->vendor_name ?? $product->vendor?->name ?? 'Local Artisan';
 
-        // Track recently viewed products in session (store product IDs)
         $recentlyViewed = session()->get('recently_viewed', []);
-        // Remove if already exists to avoid duplicates
-        $recentlyViewed = array_filter($recentlyViewed, fn ($pid) => $pid != $id);
-        // Prepend current product
-        array_unshift($recentlyViewed, (int) $id);
-        // Keep only last 20
+        $recentlyViewed = array_filter($recentlyViewed, fn ($pid) => $pid != $product->id);
+        array_unshift($recentlyViewed, $product->id);
         $recentlyViewed = array_slice($recentlyViewed, 0, 20);
         session()->put('recently_viewed', $recentlyViewed);
 
         return view('shop', array_merge($this->buildShopData(), [
             'activeProduct' => $product,
         ]));
+    }
+
+    public function getProductReviews(Request $request, $id)
+    {
+        $perPage = 6;
+        $reviews = Review::with('user:id,name')
+            ->where('product_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->paginate($perPage);
+
+        return response()->json([
+            'reviews' => $reviews->getCollection()->map(function ($review) {
+                return [
+                    'id' => $review->id,
+                    'user_name' => $review->user?->name ?? 'Anonymous',
+                    'rating' => $review->rating,
+                    'comment' => $review->comment,
+                    'verified_purchase' => $review->verified_purchase,
+                    'reply' => $review->reply,
+                    'replied_at' => $review->replied_at ? $review->replied_at->format('M j, Y') : null,
+                    'date' => $review->created_at->format('M j, Y'),
+                ];
+            }),
+            'pagination' => [
+                'current_page' => $reviews->currentPage(),
+                'last_page' => $reviews->lastPage(),
+                'per_page' => $reviews->perPage(),
+                'total' => $reviews->total(),
+            ],
+        ]);
+    }
+
+    private function checkReviewEligibility($productId, $userId)
+    {
+        // Purchase verify check
+        $verified = OrderItem::where('product_id', $productId)
+            ->whereNotIn('status', ['cancelled', 'returned'])
+            ->whereHas('order', fn ($q) => $q->where('user_id', $userId))
+            ->exists();
+
+        if (! $verified) {
+            return [
+                'eligible' => false,
+                'message' => 'You must purchase this product before writing a review.',
+            ];
+        }
+
+        // Already reviewed check
+        $existing = Review::where('user_id', $userId)
+            ->where('product_id', $productId)
+            ->first();
+
+        return [
+            'eligible' => true,
+            'verified' => $verified,
+            'existing' => $existing ? true : false,
+            'review' => $existing ? [
+                'rating' => $existing->rating,
+                'comment' => $existing->comment,
+            ] : null,
+        ];
+    }
+
+    public function canReviewProduct($id)
+    {
+        $userId = auth()->id();
+
+        if (! $userId) {
+            return response()->json([
+                'eligible' => false,
+                'message' => 'Please login to write a review.',
+            ]);
+        }
+
+        return response()->json(
+            $this->checkReviewEligibility($id, $userId)
+        );
+    }
+
+    public function storeProductReview(Request $request, $id)
+    {
+        $request->validate([
+            'rating' => 'required|integer|min:1|max:5',
+            'comment' => 'nullable|string|max:1000',
+        ]);
+
+        $userId = auth()->id();
+
+        if (! $userId) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Please login first.',
+            ], 401);
+        }
+
+        $result = $this->checkReviewEligibility($id, $userId);
+
+        if (! $result['eligible']) {
+            return response()->json([
+                'success' => false,
+                'message' => $result['message'],
+            ], 403);
+        }
+
+        // Check if we are updating an existing review or creating a new one
+        $review = Review::where('user_id', $userId)
+            ->where('product_id', $id)
+            ->first();
+
+        if ($review) {
+            // Update review
+            $review->update([
+                'rating' => $request->rating,
+                'comment' => $request->comment,
+                'verified_purchase' => $result['verified'],
+                // Reset vendor reply when user edits their review
+                'reply' => null,
+                'replied_at' => null,
+            ]);
+            $message = 'Review updated successfully!';
+        } else {
+            // Create new review
+            $review = Review::create([
+                'user_id' => $userId,
+                'product_id' => $id,
+                'rating' => $request->rating,
+                'comment' => $request->comment,
+                'verified_purchase' => $result['verified'],
+            ]);
+            $message = 'Review submitted successfully!';
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $message,
+            'review' => [
+                'id' => $review->id,
+                'user_name' => auth()->user()->name,
+                'rating' => $review->rating,
+                'comment' => $review->comment,
+                'verified_purchase' => $review->verified_purchase,
+                'reply' => $review->reply,
+                'replied_at' => $review->replied_at ? $review->replied_at->format('M j, Y') : null,
+                'date' => $review->created_at->format('M j, Y'),
+            ],
+        ]);
+    }
+
+    public function sitemap()
+    {
+        $products = Product::where('status', 'active')->get(['slug', 'updated_at']);
+        $categories = Category::where('status', 'active')->get(['slug', 'updated_at']);
+
+        return response()->view('sitemap', compact('products', 'categories'))
+            ->header('Content-Type', 'application/xml');
+    }
+
+    public function contactusSubmit(Request $request)
+    {
+        $request->validate([
+            'first_name' => 'required|string|max:100',
+            'last_name' => 'required|string|max:100',
+            'email' => 'required|email|max:255',
+            'subject' => 'required|string|max:255',
+            'message' => 'required|string|max:2000',
+        ]);
+
+        Mail::to(env('ADMIN_EMAIL'))
+            ->send(new ContactFormSubmitted(
+                firstName: $request->first_name,
+                lastName: $request->last_name,
+                email: $request->email,
+                messageSubject: $request->subject,
+                messageBody: $request->message,
+            ));
+
+        return back()->with('success', 'Thank you! Your message has been sent. We\'ll get back to you soon.');
     }
 }

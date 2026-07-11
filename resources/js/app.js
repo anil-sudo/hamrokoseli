@@ -1,6 +1,11 @@
 //
 import './seller-layout';
 document.addEventListener('DOMContentLoaded', () => {
+    function getCsrfToken() {
+        const meta = document.querySelector('meta[name="csrf-token"]');
+        return meta ? meta.getAttribute('content') : '';
+    }
+
     const hamburger     = document.getElementById('hamburger-btn');
     const drawer        = document.getElementById('mobile-drawer');
     const overlay       = document.getElementById('drawer-overlay');
@@ -29,19 +34,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Close drawer on nav link click (smooth UX)
     if (drawer) {
-        drawer.querySelectorAll('a').forEach(function(link) {
+        drawer.querySelectorAll('a').forEach(function (link) {
             link.addEventListener('click', closeDrawer);
         });
     }
 
     // Escape key closes drawer
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') closeDrawer();
     });
 
     // Mobile search toggle
     if (mobileSearchBtn && mobileSearchBar) {
-        mobileSearchBtn.addEventListener('click', function() {
+        mobileSearchBtn.addEventListener('click', function () {
             const hidden = mobileSearchBar.classList.contains('hidden');
             mobileSearchBar.classList.toggle('hidden', !hidden);
             if (hidden && mobileSearchInput) {
@@ -114,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             loginModal.classList.remove('hidden');
             loginModal.classList.add('flex');
-            
+
             // Trigger animation frame
             setTimeout(() => {
                 loginModal.classList.remove('opacity-0');
@@ -159,7 +164,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Switch to Register View
     if (modalShowRegisterBtn) {
-        modalShowRegisterBtn.addEventListener('click', function(e) {
+        modalShowRegisterBtn.addEventListener('click', function (e) {
             e.preventDefault();
             switchModalView('register');
             updateUrlState('register');
@@ -168,7 +173,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Switch to Login View
     if (modalShowLoginBtn) {
-        modalShowLoginBtn.addEventListener('click', function(e) {
+        modalShowLoginBtn.addEventListener('click', function (e) {
             e.preventDefault();
             switchModalView('login');
             updateUrlState('login');
@@ -176,18 +181,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Switch to Forgot Password View
-    const modalShowForgotBtn   = document.getElementById('modal-show-forgot');
+    const modalShowForgotBtn = document.getElementById('modal-show-forgot');
     const forgotBackToLoginBtn = document.getElementById('forgot-back-to-login');
 
     if (modalShowForgotBtn) {
-        modalShowForgotBtn.addEventListener('click', function(e) {
+        modalShowForgotBtn.addEventListener('click', function (e) {
             e.preventDefault();
             switchModalView('forgot');
         });
     }
 
     if (forgotBackToLoginBtn) {
-        forgotBackToLoginBtn.addEventListener('click', function(e) {
+        forgotBackToLoginBtn.addEventListener('click', function (e) {
             e.preventDefault();
             switchModalView('login');
             updateUrlState('login');
@@ -196,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Close on clicking outside the modal container
     if (loginModal) {
-        loginModal.addEventListener('click', function(e) {
+        loginModal.addEventListener('click', function (e) {
             if (e.target === loginModal) {
                 closeLoginModal();
             }
@@ -204,14 +209,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Escape key closes modal too
-    document.addEventListener('keydown', function(e) {
+    document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') {
             closeLoginModal();
         }
     });
 
     // Browser back/forward (history state) support
-    window.addEventListener('popstate', function(e) {
+    window.addEventListener('popstate', function (e) {
         const path = window.location.pathname;
         if (path === '/userlogin') {
             openLoginModal(null, 'login');
@@ -237,7 +242,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!toggleBtn || !passwordInput) return;
 
         const icon = toggleBtn.querySelector('i');
-        
+
         const showPassword = (e) => {
             if (e) e.preventDefault();
             passwordInput.type = 'text';
@@ -263,7 +268,7 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleBtn.addEventListener('touchstart', showPassword);
         toggleBtn.addEventListener('touchend', hidePassword);
         toggleBtn.addEventListener('touchcancel', hidePassword);
-        
+
         // Prevent click default
         toggleBtn.addEventListener('click', (e) => e.preventDefault());
     }
@@ -289,7 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Phone format filter for register modal
     const modalRegisterPhoneInput = document.getElementById('modal-register-phone');
     if (modalRegisterPhoneInput) {
-        modalRegisterPhoneInput.addEventListener('input', function() {
+        modalRegisterPhoneInput.addEventListener('input', function () {
             let value = this.value.replace(/\D/g, '');
             if (value.length > 10) value = value.substring(0, 10);
             this.value = value;
@@ -297,8 +302,25 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==================== WISHLIST FEATURE LOGIC ====================
-    let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
-    const wishlistGridContainer = document.getElementById('wishlist-grid-container');
+let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+
+// If logged in, load wishlist from database and sync to localStorage
+if (window.isLoggedIn) {
+    fetch('/wishlist/items', {
+        headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': getCsrfToken() },
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.items) {
+            wishlist = data.items;
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+            updateWishlistBadge();
+            syncWishlistIcons();
+            renderWishlistPage();
+        }
+    })
+    .catch(() => {});
+}    const wishlistGridContainer = document.getElementById('wishlist-grid-container');
 
     // Helper: Seeding defaults on first visit if we are on the wishlist page
     if (wishlistGridContainer && wishlist.length === 0 && !localStorage.getItem('wishlist_visited')) {
@@ -359,18 +381,22 @@ document.addEventListener('DOMContentLoaded', () => {
         const container = getToastContainer();
         const toast = document.createElement('div');
         toast.className = 'toast-item';
-        
+
         let iconClass = 'fa-regular fa-circle-check text-emerald-500';
         if (type === 'info') {
             iconClass = 'fa-solid fa-circle-info text-sky-500';
+        } else if (type === 'error') {
+            iconClass = 'fa-regular fa-circle-xmark text-rose-500';
+        } else if (type === 'warning') {
+            iconClass = 'fa-solid fa-triangle-exclamation text-amber-500';
         }
-        
+
         toast.innerHTML = `<i class="${iconClass}"></i><span>${message}</span>`;
         container.appendChild(toast);
-        
+
         // Trigger transition
         setTimeout(() => toast.classList.add('show'), 50);
-        
+
         // Remove toast after 3 seconds
         setTimeout(() => {
             toast.classList.remove('show');
@@ -419,23 +445,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Toggle product in wishlist
-    function toggleWishlistProduct(productData) {
-        const index = wishlist.findIndex(item => String(item.id) === String(productData.id));
-        if (index > -1) {
-            wishlist.splice(index, 1);
-            localStorage.setItem('wishlist', JSON.stringify(wishlist));
-            showToast(`${productData.name} removed from wishlist.`, 'info');
-            return false;
-        } else {
-            wishlist.push(productData);
-            localStorage.setItem('wishlist', JSON.stringify(wishlist));
-            showToast(`${productData.name} added to wishlist!`, 'success');
-            return true;
-        }
+function toggleWishlistProduct(productData) {
+    const index = wishlist.findIndex(item => String(item.id) === String(productData.id));
+    if (index > -1) {
+        wishlist.splice(index, 1);
+        localStorage.setItem('wishlist', JSON.stringify(wishlist));
+        showToast(`${productData.name} removed from wishlist.`, 'info');
+    } else {
+        wishlist.push(productData);
+        localStorage.setItem('wishlist', JSON.stringify(wishlist));
+        showToast(`${productData.name} added to wishlist!`, 'success');
     }
 
+    // Sync to database if logged in
+    if (window.isLoggedIn) {
+        fetch('/wishlist/toggle', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': getCsrfToken(),
+            },
+            body: JSON.stringify({ product_id: productData.id }),
+        }).catch(() => {
+            // Fail silently — localStorage still updated
+        });
+    }
+
+    return index === -1; // true if added, false if removed
+}
+
     // Attach listeners to wishlist buttons on the page
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         const btn = e.target.closest('.wishlist-btn');
         if (btn) {
             e.preventDefault();
@@ -443,6 +484,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const productData = {
                 id: btn.getAttribute('data-product-id'),
                 name: btn.getAttribute('data-product-name'),
+                slug: btn.getAttribute('data-slug'),
                 price: btn.getAttribute('data-product-price'),
                 image: btn.getAttribute('data-product-image'),
                 desc: btn.getAttribute('data-product-desc'),
@@ -452,7 +494,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const added = toggleWishlistProduct(productData);
             updateWishlistBadge();
             syncWishlistIcons();
-            
+
             // If on wishlist page, re-render
             if (wishlistGridContainer) {
                 renderWishlistPage();
@@ -463,9 +505,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Render Wishlist Page Items
     function renderWishlistPage() {
         if (!wishlistGridContainer) return;
-        
+
         wishlistGridContainer.innerHTML = '';
-        
+
         if (wishlist.length === 0) {
             const emptyTemplate = document.getElementById('wishlist-empty-template');
             if (emptyTemplate) {
@@ -474,23 +516,23 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             return;
         }
-        
+
         const grid = document.createElement('div');
         grid.className = 'grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 md:gap-8';
-        
+
         const cardTemplate = document.getElementById('wishlist-card-template');
         if (!cardTemplate) return;
-        
+
         wishlist.forEach(item => {
             const clone = cardTemplate.content.cloneNode(true);
-            
+
             // Bind image
             const img = clone.querySelector('.wishlist-img');
             if (img) {
                 img.src = item.image;
                 img.alt = item.name;
             }
-            
+
             // Bind tag
             const tagSpan = clone.querySelector('.wishlist-tag');
             if (tagSpan) {
@@ -501,26 +543,26 @@ document.addEventListener('DOMContentLoaded', () => {
                     tagSpan.classList.add('hidden');
                 }
             }
-            
+
             // Bind title
             const title = clone.querySelector('.wishlist-title');
             if (title) title.textContent = item.name;
-            
+
             // Bind description
             const desc = clone.querySelector('.wishlist-desc');
             if (desc) desc.textContent = item.desc || '';
-            
+
             // Bind price
             const price = clone.querySelector('.wishlist-price');
             if (price) {
                 const formattedPrice = parseInt(item.price).toLocaleString();
                 price.textContent = `रू ${formattedPrice}`;
             }
-            
+
             // Bind delete button
             const deleteBtn = clone.querySelector('.wishlist-delete-btn');
             if (deleteBtn) {
-                deleteBtn.addEventListener('click', function(e) {
+                deleteBtn.addEventListener('click', function (e) {
                     e.preventDefault();
                     toggleWishlistProduct(item);
                     updateWishlistBadge();
@@ -528,11 +570,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     renderWishlistPage();
                 });
             }
-            
+
             // Bind add to cart button
             const addCartBtn = clone.querySelector('.wishlist-add-cart-btn');
             if (addCartBtn) {
-                addCartBtn.addEventListener('click', function() {
+                addCartBtn.addEventListener('click', function () {
                     addToCart({
                         id: item.id,
                         name: item.name,
@@ -545,10 +587,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     }, 1);
                 });
             }
-            
+
             grid.appendChild(clone);
         });
-        
+
         wishlistGridContainer.appendChild(grid);
     }
 
@@ -567,11 +609,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const cartItemsContainer = document.getElementById('cart-items-container');
-
-    function getCsrfToken() {
-        const meta = document.querySelector('meta[name="csrf-token"]');
-        return meta ? meta.getAttribute('content') : '';
-    }
 
     // Update Header Badge Count
     function updateCartBadge() {
@@ -689,7 +726,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         localStorage.setItem('cart', JSON.stringify(cart));
         updateCartBadge();
-        
+
         if (cartItemsContainer) {
             renderCartPage();
         }
@@ -747,14 +784,14 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('wishlist', JSON.stringify(wishlist));
         }
         showToast(`${item.name} moved to wishlist!`, 'success');
-        
+
         // Remove from cart
         const cartIndex = cart.findIndex(c => String(c.id) === String(item.id));
         if (cartIndex > -1) {
             cart.splice(cartIndex, 1);
             localStorage.setItem('cart', JSON.stringify(cart));
         }
-        
+
         updateCartBadge();
         updateWishlistBadge();
         syncWishlistIcons();
@@ -770,9 +807,10 @@ document.addEventListener('DOMContentLoaded', () => {
     window.removeFromCart = removeFromCart;
     window.updateCartQuantity = updateCartQuantity;
     window.moveCartItemToWishlist = moveCartItemToWishlist;
+    window.showToast = showToast;
 
     // Attach global click listener for any elements with .add-to-cart-btn
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         const btn = e.target.closest('.add-to-cart-btn');
         if (btn) {
             e.preventDefault();
@@ -795,9 +833,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Render Cart Page
     function renderCartPage() {
         if (!cartItemsContainer) return;
-        
+
         cartItemsContainer.innerHTML = '';
-        
+
         if (cart.length === 0) {
             const emptyTemplate = document.getElementById('cart-empty-template');
             if (emptyTemplate) {
@@ -813,22 +851,22 @@ document.addEventListener('DOMContentLoaded', () => {
             if (totalEl) totalEl.textContent = 'रू 0';
             return;
         }
-        
+
         const cardTemplate = document.getElementById('cart-item-template');
         if (!cardTemplate) return;
-        
+
         let subtotal = 0;
-        
+
         cart.forEach(item => {
             const clone = cardTemplate.content.cloneNode(true);
-            
+
             // Image
             const img = clone.querySelector('.cart-item-img');
             if (img) {
                 img.src = item.image;
                 img.alt = item.name;
             }
-            
+
             // Tag
             const tagSpan = clone.querySelector('.cart-item-tag');
             const tagText = clone.querySelector('.cart-item-tag-text');
@@ -840,80 +878,80 @@ document.addEventListener('DOMContentLoaded', () => {
                     tagSpan.classList.add('hidden');
                 }
             }
-            
+
             // Title
             const title = clone.querySelector('.cart-item-title');
             if (title) title.textContent = item.name;
-            
+
             // Specs / Description
             const specs = clone.querySelector('.cart-item-specs');
             if (specs) {
                 specs.textContent = item.specs || (item.desc ? item.desc : '');
             }
-            
+
             // Price
             const price = clone.querySelector('.cart-item-price');
             if (price) {
                 const formattedPrice = parseInt(item.price).toLocaleString();
                 price.textContent = `रू ${formattedPrice}`;
             }
-            
+
             // Quantity Input value
             const qtyVal = clone.querySelector('.qty-val');
             if (qtyVal) {
                 qtyVal.textContent = item.qty;
             }
-            
+
             // Quantity decrement
             const qtyMinus = clone.querySelector('.qty-minus');
             if (qtyMinus) {
-                qtyMinus.addEventListener('click', function(e) {
+                qtyMinus.addEventListener('click', function (e) {
                     e.preventDefault();
                     if (item.qty > 1) {
                         updateCartQuantity(item.id, item.qty - 1);
                     }
                 });
             }
-            
+
             // Quantity increment
             const qtyPlus = clone.querySelector('.qty-plus');
             if (qtyPlus) {
-                qtyPlus.addEventListener('click', function(e) {
+                qtyPlus.addEventListener('click', function (e) {
                     e.preventDefault();
                     updateCartQuantity(item.id, item.qty + 1);
                 });
             }
-            
+
             // Move to wishlist
             const wishlistBtn = clone.querySelector('.cart-move-wishlist');
             if (wishlistBtn) {
-                wishlistBtn.addEventListener('click', function(e) {
+                wishlistBtn.addEventListener('click', function (e) {
                     e.preventDefault();
                     moveCartItemToWishlist(item);
                 });
             }
-            
+
             // Delete button
             const deleteBtn = clone.querySelector('.cart-delete-btn');
             if (deleteBtn) {
-                deleteBtn.addEventListener('click', function(e) {
+                deleteBtn.addEventListener('click', function (e) {
                     e.preventDefault();
                     removeFromCart(item.id);
                 });
             }
-            
+
             cartItemsContainer.appendChild(clone);
             subtotal += parseInt(item.price) * parseInt(item.qty);
         });
-        
+
         // Update Order Summary
         const tax = Math.round(subtotal * 0.0837); // Simulated taxes like in the image (1850 tax on 22100 subtotal is ~8.37%)
         const total = subtotal + tax; // shipping is FREE
-        
+
         const subtotalEl = document.getElementById('cart-subtotal');
         const taxEl = document.getElementById('cart-tax');
         const totalEl = document.getElementById('cart-total');
-        
+
         if (subtotalEl) subtotalEl.textContent = `रू ${subtotal.toLocaleString()}`;
         if (taxEl) taxEl.textContent = `रू ${tax.toLocaleString()}`;
         if (totalEl) totalEl.textContent = `रू ${total.toLocaleString()}`;
@@ -930,16 +968,17 @@ document.addEventListener('DOMContentLoaded', () => {
         originalUrlBeforeProduct = '/shop'; // Default fallback
     }
 
-    function updateProductUrlState(productId) {
-        const path = `/viewdetails/${productId}`;
-        if (window.location.pathname !== path) {
-            const currentPath = window.location.pathname + window.location.search;
-            if (!currentPath.startsWith('/viewdetails/')) {
-                originalUrlBeforeProduct = currentPath;
-            }
-            history.pushState({ productModal: productId }, '', path);
+    function updateProductUrlState(productId, productSlug) {
+    const identifier = productSlug || productId;
+    const path = `/viewdetails/${identifier}`;
+    if (window.location.pathname !== path) {
+        const currentPath = window.location.pathname + window.location.search;
+        if (!currentPath.startsWith('/viewdetails/')) {
+            originalUrlBeforeProduct = currentPath;
         }
+        history.pushState({ productModal: identifier }, '', path);
     }
+}
 
     function restoreProductUrlState() {
         if (window.location.pathname.startsWith('/viewdetails/')) {
@@ -949,6 +988,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function populateAndShowProductModal(productData) {
         if (!productModal || !productContainer) return;
+
+        // Reset review form and status messages from previous product
+        const reviewForm = document.getElementById('product-review-form');
+        if (reviewForm) {
+            reviewForm.reset();
+        }
+        const reviewSuccessMsg = document.getElementById('review-success-message');
+        if (reviewSuccessMsg) {
+            reviewSuccessMsg.textContent = '';
+            reviewSuccessMsg.classList.add('hidden');
+        }
+        const reviewErrorMsg = document.getElementById('review-error-message');
+        if (reviewErrorMsg) {
+            reviewErrorMsg.textContent = '';
+            reviewErrorMsg.classList.add('hidden');
+        }
+        const reviewSection = document.getElementById('modal-add-review-section');
+        if (reviewSection) {
+            reviewSection.classList.add('hidden');
+        }
+        const ratingVal = document.getElementById('review-rating-value');
+        if (ratingVal) {
+            ratingVal.value = '';
+        }
+        const starSelectBtns = document.querySelectorAll('.star-select-btn');
+        starSelectBtns.forEach(s => {
+            const icon = s.querySelector('i');
+            if (icon) {
+                icon.className = 'far fa-star text-[#3A2A1F]/40';
+            }
+            s.classList.remove('text-yellow-400');
+        });
 
         let categoryName = typeof productData.category === 'string' ? productData.category : (productData.category?.cat_name || productData.category?.name || productData.category_name || 'Crafts');
         let vendorName = typeof productData.vendor === 'string' ? productData.vendor : (productData.vendor?.vendor_name || productData.vendor?.business_name || productData.vendor?.name || productData.vendor_name || 'Local Artisan');
@@ -1000,13 +1071,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const displayOriginalPrice = Number.isFinite(originalPrice) ? originalPrice : displayPrice;
         const savings = Math.max(0, displayOriginalPrice - displayPrice);
         const discountPercentage = displayOriginalPrice > 0 ? Math.round((savings / displayOriginalPrice) * 100) : 0;
-        
+
         if (modalProductPrice) modalProductPrice.textContent = `Rs. ${displayPrice.toLocaleString()}`;
-        
+
         if (hasDiscount && modalProductOriginalPrice && savings > 0) {
             modalProductOriginalPrice.textContent = `Rs. ${displayOriginalPrice.toLocaleString()}`;
             modalProductOriginalPrice.classList.remove('hidden');
-            
+
             if (modalDiscountTag) {
                 modalDiscountTag.textContent = `-${discountPercentage}% OFF`;
                 modalDiscountTag.classList.remove('hidden');
@@ -1052,6 +1123,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (qtyInput) qtyInput.value = 1;
 
+        fetchReviewsForProduct(productData.id);
+
+        const toggleReviewBtn = document.getElementById('toggle-add-review-btn');
+        if (toggleReviewBtn) {
+            toggleReviewBtn.innerHTML = '<i class="fas fa-pen-fancy"></i> Write a Review';
+            if (window.isLoggedIn) {
+                fetch('/product/' + productData.id + '/can-review')
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.eligible && data.existing) {
+                            toggleReviewBtn.innerHTML = '<i class="fas fa-edit"></i> Edit a Review';
+                        }
+                    })
+                    .catch(() => {});
+            }
+        }
+
         productModal.classList.remove('hidden');
         productModal.classList.add('block');
         setTimeout(() => {
@@ -1065,14 +1153,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function closeProductDetailsModal() {
         if (!productModal || !productContainer) return;
-        
+
         restoreProductUrlState();
 
         productModal.classList.remove('opacity-100');
         productModal.classList.add('opacity-0');
         productContainer.classList.remove('scale-100', 'opacity-100');
         productContainer.classList.add('scale-95', 'opacity-0');
-        
+
         setTimeout(() => {
             productModal.classList.remove('block');
             productModal.classList.add('hidden');
@@ -1083,13 +1171,14 @@ document.addEventListener('DOMContentLoaded', () => {
     window.closeProductDetailsModal = closeProductDetailsModal;
 
     // Listeners for view details buttons
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         const btn = e.target.closest('.view-details-btn');
         if (btn) {
             e.preventDefault();
 
             const productData = {
                 id: btn.getAttribute('data-id'),
+                slug: btn.getAttribute('data-slug'),
                 name: btn.getAttribute('data-name'),
                 price: btn.getAttribute('data-price'),
                 originalPrice: btn.getAttribute('data-original-price'),
@@ -1105,13 +1194,14 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             populateAndShowProductModal(productData);
-            updateProductUrlState(productData.id);
+            updateProductUrlState(productData.id, productData.slug);
+
         }
     });
 
     if (closeProductBtn) closeProductBtn.addEventListener('click', closeProductDetailsModal);
     if (productModal) {
-        productModal.addEventListener('click', function(e) {
+        productModal.addEventListener('click', function (e) {
             if (e.target === productModal) closeProductDetailsModal();
         });
     }
@@ -1121,7 +1211,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const tabBtns = productModal.querySelectorAll('.tab-btn');
         const tabPanels = productModal.querySelectorAll('.tab-panel');
         tabBtns.forEach(btn => {
-            btn.addEventListener('click', function() {
+            btn.addEventListener('click', function () {
                 const target = btn.getAttribute('data-tab');
                 tabBtns.forEach(b => {
                     b.classList.remove('text-[#C65A3A]', 'border-b-2', 'border-[#C65A3A]', 'font-bold');
@@ -1144,18 +1234,18 @@ document.addEventListener('DOMContentLoaded', () => {
         const qtyPlus = productModal.querySelector('.qty-plus-btn');
         const qtyMinus = productModal.querySelector('.qty-minus-btn');
         if (qtyPlus && qtyInput) {
-            qtyPlus.addEventListener('click', function() {
+            qtyPlus.addEventListener('click', function () {
                 qtyInput.value = parseInt(qtyInput.value) + 1;
             });
         }
         if (qtyMinus && qtyInput) {
-            qtyMinus.addEventListener('click', function() {
+            qtyMinus.addEventListener('click', function () {
                 const val = parseInt(qtyInput.value);
                 if (val > 1) qtyInput.value = val - 1;
             });
         }
         if (qtyInput) {
-            qtyInput.addEventListener('change', function() {
+            qtyInput.addEventListener('change', function () {
                 let val = parseInt(this.value) || 1;
                 if (val < 1) val = 1;
                 this.value = val;
@@ -1165,9 +1255,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Add to Cart inside modal
         const addToCartModalBtn = document.getElementById('modal-add-to-cart-btn');
         const buyNowModalBtn = document.getElementById('modal-buy-now-btn');
-        
+
         if (addToCartModalBtn) {
-            addToCartModalBtn.addEventListener('click', function() {
+            addToCartModalBtn.addEventListener('click', function () {
                 if (!window.isLoggedIn) {
                     window.location.href = window.loginUrl || '/userlogin';
                     return;
@@ -1185,7 +1275,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (buyNowModalBtn) {
-            buyNowModalBtn.addEventListener('click', function() {
+            buyNowModalBtn.addEventListener('click', function () {
                 if (!window.isLoggedIn) {
                     window.location.href = window.loginUrl || '/userlogin';
                     return;
@@ -1206,8 +1296,303 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // ==================== PRODUCT DETAILS REVIEWS AJAX ====================
+    function fetchReviewsForProduct(productId, page = 1) {
+        const listContainer = document.getElementById('modal-reviews-list');
+        const pagContainer = document.getElementById('modal-reviews-pagination');
+        const countBadge = document.getElementById('modal-reviews-count-badge');
+        const mainCount = document.getElementById('modal-reviews-count');
+        const starsContainer = document.getElementById('modal-stars-container');
+
+        if (!listContainer) return;
+
+        listContainer.innerHTML = '<p class="text-[#3A2A1F]/60 text-xs italic">Loading customer reviews...</p>';
+        if (pagContainer) pagContainer.innerHTML = '';
+
+        fetch('/product/' + productId + '/reviews?page=' + page)
+            .then(res => res.json())
+            .then(data => {
+                const reviews = data.reviews || [];
+                const pagination = data.pagination || {};
+
+                if (countBadge) countBadge.textContent = pagination.total || reviews.length;
+                if (mainCount) mainCount.textContent = pagination.total || reviews.length;
+
+                if (starsContainer && reviews.length > 0 && page === 1) {
+                    const avg = reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length;
+                    starsContainer.innerHTML = '';
+                    for (let i = 1; i <= 5; i++) {
+                        const star = document.createElement('i');
+                        star.style.marginRight = '2px';
+                        if (i <= avg) {
+                            star.className = 'fas fa-star text-yellow-500';
+                        } else if (i - avg < 1) {
+                            star.className = 'fas fa-star-half-alt text-yellow-500';
+                        } else {
+                            star.className = 'far fa-star text-yellow-500';
+                        }
+                        starsContainer.appendChild(star);
+                    }
+                }
+
+                if (reviews.length === 0) {
+                    listContainer.innerHTML = '<p class="text-[#3A2A1F]/60 text-xs italic py-4">No reviews yet for this product. Be the first to write one!</p>';
+                    if (pagContainer) pagContainer.innerHTML = '';
+                    return;
+                }
+
+                listContainer.innerHTML = '';
+                reviews.forEach(review => {
+                    let starsHtml = '';
+                    for (let i = 1; i <= 5; i++) {
+                        if (i <= review.rating) {
+                            starsHtml += '<i class="fas fa-star text-yellow-500 text-[10px]"></i>';
+                        } else {
+                            starsHtml += '<i class="far fa-star text-[#3A2A1F]/20 text-[10px]"></i>';
+                        }
+                    }
+
+                    const verifiedHtml = review.verified_purchase
+                        ? '<span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 uppercase tracking-wider flex items-center gap-1"><i class="fas fa-check-circle"></i> Verified Purchase</span>'
+                        : '';
+
+                    const replyHtml = review.reply
+                        ? `
+                        <div class="mt-3 ml-6 bg-[#E5DCD0] border border-[#ebd7be]/30 rounded-xl p-3 space-y-1">
+                            <div class="flex items-center justify-between">
+                                <span class="text-[10px] font-bold text-[#C65A3A] flex items-center gap-1">
+                                    <i class="fas fa-reply fa-flip-horizontal"></i> Vendor Response
+                                </span>
+                                <span class="text-[8px] text-[#3A2A1F]/50 font-semibold">${review.replied_at || ''}</span>
+                            </div>
+                            <p class="text-xs text-[#3A2A1F]/80 leading-relaxed font-medium">${review.reply}</p>
+                        </div>
+                        `
+                        : '';
+
+                    const card = document.createElement('div');
+                    card.className = 'bg-[#FFF7EF] border border-[#ebd7be]/30 rounded-xl p-4 space-y-2';
+                    card.innerHTML = `
+                        <div class="flex items-start justify-between gap-3">
+                            <div class="space-y-1">
+                                <div class="flex items-center gap-2">
+                                    <h5 class="text-xs font-bold text-[#1F3D2E]">${review.user_name}</h5>
+                                    ${verifiedHtml}
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <div class="flex gap-0.5">${starsHtml}</div>
+                                    <span class="text-[10px] text-[#3A2A1F]/50 font-semibold">${review.date}</span>
+                                </div>
+                            </div>
+                        </div>
+                        ${review.comment ? `<p class="text-xs text-[#3A2A1F]/80 leading-relaxed font-medium mt-1">"${review.comment}"</p>` : ''}
+                        ${replyHtml}
+                    `;
+                    listContainer.appendChild(card);
+                });
+
+                if (pagContainer) {
+                    pagContainer.innerHTML = '';
+                    if (pagination.last_page > 1) {
+                        pagContainer.className = 'flex items-center justify-center gap-3 mt-8 pb-4';
+
+                        // Previous button
+                        const prevBtn = document.createElement('button');
+                        if (pagination.current_page > 1) {
+                            prevBtn.className = 'w-10 h-10 rounded-full border border-[#1F3D2E]/20 flex items-center justify-center text-[#1F3D2E] hover:border-[#1F3D2E] hover:bg-[#1F3D2E]/5 transition duration-300 shadow-sm cursor-pointer';
+                            prevBtn.onclick = () => fetchReviewsForProduct(productId, pagination.current_page - 1);
+                        } else {
+                            prevBtn.className = 'w-10 h-10 rounded-full border border-[#1F3D2E]/10 flex items-center justify-center text-[#1F3D2E]/30 shadow-sm cursor-not-allowed';
+                        }
+                        prevBtn.innerHTML = '<i class="fas fa-chevron-left text-xs"></i>';
+                        pagContainer.appendChild(prevBtn);
+
+                        // Page numbers container
+                        const pageNumbersContainer = document.createElement('div');
+                        pageNumbersContainer.className = 'flex items-center gap-1';
+
+                        const start = Math.max(1, pagination.current_page - 2);
+                        const end = Math.min(pagination.last_page, pagination.current_page + 2);
+
+                        if (start > 1) {
+                            const firstPageBtn = document.createElement('button');
+                            firstPageBtn.className = 'w-10 h-10 flex items-center justify-center text-sm font-semibold text-[#3A2A1F]/60 hover:text-[#1F3D2E] transition-colors cursor-pointer';
+                            firstPageBtn.textContent = '1';
+                            firstPageBtn.onclick = () => fetchReviewsForProduct(productId, 1);
+                            pageNumbersContainer.appendChild(firstPageBtn);
+
+                            if (start > 2) {
+                                const dots = document.createElement('span');
+                                dots.className = 'text-sm font-semibold text-[#3A2A1F]/40 px-2 select-none';
+                                dots.textContent = '...';
+                                pageNumbersContainer.appendChild(dots);
+                            }
+                        }
+
+                        for (let page = start; page <= end; page++) {
+                            const pageBtn = document.createElement('button');
+                            if (page === pagination.current_page) {
+                                pageBtn.className = 'w-10 h-10 flex flex-col items-center justify-center text-sm font-bold text-[#1F3D2E] relative cursor-pointer';
+                                pageBtn.innerHTML = `<span>${page}</span><span class="absolute bottom-1 w-5 h-0.5 bg-[#1F3D2E] rounded-full"></span>`;
+                            } else {
+                                pageBtn.className = 'w-10 h-10 flex items-center justify-center text-sm font-semibold text-[#3A2A1F]/60 hover:text-[#1F3D2E] transition-colors cursor-pointer';
+                                pageBtn.textContent = page;
+                                pageBtn.onclick = () => fetchReviewsForProduct(productId, page);
+                            }
+                            pageNumbersContainer.appendChild(pageBtn);
+                        }
+
+                        if (end < pagination.last_page) {
+                            if (end < pagination.last_page - 1) {
+                                const dots = document.createElement('span');
+                                dots.className = 'text-sm font-semibold text-[#3A2A1F]/40 px-2 select-none';
+                                dots.textContent = '...';
+                                pageNumbersContainer.appendChild(dots);
+                            }
+                            const lastPageBtn = document.createElement('button');
+                            lastPageBtn.className = 'w-10 h-10 flex items-center justify-center text-sm font-semibold text-[#3A2A1F]/60 hover:text-[#1F3D2E] transition-colors cursor-pointer';
+                            lastPageBtn.textContent = pagination.last_page;
+                            lastPageBtn.onclick = () => fetchReviewsForProduct(productId, pagination.last_page);
+                            pageNumbersContainer.appendChild(lastPageBtn);
+                        }
+
+                        pagContainer.appendChild(pageNumbersContainer);
+
+                        // Next button
+                        const nextBtn = document.createElement('button');
+                        if (pagination.current_page < pagination.last_page) {
+                            nextBtn.className = 'w-10 h-10 rounded-full border border-[#1F3D2E]/20 flex items-center justify-center text-[#1F3D2E] hover:border-[#1F3D2E] hover:bg-[#1F3D2E]/5 transition duration-300 shadow-sm cursor-pointer';
+                            nextBtn.onclick = () => fetchReviewsForProduct(productId, pagination.current_page + 1);
+                        } else {
+                            nextBtn.className = 'w-10 h-10 rounded-full border border-[#1F3D2E]/10 flex items-center justify-center text-[#1F3D2E]/30 shadow-sm cursor-not-allowed';
+                        }
+                        nextBtn.innerHTML = '<i class="fas fa-chevron-right text-xs"></i>';
+                        pagContainer.appendChild(nextBtn);
+                    }
+                }
+            })
+            .catch(err => {
+                listContainer.innerHTML = '<p class="text-red-500 text-xs py-4">Failed to load reviews.</p>';
+            });
+    }
+
+    // Review Form event listeners
+    const starSelectBtns = document.querySelectorAll('.star-select-btn');
+    const ratingVal = document.getElementById('review-rating-value');
+    if (starSelectBtns.length > 0 && ratingVal) {
+        starSelectBtns.forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                const rating = parseInt(this.getAttribute('data-rating'));
+                ratingVal.value = rating;
+
+                starSelectBtns.forEach(s => {
+                    const r = parseInt(s.getAttribute('data-rating'));
+                    const icon = s.querySelector('i');
+                    if (r <= rating) {
+                        icon.className = 'fas fa-star text-[#C65A3A]';
+                    } else {
+                        icon.className = 'far fa-star text-[#3A2A1F]/40';
+                    }
+                });
+            });
+        });
+    }
+
+    const reviewForm = document.getElementById('product-review-form');
+    if (reviewForm) {
+        reviewForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const rating = ratingVal.value;
+            const comment = document.getElementById('review-comment').value;
+            const errorMsg = document.getElementById('review-error-message');
+            const successMsg = document.getElementById('review-success-message');
+            const submitBtn = document.getElementById('submit-review-btn');
+
+            if (!rating) {
+                if (window.showToast) {
+                    window.showToast('Please select a rating star.', 'error');
+                } else if (errorMsg) {
+                    errorMsg.textContent = 'Please select a rating star.';
+                    errorMsg.classList.remove('hidden');
+                }
+                return;
+            }
+
+            if (errorMsg) errorMsg.classList.add('hidden');
+            if (successMsg) successMsg.classList.add('hidden');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+
+            fetch('/product/' + window.activeProduct.id + '/reviews', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? ''
+                },
+                body: JSON.stringify({ rating, comment })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Submit Review';
+
+                    if (data.success) {
+                        if (window.showToast) {
+                            window.showToast(data.message || 'Review submitted successfully!', 'success');
+                        } else if (successMsg) {
+                            successMsg.textContent = data.message;
+                            successMsg.classList.remove('hidden');
+                        }
+
+                        reviewForm.reset();
+
+                        starSelectBtns.forEach(s => {
+                            s.querySelector('i').className = 'far fa-star text-[#3A2A1F]/40';
+                        });
+
+                        ratingVal.value = '';
+
+                        fetchReviewsForProduct(window.activeProduct.id);
+
+                        const toggleReviewBtn = document.getElementById('toggle-add-review-btn');
+                        if (toggleReviewBtn) {
+                            toggleReviewBtn.innerHTML = '<i class="fas fa-edit"></i> Edit a Review';
+                        }
+
+                        const reviewSection = document.getElementById('modal-add-review-section');
+                        if (reviewSection) {
+                            reviewSection.classList.add('hidden');
+                        }
+
+                    } else {
+                        if (window.showToast) {
+                            window.showToast(data.message || 'Something went wrong.', 'error');
+                        } else if (errorMsg) {
+                            errorMsg.textContent = data.message || 'Something went wrong.';
+                            errorMsg.classList.remove('hidden');
+                        }
+                    }
+                })
+                .catch(err => {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Submit Review';
+
+                    if (window.showToast) {
+                        window.showToast('Server error. Please try again.', 'error');
+                    } else if (errorMsg) {
+                        errorMsg.textContent = 'Server error. Please try again.';
+                        errorMsg.classList.remove('hidden');
+                    }
+                });
+        });
+    }
+
+
     // Handle direct loading and history state popped
-    window.addEventListener('popstate', function(e) {
+    window.addEventListener('popstate', function (e) {
         const path = window.location.pathname;
         if (path === '/userlogin') {
             openLoginModal(null, 'login');
@@ -1219,17 +1604,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        const match = path.match(/^\/viewdetails\/(\d+)$/);
-        if (match) {
-            if (window.activeProductOnLoad && String(window.activeProductOnLoad.id) === match[1]) {
-                populateAndShowProductModal(window.activeProductOnLoad);
-            } else {
-                const btn = document.querySelector(`.view-details-btn[data-id="${match[1]}"], .wishlist-btn[data-product-id="${match[1]}"]`);
-                if (btn) {
-                    btn.click();
-                }
-            }
-        } else {
+const match = path.match(/^\/viewdetails\/([^/]+)$/);
+if (match) {
+    if (window.activeProductOnLoad && (String(window.activeProductOnLoad.slug) === match[1] || String(window.activeProductOnLoad.id) === match[1])) {
+        populateAndShowProductModal(window.activeProductOnLoad);
+    } else {
+        const btn = document.querySelector(`.view-details-btn[data-slug="${match[1]}"], .view-details-btn[data-id="${match[1]}"]`);
+        if (btn) {
+            btn.click();
+        }
+    }
+} else {
             if (productModal && !productModal.classList.contains('hidden')) {
                 closeProductDetailsModal();
             }
@@ -1248,23 +1633,23 @@ document.addEventListener('DOMContentLoaded', () => {
     renderCartPage();
 
     // ─── Forgot Password: AJAX form submit ────────────────────────────────────
-    const forgotForm    = document.getElementById('forgot-password-form');
-    const forgotResend  = document.getElementById('forgot-resend');
+    const forgotForm = document.getElementById('forgot-password-form');
+    const forgotResend = document.getElementById('forgot-resend');
 
     if (forgotResend) {
-        forgotResend.addEventListener('click', function() {
+        forgotResend.addEventListener('click', function () {
             document.getElementById('forgot-success')?.classList.add('hidden');
             document.getElementById('forgot-form-wrap')?.classList.remove('hidden');
         });
     }
 
     if (forgotForm) {
-        forgotForm.addEventListener('submit', async function(e) {
+        forgotForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
-            const btn     = document.getElementById('forgot-submit-btn');
+            const btn = document.getElementById('forgot-submit-btn');
             const btnText = document.getElementById('forgot-btn-text');
-            const email   = document.getElementById('forgot-email').value;
+            const email = document.getElementById('forgot-email').value;
 
             // Loading state
             btn.disabled = true;
@@ -1276,12 +1661,12 @@ document.addEventListener('DOMContentLoaded', () => {
             forgotForm.querySelectorAll('.forgot-error').forEach(el => el.remove());
 
             try {
-                const res  = await fetch(forgotForm.action, {
-                    method : 'POST',
+                const res = await fetch(forgotForm.action, {
+                    method: 'POST',
                     headers: {
-                        'Content-Type' : 'application/json',
-                        'Accept'       : 'application/json',
-                        'X-CSRF-TOKEN' : document.querySelector('meta[name="csrf-token"]')?.content ?? '',
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
                     },
                     body: JSON.stringify({ email }),
                 });
@@ -1297,7 +1682,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     // Show inline error under the email input
                     const errMsg = json.errors?.email?.[0] ?? json.message ?? 'Something went wrong. Please try again.';
-                    const errEl  = document.createElement('p');
+                    const errEl = document.createElement('p');
                     errEl.className = 'forgot-error text-red-500 text-xs mt-1.5 font-medium flex items-center gap-1';
                     errEl.innerHTML = '<i class="fas fa-exclamation-circle text-[10px]"></i> ' + errMsg;
                     document.getElementById('forgot-email')?.closest('div[class*="flex"]')?.after(errEl);

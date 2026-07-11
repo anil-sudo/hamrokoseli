@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\NotificationService;
 use Illuminate\Database\Eloquent\Model;
 
 class SupportTicket extends Model
@@ -18,5 +19,17 @@ class SupportTicket extends Model
     public function vendor()
     {
         return $this->belongsTo(Vendor::class);
+    }
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted()
+    {
+        static::saved(function ($ticket) {
+            if ($ticket->wasRecentlyCreated || $ticket->wasChanged('status')) {
+                NotificationService::vendorSupportTicketStatusChanged($ticket);
+            }
+        });
     }
 }

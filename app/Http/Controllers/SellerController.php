@@ -9,7 +9,9 @@ use App\Models\Payment;
 use App\Models\Payout;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Models\Review;
 use App\Models\SupportTicket;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -102,6 +104,20 @@ class SellerController extends Controller
 
     public function seller()
     {
+        // If the user is already logged in, redirect them appropriately.
+        if (auth()->check()) {
+            $user = auth()->user();
+
+            if ($user->role === 'vendor') {
+                return redirect()->route('dashboard')
+                    ->with('info', 'You already have a seller account.');
+            }
+
+            // Regular user – they must log out before registering as a seller.
+            return redirect()->route('home')
+                ->with('info', 'Please log out of your current account before registering as a seller.');
+        }
+
         return view('seller.register');
     }
 
@@ -222,19 +238,21 @@ class SellerController extends Controller
         return view('seller.product-create', compact('categories'));
     }
 
-    public function productEdit($id)
+    public function productEdit($slug)
     {
         $product = Product::with(['category', 'images', 'variants'])
             ->where('vendor_id', auth()->user()->vendor->id)
-            ->findOrFail($id);
+            ->where('slug', $slug)
+            ->firstOrFail();
+
         $categories = Category::where('status', 'active')->get();
 
         return view('seller.product-edit', compact('product', 'categories'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $slug)
     {
-        $product = Product::where('vendor_id', auth()->user()->vendor->id)->findOrFail($id);
+        $product = Product::where('vendor_id', auth()->user()->vendor->id)->where('slug', $slug)->firstOrFail();
 
         $validated = $request->validate([
             'product_name' => 'required|string|max:200',
@@ -278,6 +296,7 @@ class SellerController extends Controller
             'discount_price' => ($validated['discount_amount'] ?? 0) > 0 ? (($validated['base_price'] ?? $product->price) - $validated['discount_amount']) : null,
             'stock' => $validated['stock'] ?? $product->stock,
             'sku' => $validated['sku'] ?? $product->sku,
+            'todays_deal_date' => $validated['todays_deal_date'] ?? $product->todays_deal_date,
         ]);
 
         // Update variants
@@ -362,6 +381,7 @@ class SellerController extends Controller
             'discounted_price' => 'nullable|numeric|min:0|lt:base_price',
             'sku' => 'required|string|max:100|unique:products,sku',
             'stock' => 'required|integer|min:0',
+            'todays_deal_date' => 'nullable|date',
             'specifications' => 'nullable|array',
             'specifications.*.key' => 'nullable|string|max:100',
             'specifications.*.value' => 'nullable|string|max:255',
@@ -393,6 +413,7 @@ class SellerController extends Controller
             'stock' => $validated['stock'],
             'sku' => $validated['sku'],
             'status' => 'active',
+            'todays_deal_date' => $validated['todays_deal_date'] ?? null,
         ]);
 
         // 2. Save variants
@@ -432,10 +453,11 @@ class SellerController extends Controller
             ->with('success', 'Product "'.$product->name.'" created successfully!');
     }
 
-    public function destroy($id)
+    public function destroy($slug)
     {
         $product = Product::where('vendor_id', auth()->user()->vendor->id)
-            ->findOrFail($id);
+            ->where('slug', $slug)
+            ->firstOrFail();
 
         $product->images()->delete();
         $product->variants()->delete();
@@ -648,6 +670,8 @@ class SellerController extends Controller
 
         $user->save();
 
+        NotificationService::profileUpdated($user, 'profile', true);
+
         return redirect()->back()->with('success', 'Profile updated successfully.');
     }
 
@@ -668,12 +692,92 @@ class SellerController extends Controller
         $user->password = \Hash::make($request->new_password);
         $user->save();
 
+        NotificationService::profileUpdated($user, 'password', true);
+
         return redirect()->back()->with('password_success', 'Password changed successfully.');
     }
 
-    public function sellerReview()
+    public function sellerReview(Request $request)
     {
-        return view('seller.review');
+        $vendor = auth()->user()->vendor;
+
+        if (! $vendor) {
+            return redirect()->route('dashboard')
+                ->with('error', 'Vendor profile not found. Please contact support.');
+        }
+
+        $vendorId = $vendor->id;
+
+        // Fetch products owned by this vendor
+        $productIds = Product::where('vendor_id', $vendorId)->pluck('id');
+
+        $query = Review::with(['user', 'product'])->whereIn('product_id', $productIds);
+
+        // Filter by rating
+        if ($request->filled('rating')) {
+            $query->where('rating', $request->rating);
+        }
+
+        // Search by keyword in comments or product names or user names
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('comment', 'like', "%{$search}%")
+                    ->orWhereHas('product', function ($pq) use ($search) {
+                        $pq->where('name', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('user', function ($uq) use ($search) {
+                        $uq->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $reviews = $query->orderBy('created_at', 'desc')->paginate(5);
+
+        // Calculate statistics based on ALL reviews for this vendor's products
+        $allReviews = Review::whereIn('product_id', $productIds)->get();
+        $totalReviews = $allReviews->count();
+        $avgRating = $totalReviews > 0 ? round($allReviews->avg('rating'), 2) : 0;
+
+        // Response rate: percentage of reviews with a reply
+        $repliedCount = $allReviews->whereNotNull('reply')->count();
+        $responseRate = $totalReviews > 0 ? round(($repliedCount / $totalReviews) * 100) : 0;
+
+        // Pending Replies
+        $pendingReplies = $totalReviews - $repliedCount;
+
+        return view('seller.review', compact(
+            'reviews',
+            'totalReviews',
+            'avgRating',
+            'responseRate',
+            'pendingReplies'
+        ));
+    }
+
+    public function replyToReview(Request $request, $id)
+    {
+        $request->validate([
+            'reply' => 'required|string|max:1000',
+        ]);
+
+        $vendor = auth()->user()->vendor;
+        if (! $vendor) {
+            return redirect()->back()->with('error', 'Vendor profile not found.');
+        }
+
+        $review = Review::findOrFail($id);
+
+        // Ensure the review belongs to this vendor's products
+        if ($review->product->vendor_id !== $vendor->id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $review->reply = $request->reply;
+        $review->replied_at = now();
+        $review->save();
+
+        return redirect()->back()->with('success', 'Reply submitted successfully.');
     }
 
     public function sellerPayment(Request $request)
@@ -780,19 +884,32 @@ class SellerController extends Controller
     public function sellerNotification()
     {
         $user = auth()->user();
+        $sellerTypes = [
+            'order_placed',
+            'vendor_order_placed',
+            'return_requested',
+            'return_approved',
+            'payout_processed',
+            'vendor_payment_received',
+            'vendor_profile_updated',
+            'support_ticket_status',
+        ];
 
-        $notifications = $user->appNotifications()->latest()->paginate(10);
+        $notifications = $user->appNotifications()
+            ->whereIn('type', $sellerTypes)
+            ->latest()
+            ->paginate(10);
 
         $counts = [
-            'all' => $user->appNotifications()->where('is_read', false)->count(),
+            'all' => $user->appNotifications()->whereIn('type', $sellerTypes)->where('is_read', false)->count(),
             'orders' => $user->appNotifications()->where('is_read', false)->whereIn('type', [
-                'order_placed', 'order_confirmed', 'order_shipped', 'order_delivered', 'order_cancelled', 'return_requested', 'return_approved',
+                'order_placed', 'vendor_order_placed', 'return_requested', 'return_approved',
             ])->count(),
             'payouts' => $user->appNotifications()->where('is_read', false)->whereIn('type', [
-                'payout_processed', 'payment_received',
+                'payout_processed', 'vendor_payment_received',
             ])->count(),
-            'store' => $user->appNotifications()->where('is_read', false)->whereNotIn('type', [
-                'order_placed', 'order_confirmed', 'order_shipped', 'order_delivered', 'order_cancelled', 'return_requested', 'return_approved', 'payout_processed', 'payment_received',
+            'store' => $user->appNotifications()->where('is_read', false)->whereIn('type', [
+                'vendor_profile_updated', 'support_ticket_status',
             ])->count(),
         ];
 
@@ -809,10 +926,24 @@ class SellerController extends Controller
 
     public function markAllNotificationsRead()
     {
-        auth()->user()->appNotifications()->where('is_read', false)->update([
-            'is_read' => true,
-            'read_at' => now(),
-        ]);
+        $sellerTypes = [
+            'order_placed',
+            'vendor_order_placed',
+            'return_requested',
+            'return_approved',
+            'payout_processed',
+            'vendor_payment_received',
+            'vendor_profile_updated',
+            'support_ticket_status',
+        ];
+
+        auth()->user()->appNotifications()
+            ->whereIn('type', $sellerTypes)
+            ->where('is_read', false)
+            ->update([
+                'is_read' => true,
+                'read_at' => now(),
+            ]);
 
         return response()->json(['success' => true]);
     }

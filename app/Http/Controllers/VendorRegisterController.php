@@ -64,7 +64,7 @@ class VendorRegisterController extends Controller
                 'city' => $data['city'] ?? null,
                 'province' => $data['province'] ?? null,
                 'pan_number' => $data['pan_number'] ?? null,
-                'status' => 'pending',
+                'status' => 'active',
             ]);
         });
 

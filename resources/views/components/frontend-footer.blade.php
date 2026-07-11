@@ -12,11 +12,12 @@
             </div>
 
             <!-- Columns 2, 3, 4: Quick Link + Support + Legal (side-by-side grid) -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:contents gap-6 sm:gap-10 col-span-2 sm:col-span-3 md:col-span-3">
+            <div
+                class="grid grid-cols-2 sm:grid-cols-3 md:contents gap-6 sm:gap-10 col-span-2 sm:col-span-3 md:col-span-3">
 
                 <!-- Column 2: Navigation Links -->
                 <div class="space-y-4">
-                    <h4 class="text-xs font-bold uppercase tracking-widest text-[#b55b3d]">QUICK LINK</h4>
+                    <h4 class="text-s font-bold uppercase tracking-widest text-[#b55b3d]">QUICK LINK</h4>
                     <ul class="flex flex-col space-y-2.5 text-sm">
                         <li><a href="{{ url('home') }}"
                                 class="text-slate-300 hover:text-white transition-colors">Home</a></li>
@@ -32,7 +33,7 @@
 
                 <!-- Column 3: Support Links -->
                 <div class="space-y-4">
-                    <h4 class="text-xs font-bold uppercase tracking-widest text-[#b55b3d]">SUPPORT</h4>
+                    <h4 class="text-s font-bold uppercase tracking-widest text-[#b55b3d]">SUPPORT</h4>
                     <ul class="flex flex-col space-y-2.5 text-sm">
                         <li><a href="{{ url('FAQ') }}"
                                 class="text-slate-300 hover:text-white transition-colors">FAQs</a></li>
@@ -45,7 +46,7 @@
 
                 <!-- Column 4: Legal -->
                 <div class="space-y-4">
-                    <h4 class="text-xs font-bold uppercase tracking-widest text-[#b55b3d]">LEGAL</h4>
+                    <h4 class="text-s font-bold uppercase tracking-widest text-[#b55b3d]">LEGAL</h4>
                     <ul class="flex flex-col space-y-2.5 text-sm">
                         <li><a href="{{ url('privacypolicy') }}"
                                 class="text-slate-300 hover:text-white transition-colors">Privacy Policy</a></li>
@@ -61,24 +62,17 @@
 
             </div>
 
-            <!-- Column 5: Newsletter -->
+            <!-- Column 5: Sell with us -->
             <div class="col-span-2 sm:col-span-3 md:col-span-1 space-y-4">
-                <h4 class="text-xs font-bold uppercase tracking-widest text-[#b55b3d]">NEWSLETTER</h4>
+                <h4 class="text-s font-bold uppercase tracking-widest text-[#b55b3d]">SELL WITH US</h4>
                 <p class="text-slate-300 text-sm leading-relaxed">
-                    Join our community for stories of craft and culture.
+                    Reach customers across Nepal and beyond. Join our platform to showcase your authentic Nepalese
+                    crafts to a global audience.
                 </p>
-                <div class="flex items-center bg-[#F2E7D9] rounded-full p-0.5 w-full max-w-[260px] md:max-w-xs">
-                    <input type="email" placeholder="Email Address"
-                        class="bg-transparent pl-4 pr-2 py-1.5 text-slate-800 placeholder-slate-500 focus:outline-none w-full text-xs font-medium">
-                    <button
-                        class="bg-[#b55b3d] text-white rounded-full w-8 h-8 flex items-center justify-center hover:bg-[#a04e33] transition-colors shrink-0">
-                        <i class="fa-solid fa-arrow-right"></i>
-                    </button>
-                </div>
                 <div class="pt-1">
                     <a href="{{ route('seller.login') }}"
-                        class="text-[#b55b3d] px-2 py-0.5 rounded-xl hover:rounded-xl hover:bg-[#a04e33] hover:text-[#fff7ef] text-sm font-semibold underline underline-offset-4 transition-colors">Become
-                        a Seller</a>
+                        class="text-[#b55b3d] px-3 py-0.5 rounded-xl hover:rounded-xl hover:bg-[#a04e33] hover:text-[#fff7ef] text-sm font-semibold underline underline-offset-4 transition-colors">Become
+                        a Seller <i class="fa-solid fa-arrow-right pl-2"></i></a>
                 </div>
             </div>
 

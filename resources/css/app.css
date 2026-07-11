@@ -261,7 +261,11 @@ h6 {
     /* Today's Deals */
 =======
 /* Today's Deals */
+<<<<<<< HEAD
 >>>>>>> cb9d589f366422d01ab630bc1ab90bd5b047cbe0
+=======
+>>>>>>> origin/main
+>>>>>>> main
     .today-deals-container {
         display: grid;
         grid-template-columns: repeat(4, 1fr);

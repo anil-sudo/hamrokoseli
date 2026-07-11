@@ -1,5 +1,6 @@
-@vite('resources/js/today-deals.js')
-<x-frontend-layout>
+<x-frontend-layout title="Today's Deals - Hamro Koseli"
+    description="Check out today's limited-time offers on authentic Nepali crafts and handmade treasures."
+    ogImage="/images/og-images.jpg">
 
     <main class="bg-[#c05d1b] min-h-screen">
 
@@ -582,12 +583,6 @@
                     const cardWidth = cards[0].getBoundingClientRect().width;
                     trendingCarousel.style.transform = `translateX(-${currentIndex * (cardWidth + 24)}px)`;
                 }
-
-                trendingNext.addEventListener('click', () => {
-                    const maxIndex = Math.max(0, cards.length - visibleCount());
-                    currentIndex = currentIndex < maxIndex ? currentIndex + 1 : 0;
-                    updateTrendingCarousel();
-                });
 
                 trendingPrev.addEventListener('click', () => {
                     const maxIndex = Math.max(0, cards.length - visibleCount());
