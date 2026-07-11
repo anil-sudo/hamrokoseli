@@ -10,9 +10,11 @@
 
         <!-- Flash -->
         @if (session('success'))
-            <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-2xl text-green-700 font-medium">
-                {{ session('success') }}
-            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    if (window.showToast) window.showToast("{{ session('success') }}", 'success');
+                });
+            </script>
         @endif
 
         @if ($errors->any())

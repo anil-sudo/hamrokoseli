@@ -254,11 +254,6 @@ class UserController extends Controller
             ->with('success', 'Your order has been cancelled successfully.');
     }
 
-    public function returnProduct()
-    {
-        return view('user.return');
-    }
-
     public function userProfile()
     {
         $user = auth()->user();

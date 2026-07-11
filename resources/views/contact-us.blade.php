@@ -92,9 +92,11 @@
 
                     {{-- Success Message --}}
                     @if (session('success'))
-                        <div class="mb-6 bg-green-50 border border-green-200 text-green-800 rounded-xl px-4 py-3 text-sm">
-                            ✅ {{ session('success') }}
-                        </div>
+                        <script>
+                            document.addEventListener('DOMContentLoaded', () => {
+                                if (window.showToast) window.showToast("{{ session('success') }}", 'success');
+                            });
+                        </script>
                     @endif
 
                     {{-- Validation Errors --}}

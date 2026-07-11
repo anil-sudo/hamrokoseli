@@ -1,11 +1,16 @@
 // Toast
 function showToast(message, type = 'error') {
-    const container = document.getElementById('toastContainer');
-    const toast = document.createElement('div');
-    toast.className = `${type === 'success' ? 'bg-green-600' : 'bg-(--secondary-color)'} text-white px-5 py-4 rounded-xl shadow-lg`;
-    toast.textContent = message;
-    container.appendChild(toast);
-    setTimeout(() => toast.remove(), 4000);
+    if (window.showToast) {
+        window.showToast(message, type);
+    } else {
+        const container = document.getElementById('toastContainer') || document.body;
+        const toast = document.createElement('div');
+        const bgColor = type === 'success' ? 'bg-green-600' : 'bg-red-600';
+        toast.className = `${bgColor} text-white px-5 py-4 rounded-xl shadow-lg fixed top-5 right-5 z-50`;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 4000);
+    }
 }
 
 // Specifications

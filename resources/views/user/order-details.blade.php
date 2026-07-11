@@ -8,18 +8,18 @@
         </a>
 
         @if (session('success'))
-            <div
-                class="flex items-center gap-3 px-5 py-4 rounded-2xl bg-(--primary-color)/10 border border-(--primary-color)/25 text-(--primary-color) text-sm font-medium">
-                <i data-lucide="check-circle-2" class="w-5 h-5 shrink-0"></i>
-                {{ session('success') }}
-            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    if (window.showToast) window.showToast("{{ session('success') }}", 'success');
+                });
+            </script>
         @endif
         @if (session('error'))
-            <div
-                class="flex items-center gap-3 px-5 py-4 rounded-2xl bg-red-500/10 border border-red-500/25 text-red-600 text-sm font-medium">
-                <i data-lucide="alert-circle" class="w-5 h-5 shrink-0"></i>
-                {{ session('error') }}
-            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    if (window.showToast) window.showToast("{{ session('error') }}", 'error');
+                });
+            </script>
         @endif
 
         @php
@@ -286,16 +286,7 @@
 
                 <!-- Return / Cancel -->
                 <!-- Return / Cancel -->
-                @if ($order->status === 'delivered')
-                    <div class="bg-(--card-bg) rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-200">
-                        <h2 class="text-lg font-semibold mb-3">Request Return</h2>
-                        <p class="text-gray-600 text-sm mb-5">You can request a return within 7 days of delivery.</p>
-                        <a href="{{ route('return-product') }}"
-                            class="w-full bg-(--secondary-color) hover:bg-[#B94E31] text-white py-3.5 rounded-xl font-medium flex items-center justify-center gap-2 transition">
-                            Initiate Return
-                        </a>
-                    </div>
-                @elseif ($order->status === 'pending')
+                @if ($order->status === 'pending')
                     <div class="bg-(--card-bg) rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-200">
                         <h2 class="text-lg font-semibold mb-3">Cancel Order</h2>
                         <p class="text-gray-600 text-sm mb-5">You can cancel this order only while it is pending.</p>

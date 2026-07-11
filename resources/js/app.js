@@ -380,18 +380,33 @@ if (window.isLoggedIn) {
     function showToast(message, type = 'success') {
         const container = getToastContainer();
         const toast = document.createElement('div');
-        toast.className = 'toast-item';
+        
+        const colours = {
+            success : 'bg-white text-[#1F3D2E] border-l-4 border-[#1F3D2E]',
+            error   : 'bg-white text-red-600 border-l-4 border-red-600',
+            warning : 'bg-white text-amber-600 border-l-4 border-amber-500',
+            info    : 'bg-white text-[#C65A3A] border-l-4 border-[#C65A3A]',
+        };
 
-        let iconClass = 'fa-regular fa-circle-check text-emerald-500';
-        if (type === 'info') {
-            iconClass = 'fa-solid fa-circle-info text-sky-500';
-        } else if (type === 'error') {
-            iconClass = 'fa-regular fa-circle-xmark text-rose-500';
-        } else if (type === 'warning') {
-            iconClass = 'fa-solid fa-triangle-exclamation text-amber-500';
-        }
+        const icons = {
+            success : 'fa-circle-check',
+            error   : 'fa-circle-xmark',
+            warning : 'fa-triangle-exclamation',
+            info    : 'fa-circle-info',
+        };
 
-        toast.innerHTML = `<i class="${iconClass}"></i><span>${message}</span>`;
+        toast.className = [
+            'toast-item flex items-center gap-3',
+            'px-5 py-3.5 rounded-2xl shadow-xl text-sm font-semibold',
+            'transition-all duration-300 backdrop-blur-md',
+            colours[type] ?? colours.success,
+        ].join(' ');
+
+        toast.innerHTML = `
+            <i class="fas ${icons[type] ?? icons.success} text-base"></i>
+            <span>${message}</span>
+        `;
+
         container.appendChild(toast);
 
         // Trigger transition
@@ -404,6 +419,13 @@ if (window.isLoggedIn) {
             setTimeout(() => toast.remove(), 400);
         }, 3000);
     }
+
+    window.showToast = showToast;
+    if (window.flashMessages) {
+        window.flashMessages.forEach(msg => showToast(msg.message, msg.type));
+        window.flashMessages = [];
+    }
+
 
     // Update Header Badge Count
     function updateWishlistBadge() {
@@ -807,7 +829,13 @@ function toggleWishlistProduct(productData) {
     window.removeFromCart = removeFromCart;
     window.updateCartQuantity = updateCartQuantity;
     window.moveCartItemToWishlist = moveCartItemToWishlist;
+
     window.showToast = showToast;
+    if (window.flashMessages) {
+        window.flashMessages.forEach(msg => showToast(msg.message, msg.type));
+        window.flashMessages = [];
+    }
+
 
     // Attach global click listener for any elements with .add-to-cart-btn
     document.addEventListener('click', function (e) {
