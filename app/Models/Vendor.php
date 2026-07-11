@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
@@ -63,14 +62,6 @@ class Vendor extends Model
     }
 
     /**
-     * One-to-Many: A vendor has many earning records.
-     */
-    public function earnings(): HasMany
-    {
-        return $this->hasMany(VendorEarning::class);
-    }
-
-    /**
      * One-to-Many: A vendor receives many payouts.
      */
     public function payouts(): HasMany
@@ -79,27 +70,11 @@ class Vendor extends Model
     }
 
     /**
-     * One-to-Many: A vendor can receive many reviews.
-     */
-    public function reviews(): HasMany
-    {
-        return $this->hasMany(VendorReview::class);
-    }
-
-    /**
      * One-to-Many: A vendor can have many coupons.
      */
     public function coupons(): HasMany
     {
         return $this->hasMany(Coupon::class);
-    }
-
-    /**
-     * Many-to-Many: A vendor can belong to many categories via vendor_categories pivot.
-     */
-    public function categories(): BelongsToMany
-    {
-        return $this->belongsToMany(Category::class, 'vendor_categories');
     }
 
     /**
