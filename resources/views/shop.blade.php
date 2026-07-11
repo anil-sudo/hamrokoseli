@@ -222,7 +222,6 @@
                     </span>
                 @endif
 
-
                 <button
                     class="wishlist-btn absolute bottom-2 right-2 sm:bottom-4 sm:right-4 bg-white/90 hover:bg-white text-[#C65A3A] hover:text-[#b04a2c] w-7 h-7 sm:w-10 sm:h-10 rounded-full shadow-md transition-all flex items-center justify-center z-10 focus:outline-none"
                     data-product-id="{{ $product->id }}"

@@ -264,14 +264,14 @@
                                 {{-- Actions --}}
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
-                                        <a href="{{ route('product-edit', $product->slug) }}"
+                                        <a href="{{ route('product-edit', $product->id) }}"
                                             class="text-(--text-color)/60 hover:text-(--hover-color) transition"
                                             title="Edit">
                                             <i data-lucide="edit" class="w-5 h-5"></i>
                                         </a>
                                         <!-- SweetAlert Delete -->
                                         <button type="button"
-                                            onclick="confirmDelete('{{ $product->slug }}', '{{ addslashes($product->name) }}')"
+                                            onclick="confirmDelete('{{ $product->id }}', '{{ addslashes($product->name) }}')"
                                             class="text-(--text-color)/60 hover:text-red-500 transition"
                                             title="Delete">
                                             <i data-lucide="trash-2" class="w-5 h-5"></i>
@@ -349,4 +349,3 @@
     }
 </script>
 </x-seller_layout>
-

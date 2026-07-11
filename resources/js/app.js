@@ -446,6 +446,12 @@ if (window.isLoggedIn) {
 
     // Toggle product in wishlist
 function toggleWishlistProduct(productData) {
+    // Guests must log in before adding to wishlist
+    if (!window.isLoggedIn) {
+        window.location.href = window.loginUrl || '/userlogin';
+        return false;
+    }
+
     const index = wishlist.findIndex(item => String(item.id) === String(productData.id));
     if (index > -1) {
         wishlist.splice(index, 1);
@@ -1022,7 +1028,7 @@ function toggleWishlistProduct(productData) {
         });
 
         let categoryName = typeof productData.category === 'string' ? productData.category : (productData.category?.cat_name || productData.category?.name || productData.category_name || 'Crafts');
-        let vendorName = typeof productData.vendor === 'string' ? productData.vendor : (productData.vendor?.vendor_name || productData.vendor?.business_name || productData.vendor?.name || productData.vendor_name || 'Local Artisan');
+        let vendorName = typeof productData.vendor === 'string' ? productData.vendor : (productData.vendor?.vendor_name || productData.vendor?.business_name || productData.vendor?.name || productData.vendor_name || '');
         let imageUrl = productData.primary_image_url || (typeof productData.image === 'string' && productData.image.startsWith('http') ? productData.image : (productData.image ? '/' + productData.image.replace(/^\/+/, '') : ''));
 
         window.activeProduct = {
@@ -1055,8 +1061,21 @@ function toggleWishlistProduct(productData) {
             modalMainImage.alt = productData.name;
         }
         if (modalBreadcrumbCat) modalBreadcrumbCat.textContent = categoryName;
-        if (modalProductDesc) modalProductDesc.textContent = productData.desc || productData.description || '';
-        if (modalVendorName) modalVendorName.textContent = vendorName;
+        const modalProductStory = document.getElementById('modal-product-story');
+        const descText = productData.desc || productData.description || '';
+        if (modalProductDesc) modalProductDesc.textContent = descText;
+        if (modalProductStory) modalProductStory.textContent = descText;
+        if (modalVendorName) {
+            const vendorCard = document.getElementById('modal-vendor-card');
+            const avatarEl = document.getElementById('modal-vendor-avatar');
+            if (vendorName) {
+                modalVendorName.textContent = vendorName;
+                if (avatarEl) avatarEl.textContent = vendorName.charAt(0).toUpperCase();
+                if (vendorCard) vendorCard.classList.remove('hidden');
+            } else {
+                if (vendorCard) vendorCard.classList.add('hidden');
+            }
+        }
         if (modalReviewsCount) modalReviewsCount.textContent = productData.reviews || productData.reviews_count || '0';
 
         // Pricing
