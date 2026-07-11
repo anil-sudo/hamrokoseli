@@ -32,15 +32,9 @@
                     <span>Flash Sale &mdash; Limited Time</span>
                 </div>
             </div>
-<<<<<<< HEAD
 
             <!-- Grid: 3 columns on mobile, 4 on desktop -->
             <div class="grid grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
-=======
-
-            <!-- Grid: 2 columns on mobile, 4 on desktop -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
->>>>>>> 2201fbb3147e74d40d2cdb78d91f2c0c6e47b8e0
                 @forelse($featuredProducts as $product)
                     @php
                         $imageUrl = $product->primaryImageUrl();
