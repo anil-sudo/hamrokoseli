@@ -3,14 +3,18 @@
 
         {{-- Success message --}}
         @if (session('success'))
-            <div class="p-4 bg-green-50 border border-green-200 text-green-700 rounded-2xl text-sm">
-                {{ session('success') }}
-            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    if (window.showToast) window.showToast("{{ session('success') }}", 'success');
+                });
+            </script>
         @endif
         @if (session('error'))
-            <div class="p-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl text-sm">
-                {{ session('error') }}
-            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    if (window.showToast) window.showToast("{{ session('error') }}", 'error');
+                });
+            </script>
         @endif
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-center md:justify-between items-start gap-4">
@@ -264,14 +268,14 @@
                                 {{-- Actions --}}
                                 <td class="px-6 py-4">
                                     <div class="flex items-center gap-3">
-                                        <a href="{{ route('product-edit', $product->slug) }}"
+                                        <a href="{{ route('product-edit', $product->id) }}"
                                             class="text-(--text-color)/60 hover:text-(--hover-color) transition"
                                             title="Edit">
                                             <i data-lucide="edit" class="w-5 h-5"></i>
                                         </a>
                                         <!-- SweetAlert Delete -->
                                         <button type="button"
-                                            onclick="confirmDelete('{{ $product->slug }}', '{{ addslashes($product->name) }}')"
+                                            onclick="confirmDelete('{{ $product->id }}', '{{ addslashes($product->name) }}')"
                                             class="text-(--text-color)/60 hover:text-red-500 transition"
                                             title="Delete">
                                             <i data-lucide="trash-2" class="w-5 h-5"></i>
@@ -317,35 +321,55 @@
 
     </div>
 
-<!-- SweetAlert2 -->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!-- Custom Delete Confirmation Modal -->
+<div id="deleteModal" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <!-- Background overlay -->
+        <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity" aria-hidden="true" onclick="hideDeleteModal()"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+        <!-- Modal panel -->
+        <div class="inline-block align-bottom bg-white dark:bg-(--card-bg) rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl transform transition-all sm:my-8 sm:align-middle relative z-10">
+            <div class="flex justify-center mb-6">
+                <div class="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-2xl flex items-center justify-center">
+                    <i data-lucide="alert-triangle" class="w-8 h-8 text-red-500"></i>
+                </div>
+            </div>
+
+            <h3 class="text-2xl font-semibold text-center mb-2" id="modal-title">Delete Product?</h3>
+            <p class="text-center text-gray-600 dark:text-gray-400 mb-8">
+                Are you sure you want to delete <strong id="deleteProductName"></strong>?
+            </p>
+
+            <div class="flex gap-3">
+                <button type="button" onclick="hideDeleteModal()"
+                    class="flex-1 py-4 text-base font-medium border border-gray-300 dark:border-gray-600 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+                    No, Keep Product
+                </button>
+
+                <form id="deleteForm" method="POST" class="flex-1">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                        class="w-full py-4 text-base font-medium bg-(--secondary-color) hover:bg-[#B94E31] text-white rounded-2xl transition flex items-center justify-center gap-2">
+                        <i data-lucide="trash-2" class="w-5 h-5"></i>
+                        Yes, Delete It
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
     function confirmDelete(slug, productName) {
-        Swal.fire({
-            title: 'Are you sure?',
-            html: `You want to delete <strong>${productName}</strong>?`,
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#B94E31',
-            cancelButtonColor: '#6b7280',
-            confirmButtonText: 'Yes, Delete It',
-            cancelButtonText: 'Cancel',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = `/product/${slug}`; // Direct URL based on your route
+        document.getElementById('deleteProductName').innerText = productName;
+        document.getElementById('deleteForm').action = `/product/${slug}`;
+        document.getElementById('deleteModal').classList.remove('hidden');
+    }
 
-                form.innerHTML = `
-                <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                <input type="hidden" name="_method" value="DELETE">
-            `;
-
-                document.body.appendChild(form);
-                form.submit();
-            }
-        });
+    function hideDeleteModal() {
+        document.getElementById('deleteModal').classList.add('hidden');
     }
 </script>
 </x-seller_layout>

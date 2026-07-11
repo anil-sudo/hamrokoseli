@@ -1,15 +1,16 @@
 // ==================== TOAST ====================
 function showToast(message, type = 'error') {
-    const container = document.getElementById('toastContainer');
-    const toast = document.createElement('div');
-
-    const bgColor = type === 'success' ? 'bg-green-600' : 'bg-(--secondary-color)';
-
-    toast.className = `${bgColor} text-white px-5 py-4 rounded-xl shadow-lg flex items-center gap-3 min-w-[300px]`;
-    toast.innerHTML = `<span>${message}</span>`;
-
-    container.appendChild(toast);
-    setTimeout(() => toast.remove(), 4000);
+    if (window.showToast) {
+        window.showToast(message, type);
+    } else {
+        const container = document.getElementById('toastContainer') || document.body;
+        const toast = document.createElement('div');
+        const bgColor = type === 'success' ? 'bg-green-600' : 'bg-red-600';
+        toast.className = `${bgColor} text-white px-5 py-4 rounded-xl shadow-lg flex items-center gap-3 min-w-[300px] fixed top-5 right-5 z-50`;
+        toast.innerHTML = `<span>${message}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 4000);
+    }
 }
 
 // ==================== SPECIFICATIONS ====================

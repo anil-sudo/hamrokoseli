@@ -3,18 +3,18 @@
     <div class="space-y-10">
         <!-- Session Notifications -->
         @if (session('success'))
-            <div
-                class="bg-emerald-50 border border-emerald-200 text-emerald-800 px-5 py-4 rounded-2xl animate-fadeIn flex items-center gap-3">
-                <i data-lucide="check-circle" class="w-5 h-5 text-emerald-600"></i>
-                <span class="font-medium text-sm">{{ session('success') }}</span>
-            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    if (window.showToast) window.showToast("{{ session('success') }}", 'success');
+                });
+            </script>
         @endif
         @if (session('error'))
-            <div
-                class="bg-rose-50 border border-rose-200 text-rose-800 px-5 py-4 rounded-2xl animate-fadeIn flex items-center gap-3">
-                <i data-lucide="alert-circle" class="w-5 h-5 text-rose-600"></i>
-                <span class="font-medium text-sm">{{ session('error') }}</span>
-            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    if (window.showToast) window.showToast("{{ session('error') }}", 'error');
+                });
+            </script>
         @endif
         @if ($errors->any())
             <div class="bg-rose-50 border border-rose-200 text-rose-800 px-5 py-4 rounded-2xl animate-fadeIn">

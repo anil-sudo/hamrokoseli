@@ -8,18 +8,18 @@
         </a>
 
         @if (session('success'))
-            <div
-                class="flex items-center gap-3 px-5 py-4 rounded-2xl bg-(--primary-color)/10 border border-(--primary-color)/25 text-(--primary-color) text-sm font-medium">
-                <i data-lucide="check-circle-2" class="w-5 h-5 shrink-0"></i>
-                {{ session('success') }}
-            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    if (window.showToast) window.showToast("{{ session('success') }}", 'success');
+                });
+            </script>
         @endif
         @if (session('error'))
-            <div
-                class="flex items-center gap-3 px-5 py-4 rounded-2xl bg-red-500/10 border border-red-500/25 text-red-600 text-sm font-medium">
-                <i data-lucide="alert-circle" class="w-5 h-5 shrink-0"></i>
-                {{ session('error') }}
-            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    if (window.showToast) window.showToast("{{ session('error') }}", 'error');
+                });
+            </script>
         @endif
 
         @php
