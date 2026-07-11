@@ -141,7 +141,7 @@ class SellerController extends Controller
         ];
 
         // ─── Sales trend for the last 7 days ───────────────────────────────
-        $days = collect(range(6, 0))->map(fn ($daysAgo) => now()->subDays($daysAgo)->startOfDay());
+        $days = collect(range(6, 0))->map(fn($daysAgo) => now()->subDays($daysAgo)->startOfDay());
 
         $dailyTotals = (clone $soldItems)
             ->where('created_at', '>=', now()->subDays(6)->startOfDay())
@@ -247,45 +247,40 @@ class SellerController extends Controller
             'category' => 'required|exists:categories,id',
             'product_type' => 'nullable|string|max:100',
             'description' => 'required|string|max:2000',
-            'base_price' => 'nullable|numeric|min:0',
-            'discount_amount' => 'nullable|numeric|min:0|max:99', // Changed from discount_price
-            'sku' => 'nullable|string|max:100|unique:products,sku,'.$product->id,
-            'stock' => 'nullable|integer|min:0',
+            'base_price' => 'required|numeric|min:0',
+            'discount_amount' => 'nullable|numeric|min:0|max:99',
+            'sku' => 'nullable|string|max:100|unique:products,sku,' . $product->id,
+            'stock' => 'required|integer|min:0',
             'specifications' => 'nullable|array',
             'specifications.*.key' => 'nullable|string|max:100',
             'specifications.*.value' => 'nullable|string|max:255',
             'images' => 'nullable|array|max:1',
             'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:10240',
-            'remove_images' => 'nullable|array',
-            'remove_images.*' => 'integer|exists:images,id',
             'status' => 'required|in:active,draft',
         ]);
 
+        // Update Product
         $product->update([
             'category_id' => $validated['category'],
             'name' => $validated['product_name'],
-            'slug' => Str::slug($validated['product_name']).'-'.Str::lower(Str::random(5)),
+            'slug' => Str::slug($validated['product_name']) . '-' . Str::lower(Str::random(5)),
             'product_type' => $validated['product_type'] ?? null,
             'description' => $validated['description'],
-            'specifications' => ! empty($validated['specifications']) ? $this->filterSpecs($validated['specifications']) : null,
-            'price' => $validated['base_price'] ?? $product->price,
-            'discount_price' => ($validated['discount_amount'] ?? 0) > 0 ? (($validated['base_price'] ?? $product->price) * (1 - $validated['discount_amount'] / 100)) : null,
-            'stock' => $validated['stock'] ?? $product->stock,
+            'specifications' => !empty($validated['specifications'])
+                ? $this->filterSpecs($validated['specifications'])
+                : null,
+            'price' => $validated['base_price'],
+            'discount_price' => ($validated['discount_amount'] ?? 0) > 0
+                ? ($validated['base_price'] * (1 - $validated['discount_amount'] / 100))
+                : null,
+            'stock' => $validated['stock'],
             'sku' => $validated['sku'] ?? $product->sku,
             'status' => $validated['status'],
         ]);
 
-        $product->variants()->delete();
-
-        if (! empty($validated['remove_images'])) {
-            $imagesToRemove = $product->images()->whereIn('id', $validated['remove_images'])->get();
-            foreach ($imagesToRemove as $img) {
-                Storage::disk('public')->delete($img->path);
-                $img->delete();
-            }
-        }
-
+        // Image Handling
         if ($request->hasFile('images')) {
+            // Delete old images
             foreach ($product->images as $oldImage) {
                 Storage::disk('public')->delete($oldImage->path);
                 $oldImage->delete();
@@ -301,7 +296,8 @@ class SellerController extends Controller
             ]);
         }
 
-        return redirect()->route('product-management')->with('success', 'Product updated successfully!');
+        return redirect()->route('product-management')
+            ->with('success', 'Product updated successfully!');
     }
 
     public function store(Request $request)
@@ -328,7 +324,7 @@ class SellerController extends Controller
             'vendor_id' => auth()->user()->vendor->id,
             'category_id' => $validated['category'],
             'name' => $validated['product_name'],
-            'slug' => Str::slug($validated['product_name']).'-'.Str::lower(Str::random(5)),
+            'slug' => Str::slug($validated['product_name']) . '-' . Str::lower(Str::random(5)),
             'product_type' => $validated['product_type'] ?? null,
             'description' => $validated['description'],
             'specifications' => ! empty($validated['specifications'])
@@ -336,8 +332,8 @@ class SellerController extends Controller
                 : null,
             'price' => $validated['base_price'],
             'discount_price' => ($validated['discounted_price'] ?? 0) > 0
-                                    ? ($validated['base_price'] * (1 - $validated['discounted_price'] / 100))
-                                    : null,
+                ? ($validated['base_price'] * (1 - $validated['discounted_price'] / 100))
+                : null,
             'stock' => $validated['stock'],
             'sku' => $validated['sku'],
             'status' => $validated['status'],
@@ -357,7 +353,7 @@ class SellerController extends Controller
 
         return redirect()
             ->route('product-management')
-            ->with('success', 'Product "'.$product->name.'" created successfully!');
+            ->with('success', 'Product "' . $product->name . '" created successfully!');
     }
 
     public function destroy($id)
@@ -392,7 +388,7 @@ class SellerController extends Controller
             }
 
             // Log unexpected errors
-            Log::error('Product deletion failed: '.$e->getMessage());
+            Log::error('Product deletion failed: ' . $e->getMessage());
 
             return redirect()
                 ->route('product-management')
@@ -429,13 +425,13 @@ class SellerController extends Controller
             if (isset($statusMap[$activeTab])) {
                 $query->whereIn('status', $statusMap[$activeTab]);
             } elseif ($activeTab === 'paid') {
-                $query->whereHas('order.payment', fn ($pq) => $pq->whereIn('status', $paymentMap['paid']));
+                $query->whereHas('order.payment', fn($pq) => $pq->whereIn('status', $paymentMap['paid']));
             } elseif ($activeTab === 'pending_payment') {
                 // Orders paid via COD (or otherwise missing a payment row) are
                 // treated as "payment pending" too, same as the badge shown
                 // on the order details page.
                 $query->where(function ($pq) use ($paymentMap) {
-                    $pq->whereHas('order.payment', fn ($ppq) => $ppq->whereIn('status', $paymentMap['pending_payment']))
+                    $pq->whereHas('order.payment', fn($ppq) => $ppq->whereIn('status', $paymentMap['pending_payment']))
                         ->orWhereDoesntHave('order.payment');
                 });
             }
@@ -462,14 +458,14 @@ class SellerController extends Controller
         $orderItems = $query->latest()->paginate(10)->withQueryString();
 
         // ─── Counts for the tab badges (unaffected by the active filter) ──
-        $baseCount = fn () => OrderItem::where('vendor_id', $vendorId);
+        $baseCount = fn() => OrderItem::where('vendor_id', $vendorId);
 
         $counts = [
             'all' => $baseCount()->count(),
             'new' => $baseCount()->whereIn('status', $statusMap['new'])->count(),
-            'paid' => $baseCount()->whereHas('order.payment', fn ($pq) => $pq->whereIn('status', $paymentMap['paid']))->count(),
+            'paid' => $baseCount()->whereHas('order.payment', fn($pq) => $pq->whereIn('status', $paymentMap['paid']))->count(),
             'pending_payment' => $baseCount()->where(function ($pq) use ($paymentMap) {
-                $pq->whereHas('order.payment', fn ($ppq) => $ppq->whereIn('status', $paymentMap['pending_payment']))
+                $pq->whereHas('order.payment', fn($ppq) => $ppq->whereIn('status', $paymentMap['pending_payment']))
                     ->orWhereDoesntHave('order.payment');
             })->count(),
             'cancelled' => $baseCount()->whereIn('status', $statusMap['cancelled'])->count(),
@@ -491,7 +487,7 @@ class SellerController extends Controller
         // (checkout groups cart lines by vendor before an Order is created),
         // so we just need to confirm this order actually belongs to them.
         $order = Order::with(['user', 'shippingAddress', 'payment'])
-            ->whereHas('orderItems', fn ($q) => $q->where('vendor_id', $vendor->id))
+            ->whereHas('orderItems', fn($q) => $q->where('vendor_id', $vendor->id))
             ->find($request->query('order'));
 
         if (! $order) {
@@ -540,7 +536,7 @@ class SellerController extends Controller
         // (pending -> paid), but we also allow flagging failed/refunded.
         if ($payment->status !== $validated['payment_status']) {
             if ($validated['payment_status'] === 'completed') {
-                $payment->markAsCompleted($payment->transaction_id ?? ('MANUAL-'.Str::upper(Str::random(10))));
+                $payment->markAsCompleted($payment->transaction_id ?? ('MANUAL-' . Str::upper(Str::random(10))));
             } elseif ($validated['payment_status'] === 'failed') {
                 $payment->markAsFailed();
             } elseif ($validated['payment_status'] === 'refunded') {
@@ -559,7 +555,7 @@ class SellerController extends Controller
 
         return redirect()
             ->route('order-details', ['order' => $order->id])
-            ->with('success', 'Payment status updated to '.$labels[$validated['payment_status']].'.');
+            ->with('success', 'Payment status updated to ' . $labels[$validated['payment_status']] . '.');
     }
 
     public function updateOrderStatus(Request $request, Order $order)
@@ -596,7 +592,7 @@ class SellerController extends Controller
 
         return redirect()
             ->route('order-details', ['order' => $order->id])
-            ->with('success', 'Order status updated to '.$labels[$validated['order_status']].'.');
+            ->with('success', 'Order status updated to ' . $labels[$validated['order_status']] . '.');
     }
 
     public function sellerProfile()
@@ -613,7 +609,7 @@ class SellerController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:100',
-            'email' => 'required|email|max:150|unique:users,email,'.$user->id,
+            'email' => 'required|email|max:150|unique:users,email,' . $user->id,
             'phone' => 'nullable|string|max:20',
             'profile_pic' => 'nullable|image|max:2048',
             'vendor_name' => 'required|string|max:100',
@@ -939,7 +935,7 @@ class SellerController extends Controller
     private function initiateKhaltiPayment(Payout $payout, float $amount)
     {
         $secretKey = config('services.khalti.secret_key');
-        $baseUrl = rtrim(config('services.khalti.base_url', 'https://dev.khalti.com/api/v2'), '/').'/';
+        $baseUrl = rtrim(config('services.khalti.base_url', 'https://dev.khalti.com/api/v2'), '/') . '/';
 
         Log::info('Khalti Debug - Config', [
             'secret_key_present' => ! empty($secretKey),
@@ -954,7 +950,7 @@ class SellerController extends Controller
             return back()->with('error', 'Khalti secret key is missing.');
         }
 
-        $internalTxnId = $payout->id.'-'.Str::uuid();
+        $internalTxnId = $payout->id . '-' . Str::uuid();
         $payout->update(['transaction_id' => $internalTxnId]);  // temporary
 
         $payload = [
@@ -972,11 +968,11 @@ class SellerController extends Controller
 
         try {
             $response = Http::withHeaders([
-                'Authorization' => 'Key '.$secretKey,
+                'Authorization' => 'Key ' . $secretKey,
                 'Content-Type' => 'application/json',
             ])
                 ->withOptions(['verify' => false])
-                ->post($baseUrl.'epayment/initiate/', $payload);
+                ->post($baseUrl . 'epayment/initiate/', $payload);
 
             Log::info('Khalti Raw Response', [
                 'status' => $response->status(),
@@ -997,7 +993,7 @@ class SellerController extends Controller
             Log::error('Khalti Initiate Failed', ['error' => $error]);
             $payout->update(['status' => 'failed']);
 
-            return back()->with('error', 'Khalti Error: '.$error);
+            return back()->with('error', 'Khalti Error: ' . $error);
         } catch (\Exception $e) {
             $payout->delete();
             Log::error('Khalti Exception', [
@@ -1034,10 +1030,10 @@ class SellerController extends Controller
 
         try {
             $response = Http::withHeaders([
-                'Authorization' => 'Key '.config('services.khalti.secret_key'),
+                'Authorization' => 'Key ' . config('services.khalti.secret_key'),
             ])
                 ->withOptions(['verify' => false])
-                ->post(rtrim(config('services.khalti.base_url'), '/').'/epayment/lookup/', [
+                ->post(rtrim(config('services.khalti.base_url'), '/') . '/epayment/lookup/', [
                     'pidx' => $pidx,
                 ]);
 
@@ -1051,7 +1047,7 @@ class SellerController extends Controller
                     ]);
 
                     return redirect()->route('seller.payment')
-                        ->with('success', 'Commission payment of Rs. '.number_format($payout->amount, 2).' settled successfully.');
+                        ->with('success', 'Commission payment of Rs. ' . number_format($payout->amount, 2) . ' settled successfully.');
                 }
             }
         } catch (\Exception $e) {
@@ -1104,7 +1100,7 @@ class SellerController extends Controller
                         'transaction_id' => $data['ref_id'] ?? $decoded['transaction_uuid'],
                     ]);
 
-                    return redirect()->route('seller.payment')->with('success', 'Commission payment of Rs. '.number_format($payout->amount, 2).' settled successfully.');
+                    return redirect()->route('seller.payment')->with('success', 'Commission payment of Rs. ' . number_format($payout->amount, 2) . ' settled successfully.');
                 }
             }
         } catch (\Exception $e) {
@@ -1205,7 +1201,7 @@ class SellerController extends Controller
 
         SupportTicket::create([
             'vendor_id' => $vendor->id,
-            'ticket_number' => 'TK-'.mt_rand(10000, 99999),
+            'ticket_number' => 'TK-' . mt_rand(10000, 99999),
             'category' => $validated['category'],
             'subject' => $validated['subject'],
             'description' => $validated['description'],
