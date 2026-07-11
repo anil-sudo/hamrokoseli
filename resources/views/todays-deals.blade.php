@@ -131,13 +131,15 @@
                                     : 0;
                             @endphp
                             <div class="bg-card rounded-2xl border border-[#e0e3e5] overflow-hidden hover:shadow-lg transition-all product-card"
-                                data-id="{{ $product->id }}" data-name="{{ $product->name }}"
+                                data-id="{{ $product->id }}" data-slug="{{ $product->slug ?? '' }}" data-name="{{ $product->name }}"
                                 data-price="{{ $displayPrice }}"
                                 data-category="{{ strtolower($product->category->cat_name ?? '') }}"
                                 data-discount="{{ $discountPercentage }}">
                                 <div class="relative aspect-square bg-gray-200 overflow-hidden">
-                                    <img src="{{ $product->primaryImageUrl() }}" alt="{{ $product->name }}"
-                                        class="w-full h-full object-cover hover:scale-105 transition duration-300">
+                                    <a href="{{ route('viewdetails', $product->slug) }}" class="block w-full h-full">
+                                        <img src="{{ $product->primaryImageUrl() }}" alt="{{ $product->name }}"
+                                            class="w-full h-full object-cover hover:scale-105 transition duration-300">
+                                    </a>
                                     @if ($hasDiscount)
                                         <span
                                             class="absolute top-3 left-3 bg-[#b51822] text-white text-xs font-bold px-3 py-1 rounded-full">-{{ $discountPercentage }}%
@@ -160,30 +162,31 @@
                                             Reviews)</span>
                                     </div>
                                     <div class="flex gap-2">
-                                        <button
-                                            class="flex-1 bg-[#b51822] text-white py-2 rounded-lg font-semibold hover:bg-[#930013] transition text-sm view-details-btn"
+                                        <a href="{{ route('viewdetails', $product->slug) }}"
+                                            class="flex-1 bg-[#b51822] text-white py-2 rounded-lg font-semibold hover:bg-[#930013] transition text-sm view-details-btn text-center"
+                                            data-id="{{ $product->id }}" data-slug="{{ $product->slug }}"
                                             data-name="{{ $product->name }}" data-price="{{ $displayPrice }}"
-                                            data-original-price="{{ $price }}"
-                                            data-image="{{ $product->primaryImageUrl() }}"
-                                            data-category="{{ $product->category->cat_name ?? '' }}"
-                                            data-vendor="{{ $product->vendor->vendor_name ?? 'Local Artisan' }}"
-                                            data-desc="{{ $product->description }}"
-                                            data-rating="{{ $product->rating ?? 5 }}"
-                                            data-reviews="{{ $product->reviews_count ?? 0 }}"
-                                            data-stock="{{ $product->stock ?? 10 }}">
+                                            data-product-original-price="{{ $price }}" data-original-price="{{ $price }}"
+                                            data-product-image="{{ $product->primaryImageUrl() }}" data-image="{{ $product->primaryImageUrl() }}"
+                                            data-product-category="{{ $product->category->cat_name ?? '' }}" data-category="{{ $product->category->cat_name ?? '' }}"
+                                            data-product-vendor="{{ $product->vendor->vendor_name ?? 'Local Artisan' }}" data-vendor="{{ $product->vendor->vendor_name ?? 'Local Artisan' }}"
+                                            data-product-desc="{{ $product->description }}" data-desc="{{ $product->description }}"
+                                            data-product-rating="{{ $product->rating ?? 5 }}" data-rating="{{ $product->rating ?? 5 }}"
+                                            data-product-reviews="{{ $product->reviews_count ?? 0 }}" data-reviews="{{ $product->reviews_count ?? 0 }}"
+                                            data-product-stock="{{ $product->stock ?? 10 }}" data-stock="{{ $product->stock ?? 10 }}">
                                             View Details
-                                        </button>
+                                        </a>
                                         <button
                                             class="flex-1 bg-[#b51822] text-white py-2 rounded-lg font-semibold hover:bg-[#930013] transition text-sm add-to-cart-btn"
-                                            data-name="{{ $product->name }}" data-price="{{ $displayPrice }}"
-                                            data-original-price="{{ $price }}"
-                                            data-image="{{ $product->primaryImageUrl() }}"
-                                            data-category="{{ $product->category->cat_name ?? '' }}"
-                                            data-vendor="{{ $product->vendor->vendor_name ?? 'Local Artisan' }}"
-                                            data-desc="{{ $product->description }}"
-                                            data-rating="{{ $product->rating ?? 5 }}"
-                                            data-reviews="{{ $product->reviews_count ?? 0 }}"
-                                            data-stock="{{ $product->stock ?? 10 }}">
+                                            data-product-id="{{ $product->id }}" data-product-name="{{ $product->name }}" data-product-price="{{ $displayPrice }}" data-name="{{ $product->name }}" data-price="{{ $displayPrice }}"
+                                            data-product-original-price="{{ $price }}" data-original-price="{{ $price }}"
+                                            data-product-image="{{ $product->primaryImageUrl() }}" data-image="{{ $product->primaryImageUrl() }}"
+                                            data-product-category="{{ $product->category->cat_name ?? '' }}" data-category="{{ $product->category->cat_name ?? '' }}"
+                                            data-product-vendor="{{ $product->vendor->vendor_name ?? 'Local Artisan' }}" data-vendor="{{ $product->vendor->vendor_name ?? 'Local Artisan' }}"
+                                            data-product-desc="{{ $product->description }}" data-desc="{{ $product->description }}"
+                                            data-product-rating="{{ $product->rating ?? 5 }}" data-rating="{{ $product->rating ?? 5 }}"
+                                            data-product-reviews="{{ $product->reviews_count ?? 0 }}" data-reviews="{{ $product->reviews_count ?? 0 }}"
+                                            data-product-stock="{{ $product->stock ?? 10 }}" data-stock="{{ $product->stock ?? 10 }}">
                                             Add
                                         </button>
                                     </div>
@@ -443,9 +446,11 @@
                                         class="bg-card rounded-2xl border border-[#e0e3e5] overflow-hidden hover:shadow-lg transition-all group flex flex-col h-full">
                                         <div
                                             class="aspect-square bg-gray-200 flex items-center justify-center overflow-hidden relative">
-                                            <img src="{{ $imageUrl }}" alt="{{ $product->name }}"
-                                                class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                                                onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9zdmc+'">
+                                            <a href="{{ route('viewdetails', $product->slug) }}" class="block w-full h-full">
+                                                <img src="{{ $imageUrl }}" alt="{{ $product->name }}"
+                                                    class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                                                    onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9zdmc+'">
+                                            </a>
                                         </div>
                                         <div class="p-4 flex-grow flex flex-col justify-between">
                                             <div>
