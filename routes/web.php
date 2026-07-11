@@ -123,7 +123,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/user-orders', [UserController::class, 'orders'])->name('User-orders');
     Route::get('/user-order-details', [UserController::class, 'orderDetail'])->name('order-detail');
     Route::patch('/user-orders/{order}/cancel', [UserController::class, 'cancelOrder'])->name('order.cancel');
-    Route::get('/return-product', [UserController::class, 'returnProduct'])->name('return-product');
     Route::get('/user-profile', [UserController::class, 'userProfile'])->name('user-profile');
     Route::post('/user-profile', [UserController::class, 'updateProfile'])->name('user.profile.update');
     Route::post('/user-password', [UserController::class, 'updatePassword'])->name('user.password.update');

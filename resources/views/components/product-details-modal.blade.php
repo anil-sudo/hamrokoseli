@@ -47,9 +47,8 @@
                         <div class="flex items-start gap-3 bg-[#FFF7EF]/50 p-3 rounded-xl border border-[#ebd7be]/30">
                             <i class="fas fa-rotate-left text-[#C65A3A] text-lg mt-0.5"></i>
                             <div>
-                                <h4 class="text-xs font-bold text-[#1F3D2E] uppercase tracking-wide">15-Day Returns</h4>
-                                <p class="text-[10px] text-[#3A2A1F]/60 font-semibold mt-0.5">Easy exchange if not
-                                    satisfied</p>
+                                <h4 class="text-xs font-bold text-[#1F3D2E] uppercase tracking-wide">No Return Policy</h4>
+                                <p class="text-[10px] text-[#3A2A1F]/60 font-semibold mt-0.5">Returns are not accepted</p>
                             </div>
                         </div>
                     </div>

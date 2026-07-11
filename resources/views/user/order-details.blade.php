@@ -286,16 +286,7 @@
 
                 <!-- Return / Cancel -->
                 <!-- Return / Cancel -->
-                @if ($order->status === 'delivered')
-                    <div class="bg-(--card-bg) rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-200">
-                        <h2 class="text-lg font-semibold mb-3">Request Return</h2>
-                        <p class="text-gray-600 text-sm mb-5">You can request a return within 7 days of delivery.</p>
-                        <a href="{{ route('return-product') }}"
-                            class="w-full bg-(--secondary-color) hover:bg-[#B94E31] text-white py-3.5 rounded-xl font-medium flex items-center justify-center gap-2 transition">
-                            Initiate Return
-                        </a>
-                    </div>
-                @elseif ($order->status === 'pending')
+                @if ($order->status === 'pending')
                     <div class="bg-(--card-bg) rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-200">
                         <h2 class="text-lg font-semibold mb-3">Cancel Order</h2>
                         <p class="text-gray-600 text-sm mb-5">You can cancel this order only while it is pending.</p>
