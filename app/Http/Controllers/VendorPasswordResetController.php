@@ -73,7 +73,20 @@ class VendorPasswordResetController extends Controller
         $request->validate([
             'token' => ['required'],
             'email' => ['required', 'email'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'confirmed',
+                'regex:/[A-Z]/',
+                'regex:/[a-z]/',
+                'regex:/[0-9]/',
+                'regex:/[\^$*.\[\]{}()?\-"!@#%&\/\\,><\':;|_~`+=]/',
+            ],
+        ], [
+            'password.regex' => 'Password must include at least one uppercase letter, one lowercase letter, one number, and one special character.',
+            'password.min' => 'Password must be at least 8 characters.',
+            'password.confirmed' => 'The password confirmation does not match.',
         ]);
 
         $status = Password::reset(

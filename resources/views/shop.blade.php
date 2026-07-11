@@ -8,6 +8,46 @@
         .qty-val-input::-webkit-outer-spin-button,
         .qty-val-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         .qty-val-input { -moz-appearance: textfield; }
+        
+        /* Floating sidebar styles */
+        .sidebar-sticky {
+            position: sticky;
+            top: 20px;
+            align-self: flex-start;
+        }
+        
+        /* Ensure the sidebar content doesn't overflow viewport */
+        .sidebar-sticky > div {
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+        }
+        
+        /* Custom scrollbar for floating sidebar */
+        .sidebar-sticky > div::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .sidebar-sticky > div::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .sidebar-sticky > div::-webkit-scrollbar-thumb {
+            background: #C65A3A;
+            border-radius: 10px;
+        }
+        
+        /* For mobile, remove sticky behavior */
+        @media (max-width: 768px) {
+            .sidebar-sticky {
+                position: relative;
+                top: 0;
+                align-self: auto;
+            }
+            .sidebar-sticky > div {
+                max-height: none;
+                overflow-y: visible;
+            }
+        }
     </style>
     <div class="bg-[#F4EAE1] text-[#3A2A1F] min-h-screen py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
         <div class="max-w-7xl mx-auto">
@@ -17,7 +57,7 @@
                   class="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-8 items-start">
 
                 {{-- ===== LEFT SIDEBAR ===== --}}
-                <aside class="md:col-span-4 lg:col-span-3 col-span-full">
+                <aside class="md:col-span-4 lg:col-span-3 col-span-full sidebar-sticky">
                     <div class="bg-[#FFF7EF] rounded-3xl p-6 border border-[#ebd7be]/50 shadow-sm">
 
                         {{-- Header --}}
@@ -124,24 +164,7 @@
                             </div>
 
 
-                            {{-- Availability --}}
-                            <div class="pt-5 border-t border-[#ebd7be]/40">
-                                <button type="button" class="w-full flex items-center justify-between text-left focus:outline-none py-1">
-                                    <span
-                                        class="text-xs font-bold uppercase tracking-wider text-[#1F3D2E]">Availability</span>
-                                    <i class="fas fa-minus text-[10px] text-[#C65A3A]"></i>
-                                </button>
-                                <div class="mt-4 flex items-center gap-3">
-                                    <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" name="in_stock" value="1" id="in-stock-toggle"
-                                            class="sr-only peer" {{ request('in_stock') ? 'checked' : '' }}>
-                                        <div
-                                            class="w-9 h-5 bg-[#ebd7be] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#C65A3A]">
-                                        </div>
-                                    </label>
-                                    <span class="text-sm font-semibold text-[#3A2A1F]/80">In Stock Only</span>
-                                </div>
-                            </div>
+
                         </div>
 
                     </div>
@@ -178,40 +201,41 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-6">
+                    <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-6">
 
     @forelse($products as $product)
         <div
             data-category="{{ $product->category?->slug ?? 'uncategorized' }}"
             class="product-card bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group">
 
-            <div class="relative w-full aspect-[4/5] overflow-hidden rounded-t-2xl sm:rounded-t-3xl">
+            <div class="relative w-full aspect-square overflow-hidden rounded-t-2xl sm:rounded-t-3xl">
 
                 <img
                     src="{{ $product->primaryImageUrl() }}"
                     alt="{{ $product->name }}"
                     class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
 
-                @if($product->vendor)
-                    <div class="absolute top-2 right-2 sm:top-4 sm:right-4 bg-white/95 text-[#1F3D2E] text-[6px] xs:text-[9px] sm:text-[10px] font-bold tracking-wider uppercase px-1.5 py-0.5 sm:px-3 sm:py-1.5 rounded-full shadow-sm">
-                        {{ $product->vendor->business_name ?? $product->vendor->name }}
-                    </div>
+                @if($product->hasDiscount())
+                    @php $discPct = $product->getDiscountPercentage(); @endphp
+                    <span class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-[#C65A3A] text-white text-[7px] xs:text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-full shadow-sm z-10">
+                        -{{ $discPct }}% OFF
+                    </span>
                 @endif
 
                 <button
-                    class="wishlist-btn absolute bottom-2 right-2 sm:bottom-4 sm:right-4 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-xs sm:text-xl drop-shadow"
+                    class="wishlist-btn absolute bottom-2 right-2 sm:bottom-4 sm:right-4 bg-white/90 hover:bg-white text-[#C65A3A] hover:text-[#b04a2c] w-7 h-7 sm:w-10 sm:h-10 rounded-full shadow-md transition-all flex items-center justify-center z-10 focus:outline-none"
                     data-product-id="{{ $product->id }}"
                     data-product-name="{{ $product->name }}"
                     data-product-price="{{ $product->effectivePrice() }}"
                     data-product-image="{{ $product->primaryImageUrl() }}"
                     data-product-desc="{{ $product->description }}"
                     data-product-category="{{ $product->category?->cat_name }}">
-                    <i class="far fa-heart"></i>
+                    <i class="far fa-heart text-[10px] sm:text-lg"></i>
                 </button>
 
             </div>
 
-            <div class="p-2.5 sm:p-5 flex-grow flex flex-col justify-between">
+            <div class="p-3 sm:p-5 flex-grow flex flex-col justify-between">
 
                 <div>
                     <span class="text-[8px] sm:text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-0.5 sm:mb-1">
@@ -227,7 +251,7 @@
                     </span>
                 </div>
 
-                    <div class="flex flex-col xs:flex-row gap-1 sm:gap-2 mt-auto">
+                    <div class="flex gap-1 sm:gap-2 mt-auto">
                         <a href="{{ route('viewdetails', $product->slug) }}"
                            class="view-details-btn flex-grow flex items-center justify-center gap-1 sm:gap-2 bg-[#1F3D2E] hover:bg-[#16301f] text-white text-[8px] sm:text-xs md:text-sm font-semibold py-1.5 px-1 sm:py-3 sm:px-3 rounded-lg sm:rounded-xl shadow-sm hover:shadow transition duration-300"
                            data-id="{{ $product->id }}"
@@ -239,7 +263,7 @@
                            data-discount-price="{{ $product->resolvedDiscountPrice() ?? '' }}"
                            data-image="{{ $product->primaryImageUrl() }}"
                            data-category="{{ $product->category?->cat_name ?? 'Crafts' }}"
-                           data-vendor="{{ $product->vendor->business_name ?? $product->vendor->name ?? 'Local Artisan' }}"
+                           data-vendor="{{ $product->vendor->business_name ?? $product->vendor->name ?? '' }}"
                            data-desc="{{ $product->description }}"
                            data-rating="{{ $product->rating ?? 5 }}"
                            data-reviews="{{ $product->reviews_count ?? 24 }}"

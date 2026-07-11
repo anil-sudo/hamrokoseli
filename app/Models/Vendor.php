@@ -128,4 +128,44 @@ class Vendor extends Model
     {
         return $this->status === 'suspended';
     }
+
+    /**
+     * Get total sales/earnings from completed orders.
+     */
+    public function getTotalEarnings(): float
+    {
+        return (float) $this->orderItems()
+            ->whereNotIn('status', ['cancelled', 'returned'])
+            ->whereHas('order.payment', function ($query) {
+                $query->where('status', 'completed');
+            })
+            ->sum('subtotal');
+    }
+
+    /**
+     * Get total commission owed (3% of total earnings).
+     */
+    public function getCommissionOwed(): float
+    {
+        return round($this->getTotalEarnings() * 0.03, 2);
+    }
+
+    /**
+     * Get total commission paid to admin.
+     */
+    public function getCommissionPaid(): float
+    {
+        return (float) $this->payouts()
+            ->where('status', 'completed')
+            ->where('platform_fee', 0)
+            ->sum('amount');
+    }
+
+    /**
+     * Get outstanding commission balance.
+     */
+    public function getCommissionBalance(): float
+    {
+        return max(0.0, round($this->getCommissionOwed() - $this->getCommissionPaid(), 2));
+    }
 }

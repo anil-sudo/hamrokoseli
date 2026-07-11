@@ -52,7 +52,7 @@
                     <div class="space-y-4">
                         <div>
                             <label for="phone" class="block text-xs font-bold text-[#1F3D2E] mb-1.5">Phone Number</label>
-                            <input type="tel" id="phone" name="phone" required maxlength="20"
+                            <input type="tel" id="phone" name="phone" required maxlength="10"
                                    value="{{ old('phone', $user->phone) }}"
                                    placeholder="98XXXXXXXX"
                                    class="w-full px-4 py-3 rounded-xl border border-[#ebd7be] bg-[#FFF7EF] text-sm font-semibold text-[#3A2A1F] focus:outline-none focus:ring-2 focus:ring-[#1F3D2E]/25">
@@ -99,4 +99,28 @@
 
         </div>
     </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const phoneInput = document.getElementById('phone');
+        // Strip non-digits and cap at 10 as user types
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function () {
+                this.value = this.value.replace(/\D/g, '').substring(0, 10);
+            });
+        }
+        // Block submit if phone isn't exactly 10 digits
+        const form = document.querySelector('form');
+        if (form && phoneInput) {
+            form.addEventListener('submit', function (e) {
+                const phone = phoneInput.value.trim();
+                if (!/^\d{10}$/.test(phone)) {
+                    e.preventDefault();
+                    phoneInput.focus();
+                    alert('Phone number must be exactly 10 digits.');
+                }
+            });
+        }
+    });
+    </script>
 </x-frontend-layout>

@@ -14,6 +14,28 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+
+    <script>
+        window.flashMessages = [];
+        @if(session('success'))
+            window.flashMessages.push({ message: {!! json_encode(session('success')) !!}, type: 'success' });
+        @endif
+        @if(session('error'))
+            window.flashMessages.push({ message: {!! json_encode(session('error')) !!}, type: 'error' });
+        @endif
+        @if(session('status'))
+            window.flashMessages.push({ message: {!! json_encode(session('status')) !!}, type: 'success' });
+        @endif
+        @if(session('info'))
+            window.flashMessages.push({ message: {!! json_encode(session('info')) !!}, type: 'info' });
+        @endif
+        @if(session('warning'))
+            window.flashMessages.push({ message: {!! json_encode(session('warning')) !!}, type: 'warning' });
+        @endif
+        @if(session('password_success'))
+            window.flashMessages.push({ message: {!! json_encode(session('password_success')) !!}, type: 'success' });
+        @endif
+    </script>
 </head>
 
 <body class="bg-brand-cream overflow-hidden h-screen">
@@ -45,6 +67,32 @@
 
     <script>
         lucide.createIcons();
+    </script>
+
+    <script>
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+        });
+
+        @if(session('success'))
+            Toast.fire({ icon: 'success', title: '{{ session('success') }}' });
+        @endif
+
+        @if(session('error'))
+            Toast.fire({ icon: 'error', title: '{{ session('error') }}' });
+        @endif
+
+        @if(session('warning'))
+            Toast.fire({ icon: 'warning', title: '{{ session('warning') }}' });
+        @endif
+
+        @if(session('info'))
+            Toast.fire({ icon: 'info', title: '{{ session('info') }}' });
+        @endif
     </script>
 </body>
 

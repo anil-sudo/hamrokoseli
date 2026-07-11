@@ -3,11 +3,19 @@
 
         {{-- Success message --}}
         @if (session('success'))
-            <div class="p-4 bg-green-50 border border-green-200 text-green-700 rounded-2xl text-sm">
-                {{ session('success') }}
-            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    if (window.showToast) window.showToast("{{ session('success') }}", 'success');
+                });
+            </script>
         @endif
-
+        @if (session('error'))
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    if (window.showToast) window.showToast("{{ session('error') }}", 'error');
+                });
+            </script>
+        @endif
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-center md:justify-between items-start gap-4">
             <div>
@@ -34,14 +42,14 @@
                 </p>
             </div>
 
+            <!-- Low Stock -->
             <div
                 class="bg-(--card-bg) border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300">
-                <div class="w-10 h-10 rounded-xl bg-green-100 flex items-center justify-center mb-3">
-                    <i data-lucide="check-circle" class="w-5 h-5 text-green-600"></i>
+                <div class="w-10 h-10 rounded-xl bg-orange-100 flex items-center justify-center mb-3">
+                    <i data-lucide="alert-triangle" class="w-5 h-5 text-(--secondary-color)"></i>
                 </div>
-                <p class="text-sm font-medium text-(--text-color) uppercase tracking-widest">Active Listings</p>
-                <p class="text-3xl font-extrabold text-(--text-dark) mt-2 font-sans">
-                    {{ number_format($activeProducts) }}</p>
+                <p class="text-sm font-medium text-(--text-color) uppercase tracking-widest">Low Stock</p>
+                <p class="text-3xl font-extrabold text-(--secondary-color) mt-2 font-sans">{{ number_format($lowStock) }}</p>
             </div>
 
             <div
@@ -54,15 +62,17 @@
                 </p>
             </div>
 
+            <!-- Draft Products -->
             <div
                 class="bg-(--card-bg) border border-gray-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300">
-                <div class="w-10 h-10 rounded-xl bg-(--hover-color)/20 flex items-center justify-center mb-3">
-                    <i data-lucide="star" class="w-5 h-5 text-(--hover-color)"></i>
+                <div class="w-10 h-10 rounded-xl bg-yellow-100 flex items-center justify-center mb-3">
+                    <i data-lucide="file-text" class="w-5 h-5 text-yellow-600"></i>
                 </div>
-                <p class="text-sm font-medium text-(--text-color) uppercase tracking-widest">Draft Products</p>
+                <p class="text-sm font-medium text-(--text-color) uppercase tracking-widest">Draft</p>
                 <p class="text-3xl font-extrabold text-(--text-dark) mt-2 font-sans">{{ number_format($draftProducts) }}
                 </p>
             </div>
+
         </div>
 
         <!-- Filters -->
@@ -104,7 +114,8 @@
                             </option>
                             <option value="inactive"{{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive
                             </option>
-                            <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft
+                            <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>
+                                Draft
                             </option>
                         </select>
                     </div>
@@ -186,32 +197,33 @@
                                 </td>
 
                                 {{-- Price --}}
-               <td class="px-6 py-4">
-    @php
-        $discountPrice = $product->resolvedDiscountPrice();
-        $hasDiscount = $discountPrice !== null && $discountPrice < $product->price;
-    @endphp
+                                <td class="px-6 py-4">
+                                    @php
+                                        $discountPrice = $product->resolvedDiscountPrice();
+                                        $hasDiscount = $discountPrice !== null && $discountPrice < $product->price;
+                                    @endphp
 
-    @if ($hasDiscount)
-        <div class="flex flex-col">
-            <div class="flex items-center gap-2">
-                <span class="font-semibold text-green-600">
-                    Rs.{{ number_format($discountPrice, 2) }}
-                </span>
-                <span class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">
-                    -{{ $product->getDiscountPercentage() ?? 0 }}%
-                </span>
-            </div>
-            <span class="text-xs text-gray-400 line-through">
-                Rs.{{ number_format($product->price, 2) }}
-            </span>
-        </div>
-    @else
-        <p class="font-semibold text-(--text-dark)">
-            Rs.{{ number_format($product->price, 2) }}
-        </p>
-    @endif
-</td>
+                                    @if ($hasDiscount)
+                                        <div class="flex flex-col">
+                                            <div class="flex items-center gap-2">
+                                                <span class="font-semibold text-green-600">
+                                                    Rs.{{ number_format($discountPrice, 2) }}
+                                                </span>
+                                                <span
+                                                    class="text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded-full font-medium">
+                                                    -{{ $product->getDiscountPercentage() ?? 0 }}%
+                                                </span>
+                                            </div>
+                                            <span class="text-xs text-gray-400 line-through">
+                                                Rs.{{ number_format($product->price, 2) }}
+                                            </span>
+                                        </div>
+                                    @else
+                                        <p class="font-semibold text-(--text-dark)">
+                                            Rs.{{ number_format($product->price, 2) }}
+                                        </p>
+                                    @endif
+                                </td>
                                 </td>
                                 {{-- Status --}}
                                 <td class="px-6 py-4">
@@ -261,16 +273,13 @@
                                             title="Edit">
                                             <i data-lucide="edit" class="w-5 h-5"></i>
                                         </a>
-                                        <form method="POST" action="{{ route('product.destroy', $product->id) }}"
-                                            onsubmit="return confirm('Are you sure you want to delete {{ addslashes($product->name) }}?')">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit"
-                                                class="text-(--text-color)/60 hover:text-red-500 transition"
-                                                title="Delete">
-                                                <i data-lucide="trash-2" class="w-5 h-5"></i>
-                                            </button>
-                                        </form>
+                                        <!-- SweetAlert Delete -->
+                                        <button type="button"
+                                            onclick="confirmDelete('{{ $product->id }}', '{{ addslashes($product->name) }}')"
+                                            class="text-(--text-color)/60 hover:text-red-500 transition"
+                                            title="Delete">
+                                            <i data-lucide="trash-2" class="w-5 h-5"></i>
+                                        </button>
                                     </div>
                                 </td>
                             </tr>
@@ -311,4 +320,56 @@
         </div>
 
     </div>
+
+<!-- Custom Delete Confirmation Modal -->
+<div id="deleteModal" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <!-- Background overlay -->
+        <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity" aria-hidden="true" onclick="hideDeleteModal()"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+        <!-- Modal panel -->
+        <div class="inline-block align-bottom bg-white dark:bg-(--card-bg) rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl transform transition-all sm:my-8 sm:align-middle relative z-10">
+            <div class="flex justify-center mb-6">
+                <div class="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-2xl flex items-center justify-center">
+                    <i data-lucide="alert-triangle" class="w-8 h-8 text-red-500"></i>
+                </div>
+            </div>
+
+            <h3 class="text-2xl font-semibold text-center mb-2" id="modal-title">Delete Product?</h3>
+            <p class="text-center text-gray-600 dark:text-gray-400 mb-8">
+                Are you sure you want to delete <strong id="deleteProductName"></strong>?
+            </p>
+
+            <div class="flex gap-3">
+                <button type="button" onclick="hideDeleteModal()"
+                    class="flex-1 py-4 text-base font-medium border border-gray-300 dark:border-gray-600 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+                    No, Keep Product
+                </button>
+
+                <form id="deleteForm" method="POST" class="flex-1">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit"
+                        class="w-full py-4 text-base font-medium bg-(--secondary-color) hover:bg-[#B94E31] text-white rounded-2xl transition flex items-center justify-center gap-2">
+                        <i data-lucide="trash-2" class="w-5 h-5"></i>
+                        Yes, Delete It
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function confirmDelete(slug, productName) {
+        document.getElementById('deleteProductName').innerText = productName;
+        document.getElementById('deleteForm').action = `/product/${slug}`;
+        document.getElementById('deleteModal').classList.remove('hidden');
+    }
+
+    function hideDeleteModal() {
+        document.getElementById('deleteModal').classList.add('hidden');
+    }
+</script>
 </x-seller_layout>

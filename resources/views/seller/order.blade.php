@@ -11,12 +11,6 @@
 
                 <!-- Action Buttons with hover effects -->
                 <div class="flex flex-wrap gap-3">
-                    <button onclick="exportCSV()"
-                        class="group flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 bg-(--card-bg) border border-(--text-color)/10 rounded-2xl text-sm font-medium hover:border-(--secondary-color) hover:shadow-md active:scale-95 transition-all duration-200">
-                        <i data-lucide="hard-drive-download"
-                            class="w-5 h-5 group-hover:-translate-y-0.5 transition-transform duration-200"></i>
-                        <span>Export CSV</span>
-                    </button>
                     <button onclick="bulkPrint()"
                         class="group flex items-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 bg-(--secondary-color) text-(--text-light)/95 rounded-2xl text-sm font-medium hover:bg-[#B94E31] hover:shadow-lg active:scale-95 transition-all duration-200 shadow-md">
                         <i data-lucide="printer"

@@ -18,9 +18,6 @@ class OrderForm
                 Select::make('shipping_address_id')
                     ->relationship('shippingAddress', 'id')
                     ->required(),
-                Select::make('coupon_id')
-                    ->relationship('coupon', 'id')
-                    ->default(null),
                 TextInput::make('total_amount')
                     ->required()
                     ->numeric(),
@@ -41,7 +38,8 @@ class OrderForm
                         'cancelled' => 'Cancelled',
                     ])
                     ->default('pending')
-                    ->required(),
+                    ->required()
+                    ->disabled(),
             ]);
     }
 }

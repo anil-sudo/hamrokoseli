@@ -12,7 +12,7 @@
             <div class="flex items-center gap-3">
                 <a href="{{ route('seller.login') }}" class="hover:text-[#b55b3d] transition-colors">Become a Seller</a>
                 <span class="text-gray-400">|</span>
-                <span>Support local artisans &bull; Free shipping on orders over Rs.999</span>
+                <span>Support local artisans</span>
             </div>
         </div>
     </div>

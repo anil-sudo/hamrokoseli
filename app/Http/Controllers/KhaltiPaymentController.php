@@ -50,7 +50,9 @@ class KhaltiPaymentController extends Controller
             'customer_info' => [
                 'name' => $user->name,
                 'email' => $user->email,
-                'phone' => $user->phone,
+                // Phone lives on the shipping address (we no longer write it
+                // back to users.phone to avoid the unique-constraint clash).
+                'phone' => $order->shippingAddress?->phone ?? $user->phone ?? '',
             ],
         ]);
 

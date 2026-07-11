@@ -2,15 +2,19 @@
     <div class="space-y-10">
         {{-- Success and Error Flash Alerts --}}
         @if (session('success'))
-            <div class="p-2 bg-green-50 border border-green-200 text-green-700 rounded-2xl text-sm font-medium">
-                {{ session('success') }}
-            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    if (window.showToast) window.showToast("{{ session('success') }}", 'success');
+                });
+            </script>
         @endif
 
         @if (session('error'))
-            <div class="p-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl text-sm font-medium">
-                {{ session('error') }}
-            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    if (window.showToast) window.showToast("{{ session('error') }}", 'error');
+                });
+            </script>
         @endif
 
         <!-- Header -->

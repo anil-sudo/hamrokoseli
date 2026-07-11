@@ -61,17 +61,19 @@
 
         <!-- Flash messages -->
         @if (session('success'))
-            <div class="flex items-center gap-3 px-5 py-4 rounded-2xl bg-(--primary-color)/10 border border-(--primary-color)/25 text-(--primary-color) text-sm font-medium">
-                <i data-lucide="check-circle-2" class="w-5 h-5 shrink-0"></i>
-                {{ session('success') }}
-            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    if (window.showToast) window.showToast("{{ session('success') }}", 'success');
+                });
+            </script>
         @endif
 
         @if (session('error'))
-            <div class="flex items-center gap-3 px-5 py-4 rounded-2xl bg-red-500/10 border border-red-500/25 text-red-600 text-sm font-medium">
-                <i data-lucide="alert-circle" class="w-5 h-5 shrink-0"></i>
-                {{ session('error') }}
-            </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', () => {
+                    if (window.showToast) window.showToast("{{ session('error') }}", 'error');
+                });
+            </script>
         @endif
 
         <!-- Header -->
@@ -107,49 +109,96 @@
                 </h2>
 
                 <div class="space-y-6">
-                    <!-- Order status (read-only for now) -->
-                    <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wide text-(--text-color)/50 mb-2">Order Status</label>
-                        <div class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold {{ $orderStatusMeta['class'] }}">
-                            <i data-lucide="package" class="w-4 h-4"></i>
-                            {{ $orderStatusMeta['label'] }}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                        <!-- Order status -->
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wide text-(--text-color)/50 mb-2">Order Status</label>
+                            <form id="orderStatusForm"
+                                action="{{ route('order-details.order-status', ['order' => $order->id]) }}"
+                                method="POST">
+                                @csrf
+                                <div class="relative">
+                                    <select id="orderStatus" name="order_status"
+                                        onchange="document.getElementById('orderStatusForm').submit()"
+                                        class="w-full bg-(--bg-color) border border-(--text-color)/15 focus:outline-none focus:ring-2 focus:ring-(--primary-color)/40 focus:border-(--primary-color) rounded-2xl pl-5 pr-11 py-3.5 text-sm font-medium text-(--text-dark) appearance-none transition-all cursor-pointer">
+                                        @foreach ($orderStatusOptions as $value => $label)
+                                            <option value="{{ $value }}" @selected($order->status === $value)>{{ $label }}</option>
+                                        @endforeach
+                                    </select>
+                                    <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-(--text-color)/50">
+                                        <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Payment status -->
+                        <div>
+                            <label class="block text-xs font-semibold uppercase tracking-wide text-(--text-color)/50 mb-2">Payment Status</label>
+                            <form id="paymentStatusForm"
+                                action="{{ route('order-details.payment-status', ['order' => $order->id]) }}"
+                                method="POST">
+                                @csrf
+                                <div class="relative">
+                                    <select id="paymentStatus" name="payment_status"
+                                        @if (! $payment) disabled title="No payment record found for this order." @endif
+                                        onchange="document.getElementById('paymentStatusForm').submit()"
+                                        class="w-full bg-(--bg-color) border border-(--text-color)/15 focus:outline-none focus:ring-2 focus:ring-(--primary-color)/40 focus:border-(--primary-color) rounded-2xl pl-5 pr-11 py-3.5 text-sm font-medium text-(--text-dark) appearance-none transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                                        @foreach ($paymentStatusOptions as $value => $label)
+                                            <option value="{{ $value }}" @selected($paymentStatus === $value)>{{ $label }}</option>
+                                        @endforeach
+                                    </select>
+                                    <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-(--text-color)/50">
+                                        <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
 
-                    <!-- Payment status -->
-                    <div>
-                        <label class="block text-xs font-semibold uppercase tracking-wide text-(--text-color)/50 mb-2">Payment Status</label>
-
-                        <form id="paymentStatusForm"
-                            action="{{ route('order-details.payment-status', ['order' => $order->id]) }}"
-                            method="POST">
-                            @csrf
-                            <div class="relative">
-                                <select id="paymentStatus" name="payment_status"
-                                    @if (! $payment) disabled title="No payment record found for this order." @endif
-                                    onchange="document.getElementById('paymentStatusForm').submit()"
-                                    class="w-full bg-(--bg-color) border border-(--text-color)/15 focus:outline-none focus:ring-2 focus:ring-(--primary-color)/40 focus:border-(--primary-color) rounded-2xl pl-5 pr-11 py-3.5 text-sm font-medium text-(--text-dark) appearance-none transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
-                                    @foreach ($paymentStatusOptions as $value => $label)
-                                        <option value="{{ $value }}" @selected($paymentStatus === $value)>{{ $label }}</option>
-                                    @endforeach
-                                </select>
-                                <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-(--text-color)/50">
-                                    <i data-lucide="chevron-down" class="w-4 h-4"></i>
-                                </div>
-                            </div>
-                        </form>
-
-                        @if ($paymentStatus === 'pending' && $payment)
-                            <p class="text-xs text-(--text-color)/60 mt-2.5 flex items-start gap-1.5">
-                                <i data-lucide="lightbulb" class="w-3.5 h-3.5 mt-0.5 shrink-0 text-(--hover-color)"></i>
-                                Received the money for this order? Switch this to "Paid" to confirm it.
-                            </p>
-                        @elseif ($paymentStatus === 'completed')
-                            <p class="text-xs text-(--primary-color) mt-2.5 flex items-center gap-1.5">
-                                <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
-                                Payment confirmed — this order is fully paid.
-                            </p>
-                        @endif
+                    <!-- Status Helpers -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+                        <div>
+                            @if ($order->status === 'pending')
+                                <p class="text-(--hover-color) flex items-start gap-1.5">
+                                    <i data-lucide="lightbulb" class="w-3.5 h-3.5 mt-0.5 shrink-0 text-(--hover-color)"></i>
+                                    New order waiting for processing confirmation.
+                                </p>
+                            @elseif ($order->status === 'confirmed')
+                                <p class="text-(--secondary-color) flex items-start gap-1.5">
+                                    <i data-lucide="info" class="w-3.5 h-3.5 mt-0.5 shrink-0"></i>
+                                    Order confirmed and currently processing.
+                                </p>
+                            @elseif ($order->status === 'shipped')
+                                <p class="text-(--primary-color) flex items-start gap-1.5">
+                                    <i data-lucide="truck" class="w-3.5 h-3.5 mt-0.5 shrink-0"></i>
+                                    Order shipped. On the way to delivery address.
+                                </p>
+                            @elseif ($order->status === 'delivered')
+                                <p class="text-(--primary-color) flex items-start gap-1.5">
+                                    <i data-lucide="check-circle-2" class="w-3.5 h-3.5 mt-0.5 shrink-0"></i>
+                                    Delivered. Transaction finished successfully.
+                                </p>
+                            @elseif ($order->status === 'cancelled')
+                                <p class="text-red-500 flex items-start gap-1.5">
+                                    <i data-lucide="x-circle" class="w-3.5 h-3.5 mt-0.5 shrink-0"></i>
+                                    Order has been cancelled.
+                                </p>
+                            @endif
+                        </div>
+                        <div>
+                            @if ($paymentStatus === 'pending' && $payment)
+                                <p class="text-(--text-color)/60 flex items-start gap-1.5">
+                                    <i data-lucide="lightbulb" class="w-3.5 h-3.5 mt-0.5 shrink-0 text-(--hover-color)"></i>
+                                    Received payment? Switch to "Paid" to confirm it.
+                                </p>
+                            @elseif ($paymentStatus === 'completed')
+                                <p class="text-(--primary-color) flex items-center gap-1.5">
+                                    <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
+                                    Payment confirmed — order is fully paid.
+                                </p>
+                            @endif
+                        </div>
                     </div>
 
                     <!-- Payment meta -->
@@ -180,7 +229,7 @@
 
                     <div class="bg-(--brand-dark,#1F3D2E) rounded-2xl p-5 text-sm flex gap-3">
                         <i data-lucide="info" class="w-5 h-5 text-(--text-light) mt-0.5 shrink-0"></i>
-                        <p class="text-(--text-light)/90">Payment status updates the moment you change it — no need to click Save. Order status editing is coming soon.</p>
+                        <p class="text-(--text-light)/90">Both order status and payment status update the moment you change them — no need to click Save.</p>
                     </div>
                 </div>
             </div>

@@ -380,18 +380,33 @@ if (window.isLoggedIn) {
     function showToast(message, type = 'success') {
         const container = getToastContainer();
         const toast = document.createElement('div');
-        toast.className = 'toast-item';
+        
+        const colours = {
+            success : 'bg-white text-[#1F3D2E] border-l-4 border-[#1F3D2E]',
+            error   : 'bg-white text-red-600 border-l-4 border-red-600',
+            warning : 'bg-white text-amber-600 border-l-4 border-amber-500',
+            info    : 'bg-white text-[#C65A3A] border-l-4 border-[#C65A3A]',
+        };
 
-        let iconClass = 'fa-regular fa-circle-check text-emerald-500';
-        if (type === 'info') {
-            iconClass = 'fa-solid fa-circle-info text-sky-500';
-        } else if (type === 'error') {
-            iconClass = 'fa-regular fa-circle-xmark text-rose-500';
-        } else if (type === 'warning') {
-            iconClass = 'fa-solid fa-triangle-exclamation text-amber-500';
-        }
+        const icons = {
+            success : 'fa-circle-check',
+            error   : 'fa-circle-xmark',
+            warning : 'fa-triangle-exclamation',
+            info    : 'fa-circle-info',
+        };
 
-        toast.innerHTML = `<i class="${iconClass}"></i><span>${message}</span>`;
+        toast.className = [
+            'toast-item flex items-center gap-3',
+            'px-5 py-3.5 rounded-2xl shadow-xl text-sm font-semibold',
+            'transition-all duration-300 backdrop-blur-md',
+            colours[type] ?? colours.success,
+        ].join(' ');
+
+        toast.innerHTML = `
+            <i class="fas ${icons[type] ?? icons.success} text-base"></i>
+            <span>${message}</span>
+        `;
+
         container.appendChild(toast);
 
         // Trigger transition
@@ -404,6 +419,13 @@ if (window.isLoggedIn) {
             setTimeout(() => toast.remove(), 400);
         }, 3000);
     }
+
+    window.showToast = showToast;
+    if (window.flashMessages) {
+        window.flashMessages.forEach(msg => showToast(msg.message, msg.type));
+        window.flashMessages = [];
+    }
+
 
     // Update Header Badge Count
     function updateWishlistBadge() {
@@ -446,6 +468,16 @@ if (window.isLoggedIn) {
 
     // Toggle product in wishlist
 function toggleWishlistProduct(productData) {
+    // Guests must log in before adding to wishlist
+    if (!window.isLoggedIn) {
+        if (typeof window.openLoginModal === 'function') {
+            window.openLoginModal(null, 'login');
+        } else {
+            window.location.href = window.loginUrl || '/userlogin';
+        }
+        return false;
+    }
+
     const index = wishlist.findIndex(item => String(item.id) === String(productData.id));
     if (index > -1) {
         wishlist.splice(index, 1);
@@ -481,6 +513,7 @@ function toggleWishlistProduct(productData) {
         if (btn) {
             e.preventDefault();
             e.stopPropagation();
+            e._handledByWishlist = true;
             const productData = {
                 id: btn.getAttribute('data-product-id'),
                 name: btn.getAttribute('data-product-name'),
@@ -807,14 +840,28 @@ function toggleWishlistProduct(productData) {
     window.removeFromCart = removeFromCart;
     window.updateCartQuantity = updateCartQuantity;
     window.moveCartItemToWishlist = moveCartItemToWishlist;
+
     window.showToast = showToast;
+    if (window.flashMessages) {
+        window.flashMessages.forEach(msg => showToast(msg.message, msg.type));
+        window.flashMessages = [];
+    }
+
 
     // Attach global click listener for any elements with .add-to-cart-btn
     document.addEventListener('click', function (e) {
-        const btn = e.target.closest('.add-to-cart-btn');
+        const btn = e.target.closest('.wishlist-btn');
         if (btn) {
             e.preventDefault();
             e.stopPropagation();
+            if (!window.isLoggedIn) {
+                if (typeof window.openLoginModal === 'function') {
+                    window.openLoginModal(null, 'login');
+                } else {
+                    window.location.href = window.loginUrl || '/userlogin';
+                }
+                return;
+            }
             const productData = {
                 id: btn.getAttribute('data-product-id'),
                 name: btn.getAttribute('data-product-name'),
@@ -1022,7 +1069,7 @@ function toggleWishlistProduct(productData) {
         });
 
         let categoryName = typeof productData.category === 'string' ? productData.category : (productData.category?.cat_name || productData.category?.name || productData.category_name || 'Crafts');
-        let vendorName = typeof productData.vendor === 'string' ? productData.vendor : (productData.vendor?.vendor_name || productData.vendor?.business_name || productData.vendor?.name || productData.vendor_name || 'Local Artisan');
+        let vendorName = typeof productData.vendor === 'string' ? productData.vendor : (productData.vendor?.vendor_name || productData.vendor?.business_name || productData.vendor?.name || productData.vendor_name || '');
         let imageUrl = productData.primary_image_url || (typeof productData.image === 'string' && productData.image.startsWith('http') ? productData.image : (productData.image ? '/' + productData.image.replace(/^\/+/, '') : ''));
 
         window.activeProduct = {
@@ -1055,8 +1102,21 @@ function toggleWishlistProduct(productData) {
             modalMainImage.alt = productData.name;
         }
         if (modalBreadcrumbCat) modalBreadcrumbCat.textContent = categoryName;
-        if (modalProductDesc) modalProductDesc.textContent = productData.desc || productData.description || '';
-        if (modalVendorName) modalVendorName.textContent = vendorName;
+        const modalProductStory = document.getElementById('modal-product-story');
+        const descText = productData.desc || productData.description || '';
+        if (modalProductDesc) modalProductDesc.textContent = descText;
+        if (modalProductStory) modalProductStory.textContent = descText;
+        if (modalVendorName) {
+            const vendorCard = document.getElementById('modal-vendor-card');
+            const avatarEl = document.getElementById('modal-vendor-avatar');
+            if (vendorName) {
+                modalVendorName.textContent = vendorName;
+                if (avatarEl) avatarEl.textContent = vendorName.charAt(0).toUpperCase();
+                if (vendorCard) vendorCard.classList.remove('hidden');
+            } else {
+                if (vendorCard) vendorCard.classList.add('hidden');
+            }
+        }
         if (modalReviewsCount) modalReviewsCount.textContent = productData.reviews || productData.reviews_count || '0';
 
         // Pricing
