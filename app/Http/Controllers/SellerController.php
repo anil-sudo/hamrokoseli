@@ -247,45 +247,40 @@ class SellerController extends Controller
             'category' => 'required|exists:categories,id',
             'product_type' => 'nullable|string|max:100',
             'description' => 'required|string|max:2000',
-            'base_price' => 'nullable|numeric|min:0',
-            'discount_amount' => 'nullable|numeric|min:0|max:99', // Changed from discount_price
+            'base_price' => 'required|numeric|min:0',
+            'discount_amount' => 'nullable|numeric|min:0|max:99',
             'sku' => 'nullable|string|max:100|unique:products,sku,'.$product->id,
-            'stock' => 'nullable|integer|min:0',
+            'stock' => 'required|integer|min:0',
             'specifications' => 'nullable|array',
             'specifications.*.key' => 'nullable|string|max:100',
             'specifications.*.value' => 'nullable|string|max:255',
             'images' => 'nullable|array|max:1',
             'images.*' => 'image|mimes:jpg,jpeg,png,webp|max:10240',
-            'remove_images' => 'nullable|array',
-            'remove_images.*' => 'integer|exists:images,id',
             'status' => 'required|in:active,draft',
         ]);
 
+        // Update Product
         $product->update([
             'category_id' => $validated['category'],
             'name' => $validated['product_name'],
             'slug' => Str::slug($validated['product_name']).'-'.Str::lower(Str::random(5)),
             'product_type' => $validated['product_type'] ?? null,
             'description' => $validated['description'],
-            'specifications' => ! empty($validated['specifications']) ? $this->filterSpecs($validated['specifications']) : null,
-            'price' => $validated['base_price'] ?? $product->price,
-            'discount_price' => ($validated['discount_amount'] ?? 0) > 0 ? (($validated['base_price'] ?? $product->price) * (1 - $validated['discount_amount'] / 100)) : null,
-            'stock' => $validated['stock'] ?? $product->stock,
+            'specifications' => ! empty($validated['specifications'])
+                ? $this->filterSpecs($validated['specifications'])
+                : null,
+            'price' => $validated['base_price'],
+            'discount_price' => ($validated['discount_amount'] ?? 0) > 0
+                ? ($validated['base_price'] * (1 - $validated['discount_amount'] / 100))
+                : null,
+            'stock' => $validated['stock'],
             'sku' => $validated['sku'] ?? $product->sku,
             'status' => $validated['status'],
         ]);
 
-        $product->variants()->delete();
-
-        if (! empty($validated['remove_images'])) {
-            $imagesToRemove = $product->images()->whereIn('id', $validated['remove_images'])->get();
-            foreach ($imagesToRemove as $img) {
-                Storage::disk('public')->delete($img->path);
-                $img->delete();
-            }
-        }
-
+        // Image Handling
         if ($request->hasFile('images')) {
+            // Delete old images
             foreach ($product->images as $oldImage) {
                 Storage::disk('public')->delete($oldImage->path);
                 $oldImage->delete();
@@ -301,7 +296,8 @@ class SellerController extends Controller
             ]);
         }
 
-        return redirect()->route('product-management')->with('success', 'Product updated successfully!');
+        return redirect()->route('product-management')
+            ->with('success', 'Product updated successfully!');
     }
 
     public function store(Request $request)
@@ -336,8 +332,8 @@ class SellerController extends Controller
                 : null,
             'price' => $validated['base_price'],
             'discount_price' => ($validated['discounted_price'] ?? 0) > 0
-                                    ? ($validated['base_price'] * (1 - $validated['discounted_price'] / 100))
-                                    : null,
+                ? ($validated['base_price'] * (1 - $validated['discounted_price'] / 100))
+                : null,
             'stock' => $validated['stock'],
             'sku' => $validated['sku'],
             'status' => $validated['status'],
