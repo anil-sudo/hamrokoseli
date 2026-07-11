@@ -8,6 +8,46 @@
         .qty-val-input::-webkit-outer-spin-button,
         .qty-val-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         .qty-val-input { -moz-appearance: textfield; }
+        
+        /* Floating sidebar styles */
+        .sidebar-sticky {
+            position: sticky;
+            top: 20px;
+            align-self: flex-start;
+        }
+        
+        /* Ensure the sidebar content doesn't overflow viewport */
+        .sidebar-sticky > div {
+            max-height: calc(100vh - 40px);
+            overflow-y: auto;
+        }
+        
+        /* Custom scrollbar for floating sidebar */
+        .sidebar-sticky > div::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .sidebar-sticky > div::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .sidebar-sticky > div::-webkit-scrollbar-thumb {
+            background: #C65A3A;
+            border-radius: 10px;
+        }
+        
+        /* For mobile, remove sticky behavior */
+        @media (max-width: 768px) {
+            .sidebar-sticky {
+                position: relative;
+                top: 0;
+                align-self: auto;
+            }
+            .sidebar-sticky > div {
+                max-height: none;
+                overflow-y: visible;
+            }
+        }
     </style>
     <div class="bg-[#F4EAE1] text-[#3A2A1F] min-h-screen py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
         <div class="max-w-7xl mx-auto">
@@ -17,7 +57,7 @@
                   class="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-8 items-start">
 
                 {{-- ===== LEFT SIDEBAR ===== --}}
-                <aside class="md:col-span-4 lg:col-span-3 col-span-full">
+                <aside class="md:col-span-4 lg:col-span-3 col-span-full sidebar-sticky">
                     <div class="bg-[#FFF7EF] rounded-3xl p-6 border border-[#ebd7be]/50 shadow-sm">
 
                         {{-- Header --}}
@@ -124,24 +164,7 @@
                             </div>
 
 
-                            {{-- Availability --}}
-                            <div class="pt-5 border-t border-[#ebd7be]/40">
-                                <button type="button" class="w-full flex items-center justify-between text-left focus:outline-none py-1">
-                                    <span
-                                        class="text-xs font-bold uppercase tracking-wider text-[#1F3D2E]">Availability</span>
-                                    <i class="fas fa-minus text-[10px] text-[#C65A3A]"></i>
-                                </button>
-                                <div class="mt-4 flex items-center gap-3">
-                                    <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" name="in_stock" value="1" id="in-stock-toggle"
-                                            class="sr-only peer" {{ request('in_stock') ? 'checked' : '' }}>
-                                        <div
-                                            class="w-9 h-5 bg-[#ebd7be] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#C65A3A]">
-                                        </div>
-                                    </label>
-                                    <span class="text-sm font-semibold text-[#3A2A1F]/80">In Stock Only</span>
-                                </div>
-                            </div>
+
                         </div>
 
                     </div>
@@ -185,7 +208,7 @@
             data-category="{{ $product->category?->slug ?? 'uncategorized' }}"
             class="product-card bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group">
 
-            <div class="relative w-full aspect-[4/5] overflow-hidden rounded-t-2xl sm:rounded-t-3xl">
+            <div class="relative w-full aspect-square overflow-hidden rounded-t-2xl sm:rounded-t-3xl">
 
                 <img
                     src="{{ $product->primaryImageUrl() }}"
@@ -200,7 +223,7 @@
                 @endif
 
                 @if($product->vendor)
-                    <div class="absolute top-2 right-2 sm:top-4 sm:right-4 bg-white/95 text-[#1F3D2E] text-[6px] xs:text-[9px] sm:text-[10px] font-bold tracking-wider uppercase px-1.5 py-0.5 sm:px-3 sm:py-1.5 rounded-full shadow-sm">
+                    <div class="absolute left-2 sm:left-4 bg-white/95 text-[#1F3D2E] text-[6px] xs:text-[9px] sm:text-[10px] font-bold tracking-wider uppercase px-1.5 py-0.5 sm:px-3 sm:py-1.5 rounded-full shadow-sm max-w-[55%] truncate {{ $product->hasDiscount() ? 'top-8 sm:top-10' : 'top-2 sm:top-4' }}">
                         {{ $product->vendor->business_name ?? $product->vendor->name }}
                     </div>
                 @endif
@@ -246,7 +269,7 @@
                            data-discount-price="{{ $product->resolvedDiscountPrice() ?? '' }}"
                            data-image="{{ $product->primaryImageUrl() }}"
                            data-category="{{ $product->category?->cat_name ?? 'Crafts' }}"
-                           data-vendor="{{ $product->vendor->business_name ?? $product->vendor->name ?? 'Local Artisan' }}"
+                           data-vendor="{{ $product->vendor->business_name ?? $product->vendor->name ?? '' }}"
                            data-desc="{{ $product->description }}"
                            data-rating="{{ $product->rating ?? 5 }}"
                            data-reviews="{{ $product->reviews_count ?? 24 }}"

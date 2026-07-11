@@ -149,7 +149,7 @@
                        data-discount-price="{{ $discountPrice ?? '' }}"
                        data-image="{{ $product->primaryImageUrl() }}"
                        data-category="{{ $product->category?->cat_name ?? 'Crafts' }}"
-                       data-vendor="{{ $product->vendor->business_name ?? $product->vendor->name ?? 'Local Artisan' }}"
+                       data-vendor="{{ $product->vendor->business_name ?? $product->vendor->name ?? '' }}"
                        data-desc="{{ $product->description }}"
                        data-rating="{{ $avgRating ?? 5 }}"
                        data-reviews="{{ $reviewCount ?? 24 }}"
