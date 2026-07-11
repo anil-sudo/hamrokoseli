@@ -468,6 +468,12 @@ if (window.isLoggedIn) {
 
     // Toggle product in wishlist
 function toggleWishlistProduct(productData) {
+    // Guests must log in before adding to wishlist
+    if (!window.isLoggedIn) {
+        window.location.href = window.loginUrl || '/userlogin';
+        return false;
+    }
+
     const index = wishlist.findIndex(item => String(item.id) === String(productData.id));
     if (index > -1) {
         wishlist.splice(index, 1);

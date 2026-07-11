@@ -1,19 +1,16 @@
 // ==================== TOAST ====================
 function showToast(message, type = 'error') {
-    const container = document.getElementById('toastContainer') || document.body;
-    const toast = document.createElement('div');
-    const bgColor = type === 'success' ? 'bg-green-600' : 'bg-red-600';
-
-    toast.className = `${bgColor} text-white px-6 py-4 rounded-2xl shadow-xl fixed top-5 right-5 z-50 flex items-center gap-3 min-w-[280px]`;
-    toast.innerHTML = `<span>${message}</span>`;
-
-    container.appendChild(toast);
-
-    setTimeout(() => {
-        toast.style.transition = 'all 0.3s';
-        toast.style.opacity = '0';
-        setTimeout(() => toast.remove(), 300);
-    }, 4000);
+    if (window.showToast) {
+        window.showToast(message, type);
+    } else {
+        const container = document.getElementById('toastContainer') || document.body;
+        const toast = document.createElement('div');
+        const bgColor = type === 'success' ? 'bg-green-600' : 'bg-red-600';
+        toast.className = `${bgColor} text-white px-5 py-4 rounded-xl shadow-lg fixed top-5 right-5 z-50`;
+        toast.textContent = message;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 4000);
+    }
 }
 
 // ==================== SPECIFICATIONS ====================

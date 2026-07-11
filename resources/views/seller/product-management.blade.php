@@ -373,4 +373,3 @@
     }
 </script>
 </x-seller_layout>
-
