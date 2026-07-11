@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
@@ -54,14 +53,6 @@ class Category extends Model
     public function products(): HasMany
     {
         return $this->hasMany(Product::class);
-    }
-
-    /**
-     * Many-to-Many: A category can be linked to many vendors via vendor_categories pivot.
-     */
-    public function vendors(): BelongsToMany
-    {
-        return $this->belongsToMany(Vendor::class, 'vendor_categories');
     }
 
     /**

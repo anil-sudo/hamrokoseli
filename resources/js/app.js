@@ -302,7 +302,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==================== WISHLIST FEATURE LOGIC ====================
-let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+let wishlist = [];
+
+if (!window.isLoggedIn) {
+    localStorage.removeItem('wishlist');
+    localStorage.removeItem('wishlist_visited');
+    wishlist = [];
+} else {
+    wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+}
 
 // If logged in, load wishlist from database and sync to localStorage
 if (window.isLoggedIn) {
@@ -470,7 +478,12 @@ if (window.isLoggedIn) {
 function toggleWishlistProduct(productData) {
     // Guests must log in before adding to wishlist
     if (!window.isLoggedIn) {
-        window.location.href = window.loginUrl || '/userlogin';
+        showToast('Please sign in to add items to your wishlist.', 'warning');
+        if (typeof window.openLoginModal === 'function') {
+            window.openLoginModal(null, 'login');
+        } else {
+            window.location.href = window.loginUrl || '/userlogin';
+        }
         return false;
     }
 
@@ -509,6 +522,7 @@ function toggleWishlistProduct(productData) {
         if (btn) {
             e.preventDefault();
             e.stopPropagation();
+            e._handledByWishlist = true;
             const productData = {
                 id: btn.getAttribute('data-product-id'),
                 name: btn.getAttribute('data-product-name'),
@@ -598,6 +612,7 @@ function toggleWishlistProduct(productData) {
                     renderWishlistPage();
                 });
             }
+
 
             // Bind add to cart button
             const addCartBtn = clone.querySelector('.wishlist-add-cart-btn');
@@ -849,6 +864,14 @@ function toggleWishlistProduct(productData) {
         if (btn) {
             e.preventDefault();
             e.stopPropagation();
+            if (!window.isLoggedIn) {
+                if (typeof window.openLoginModal === 'function') {
+                    window.openLoginModal(null, 'login');
+                } else {
+                    window.location.href = window.loginUrl || '/userlogin';
+                }
+                return;
+            }
             const productData = {
                 id: btn.getAttribute('data-product-id'),
                 name: btn.getAttribute('data-product-name'),
@@ -1221,6 +1244,10 @@ function toggleWishlistProduct(productData) {
     document.addEventListener('click', function (e) {
         const btn = e.target.closest('.view-details-btn');
         if (btn) {
+            // Ignore clicks originating from wishlist buttons to avoid opening view details modal
+            if (e.target.closest('.wishlist-btn') || e._handledByWishlist) {
+                return;
+            }
             e.preventDefault();
 
             const productData = {

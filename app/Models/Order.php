@@ -6,7 +6,6 @@ use App\Services\NotificationService;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Order extends Model
@@ -80,17 +79,6 @@ class Order extends Model
     public function payment(): HasOne
     {
         return $this->hasOne(Payment::class);
-    }
-
-    /**
-     * Returns through order items (FIXED VERSION)
-     */
-    public function returns(): HasManyThrough
-    {
-        return $this->hasManyThrough(
-            OrderReturn::class,
-            OrderItem::class
-        );
     }
 
     // -------------------------------------------------------------------------
