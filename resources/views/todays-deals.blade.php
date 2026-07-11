@@ -2,15 +2,13 @@
     description="Check out today's limited-time offers on authentic Nepali crafts and handmade treasures."
     ogImage="/images/og-images.jpg">
 
-    <main class="bg-[#c05d1b] min-h-screen">
+    <main class="bg-[#f2eae1] min-h-screen">
 
         <!-- Hero Section -->
         <section
-            @if (isset($dealBgImage) && $dealBgImage)
-                style="background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('{{ asset('storage/' . $dealBgImage) }}'); background-size: cover; background-position: center;"
+            @if (isset($dealBgImage) && $dealBgImage) style="background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('{{ asset('storage/' . $dealBgImage) }}'); background-size: cover; background-position: center;"
             @else
-                style="background-image: url('{{ asset('images/Potteqry.png') }}'); background-size: cover; background-position: center;"
-            @endif
+                style="background-image: url('{{ asset('images/Potteqry.png') }}'); background-size: cover; background-position: center;" @endif
             class="text-white py-16 px-4 md:px-8 lg:px-16">
 
 
@@ -72,8 +70,7 @@
             <div class="max-w-7xl mx-auto">
                 <div class="flex justify-between items-center mb-8">
                     <div class="flex items-center gap-3">
-                        <span class="text-2xl">Alart</span>
-                        <h2 class="text-2xl font-bold text-[#181c1e] font-['Plus_Jakarta_Sans']">Today's Deals</h2>
+                        <h2 class="text-2xl font-bold text-[#181c1e] font-['Plus_Jakarta_Sans']">Alart Today's Deals</h2>
                     </div>
                 </div>
 
@@ -133,13 +130,13 @@
                                     ? round((($price - $discountPrice) / $price) * 100)
                                     : 0;
                             @endphp
-                            <div class="bg-white rounded-[16px] border border-[#e0e3e5] overflow-hidden hover:shadow-lg transition-all product-card"
+                            <div class="bg-card rounded-2xl border border-[#e0e3e5] overflow-hidden hover:shadow-lg transition-all product-card"
                                 data-id="{{ $product->id }}" data-name="{{ $product->name }}"
                                 data-price="{{ $displayPrice }}"
                                 data-category="{{ strtolower($product->category->cat_name ?? '') }}"
                                 data-discount="{{ $discountPercentage }}">
                                 <div class="relative aspect-square bg-gray-200 overflow-hidden">
-                                    <img src="{{ asset($product->image) }}" alt="{{ $product->name }}"
+                                    <img src="{{ $product->primaryImageUrl() }}" alt="{{ $product->name }}"
                                         class="w-full h-full object-cover hover:scale-105 transition duration-300">
                                     @if ($hasDiscount)
                                         <span
@@ -167,7 +164,7 @@
                                             class="flex-1 bg-[#b51822] text-white py-2 rounded-lg font-semibold hover:bg-[#930013] transition text-sm view-details-btn"
                                             data-name="{{ $product->name }}" data-price="{{ $displayPrice }}"
                                             data-original-price="{{ $price }}"
-                                            data-image="{{ asset($product->image) }}"
+                                            data-image="{{ $product->primaryImageUrl() }}"
                                             data-category="{{ $product->category->cat_name ?? '' }}"
                                             data-vendor="{{ $product->vendor->vendor_name ?? 'Local Artisan' }}"
                                             data-desc="{{ $product->description }}"
@@ -177,7 +174,18 @@
                                             View Details
                                         </button>
                                         <button
-                                            class="px-3 py-2 border border-[#e0e3e5] rounded-lg hover:bg-[#ebeef0] transition">...</button>
+                                            class="flex-1 bg-[#b51822] text-white py-2 rounded-lg font-semibold hover:bg-[#930013] transition text-sm add-to-cart-btn"
+                                            data-name="{{ $product->name }}" data-price="{{ $displayPrice }}"
+                                            data-original-price="{{ $price }}"
+                                            data-image="{{ $product->primaryImageUrl() }}"
+                                            data-category="{{ $product->category->cat_name ?? '' }}"
+                                            data-vendor="{{ $product->vendor->vendor_name ?? 'Local Artisan' }}"
+                                            data-desc="{{ $product->description }}"
+                                            data-rating="{{ $product->rating ?? 5 }}"
+                                            data-reviews="{{ $product->reviews_count ?? 0 }}"
+                                            data-stock="{{ $product->stock ?? 10 }}">
+                                            Add
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -423,7 +431,7 @@
                         @if (isset($trendingProducts) && $trendingProducts->count() > 0)
                             @foreach ($trendingProducts as $product)
                                 @php
-                                    $imageUrl = asset($product->image ?? 'images/placeholder.png');
+                                    $imageUrl = $product->image ? $product->primaryImageUrl() : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9zdmc+';
                                     $price = (float) $product->price;
                                     $discountPrice = $product->discount_price ?? null;
                                     $hasDiscount = !is_null($discountPrice) && $discountPrice < $price;
@@ -432,12 +440,12 @@
                                 @endphp
                                 <div class="trending-card flex-shrink-0 w-full md:w-1/2 lg:w-1/4">
                                     <div
-                                        class="bg-white rounded-[16px] border border-[#e0e3e5] overflow-hidden hover:shadow-lg transition-all group flex flex-col h-full">
+                                        class="bg-card rounded-2xl border border-[#e0e3e5] overflow-hidden hover:shadow-lg transition-all group flex flex-col h-full">
                                         <div
                                             class="aspect-square bg-gray-200 flex items-center justify-center overflow-hidden relative">
                                             <img src="{{ $imageUrl }}" alt="{{ $product->name }}"
                                                 class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                                                onerror="this.src='{{ asset('images/placeholder.png') }}'">
+                                                onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9zdmc+'">
                                         </div>
                                         <div class="p-4 flex-grow flex flex-col justify-between">
                                             <div>

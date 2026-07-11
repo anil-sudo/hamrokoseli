@@ -44,11 +44,22 @@ class PageController extends Controller
             ->take(4)
             ->get();
 
+        // Fetch today's deals products (limited to 4 for home page)
+        $todaysDeals = Product::with(['category', 'vendor', 'images'])
+            ->where('status', 'active')
+            ->whereNotNull('discount_price')
+            ->where('discount_price', '>', 0)
+            ->whereColumn('discount_price', '<', 'price')
+            ->orderByRaw('((price - discount_price) / price) DESC')
+            ->limit(4)
+            ->get();
+
         return view('welcome', [
             'vendors' => $vendors,
             'featuredProducts' => $featuredProducts,
             'categories' => $categories,
             'topSellers' => $topSellers,
+            'todaysDeals' => $todaysDeals,
         ]);
     }
 

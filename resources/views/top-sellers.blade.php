@@ -60,7 +60,7 @@
 
                     $imageUrl = method_exists($product, 'primaryImageUrl')
                         ? $product->primaryImageUrl()
-                        : asset($product->image ?? 'images/placeholder.png');
+                        : ($product->image ? asset($product->image) : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9zdmc+');
 
                     $price         = (float) $product->price;
                     $discountPrice = method_exists($product, 'resolvedDiscountPrice')
@@ -88,7 +88,7 @@
                         <img src="{{ $imageUrl }}"
                              alt="{{ $product->name }}"
                              class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
-                             onerror="this.src='{{ asset('images/placeholder.png') }}'">
+                             onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9zdmc+'">
 
                         <span class="absolute top-4 left-4 {{ $rankBg }} text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-full z-10 shadow">
                             #{{ $rank }} {{ $rank <= 3 ? 'Best Seller' : 'Seller' }}
