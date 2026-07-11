@@ -470,7 +470,11 @@ if (window.isLoggedIn) {
 function toggleWishlistProduct(productData) {
     // Guests must log in before adding to wishlist
     if (!window.isLoggedIn) {
-        window.location.href = window.loginUrl || '/userlogin';
+        if (typeof window.openLoginModal === 'function') {
+            window.openLoginModal(null, 'login');
+        } else {
+            window.location.href = window.loginUrl || '/userlogin';
+        }
         return false;
     }
 
@@ -509,6 +513,7 @@ function toggleWishlistProduct(productData) {
         if (btn) {
             e.preventDefault();
             e.stopPropagation();
+            e._handledByWishlist = true;
             const productData = {
                 id: btn.getAttribute('data-product-id'),
                 name: btn.getAttribute('data-product-name'),
@@ -845,10 +850,18 @@ function toggleWishlistProduct(productData) {
 
     // Attach global click listener for any elements with .add-to-cart-btn
     document.addEventListener('click', function (e) {
-        const btn = e.target.closest('.add-to-cart-btn');
+        const btn = e.target.closest('.wishlist-btn');
         if (btn) {
             e.preventDefault();
             e.stopPropagation();
+            if (!window.isLoggedIn) {
+                if (typeof window.openLoginModal === 'function') {
+                    window.openLoginModal(null, 'login');
+                } else {
+                    window.location.href = window.loginUrl || '/userlogin';
+                }
+                return;
+            }
             const productData = {
                 id: btn.getAttribute('data-product-id'),
                 name: btn.getAttribute('data-product-name'),
