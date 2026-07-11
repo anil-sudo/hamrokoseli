@@ -195,7 +195,7 @@ class NotificationService
         Notification::create([
             'user_id' => $user->id,
             'type' => $isVendor ? 'vendor_profile_updated' : Notification::TYPE_PROFILE_UPDATED,
-            'title' => 'Profile Updated',
+            'title' => $type === 'password' ? 'Password Updated' : 'Profile Updated',
             'message' => $message,
             'is_read' => false,
         ]);

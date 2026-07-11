@@ -30,7 +30,7 @@ return new class extends Migration
             $table->string('method', 50)->comment('Bank transfer | eSewa | Khalti');
             $table->string('transaction_id', 150)->nullable()->comment('Bank/gateway transaction ref');
 
-            $table->enum('status', ['pending', 'processing', 'completed', 'failed'])->default('pending');
+            $table->enum('status', ['pending', 'processing', 'completed', 'Cancelled'])->default('pending');
 
             $table->text('notes')->nullable()->comment('Admin notes for this payout');
 

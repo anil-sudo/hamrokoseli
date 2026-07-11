@@ -18,8 +18,6 @@ class OrdersTable
                     ->searchable(),
                 TextColumn::make('shippingAddress.id')
                     ->searchable(),
-                TextColumn::make('coupon.id')
-                    ->searchable(),
                 TextColumn::make('total_amount')
                     ->numeric()
                     ->sortable(),

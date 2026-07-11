@@ -108,6 +108,8 @@ textarea {
     }
     .subnav-link:hover::after { width: 100%; }
     .subnav-link:hover { color: #ffffff; }
+    .subnav-link.active::after { width: 100%; }
+    .subnav-link.active { color: #ffffff; }
 
     .subnav-link i {
         font-size: 14px;
@@ -182,6 +184,14 @@ textarea {
 }
 
 .mob-nav-link:hover i {
+    opacity: 1;
+}
+.mob-nav-link.active {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    border-left: 4px solid #C65A3A;
+}
+.mob-nav-link.active i {
     opacity: 1;
 }
 /* Search bar focus glow */
@@ -430,7 +440,7 @@ a {
 /* Toast Notification Style */
 .toast-container {
     position: fixed;
-    bottom: 24px;
+    top: 24px;
     right: 24px;
     z-index: 999999;
     display: flex;
@@ -441,32 +451,20 @@ a {
 
 .toast-item {
     pointer-events: auto;
-    background: rgba(31, 61, 46, 0.95);
-    color: #FFF7EF;
     border: 1px solid rgba(235, 215, 190, 0.2);
-    border-left: 4.5px solid #C65A3A;
-    padding: 14px 20px;
-    border-radius: 16px;
-    font-size: 14px;
-    font-weight: 600;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
-    display: flex;
-    align-items: center;
-    gap: 10px;
     min-width: 280px;
-    transform: translateY(20px);
+    transform: translateX(40px);
     opacity: 0;
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    backdrop-filter: blur(8px);
 }
 
 .toast-item.show {
-    transform: translateY(0);
+    transform: translateX(0);
     opacity: 1;
 }
 
 .toast-item.hide {
-    transform: translateY(-20px);
+    transform: translateX(40px);
     opacity: 0;
 }
 
@@ -523,4 +521,10 @@ a {
     background-color: rgba(31, 61, 46, 0.85);
     color: #FFF7EF;
     box-shadow: 0 4px 10px rgba(31, 61, 46, 0.2);
+}
+
+/* Hide Edge's default password reveal eye icon and clear button */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear {
+    display: none;
 }

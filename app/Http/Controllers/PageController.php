@@ -112,7 +112,7 @@ class PageController extends Controller
                 $query->withCount('orderItems')->orderBy('order_items_count', 'desc');
                 break;
             default:
-                $query->latest();
+                $query->inRandomOrder();
         }
 
         return [

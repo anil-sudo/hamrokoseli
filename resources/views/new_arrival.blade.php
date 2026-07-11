@@ -28,21 +28,16 @@
                                 New !!!
                             </span>
 
-                            @if($product->vendor)
-                                <div class="absolute top-2 right-2 sm:top-4 sm:right-4 bg-white/95 text-[#1F3D2E] text-[6px] xs:text-[9px] sm:text-[10px] font-bold tracking-wider uppercase px-1.5 py-0.5 sm:px-3 sm:py-1.5 rounded-full shadow-sm z-10">
-                                    {{ $product->vendor->business_name ?? $product->vendor->name }}
-                                </div>
-                            @endif
 
                             <button
-                                class="wishlist-btn absolute bottom-2 right-2 sm:bottom-4 sm:right-4 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-xs sm:text-xl drop-shadow z-10"
+                                class="wishlist-btn absolute bottom-2 right-2 sm:bottom-4 sm:right-4 bg-white/90 hover:bg-white text-[#C65A3A] hover:text-[#b04a2c] w-7 h-7 sm:w-10 sm:h-10 rounded-full shadow-md transition-all flex items-center justify-center z-10 focus:outline-none"
                                 data-product-id="{{ $product->id }}"
                                 data-product-name="{{ $product->name }}"
                                 data-product-price="{{ $product->effectivePrice() }}"
                                 data-product-image="{{ $product->primaryImageUrl() }}"
                                 data-product-desc="{{ $product->description }}"
                                 data-product-category="{{ $product->category?->cat_name }}">
-                                <i class="far fa-heart"></i>
+                                <i class="far fa-heart text-[10px] sm:text-lg"></i>
                             </button>
                         </div>
 
@@ -61,7 +56,7 @@
                                 </span>
                             </div>
 
-                            <div class="flex flex-col xs:flex-row gap-1 sm:gap-2 mt-auto">
+                            <div class="flex flex-row gap-1 sm:gap-2 mt-auto">
                                 <a href="{{ route('viewdetails', $product->slug) }}"
                                    class="view-details-btn flex-grow flex items-center justify-center gap-1 sm:gap-2 bg-[#1F3D2E] hover:bg-[#16301f] text-white text-[8px] sm:text-xs md:text-sm font-semibold py-1.5 px-1 sm:py-3 sm:px-3 rounded-lg sm:rounded-xl shadow-sm hover:shadow transition duration-300"
                                    data-id="{{ $product->id }}"
@@ -73,7 +68,7 @@
                                    data-discount-price="{{ $product->resolvedDiscountPrice() ?? '' }}"
                                    data-image="{{ $product->primaryImageUrl() }}"
                                    data-category="{{ $product->category?->cat_name ?? 'Crafts' }}"
-                                   data-vendor="{{ $product->vendor->business_name ?? $product->vendor->name ?? 'Local Artisan' }}"
+                                   data-vendor="{{ $product->vendor->business_name ?? $product->vendor->name ?? '' }}"
                                    data-desc="{{ $product->description }}"
                                    data-rating="{{ $product->rating ?? 5 }}"
                                    data-reviews="{{ $product->reviews_count ?? 0 }}"

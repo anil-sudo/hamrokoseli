@@ -22,16 +22,30 @@ class VendorRegisterController extends Controller
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:8|confirmed',
-            'phone' => 'required|string|max:20|unique:users,phone',
+            'password' => [
+                'required',
+                'min:8',
+                'confirmed',
+                'regex:/[A-Z]/',
+                'regex:/[a-z]/',
+                'regex:/[0-9]/',
+                'regex:/[\\^$*.\\[\\]{}()?\\-"!@#%&\/\\\\,><\'\':;|_~`+\\=]/',
+            ],
+            'phone' => 'required|digits:10|unique:users,phone',
             'vendor_name' => 'required|string|max:150',
             'owner_name' => 'required|string|max:100',
             'vendor_email' => 'required|email|unique:vendors,email',
-            'vendor_phone' => 'required|string|max:20|unique:vendors,phone',
+            'vendor_phone' => 'required|digits:10|unique:vendors,phone',
             'address' => 'nullable|string',
             'city' => 'nullable|string|max:80',
             'province' => 'nullable|string|max:80',
             'pan_number' => 'nullable|string|max:30|unique:vendors,pan_number',
+        ], [
+            'phone.digits' => 'Personal phone must be exactly 10 digits.',
+            'vendor_phone.digits' => 'Shop phone must be exactly 10 digits.',
+            'password.regex' => 'Password must include at least one uppercase letter, one lowercase letter, one number, and one special character.',
+            'password.min' => 'Password must be at least 8 characters.',
+            'password.confirmed' => 'The password confirmation does not match.',
         ]);
 
         // Create the user and vendor records atomically. If vendor creation

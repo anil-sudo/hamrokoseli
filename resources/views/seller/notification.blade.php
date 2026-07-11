@@ -5,7 +5,7 @@
         <div class="flex flex-col md:flex-row md:items-center md:justify-between items-start gap-4 mb-8">
             <div>
                 <h1 class="text-3xl font-bold text-(--text-color)">Notifications</h1>
-                <p class="text-sm text-(--text-color)/70 mt-1">Stay updated with your orders, payouts, and store activities.</p>
+                <p class="text-sm text-(--text-color)/70 mt-1">Stay updated with your orders and store activities.</p>
             </div>
             @if($notifications->isNotEmpty())
                 <button onclick="markAllAsRead()"
@@ -18,7 +18,7 @@
 
         {{-- Tabs --}}
         <div class="relative flex flex-nowrap bg-(--card-bg) rounded-3xl p-1 shadow-sm overflow-x-auto scrollbar-hide mb-8">
-            @foreach(['all' => 'All', 'orders' => 'Orders', 'payouts' => 'Payouts', 'store' => 'Store'] as $key => $label)
+            @foreach(['all' => 'All', 'orders' => 'Orders', 'store' => 'Store'] as $key => $label)
                 <button onclick="switchTab('{{ $key }}')" data-tab="{{ $key }}"
                     class="tab-button relative z-10 px-5 py-3 sm:px-6 sm:py-3.5 rounded-3xl font-medium text-sm transition-all duration-200 whitespace-nowrap
                         {{ $key === 'all' ? 'bg-(--secondary-color) text-white' : 'text-(--text-dark)' }}">
@@ -36,21 +36,19 @@
                 @php
                     $d = json_decode($notification->message, true) ?? [];
 
-                    $isOrder  = in_array($notification->type, ['order_placed','order_confirmed','order_shipped','order_delivered','order_cancelled','return_requested','return_approved']);
-                    $isPayout = in_array($notification->type, ['payout_processed','payment_received']);
-                    $tab      = $isOrder ? 'orders' : ($isPayout ? 'payouts' : 'store');
+                    $isOrder = in_array($notification->type, ['order_placed','order_confirmed','order_shipped','order_delivered','order_cancelled','return_requested','return_approved','vendor_order_placed']);
+                    $tab     = $isOrder ? 'orders' : 'store';
 
                     $icon = match($notification->type) {
-                        'order_placed'     => 'archive',
-                        'order_confirmed'  => 'package-check',
-                        'order_shipped'    => 'truck',
-                        'order_delivered'  => 'circle-check',
-                        'order_cancelled'  => 'x-circle',
-                        'return_requested' => 'undo-2',
-                        'return_approved'  => 'refresh-ccw',
-                        'payment_received' => 'banknote',
-                        'payout_processed' => 'wallet-cards',
-                        default            => 'bell',
+                        'order_placed'         => 'archive',
+                        'vendor_order_placed'  => 'archive',
+                        'order_confirmed'      => 'package-check',
+                        'order_shipped'        => 'truck',
+                        'order_delivered'      => 'circle-check',
+                        'order_cancelled'      => 'x-circle',
+                        'return_requested'     => 'undo-2',
+                        'return_approved'      => 'refresh-ccw',
+                        default                => 'bell',
                     };
                 @endphp
 
@@ -129,14 +127,8 @@
                             </a>
 
                         @else
-                            {{-- Plain text fallback for payout / store notifications --}}
+                            {{-- Plain text fallback for store notifications --}}
                             <p class="text-sm text-(--text-color)/80 mb-3">{{ $notification->message }}</p>
-                            @if($isPayout)
-                                <a href="{{ route('seller.payment') }}"
-                                    class="inline-flex items-center gap-1 text-(--secondary-color) text-sm font-medium hover:underline">
-                                    View Payment <i data-lucide="arrow-right" class="w-3 h-3"></i>
-                                </a>
-                            @endif
                         @endif
                     </div>
                 </div>

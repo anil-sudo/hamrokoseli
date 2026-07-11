@@ -14,10 +14,33 @@ class PayoutsTable
     {
         return $table
             ->columns([
-                TextColumn::make('vendor.id')
-                    ->searchable(),
-                TextColumn::make('amount')
+                TextColumn::make('vendor.vendor_name')
+                    ->label('Vendor Store')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('type')
+                    ->label('Transaction Type')
+                    ->getStateUsing(function ($record) {
+                        return $record->platform_fee > 0
+                            ? 'Disbursement (Admin to Vendor)'
+                            : 'Commission Payment (Vendor to Admin)';
+                    })
+                    ->badge()
+                    ->color(fn ($state) => str_contains($state, 'Commission') ? 'success' : 'info'),
+                TextColumn::make('gross_amount')
+                    ->label('Gross Amount')
                     ->numeric()
+                    ->money('NPR')
+                    ->sortable(),
+                TextColumn::make('platform_fee')
+                    ->label('Platform Fee')
+                    ->numeric()
+                    ->money('NPR')
+                    ->sortable(),
+                TextColumn::make('amount')
+                    ->label('Amount Paid')
+                    ->numeric()
+                    ->money('NPR')
                     ->sortable(),
                 TextColumn::make('method')
                     ->searchable(),
@@ -28,6 +51,9 @@ class PayoutsTable
                 TextColumn::make('paid_at')
                     ->dateTime()
                     ->sortable(),
+                TextColumn::make('notes')
+                    ->limit(30)
+                    ->searchable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

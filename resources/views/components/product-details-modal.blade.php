@@ -47,9 +47,8 @@
                         <div class="flex items-start gap-3 bg-[#FFF7EF]/50 p-3 rounded-xl border border-[#ebd7be]/30">
                             <i class="fas fa-rotate-left text-[#C65A3A] text-lg mt-0.5"></i>
                             <div>
-                                <h4 class="text-xs font-bold text-[#1F3D2E] uppercase tracking-wide">15-Day Returns</h4>
-                                <p class="text-[10px] text-[#3A2A1F]/60 font-semibold mt-0.5">Easy exchange if not
-                                    satisfied</p>
+                                <h4 class="text-xs font-bold text-[#1F3D2E] uppercase tracking-wide">No Return Policy</h4>
+                                <p class="text-[10px] text-[#3A2A1F]/60 font-semibold mt-0.5">Returns are not accepted</p>
                             </div>
                         </div>
                     </div>
@@ -91,17 +90,17 @@
                     </p>
 
                     <!-- Vendor/Artist Card -->
-                    <div
+                    <div id="modal-vendor-card"
                         class="bg-[#FFF7EF] border border-[#ebd7be]/40 rounded-2xl p-4 flex items-center justify-between shadow-sm">
                         <div class="flex items-center gap-3">
-                            <div
+                            <div id="modal-vendor-avatar"
                                 class="w-10 h-10 rounded-full bg-[#1F3D2E] text-white flex items-center justify-center font-bold text-lg border border-[#ebd7be]">
                                 A
                             </div>
                             <div>
                                 <h3 class="text-xs font-bold text-[#C65A3A] leading-tight" id="modal-vendor-name">
                                     Artist/Store Name</h3>
-                                <p class="text-[10px] text-[#3A2A1F]/60 font-semibold mt-0.5">Master Artisan from Nepal
+                                <p class="text-[10px] text-[#3A2A1F]/60 font-semibold mt-0.5">Verified Seller on Hamro Koseli
                                 </p>
                             </div>
                         </div>
@@ -145,28 +144,19 @@
             <div class="pt-8 border-t border-[#ebd7be]/40 space-y-6">
                 <div class="flex border-b border-[#ebd7be]/40 gap-3 sm:gap-6 overflow-x-auto">
                     <button
-                        class="tab-btn pb-3 text-sm font-bold text-[#C65A3A] border-b-2 border-[#C65A3A] focus:outline-none transition cursor-pointer"
-                        data-tab="details">
+                        class="pb-3 text-sm font-bold text-[#C65A3A] border-b-2 border-[#C65A3A] focus:outline-none transition cursor-default">
                         Product Specifications
-                    </button>
-                    <button
-                        class="tab-btn pb-3 text-sm font-semibold text-[#3A2A1F]/60 hover:text-[#3A2A1F] focus:outline-none transition cursor-pointer"
-                        data-tab="story">
-                        Craftsmanship Story
                     </button>
                 </div>
 
-                <div class="tab-panel text-sm text-[#3A2A1F]/80 leading-relaxed font-medium space-y-3"
-                    data-panel="details">
-                    <p>Detailed material specifications and sizes for this hand-crafted masterpiece. Locally sourced
-                        materials, eco-friendly processing, and traditional furnace/kiln techniques.</p>
+                <div class="tab-panel text-sm text-[#3A2A1F]/80 leading-relaxed font-medium space-y-3">
+                    <p id="modal-product-desc-spec" class="leading-relaxed"></p>
                     <ul class="list-disc pl-5 space-y-1.5 text-xs text-[#3A2A1F]/70">
                         <li><strong>Material:</strong> 100% Authentic Nepalese sourced raw materials</li>
                         <li><strong>Origin:</strong> Hand-crafted by local families under fair trade standards</li>
                         <li><strong>Certification:</strong> Handcrafted Artisan Registry Certified</li>
                     </ul>
                 </div>
-
             </div>
             <!-- Reviews Section -->
             <div class="pt-8 border-t border-[#ebd7be]/40 space-y-6" id="modal-reviews-section">
