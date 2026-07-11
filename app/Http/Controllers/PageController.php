@@ -590,4 +590,9 @@ class PageController extends Controller
     {
         return view('meet-the-team');
     }
+
+    public function suraj_tamang()
+    {
+        return view('Team.suraj-tamang');
+    }
 }

@@ -161,4 +161,5 @@ Route::get('/sitemap.xml', [PageController::class, 'sitemap'])->name('sitemap');
 Route::post('/chatbot/send', [ChatBotController::class, 'send'])->name('chatbot.send');
 
 Route::post('/contact-us', [PageController::class, 'contactusSubmit'])->name('contact-us.submit');
+Route::get('/suraj-tamang', [PageController::class, 'suraj_tamang'])->name('suraj-tamang');
 Route::get('/meet-the-team', [PageController::class, 'meet_the_team'])->name('meet-the-team');
