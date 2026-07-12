@@ -13,6 +13,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserRegisterController;
 use App\Http\Controllers\VendorPasswordResetController;
 use App\Http\Controllers\VendorRegisterController;
+use App\Http\Middleware\EnsureVendor;
 use Illuminate\Support\Facades\Route;
 
 // ─── Seller Auth (guest only, rate limited) ───────────────────────────────────
@@ -30,7 +31,7 @@ Route::middleware(['guest:vendor', 'throttle:auth'])->group(function () {
 Route::post('/seller-logout', [SellerController::class, 'logout'])->name('seller.logout');
 
 // ─── Seller profile & password (auth protected — fix #3) ─────────────────────
-Route::middleware(['auth', \App\Http\Middleware\EnsureVendor::class])->group(function () {
+Route::middleware(['auth', EnsureVendor::class])->group(function () {
     Route::get('/seller-dashboard', [SellerController::class, 'dashboard'])->name('dashboard');
     Route::get('/product-management', [SellerController::class, 'product_management'])->name('product-management');
     Route::get('/create-product', [SellerController::class, 'productCreate'])->name('product-create');

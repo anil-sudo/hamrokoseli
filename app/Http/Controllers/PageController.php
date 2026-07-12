@@ -7,7 +7,9 @@ use App\Models\Category;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Review;
+use App\Models\Setting;
 use App\Models\Vendor;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -206,13 +208,13 @@ class PageController extends Controller
             ->take(6)
             ->get();
 
-        $dealEndsAt = \App\Models\Setting::getValue('todays_deal_ends_at');
+        $dealEndsAt = Setting::getValue('todays_deal_ends_at');
         if ($dealEndsAt) {
-            $dealEndsAt = \Carbon\Carbon::parse($dealEndsAt)->toIso8601String();
+            $dealEndsAt = Carbon::parse($dealEndsAt)->toIso8601String();
         } else {
             $dealEndsAt = now()->endOfDay()->toIso8601String();
         }
-        $dealBgImage = \App\Models\Setting::getValue('deal_countdown_bg_image');
+        $dealBgImage = Setting::getValue('deal_countdown_bg_image');
 
         return view('todays-deals', compact('products', 'categories', 'featuredDeals', 'trendingProducts', 'dealEndsAt', 'dealBgImage'));
     }

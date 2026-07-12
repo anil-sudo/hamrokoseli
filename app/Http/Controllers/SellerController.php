@@ -9,8 +9,10 @@ use App\Models\Payment;
 use App\Models\Payout;
 use App\Models\Product;
 use App\Models\Review;
+use App\Models\Setting;
 use App\Models\SupportTicket;
 use App\Services\NotificationService;
+use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -182,13 +184,13 @@ class SellerController extends Controller
             ->take(5)
             ->get();
 
-        $dealEndsAt = \App\Models\Setting::getValue('todays_deal_ends_at');
+        $dealEndsAt = Setting::getValue('todays_deal_ends_at');
         if ($dealEndsAt) {
-            $dealEndsAt = \Carbon\Carbon::parse($dealEndsAt)->toIso8601String();
+            $dealEndsAt = Carbon::parse($dealEndsAt)->toIso8601String();
         } else {
             $dealEndsAt = now()->endOfDay()->toIso8601String();
         }
-        $dealBgImage = \App\Models\Setting::getValue('deal_countdown_bg_image');
+        $dealBgImage = Setting::getValue('deal_countdown_bg_image');
 
         return view('seller.dashboard', compact('vendor', 'stats', 'salesTrend', 'recentItems', 'dealEndsAt', 'dealBgImage'));
     }

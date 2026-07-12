@@ -3,11 +3,11 @@
 namespace App\Filament\Resources\Settings\Schemas;
 
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\TextInput;
 // use Filament\Forms\Get;
-use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
 
 class SettingForm
@@ -37,12 +37,12 @@ class SettingForm
                     ->image()
                     ->disk('public')
                     ->directory('settings')
-                    ->visible(fn (Get $get) => !Str::contains($get('key') ?? '', ['date', 'time', '_at']) && Str::contains($get('key') ?? '', ['image', 'bg', 'logo', 'icon', 'pic'])),
-                    
+                    ->visible(fn (Get $get) => ! Str::contains($get('key') ?? '', ['date', 'time', '_at']) && Str::contains($get('key') ?? '', ['image', 'bg', 'logo', 'icon', 'pic'])),
+
                 TextInput::make('value')
                     ->label('Setting Value (Text)')
                     ->required()
-                    ->visible(fn (Get $get) => $get('key') !== null && !Str::contains($get('key') ?? '', ['date', 'time', '_at', 'image', 'bg', 'logo', 'icon', 'pic'])),
+                    ->visible(fn (Get $get) => $get('key') !== null && ! Str::contains($get('key') ?? '', ['date', 'time', '_at', 'image', 'bg', 'logo', 'icon', 'pic'])),
             ]);
     }
 }
