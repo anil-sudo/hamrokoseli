@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>HamroKoseli - Suraj Tamang</title>
+    <title>HamroKoseli - Anil Shrestha</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
         integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
@@ -30,7 +30,7 @@
 
                     <div class="rounded-[40px] overflow-hidden bg-[#d6f5e0]">
 
-                        <img src="{{ asset('images/suraj tamang.png') }}" alt="suraj tamang"
+                        <img src="{{ asset('images/anil shrestha.png') }}" alt="anil shrestha"
                             class="w-full h-[500px] md:h-[700px] object-cover">
 
                     </div>
@@ -43,10 +43,10 @@
 
 
                     <h1 class="mt-4 text-4xl md:text-6xl font-serif text-[#3A2A1F]">
-                        Suraj Tamang</h1>
+                        Anil Shrestha</h1>
 
                     <p class="mt-4 text-xl text-[#807870]">
-                        UI/UX & Frontend Developer
+                        Team Lead & Backend Developer
                     </p>
 
                     <!-- Contribution -->
@@ -58,9 +58,9 @@
                         </h2>
 
                         <p class="mt-3 text-[#8E8376] leading-8">
-                            Designed user interfaces and
-                            implemented responsive frontend
-                            components throughout Hamro Koseli.
+                            Team coordination,
+                            Backend architecture,
+                            Database implementation.
                         </p>
 
                     </div>
@@ -74,7 +74,7 @@
                         </h2>
 
                         <p class="mt-1 text-[#8E8376] leading-8">
-                            UI/UX Design
+                            Successfully managed development workflow and backend integration.
                         </p>
 
                     </div>
@@ -88,7 +88,7 @@
                         </h2>
 
                         <p class="mt-1 text-[#8E8376] leading-8">
-                            Frontend Developer
+                            Lead large-scale software development projects.
                         </p>
 
                     </div>
@@ -102,7 +102,7 @@
                         </h2>
 
                         <p class="mt-1 text-[#8E8376] leading-8">
-                            Reading Books
+                            Coding and problem-solving.
                         </p>
 
                     </div>

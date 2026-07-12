@@ -161,5 +161,10 @@ Route::get('/sitemap.xml', [PageController::class, 'sitemap'])->name('sitemap');
 Route::post('/chatbot/send', [ChatBotController::class, 'send'])->name('chatbot.send');
 
 Route::post('/contact-us', [PageController::class, 'contactusSubmit'])->name('contact-us.submit');
-Route::get('/suraj-tamang', [PageController::class, 'suraj_tamang'])->name('suraj-tamang');
 Route::get('/meet-the-team', [PageController::class, 'meet_the_team'])->name('meet-the-team');
+Route::get('/suraj-tamang', [PageController::class, 'suraj_tamang'])->name('suraj-tamang');
+Route::get('/aashutosh-baral', [PageController::class, 'aashutosh_baral'])->name('aashutosh-baral');
+Route::get('/rajmangal-rajak', [PageController::class, 'rajmangal_rajak'])->name('rajmangal-rajak');
+Route::get('/anil-shrestha', [PageController::class, 'anil_shrestha'])->name('anil-shrestha');
+Route::get('/babisha-katwal', [PageController::class, 'babisha_katwal'])->name('babisha-katwal');
+Route::get('/nishan-rai', [PageController::class, 'nishan_rai'])->name('nishan-rai');

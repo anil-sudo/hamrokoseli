@@ -595,4 +595,29 @@ class PageController extends Controller
     {
         return view('Team.suraj-tamang');
     }
+
+    public function aashutosh_baral()
+    {
+        return view('Team.aashutosh-baral');
+    }
+
+    public function rajmangal_rajak()
+    {
+        return view('Team.rajmangal-rajak');
+    }
+
+    public function anil_shrestha()
+    {
+        return view('Team.anil-shrestha');
+    }
+
+    public function babisha_katwal()
+    {
+        return view('Team.babisha-katwal');
+    }
+
+    public function nishan_rai()
+    {
+        return view('Team.nishan-rai');
+    }
 }

@@ -141,13 +141,14 @@
 
             <!-- CARD 2 -->
 
-            <a href="{{ url('/team/anil-shrestha') }}" class="group">
+            <a href="{{ url('anil-shrestha') }}" class="group">
 
                 <div class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition">
 
                     <div class="h-100 bg-[#F5E8D6] flex items-center justify-center">
 
                         <img src="https://placehold.co/400x500"
+                            alt="Anil Shrestha"
                             class="h-full w-full object-cover">
 
                     </div>
@@ -166,7 +167,7 @@
 
             <!-- CARD 3 -->
 
-            <a href="{{ url('/team/nishan-rai') }}" class="group">
+            <a href="{{ url('nishan-rai') }}" class="group">
 
                 <div class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition">
 
@@ -191,7 +192,7 @@
 
             <!-- CARD 4 -->
 
-            <a href="{{ url('/team/babisha-katwal') }}" class="group">
+            <a href="{{ url('babisha-katwal') }}" class="group">
 
                 <div class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition">
 
@@ -216,14 +217,14 @@
 
             <!-- CARD 5 -->
 
-            <a href="{{ url('/team/aashutosh-baral') }}" class="group">
+            <a href="{{ url('aashutosh-baral') }}" class="group">
 
                 <div class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition">
 
                     <div class="h-100 bg-[#F5E8D6]">
 
-                        <img src="https://placehold.co/400x500"
-                            class="h-full w-full object-cover">
+                        <img src="{{asset('images/aashutosh baral.png')}}"
+                            class="h-full w-full object-top object-cover">
 
                     </div>
 
@@ -241,7 +242,7 @@
 
             <!-- CARD 6 -->
 
-            <a href="{{ url('/team/rajmangal-rajak') }}" class="group">
+            <a href="{{ url('rajmangal-rajak') }}" class="group">
 
                 <div class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition">
 

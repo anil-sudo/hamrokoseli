@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>HamroKoseli - Suraj Tamang</title>
+    <title>HamroKoseli - Aashutosh Baral</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
         integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
@@ -30,7 +30,7 @@
 
                     <div class="rounded-[40px] overflow-hidden bg-[#d6f5e0]">
 
-                        <img src="{{ asset('images/suraj tamang.png') }}" alt="suraj tamang"
+                        <img src="{{ asset('images/aashutosh baral.png') }}" alt="aashutosh baral"
                             class="w-full h-[500px] md:h-[700px] object-cover">
 
                     </div>
@@ -43,10 +43,10 @@
 
 
                     <h1 class="mt-4 text-4xl md:text-6xl font-serif text-[#3A2A1F]">
-                        Suraj Tamang</h1>
+                        Aashutosh Baral</h1>
 
                     <p class="mt-4 text-xl text-[#807870]">
-                        UI/UX & Frontend Developer
+                        Full Stack Developer
                     </p>
 
                     <!-- Contribution -->
@@ -58,9 +58,9 @@
                         </h2>
 
                         <p class="mt-3 text-[#8E8376] leading-8">
-                            Designed user interfaces and
-                            implemented responsive frontend
-                            components throughout Hamro Koseli.
+                            Backend development,
+                            Database optimization,
+                            throughout Hamro Koseli.
                         </p>
 
                     </div>
@@ -74,7 +74,7 @@
                         </h2>
 
                         <p class="mt-1 text-[#8E8376] leading-8">
-                            UI/UX Design
+                            Built reliable backend features supporting marketplace operations.
                         </p>
 
                     </div>
@@ -88,7 +88,7 @@
                         </h2>
 
                         <p class="mt-1 text-[#8E8376] leading-8">
-                            Frontend Developer
+                            Become a backend architect specializing in system design.
                         </p>
 
                     </div>
@@ -102,7 +102,7 @@
                         </h2>
 
                         <p class="mt-1 text-[#8E8376] leading-8">
-                            Reading Books
+                            Reading technology blogs and coding.
                         </p>
 
                     </div>
