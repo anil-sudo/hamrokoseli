@@ -122,7 +122,7 @@
                     <div class="h-100 bg-[#F5E8D6] flex items-center justify-center ">
 
                         <img
-                            src="{{ asset('images/suraj tamang.png') }}"
+                            src="{{ asset('images/Suraj Tamang.png') }}"
                             alt="Suraj Tamang"
                             class="h-full w-full object-top object-cover">
 
@@ -148,7 +148,7 @@
 
                     <div class="h-100 bg-[#F5E8D6] flex items-center justify-center">
 
-                        <img src="{{ asset('images/anil shrestha.png') }}"
+                        <img src="{{ asset('images/AnilShrestha.png') }}"
                             alt="Anil Shrestha"
                             class="h-full w-full object-cover">
 
@@ -199,7 +199,7 @@
 
                     <div class="h-100 bg-[#F5E8D6]">
 
-                        <img src="{{asset('images/babisha katwal.png')}}"
+                        <img src="{{asset('images/Babisha Katwal.png')}}"
                             class="h-full w-full object-cover">
 
                     </div>
@@ -224,7 +224,7 @@
 
                     <div class="h-100 bg-[#F5E8D6]">
 
-                        <img src="{{asset('images/aashutosh baral.png')}}"
+                        <img src="{{asset('images/Aashutosh Baral.png')}}"
                             class="h-full w-full object-top object-cover">
 
                     </div>
@@ -249,7 +249,7 @@
 
                     <div class="h-100 bg-[#F5E8D6]">
 
-                        <img src="{{asset('images/rajmangal rajak.png')}}"
+                        <img src="{{asset('images/Rajmangal Rajak.png')}}"
                             class="h-full w-full object-cover">
 
                     </div>

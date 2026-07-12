@@ -30,7 +30,7 @@
 
                     <div class="rounded-[40px] overflow-hidden bg-[#d6f5e0]">
 
-                        <img src="{{ asset('images/anil shrestha.png') }}" alt="anil shrestha"
+                        <img src="{{ asset('images/AnilShrestha.png') }}" alt="anil shrestha"
                             class="w-full h-[500px] md:h-[700px] object-cover">
 
                     </div>
@@ -112,18 +112,18 @@
                     <div class="mt-10 flex flex-wrap gap-1">
 
                         <!--LinkedIn-->
-                        <a href="" class="px-5 py-3 text-2xl">
+                        <a href="https://np.linkedin.com/in/stha-anil" class="px-5 py-3 text-2xl">
 
                             <i class="fa-brands fa-square-linkedin"></i>
                         </a>
 
                         <!--Instagram-->
-                        <a href="" class="px-5 py-3 text-2xl">
+                        <a href="https://www.instagram.com/anilstha662/" class="px-5 py-3 text-2xl">
                             <i class="fa-brands fa-instagram"></i>
                         </a>
 
                         <!--Portfolio-->
-                        <a href="" class="px-5 py-3 rounded-xl text-2xl">
+                        <a href="https://www.stha-anil.com.np" class="px-5 py-3 rounded-xl text-2xl">
                             <i class="fa-solid fa-briefcase"></i>
                         </a>
 

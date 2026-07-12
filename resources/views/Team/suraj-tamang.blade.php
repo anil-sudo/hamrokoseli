@@ -30,7 +30,7 @@
 
                     <div class="rounded-[40px] overflow-hidden bg-[#d6f5e0]">
 
-                        <img src="{{ asset('images/suraj tamang.png') }}" alt="suraj tamang"
+                        <img src="{{ asset('images/Suraj Tamang.png') }}" alt="suraj tamang"
                             class="w-full h-[500px] md:h-[700px] object-cover">
 
                     </div>

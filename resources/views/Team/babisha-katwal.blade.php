@@ -30,7 +30,7 @@
 
                     <div class="rounded-[40px] overflow-hidden bg-[#d6f5e0]">
 
-                        <img src="{{ asset('images/babisha katwal.png') }}" alt="babisha katwal"
+                        <img src="{{ asset('images/Babisha Katwal.png') }}" alt="babisha katwal"
                             class="w-full h-[500px] md:h-[700px] object-cover">
 
                     </div>
