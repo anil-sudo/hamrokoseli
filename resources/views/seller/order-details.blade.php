@@ -1,4 +1,4 @@
-<x-seller_layout title="Order Management" searchPlaceholder="Search by Order ID or Customer...">
+<x-seller_layout title="Order Details" searchPlaceholder="Search by Order ID or Customer...">
 
     @php
         $customer = $order->user;

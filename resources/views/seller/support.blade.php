@@ -1,4 +1,4 @@
-<x-seller_layout title="Edit Product">
+<x-seller_layout title="Support">
     <div class="space-y-10">
         <!-- Header -->
         <div class="text-center mt-10 mb-12">

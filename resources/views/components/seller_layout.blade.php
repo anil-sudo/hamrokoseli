@@ -53,7 +53,7 @@
         <div class="flex-1 md:ml-72 flex flex-col min-w-0 h-screen">
 
             <!-- TOPBAR (ONLY ONE HEADER) -->
-            <x-seller_topbar :searchPlaceholder="$searchPlaceholder ?? null" />
+            <x-seller_topbar :title="$title ?? 'Dashboard'" />
 
             <!-- MOBILE SAFE SPACE -->
             <main class="p-4 pt-6 md:px-8 overflow-y-auto flex-1">
@@ -67,32 +67,6 @@
 
     <script>
         lucide.createIcons();
-    </script>
-
-    <script>
-        const Toast = Swal.mixin({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-        });
-
-        @if(session('success'))
-            Toast.fire({ icon: 'success', title: '{{ session('success') }}' });
-        @endif
-
-        @if(session('error'))
-            Toast.fire({ icon: 'error', title: '{{ session('error') }}' });
-        @endif
-
-        @if(session('warning'))
-            Toast.fire({ icon: 'warning', title: '{{ session('warning') }}' });
-        @endif
-
-        @if(session('info'))
-            Toast.fire({ icon: 'info', title: '{{ session('info') }}' });
-        @endif
     </script>
 </body>
 

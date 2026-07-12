@@ -5,15 +5,11 @@
             <i data-lucide="menu" class="text-xl"></i>
         </button>
 
-        {{-- Search Bar --}}
-        <div class="flex-1 min-w-0 md:max-w-md">
-            <div class="relative bg-(--text-light) rounded-full">
-                <i data-lucide="search" class="h-5 w-5 absolute left-3 top-1/2 -translate-y-1/2 text-(--text-color)"></i>
-                <input type="text" id="seller-search-input" value="{{ request('search') }}"
-                    placeholder="{{ $searchPlaceholder ?? 'Search...' }}"
-                    onkeydown="if(event.key==='Enter'){event.preventDefault(); if(window.sellerSearchHandler){window.sellerSearchHandler(this.value);}}"
-                    class="w-full py-2 pl-10 pr-4 text-sm rounded-full focus:outline-none">
-            </div>
+        <!-- Title -->
+        <div class="flex-1 md:flex-none">
+            <h1 class="text-xl md:text-2xl font-semibold text-[#FFF7EF] tracking-tight">
+                {{ $title ?? 'Dashboard' }}
+            </h1>
         </div>
 
         {{-- Right Icons --}}
@@ -64,3 +60,4 @@
         </div>
     </div>
 </header>
+
