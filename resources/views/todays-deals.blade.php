@@ -70,7 +70,7 @@
             <div class="max-w-7xl mx-auto">
                 <div class="flex justify-between items-center mb-8">
                     <div class="flex items-center gap-3">
-                        <h2 class="text-2xl font-bold text-[#181c1e] font-['Plus_Jakarta_Sans']">Alart Today's Deals</h2>
+                        <h2 class="text-2xl font-bold text-[#181c1e] font-['Plus_Jakarta_Sans']">Alert Today's Deals</h2>
                     </div>
                 </div>
 
