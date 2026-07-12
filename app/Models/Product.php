@@ -16,7 +16,7 @@ class Product extends Model
         'vendor_id', 'category_id', 'name', 'slug',
         'product_type', 'description', 'specifications',
         'price', 'discount_price', 'stock', 'sku',
-        'image', 'status',
+        'image', 'status', 'todays_deal_date',
     ];
 
     protected function casts(): array
@@ -26,6 +26,7 @@ class Product extends Model
             'discount_price' => 'decimal:2',
             'stock' => 'integer',
             'specifications' => 'array',
+            'todays_deal_date' => 'date',
         ];
     }
 

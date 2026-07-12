@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Setting;
 use App\Models\User;
 use App\Models\Vendor;
 use Illuminate\Database\Seeder;
@@ -54,6 +55,18 @@ class DatabaseSeeder extends Seeder
                 'province' => 'Bagmati',
                 'status' => 'active',
             ]
+        );
+
+        // Seed default deal countdown time
+        Setting::updateOrCreate(
+            ['key' => 'todays_deal_ends_at'],
+            ['value' => now()->addHours(24)->toDateTimeString()]
+        );
+
+        // Seed default deal background image setting
+        Setting::updateOrCreate(
+            ['key' => 'deal_countdown_bg_image'],
+            ['value' => null]
         );
     }
 }
