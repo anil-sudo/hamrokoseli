@@ -14,11 +14,25 @@ function showToast(message, type = 'error') {
 }
 
 // ==================== SPECIFICATIONS ====================
-let specIndex = 0;
-
 function addSpecification() {
     const container = document.getElementById('specifications');
     if (!container) return;
+
+    // Determine the next index based on existing inputs in the DOM
+    let maxIndex = -1;
+    container.querySelectorAll('.spec-row input').forEach(input => {
+        const name = input.getAttribute('name');
+        if (name) {
+            const match = name.match(/specifications\[(\d+)\]/);
+            if (match) {
+                const idx = parseInt(match[1], 10);
+                if (idx > maxIndex) {
+                    maxIndex = idx;
+                }
+            }
+        }
+    });
+    const specIndex = maxIndex + 1;
 
     const row = document.createElement('div');
     row.className = 'flex gap-3 items-center spec-row';
@@ -33,7 +47,6 @@ function addSpecification() {
         </button>
     `;
     container.appendChild(row);
-    specIndex++;
     if (typeof lucide !== 'undefined') lucide.createIcons();
 }
 

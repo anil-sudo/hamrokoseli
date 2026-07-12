@@ -1,4 +1,4 @@
-<x-seller_layout title="Edit Product">
+<x-seller_layout title="Create Ticket">
     <div class="space-y-10">
         <!-- Back Button -->
         <a href="{{ route('seller-support') }}"
