@@ -43,6 +43,23 @@ class Category extends Model
     }
 
     // -------------------------------------------------------------------------
+    // Attribute Mutators
+    // -------------------------------------------------------------------------
+
+    /**
+     * Validate parent_cat_id before setting. If the parent doesn't exist, set to null.
+     */
+    public function setParentCatIdAttribute($value): void
+    {
+        if (!is_null($value)) {
+            $exists = static::where('id', $value)->exists();
+            $this->attributes['parent_cat_id'] = $exists ? $value : null;
+        } else {
+            $this->attributes['parent_cat_id'] = null;
+        }
+    }
+
+    // -------------------------------------------------------------------------
     // Relationships
     // -------------------------------------------------------------------------
 
