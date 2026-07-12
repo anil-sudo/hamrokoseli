@@ -16,7 +16,7 @@ class Category extends Model
         static::creating(function ($category) {
             // If a parent ID is provided but does not correspond to an existing category,
             // treat the category as a root by null‑ing the parent reference.
-            if (!is_null($category->parent_cat_id)) {
+            if (! is_null($category->parent_cat_id)) {
                 $exists = static::where('id', $category->parent_cat_id)->exists();
                 if (! $exists) {
                     $category->parent_cat_id = null;
@@ -51,7 +51,7 @@ class Category extends Model
      */
     public function setParentCatIdAttribute($value): void
     {
-        if (!is_null($value)) {
+        if (! is_null($value)) {
             $exists = static::where('id', $value)->exists();
             $this->attributes['parent_cat_id'] = $exists ? $value : null;
         } else {
