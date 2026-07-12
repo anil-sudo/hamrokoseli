@@ -46,7 +46,7 @@
                         Aashutosh Baral</h1>
 
                     <p class="mt-4 text-xl text-[#807870]">
-                        Database & Backend Support
+                        Database & Frontend and Backend Support
                     </p>
 
                     <!-- Contribution -->
