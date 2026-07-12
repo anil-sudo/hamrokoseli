@@ -24,7 +24,7 @@
                 <div class="space-y-4">
                     <h4 class="text-s font-bold uppercase tracking-widest text-[#b55b3d]">QUICK LINK</h4>
                     <ul class="flex flex-col space-y-2.5 text-sm">
-                        <li><a href="{{ url('home') }}"
+                        <li><a href="{{ url('/') }}"
                                 class="text-slate-300 hover:text-white transition-colors">Home</a></li>
                         <li><a href="{{ url('shop') }}"
                                 class="text-slate-300 hover:text-white transition-colors">Shop</a></li>
