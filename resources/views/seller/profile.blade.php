@@ -1,4 +1,4 @@
-<x-seller_layout title="Seller Profile">
+<x-seller_layout title="Profile">
     <div class="space-y-10">
         <!-- Header -->
         <div>

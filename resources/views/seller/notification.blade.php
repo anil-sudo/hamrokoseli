@@ -1,4 +1,4 @@
-<x-seller_layout title="Seller Notification">
+<x-seller_layout title="Notification">
     <div class="space-y-10">
 
         {{-- Header --}}
