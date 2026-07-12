@@ -234,11 +234,11 @@
                         </p>
 
                         <p class="mt-2 text-[#8E8376]">
-                            Email: support@hamrokoseli.com
+                            Email: hamrokoseli06@gmail.com
                         </p>
 
                         <p class="text-[#8E8376]">
-                            Phone: +977-XXXXXXXXXX
+                            Phone: +977-9872273268
                         </p>
 
                         <p class="text-[#8E8376]">

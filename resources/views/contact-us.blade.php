@@ -32,7 +32,7 @@
                     </h3>
 
                     <p class="mt-3 text-[#8E8376]">
-                        support@hamrokoseli.com
+                        hamrokoseli06@gmail.com
                     </p>
                 </div>
 
@@ -42,7 +42,7 @@
                     </h3>
 
                     <p class="mt-3 text-[#8E8376]">
-                        +977-XXXXXXXXXX
+                        +977-9872273268
                     </p>
                 </div>
 
@@ -240,7 +240,7 @@
                     </h3>
 
                     <p class="mt-3 text-[#8E8376]">
-                        eSewa, Khalti, Fonepay, Bank Transfer, and COD.
+                        eSewa, Khalti, and COD.
                     </p>
                 </div>
 

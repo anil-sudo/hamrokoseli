@@ -79,7 +79,7 @@
 
                     <p class="leading-8">
                         Hamro Koseli supports Cash on Delivery (COD), eSewa,
-                        Khalti, Fonepay, and Bank Transfer. We do not store
+                        and Khalti. We do not store
                         complete payment credentials. Payment processing is
                         handled by trusted third-party providers.
                     </p>
@@ -167,8 +167,8 @@
                             <strong>Hamro Koseli Pvt. Ltd.</strong>
                         </p>
 
-                        <p>Email: support@hamrokoseli.com</p>
-                        <p>Phone: +977-XXXXXXXXXX</p>
+                        <p>Email: hamrokoseli06@gmail.com</p>
+                        <p>Phone: +977-9872273268</p>
                         <p>Address: Kathmandu, Nepal</p>
                     </div>
                 </div>

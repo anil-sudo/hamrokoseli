@@ -87,9 +87,9 @@
         <div
             class="flex flex-col md:flex-row items-center justify-between gap-3 md:gap-6 mt-8 md:mt-16 pt-6 md:pt-8 border-t border-slate-700/30">
             <p class="text-xs text-slate-400 text-center md:text-left">
-                &copy; 2024 HamroKoseli. Preserving Nepalese heritage through authentic craftsmanship.
+                &copy; 2026 HamroKoseli. Preserving Nepalese heritage through authentic craftsmanship.
             </p>
-            <div class="flex items-center space-x-6">
+            {{-- <div class="flex items-center space-x-6">
                 <a href="#" class="text-[#b55b3d] hover:text-[#a04e33] transition-colors text-lg">
                     <i class="fa-solid fa-globe"></i>
                 </a>
@@ -99,7 +99,7 @@
                 <a href="#" class="text-[#b55b3d] hover:text-[#a04e33] transition-colors text-lg">
                     <i class="fa-brands fa-instagram"></i>
                 </a>
-            </div>
+            </div> --}}
         </div>
     </div>
 </footer>
