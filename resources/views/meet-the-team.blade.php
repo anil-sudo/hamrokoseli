@@ -7,6 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Meet The Team - Hamro Koseli</title>
 
+    <link rel="icon" type="image/png" href="{{ asset('images/Simplified logo.png') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -147,7 +148,7 @@
 
                     <div class="h-100 bg-[#F5E8D6] flex items-center justify-center">
 
-                        <img src="https://placehold.co/400x500"
+                        <img src="{{ asset('images/anil shrestha.png') }}"
                             alt="Anil Shrestha"
                             class="h-full w-full object-cover">
 
@@ -173,8 +174,8 @@
 
                     <div class="h-100 bg-[#F5E8D6] flex items-center justify-center">
 
-                        <img src="https://placehold.co/400x500"
-                            class="h-full w-full object-cover">
+                        <img src="{{ asset('images/Nishan Rai.png') }}"
+                            class="h-full w-full object-top object-cover">
 
                     </div>
 
@@ -248,7 +249,7 @@
 
                     <div class="h-100 bg-[#F5E8D6]">
 
-                        <img src="https://placehold.co/400x500"
+                        <img src="{{asset('images/rajmangal rajak.png')}}"
                             class="h-full w-full object-cover">
 
                     </div>
