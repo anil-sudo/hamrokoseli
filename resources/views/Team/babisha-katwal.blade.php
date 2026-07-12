@@ -46,7 +46,7 @@
                         Babisha Katwal</h1>
 
                     <p class="mt-4 text-xl text-[#807870]">
-                        Full Stack Developer
+                        Vendor side Frontend & UI/UX
                     </p>
 
                     <!-- Contribution -->
@@ -58,10 +58,9 @@
                         </h2>
 
                         <p class="mt-3 text-[#8E8376] leading-8">
-                            UI/UX design,
-                            Frontend implementation,
-                            Backend support
-                            components throughout Hamro Koseli.
+                            Designed UI/UX,
+                            Implemented vendor packages, frontend layouts and backend support
+                            throughout Hamro Koseli.
                         </p>
 
                     </div>
@@ -89,7 +88,7 @@
                         </h2>
 
                         <p class="mt-1 text-[#8E8376] leading-8">
-                            Become a versatile full-stack developer and product designer.
+                            Become a versatile full-stack developer.
                         </p>
 
                     </div>

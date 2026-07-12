@@ -46,7 +46,7 @@
                         Aashutosh Baral</h1>
 
                     <p class="mt-4 text-xl text-[#807870]">
-                        Full Stack Developer
+                        Database & Backend Support
                     </p>
 
                     <!-- Contribution -->
@@ -58,7 +58,7 @@
                         </h2>
 
                         <p class="mt-3 text-[#8E8376] leading-8">
-                            Backend development,
+                            Worked on backend development,
                             Database optimization,
                             throughout Hamro Koseli.
                         </p>

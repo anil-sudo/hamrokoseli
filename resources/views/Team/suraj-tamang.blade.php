@@ -46,7 +46,7 @@
                         Suraj Tamang</h1>
 
                     <p class="mt-4 text-xl text-[#807870]">
-                        UI/UX & Frontend Developer
+                        UI/UX & Frontend Support
                     </p>
 
                     <!-- Contribution -->
@@ -74,7 +74,7 @@
                         </h2>
 
                         <p class="mt-1 text-[#8E8376] leading-8">
-                            UI/UX Design
+                            Designed the user experience and frontend layouts of Hamro Koseli.
                         </p>
 
                     </div>
@@ -88,7 +88,7 @@
                         </h2>
 
                         <p class="mt-1 text-[#8E8376] leading-8">
-                            Frontend Developer
+                            Become a Full-Stack Mobile app developer and Product Designer.
                         </p>
 
                     </div>
@@ -102,7 +102,7 @@
                         </h2>
 
                         <p class="mt-1 text-[#8E8376] leading-8">
-                            Reading Books
+                            Creative exploration, learning new technologies, Sketching and Designing.
                         </p>
 
                     </div>

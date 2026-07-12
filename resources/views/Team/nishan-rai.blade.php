@@ -46,7 +46,7 @@
                         Nishan Rai</h1>
 
                     <p class="mt-4 text-xl text-[#807870]">
-                        Full Stack Developer
+                        Frontend & Backend
                     </p>
 
                     <!-- Contribution -->
@@ -58,10 +58,7 @@
                         </h2>
 
                         <p class="mt-3 text-[#8E8376] leading-8">
-                            UI/UX design,
-                            Frontend implementation,
-                            Backend support
-                            throughout Hamro Koseli.
+                            Supported in both frontend and backend development, ensuring smooth functionality and user experience throughout Hamro Koseli.
                         </p>
 
                     </div>
@@ -89,7 +86,7 @@
                         </h2>
 
                         <p class="mt-1 text-[#8E8376] leading-8">
-                            Become a versatile full-stack developer and product designer.
+                            Become a software engineer focused on scalable systems.
                         </p>
 
                     </div>
@@ -103,7 +100,7 @@
                         </h2>
 
                         <p class="mt-1 text-[#8E8376] leading-8">
-                            Designing interfaces and creative exploration.
+                            Gaming and experimenting with new frameworks.
                         </p>
 
                     </div>

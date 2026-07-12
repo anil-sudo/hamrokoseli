@@ -46,7 +46,7 @@
                         Anil Shrestha</h1>
 
                     <p class="mt-4 text-xl text-[#807870]">
-                        Team Lead & Backend Developer
+                        Team Lead & Backend
                     </p>
 
                     <!-- Contribution -->
@@ -58,9 +58,9 @@
                         </h2>
 
                         <p class="mt-3 text-[#8E8376] leading-8">
-                            Team coordination,
-                            Backend architecture,
-                            Database implementation.
+                            Handled team coordination,
+                            created Backend architecture and
+                            Database implementation throughout Hamro Koseli.
                         </p>
 
                     </div>
@@ -88,7 +88,7 @@
                         </h2>
 
                         <p class="mt-1 text-[#8E8376] leading-8">
-                            Lead large-scale software development projects.
+                            Become a Lead developer for large-scale software development projects.
                         </p>
 
                     </div>

@@ -46,7 +46,7 @@
                         Rajmangal Rajak</h1>
 
                     <p class="mt-4 text-xl text-[#807870]">
-                        Full Stack Developer
+                        Testing & Backend Support
                     </p>
 
                     <!-- Contribution -->
@@ -58,8 +58,8 @@
                         </h2>
 
                         <p class="mt-3 text-[#8E8376] leading-8">
-                            Backend development,
-                            Testing and quality assurance,
+                            Backend support,
+                            Testing and quality assurance
                             throughout Hamro Koseli.
                         </p>
 
