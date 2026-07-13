@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', function () {
     const categoryPills = document.querySelectorAll('.filter-pill');
     const productCards = document.querySelectorAll('.product-card');
@@ -160,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const countdownEl = document.getElementById('deal-countdown');
     const dealEndsAt = countdownEl ? countdownEl.getAttribute('data-ends-at') : null;
-    const endTime = dealEndsAt ? new Date(dealEndsAt.replace(' ', 'T')).getTime() : (new Date().getTime() + (8 * 60 * 60 * 1000));
+    const endTime = dealEndsAt ? new Date(dealEndsAt).getTime() : (new Date().getTime() + (8 * 60 * 60 * 1000));
 
     function updateCountdown() {
 

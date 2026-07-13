@@ -208,13 +208,17 @@ class PageController extends Controller
             ->take(6)
             ->get();
 
-        $dealEndsAt = Setting::getValue('todays_deal_ends_at');
+        $dealEndsAt = Setting::getValue('date');
         if ($dealEndsAt) {
-            $dealEndsAt = Carbon::parse($dealEndsAt)->toIso8601String();
+            $dealEndsAt = Carbon::parse($dealEndsAt, config('app.timezone'))->toIso8601String();
         } else {
             $dealEndsAt = now()->endOfDay()->toIso8601String();
         }
-        $dealBgImage = Setting::getValue('deal_countdown_bg_image');
+        $dealBgImage = Setting::getValue('banner_image');
+        if ($dealBgImage) {
+            // Strip any accidental leading "storage/" prefix Filament may save
+            $dealBgImage = preg_replace('#^storage/#', '', $dealBgImage);
+        }
 
         return view('todays-deals', compact('products', 'categories', 'featuredDeals', 'trendingProducts', 'dealEndsAt', 'dealBgImage'));
     }

@@ -5,10 +5,12 @@
     <main class="bg-[#f2eae1] min-h-screen">
 
         <!-- Hero Section -->
-        <section
-            @if (isset($dealBgImage) && $dealBgImage) style="background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('{{ asset('storage/' . $dealBgImage) }}'); background-size: cover; background-position: center;"
-            @else
-                style="background-image: url('{{ asset('images/Potteqry.png') }}'); background-size: cover; background-position: center;" @endif
+        @php
+            $heroBgStyle = (isset($dealBgImage) && $dealBgImage)
+                ? "background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('" . asset('storage/' . $dealBgImage) . "'); background-size: cover; background-position: center;"
+                : "background-image: url('" . asset('images/Potteqry.png') . "'); background-size: cover; background-position: center;";
+        @endphp
+        <section style="{{ $heroBgStyle }}"
             class="text-white py-16 px-4 md:px-8 lg:px-16">
 
 
@@ -21,7 +23,7 @@
                         class="text-[30px] md:text-[24px] font-bold leading-[38px] md:leading-[30px] tracking-[-0.02em] mb-4 font-['Plus_Jakarta_Sans']">
                         Authentic Nepali Heritage</h1>
                     <p class="text-white text-opacity-90 text-base leading-6 mb-6">Experience the pinnacle of Nepalese
-                        craftsmanship with our exclusive artisanal collection. Up to 60% off for the next 24 hours.</p>
+                        craftsmanship with our exclusive artisanal collection.</p>
 
                     <!-- Countdown Timer -->
                     <div id="deal-countdown" data-ends-at="{{ $dealEndsAt }}"
@@ -119,84 +121,140 @@
                 </div>
 
                 <!-- Product Grid -->
-                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6" id="product-grid">
+                <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6" id="product-grid">
                     @if (isset($products) && $products->count() > 0)
                         @foreach ($products as $product)
                             @php
-                                $price = $product->price;
-                                $discountPrice = $product->discount_price ?? null;
-                                $hasDiscount = !is_null($discountPrice) && $discountPrice < $price;
-                                $displayPrice = $hasDiscount ? $discountPrice : $price;
-                                $discountPercentage = $hasDiscount
-                                    ? round((($price - $discountPrice) / $price) * 100)
-                                    : 0;
+                                $imageUrl     = $product->primaryImageUrl();
+                                $price        = $product->price;
+                                $dDiscount    = $product->resolvedDiscountPrice();
+                                $hasDiscount  = !is_null($dDiscount) && $dDiscount > 0 && $dDiscount < $price;
+                                $displayPrice = $hasDiscount ? $dDiscount : $price;
+                                $discountPct  = $hasDiscount ? round((($price - $dDiscount) / $price) * 100) : 0;
+                                $catName      = $product->category?->cat_name ?? 'Uncategorized';
+                                $vendorName   = $product->vendor?->vendor_name ?? 'Local Artisan';
+                                $desc         = Str::limit($product->description, 100);
+                                $stock        = $product->stock ?? 0;
+                                $avgRating    = round($product->reviews_avg_rating ?? 5);
+                                $reviewCount  = $product->reviews_count ?? 0;
                             @endphp
-                            <div class="bg-card rounded-2xl border border-[#e0e3e5] overflow-hidden hover:shadow-lg transition-all product-card"
-                                data-id="{{ $product->id }}" data-slug="{{ $product->slug ?? '' }}" data-name="{{ $product->name }}"
-                                data-price="{{ $displayPrice }}"
-                                data-category="{{ strtolower($product->category->cat_name ?? '') }}"
-                                data-discount="{{ $discountPercentage }}">
-                                <div class="relative aspect-square bg-gray-200 overflow-hidden">
-                                    <a href="{{ route('viewdetails', $product->slug) }}" class="block w-full h-full">
-                                        <img src="{{ $product->primaryImageUrl() }}" alt="{{ $product->name }}"
-                                            class="w-full h-full object-cover hover:scale-105 transition duration-300">
-                                    </a>
+                            <div class="product-card bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group"
+                                 data-id="{{ $product->id }}"
+                                 data-slug="{{ $product->slug ?? '' }}"
+                                 data-category="{{ strtolower($catName) }}"
+                                 data-discount="{{ $discountPct }}"
+                                 data-price="{{ intval($displayPrice) }}">
+
+                                {{-- Image area --}}
+                                <div class="h-36 xs:h-40 sm:h-44 md:h-48 lg:h-56 overflow-hidden bg-slate-100 relative cursor-pointer view-details-btn"
+                                     data-id="{{ $product->id }}"
+                                     data-slug="{{ $product->slug ?? '' }}"
+                                     data-name="{{ $product->name }}"
+                                     data-price="{{ intval($displayPrice) }}"
+                                     data-original-price="{{ intval($price) }}"
+                                     data-discount="{{ $hasDiscount ? 'true' : 'false' }}"
+                                     data-discount-price="{{ intval($displayPrice) }}"
+                                     data-image="{{ $imageUrl }}"
+                                     data-category="{{ $catName }}"
+                                     data-vendor="{{ $vendorName }}"
+                                     data-desc="{{ $desc }}"
+                                     data-rating="{{ $avgRating }}"
+                                     data-reviews="{{ $reviewCount }}"
+                                     data-stock="{{ $stock }}">
+                                    <img src="{{ $imageUrl }}" alt="{{ $product->name }}"
+                                         class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+
+                                    {{-- Discount badge --}}
                                     @if ($hasDiscount)
-                                        <span
-                                            class="absolute top-3 left-3 bg-[#b51822] text-white text-xs font-bold px-3 py-1 rounded-full">-{{ $discountPercentage }}%
-                                            OFF</span>
+                                        <span class="absolute top-1 left-1 sm:top-2 sm:left-2 bg-[#e5b842] text-brand-dark text-[8px] sm:text-[9px] md:text-[10px] font-extrabold uppercase px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full z-10 shadow-sm">
+                                            -{{ $discountPct }}% OFF
+                                        </span>
                                     @endif
+
+                                    {{-- Wishlist button --}}
+                                    <button class="wishlist-btn absolute bottom-2 right-2 sm:bottom-4 sm:right-4 bg-white/90 hover:bg-white text-[#C65A3A] hover:text-[#b04a2c] w-7 h-7 sm:w-9 sm:h-9 rounded-full shadow-md transition-all flex items-center justify-center z-10 focus:outline-none"
+                                            data-product-id="{{ $product->id }}"
+                                            data-product-name="{{ $product->name }}"
+                                            data-product-price="{{ intval($displayPrice) }}"
+                                            data-product-image="{{ $imageUrl }}"
+                                            data-product-desc="{{ $desc }}"
+                                            data-product-category="{{ $catName }}">
+                                        <i class="far fa-heart text-[11px] sm:text-sm"></i>
+                                    </button>
                                 </div>
-                                <div class="p-4">
-                                    <h3
-                                        class="font-bold text-[16px] leading-6 text-[#181c1e] mb-2 font-['Plus_Jakarta_Sans'] line-clamp-2">
-                                        {{ $product->name }}</h3>
-                                    <p class="text-[22px] font-bold text-[#b51822] mb-1 font-['Plus_Jakarta_Sans']">Rs.
-                                        {{ number_format($displayPrice) }}</p>
-                                    @if ($hasDiscount)
-                                        <p class="text-sm text-[#5b403e] line-through mb-2">Rs.
-                                            {{ number_format($price) }}</p>
-                                    @endif
-                                    <div class="flex items-center gap-1 mb-4">
-                                        <span class="text-yellow-400">★★★★★</span>
-                                        <span class="text-xs text-[#5b403e]">({{ $product->reviews_count ?? 0 }}
-                                            Reviews)</span>
-                                    </div>
-                                    <div class="flex gap-2">
-                                        <a href="{{ route('viewdetails', $product->slug) }}"
-                                            class="flex-1 bg-[#b51822] text-white py-2 rounded-lg font-semibold hover:bg-[#930013] transition text-sm view-details-btn text-center"
-                                            data-id="{{ $product->id }}" data-slug="{{ $product->slug }}"
-                                            data-name="{{ $product->name }}" data-price="{{ $displayPrice }}"
-                                            data-product-original-price="{{ $price }}" data-original-price="{{ $price }}"
-                                            data-product-image="{{ $product->primaryImageUrl() }}" data-image="{{ $product->primaryImageUrl() }}"
-                                            data-product-category="{{ $product->category->cat_name ?? '' }}" data-category="{{ $product->category->cat_name ?? '' }}"
-                                            data-product-vendor="{{ $product->vendor->vendor_name ?? 'Local Artisan' }}" data-vendor="{{ $product->vendor->vendor_name ?? 'Local Artisan' }}"
-                                            data-product-desc="{{ $product->description }}" data-desc="{{ $product->description }}"
-                                            data-product-rating="{{ $product->rating ?? 5 }}" data-rating="{{ $product->rating ?? 5 }}"
-                                            data-product-reviews="{{ $product->reviews_count ?? 0 }}" data-reviews="{{ $product->reviews_count ?? 0 }}"
-                                            data-product-stock="{{ $product->stock ?? 10 }}" data-stock="{{ $product->stock ?? 10 }}">
-                                            View Details
-                                        </a>
-                                        <button
-                                            class="flex-1 bg-[#b51822] text-white py-2 rounded-lg font-semibold hover:bg-[#930013] transition text-sm add-to-cart-btn"
-                                            data-product-id="{{ $product->id }}" data-product-name="{{ $product->name }}" data-product-price="{{ $displayPrice }}" data-name="{{ $product->name }}" data-price="{{ $displayPrice }}"
-                                            data-product-original-price="{{ $price }}" data-original-price="{{ $price }}"
-                                            data-product-image="{{ $product->primaryImageUrl() }}" data-image="{{ $product->primaryImageUrl() }}"
-                                            data-product-category="{{ $product->category->cat_name ?? '' }}" data-category="{{ $product->category->cat_name ?? '' }}"
-                                            data-product-vendor="{{ $product->vendor->vendor_name ?? 'Local Artisan' }}" data-vendor="{{ $product->vendor->vendor_name ?? 'Local Artisan' }}"
-                                            data-product-desc="{{ $product->description }}" data-desc="{{ $product->description }}"
-                                            data-product-rating="{{ $product->rating ?? 5 }}" data-rating="{{ $product->rating ?? 5 }}"
-                                            data-product-reviews="{{ $product->reviews_count ?? 0 }}" data-reviews="{{ $product->reviews_count ?? 0 }}"
-                                            data-product-stock="{{ $product->stock ?? 10 }}" data-stock="{{ $product->stock ?? 10 }}">
-                                            Add
-                                        </button>
+
+                                {{-- Card body --}}
+                                <div class="p-2 sm:p-3 md:p-4 flex flex-col flex-grow">
+                                    <h4 class="text-slate-500 font-semibold text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-wider mb-0.5 sm:mb-1 truncate">
+                                        {{ $catName }}
+                                    </h4>
+                                    <h3 class="text-[10px] sm:text-xs md:text-sm lg:text-base font-bold text-brand-dark mb-1 sm:mb-2 line-clamp-2 cursor-pointer hover:text-brand-primary transition-colors view-details-btn"
+                                        data-id="{{ $product->id }}"
+                                        data-slug="{{ $product->slug ?? '' }}"
+                                        data-name="{{ $product->name }}"
+                                        data-price="{{ intval($displayPrice) }}"
+                                        data-original-price="{{ intval($price) }}"
+                                        data-discount="{{ $hasDiscount ? 'true' : 'false' }}"
+                                        data-discount-price="{{ intval($displayPrice) }}"
+                                        data-image="{{ $imageUrl }}"
+                                        data-category="{{ $catName }}"
+                                        data-vendor="{{ $vendorName }}"
+                                        data-desc="{{ $desc }}"
+                                        data-rating="{{ $avgRating }}"
+                                        data-reviews="{{ $reviewCount }}"
+                                        data-stock="{{ $stock }}">
+                                        {{ $product->name }}
+                                    </h3>
+
+                                    <div class="mt-auto pt-2 border-t border-slate-100/60">
+                                        <div class="flex items-baseline gap-1.5 mb-1.5">
+                                            <span class="text-brand-primary font-bold text-[10px] sm:text-xs md:text-sm">
+                                                Rs. {{ number_format($displayPrice, 0) }}
+                                            </span>
+                                            @if ($hasDiscount)
+                                                <span class="text-slate-400 text-[8px] sm:text-[9px] line-through">
+                                                    Rs. {{ number_format($price, 0) }}
+                                                </span>
+                                            @endif
+                                        </div>
+                                        <div class="flex gap-1 sm:gap-2">
+                                            <a href="{{ route('viewdetails', $product->slug) }}"
+                                               class="view-details-btn flex-grow flex items-center justify-center gap-1 sm:gap-2 bg-[#1F3D2E] hover:bg-[#16301f] text-white text-[8px] sm:text-xs md:text-sm font-semibold py-1.5 px-1 sm:py-3 sm:px-3 rounded-lg sm:rounded-xl shadow-sm hover:shadow transition duration-300"
+                                               data-id="{{ $product->id }}"
+                                               data-slug="{{ $product->slug ?? '' }}"
+                                               data-name="{{ $product->name }}"
+                                               data-price="{{ intval($displayPrice) }}"
+                                               data-original-price="{{ intval($price) }}"
+                                               data-discount="{{ $hasDiscount ? 'true' : 'false' }}"
+                                               data-discount-price="{{ intval($displayPrice) }}"
+                                               data-image="{{ $imageUrl }}"
+                                               data-category="{{ $catName }}"
+                                               data-vendor="{{ $vendorName }}"
+                                               data-desc="{{ $desc }}"
+                                               data-rating="{{ $avgRating }}"
+                                               data-reviews="{{ $reviewCount }}"
+                                               data-stock="{{ $stock }}">
+                                                <i class="fa-solid fa-circle-info text-[8px] sm:text-xs"></i> Details
+                                            </a>
+                                            <button class="add-to-cart-btn flex-grow flex items-center justify-center gap-1 sm:gap-2 bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-[8px] sm:text-xs md:text-sm font-semibold py-1.5 px-1 sm:py-3 sm:px-3 rounded-lg sm:rounded-xl shadow-sm hover:shadow transition duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
+                                                    data-product-id="{{ $product->id }}"
+                                                    data-product-name="{{ $product->name }}"
+                                                    data-product-price="{{ intval($displayPrice) }}"
+                                                    data-product-image="{{ $imageUrl }}"
+                                                    data-product-desc="{{ $desc }}"
+                                                    data-product-category="{{ $catName }}"
+                                                    {{ $stock < 1 ? 'disabled' : '' }}>
+                                                <i class="fa-solid fa-cart-plus text-[8px] sm:text-xs"></i>
+                                                {{ $stock < 1 ? 'Sold Out' : 'Add' }}
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         @endforeach
                     @else
                         <div class="col-span-full text-center py-12">
-                            <p class="text-[#5b403e] text-lg">No products available</p>
+                            <p class="text-slate-500 text-lg">No products available</p>
                         </div>
                     @endif
                 </div>
@@ -410,8 +468,8 @@
             </div>
         </section>
 
-        <!-- Trending Now Section -->
-        <section class="py-16 px-4 md:px-8 lg:px-16">
+        <!-- Trending Now Section - Updated with consistent card sizes and button dimensions -->
+        <section class="py-12 px-4 md:px-8 lg:px-16">
             <div class="max-w-7xl mx-auto">
                 <div class="flex justify-between items-center mb-8">
                     <h2 class="text-2xl font-bold text-[#181c1e] flex items-center gap-2 font-['Plus_Jakarta_Sans']">
@@ -429,58 +487,144 @@
                     </div>
                 </div>
 
-                <!-- Trending Carousel -->
+                <!-- Trending Carousel - Now using the same card structure as Alert Today's Deals -->
                 <div class="relative overflow-hidden">
-                    <div id="trending-carousel" class="flex gap-6 transition-transform duration-500 ease-out">
+                    <div id="trending-carousel" class="flex gap-3 sm:gap-4 md:gap-6 transition-transform duration-500 ease-out">
                         @if (isset($trendingProducts) && $trendingProducts->count() > 0)
                             @foreach ($trendingProducts as $product)
                                 @php
-                                    $imageUrl = $product->image ? $product->primaryImageUrl() : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9zdmc+';
-                                    $price = (float) $product->price;
-                                    $discountPrice = $product->discount_price ?? null;
-                                    $hasDiscount = !is_null($discountPrice) && $discountPrice < $price;
-                                    $displayPrice = $hasDiscount ? $discountPrice : $price;
-                                    $catName = $product->category->cat_name ?? 'Crafts';
+                                    $tImgUrl      = $product->primaryImageUrl();
+                                    $tPrice       = (float) $product->price;
+                                    $tDDiscount   = $product->resolvedDiscountPrice();
+                                    $tHasDiscount = !is_null($tDDiscount) && $tDDiscount > 0 && $tDDiscount < $tPrice;
+                                    $tDisplayPrice = $tHasDiscount ? $tDDiscount : $tPrice;
+                                    $tDiscountPct = $tHasDiscount ? round((($tPrice - $tDDiscount) / $tPrice) * 100) : 0;
+                                    $tCatName     = $product->category?->cat_name ?? 'Crafts';
+                                    $tVendorName  = $product->vendor?->vendor_name ?? 'Local Artisan';
+                                    $tDesc        = Str::limit($product->description, 100);
+                                    $tStock       = $product->stock ?? 0;
+                                    $tAvgRating   = round($product->reviews_avg_rating ?? 5);
+                                    $tReviewCount = $product->reviews_count ?? 0;
                                 @endphp
-                                <div class="trending-card flex-shrink-0 w-full md:w-1/2 lg:w-1/4">
-                                    <div
-                                        class="bg-card rounded-2xl border border-[#e0e3e5] overflow-hidden hover:shadow-lg transition-all group flex flex-col h-full">
-                                        <div
-                                            class="aspect-square bg-gray-200 flex items-center justify-center overflow-hidden relative">
-                                            <a href="{{ route('viewdetails', $product->slug) }}" class="block w-full h-full">
-                                                <img src="{{ $imageUrl }}" alt="{{ $product->name }}"
-                                                    class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
-                                                    onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9zdmc+'">
-                                            </a>
-                                        </div>
-                                        <div class="p-4 flex-grow flex flex-col justify-between">
-                                            <div>
-                                                <span
-                                                    class="text-xs font-bold text-[#b51822] uppercase tracking-widest block mb-1">
-                                                    {{ $catName }}
+                                <div class="trending-card flex-shrink-0 w-1/2 md:w-1/3 lg:w-1/4">
+                                    <!-- Same card structure as Alert Today's Deals -->
+                                    <div class="bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group h-full"
+                                         data-id="{{ $product->id }}"
+                                         data-slug="{{ $product->slug ?? '' }}"
+                                         data-category="{{ strtolower($tCatName) }}"
+                                         data-discount="{{ $tDiscountPct }}"
+                                         data-price="{{ intval($tDisplayPrice) }}">
+
+                                        {{-- Image area - Same dimensions as Alert Today's Deals --}}
+                                        <div class="h-36 xs:h-40 sm:h-44 md:h-48 lg:h-56 overflow-hidden bg-slate-100 relative cursor-pointer view-details-btn"
+                                             data-id="{{ $product->id }}"
+                                             data-slug="{{ $product->slug ?? '' }}"
+                                             data-name="{{ $product->name }}"
+                                             data-price="{{ intval($tDisplayPrice) }}"
+                                             data-original-price="{{ intval($tPrice) }}"
+                                             data-discount="{{ $tHasDiscount ? 'true' : 'false' }}"
+                                             data-discount-price="{{ intval($tDisplayPrice) }}"
+                                             data-image="{{ $tImgUrl }}"
+                                             data-category="{{ $tCatName }}"
+                                             data-vendor="{{ $tVendorName }}"
+                                             data-desc="{{ $tDesc }}"
+                                             data-rating="{{ $tAvgRating }}"
+                                             data-reviews="{{ $tReviewCount }}"
+                                             data-stock="{{ $tStock }}">
+                                            <img src="{{ $tImgUrl }}" alt="{{ $product->name }}"
+                                                 class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+
+                                            {{-- Discount badge --}}
+                                            @if ($tHasDiscount)
+                                                <span class="absolute top-1 left-1 sm:top-2 sm:left-2 bg-[#e5b842] text-brand-dark text-[8px] sm:text-[9px] md:text-[10px] font-extrabold uppercase px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full z-10 shadow-sm">
+                                                    -{{ $tDiscountPct }}% OFF
                                                 </span>
-                                                <h3
-                                                    class="font-bold text-[16px] text-[#181c1e] mb-2 font-['Plus_Jakarta_Sans'] line-clamp-2">
-                                                    {{ $product->name }}
-                                                </h3>
-                                            </div>
-                                            <div class="mt-4">
-                                                <p
-                                                    class="text-[20px] font-bold text-[#b51822] font-['Plus_Jakarta_Sans']">
-                                                    Rs. {{ number_format($displayPrice) }}
-                                                </p>
-                                                @if ($hasDiscount)
-                                                    <p class="text-xs text-[#5b403e] line-through">
-                                                        Rs. {{ number_format($price) }}
-                                                    </p>
-                                                @endif
+                                            @endif
+
+                                            {{-- Wishlist button --}}
+                                            <button class="wishlist-btn absolute bottom-2 right-2 sm:bottom-4 sm:right-4 bg-white/90 hover:bg-white text-[#C65A3A] hover:text-[#b04a2c] w-7 h-7 sm:w-9 sm:h-9 rounded-full shadow-md transition-all flex items-center justify-center z-10 focus:outline-none"
+                                                    data-product-id="{{ $product->id }}"
+                                                    data-product-name="{{ $product->name }}"
+                                                    data-product-price="{{ intval($tDisplayPrice) }}"
+                                                    data-product-image="{{ $tImgUrl }}"
+                                                    data-product-desc="{{ $tDesc }}"
+                                                    data-product-category="{{ $tCatName }}">
+                                                <i class="far fa-heart text-[11px] sm:text-sm"></i>
+                                            </button>
+                                        </div>
+
+                                        {{-- Card body - Same as Alert Today's Deals --}}
+                                        <div class="p-2 sm:p-3 md:p-4 flex flex-col flex-grow">
+                                            <h4 class="text-slate-500 font-semibold text-[8px] sm:text-[9px] md:text-[10px] uppercase tracking-wider mb-0.5 sm:mb-1 truncate">
+                                                {{ $tCatName }}
+                                            </h4>
+                                            <h3 class="text-[10px] sm:text-xs md:text-sm lg:text-base font-bold text-brand-dark mb-1 sm:mb-2 line-clamp-2 cursor-pointer hover:text-brand-primary transition-colors view-details-btn"
+                                                data-id="{{ $product->id }}"
+                                                data-slug="{{ $product->slug ?? '' }}"
+                                                data-name="{{ $product->name }}"
+                                                data-price="{{ intval($tDisplayPrice) }}"
+                                                data-original-price="{{ intval($tPrice) }}"
+                                                data-discount="{{ $tHasDiscount ? 'true' : 'false' }}"
+                                                data-discount-price="{{ intval($tDisplayPrice) }}"
+                                                data-image="{{ $tImgUrl }}"
+                                                data-category="{{ $tCatName }}"
+                                                data-vendor="{{ $tVendorName }}"
+                                                data-desc="{{ $tDesc }}"
+                                                data-rating="{{ $tAvgRating }}"
+                                                data-reviews="{{ $tReviewCount }}"
+                                                data-stock="{{ $tStock }}">
+                                                {{ $product->name }}
+                                            </h3>
+
+                                            <div class="mt-auto pt-2 border-t border-slate-100/60">
+                                                <div class="flex items-baseline gap-1.5 mb-1.5">
+                                                    <span class="text-brand-primary font-bold text-[10px] sm:text-xs md:text-sm">
+                                                        Rs. {{ number_format($tDisplayPrice, 0) }}
+                                                    </span>
+                                                    @if ($tHasDiscount)
+                                                        <span class="text-slate-400 text-[8px] sm:text-[9px] line-through">
+                                                            Rs. {{ number_format($tPrice, 0) }}
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                                <div class="flex gap-1 sm:gap-2">
+                                                    <a href="{{ route('viewdetails', $product->slug) }}"
+                                                       class="view-details-btn flex-grow flex items-center justify-center gap-1 sm:gap-2 bg-[#1F3D2E] hover:bg-[#16301f] text-white text-[8px] sm:text-xs md:text-sm font-semibold py-1.5 px-1 sm:py-3 sm:px-3 rounded-lg sm:rounded-xl shadow-sm hover:shadow transition duration-300"
+                                                       data-id="{{ $product->id }}"
+                                                       data-slug="{{ $product->slug ?? '' }}"
+                                                       data-name="{{ $product->name }}"
+                                                       data-price="{{ intval($tDisplayPrice) }}"
+                                                       data-original-price="{{ intval($tPrice) }}"
+                                                       data-discount="{{ $tHasDiscount ? 'true' : 'false' }}"
+                                                       data-discount-price="{{ intval($tDisplayPrice) }}"
+                                                       data-image="{{ $tImgUrl }}"
+                                                       data-category="{{ $tCatName }}"
+                                                       data-vendor="{{ $tVendorName }}"
+                                                       data-desc="{{ $tDesc }}"
+                                                       data-rating="{{ $tAvgRating }}"
+                                                       data-reviews="{{ $tReviewCount }}"
+                                                       data-stock="{{ $tStock }}">
+                                                        <i class="fa-solid fa-circle-info text-[8px] sm:text-xs"></i> Details
+                                                    </a>
+                                                    <button class="add-to-cart-btn flex-grow flex items-center justify-center gap-1 sm:gap-2 bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-[8px] sm:text-xs md:text-sm font-semibold py-1.5 px-1 sm:py-3 sm:px-3 rounded-lg sm:rounded-xl shadow-sm hover:shadow transition duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
+                                                            data-product-id="{{ $product->id }}"
+                                                            data-product-name="{{ $product->name }}"
+                                                            data-product-price="{{ intval($tDisplayPrice) }}"
+                                                            data-product-image="{{ $tImgUrl }}"
+                                                            data-product-desc="{{ $tDesc }}"
+                                                            data-product-category="{{ $tCatName }}"
+                                                            {{ $tStock < 1 ? 'disabled' : '' }}>
+                                                        <i class="fa-solid fa-cart-plus text-[8px] sm:text-xs"></i>
+                                                        {{ $tStock < 1 ? 'Sold Out' : 'Add' }}
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             @endforeach
                         @else
-                            <div class="w-full text-center py-8 text-[#5b403e]">
+                            <div class="w-full text-center py-8 text-slate-500">
                                 No trending products at the moment.
                             </div>
                         @endif
@@ -490,62 +634,6 @@
         </section>
 
     </main>
-
-    <!-- Product Details Modal -->
-    <div id="product-details-modal"
-        class="fixed inset-0 z-[99999] hidden bg-black/60 backdrop-blur-sm overflow-y-auto p-4 opacity-0 transition-opacity duration-300">
-        <div class="relative bg-white max-w-3xl mx-auto rounded-2xl overflow-hidden shadow-2xl transform scale-95 opacity-0 transition-all duration-300"
-            id="product-details-container">
-            <button id="close-product-details"
-                class="absolute top-4 right-4 z-50 bg-gray-100 hover:bg-gray-200 text-gray-800 rounded-full w-10 h-10 flex items-center justify-center transition">
-                <i class="fas fa-times text-lg"></i>
-            </button>
-
-            <div class="p-8 space-y-6">
-                <div class="grid md:grid-cols-2 gap-8">
-                    <div>
-                        <img src="" id="modal-main-image" alt="" class="w-full rounded-lg">
-                    </div>
-
-                    <div>
-                        <h2 id="modal-product-name"
-                            class="text-2xl font-bold text-[#181c1e] mb-2 font-['Plus_Jakarta_Sans']">Product Name</h2>
-                        <div class="flex items-center gap-2 mb-4">
-                            <div id="modal-stars-container" class="flex gap-1 text-yellow-400"></div>
-                            <span class="text-sm text-[#5b403e]">(<span id="modal-reviews-count">0</span>
-                                Reviews)</span>
-                        </div>
-
-                        <div class="bg-[#ebeef0] rounded-lg p-4 mb-4">
-                            <p class="text-[28px] font-bold text-[#b51822] font-['Plus_Jakarta_Sans']"
-                                id="modal-product-price">Rs. 0</p>
-                            <p class="text-sm text-[#5b403e] line-through hidden" id="modal-product-original-price">
-                                Rs. 0</p>
-                        </div>
-
-                        <p id="modal-product-desc" class="text-[#5b403e] text-sm mb-6">Product description</p>
-
-                        <div class="flex gap-4 mb-6">
-                            <button id="modal-add-to-cart-btn"
-                                class="flex-1 bg-[#b51822] text-white font-bold py-3 rounded-lg hover:bg-[#930013] transition">
-                                Add to Cart
-                            </button>
-                            <button id="modal-buy-now-btn"
-                                class="flex-1 border-2 border-[#b51822] text-[#b51822] font-bold py-3 rounded-lg hover:bg-[#ebeef0] transition">
-                                Buy Now
-                            </button>
-                        </div>
-
-                        <div class="text-sm text-[#5b403e] space-y-2">
-                            <p>✓ Free shipping on orders over Rs. 5,000</p>
-                            <p>✓ 30-day returns</p>
-                            <p>✓ Authentic product from Nepal</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -604,8 +692,26 @@
                     updateTrendingCarousel();
                 });
 
+                trendingNext.addEventListener('click', () => {
+                    const maxIndex = Math.max(0, cards.length - visibleCount());
+                    currentIndex = currentIndex < maxIndex ? currentIndex + 1 : 0;
+                    updateTrendingCarousel();
+                });
+
                 window.addEventListener('resize', updateTrendingCarousel);
             }
         });
     </script>
+
+    @vite('resources/js/today-deals.js')
+
+    {{-- DEBUG: remove once image and countdown are confirmed working --}}
+    @if(config('app.debug'))
+    <script>
+        console.log('[TodaysDeals] dealEndsAt =', @json($dealEndsAt));
+        console.log('[TodaysDeals] dealBgImage =', @json($dealBgImage));
+        console.log('[TodaysDeals] bgImageUrl =', '{{ isset($dealBgImage) && $dealBgImage ? asset("storage/" . $dealBgImage) : "none" }}');
+    </script>
+    @endif
+
 </x-frontend-layout>
