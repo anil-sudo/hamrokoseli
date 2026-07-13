@@ -521,11 +521,11 @@ a {
     border: none !important;
 }
 
-/* Success — rich green */
+/* Success — blue */
 .swal2-icon-success ~ .swal-hamrokoseli-toast,
 .swal-hamrokoseli-toast.swal2-icon-success,
 .swal2-popup.swal2-toast.swal-hamrokoseli-toast:has(.swal2-success) {
-    background: #1F3D2E !important;
+    background: #3498db !important;
     color: #ffffff !important;
 }
 
