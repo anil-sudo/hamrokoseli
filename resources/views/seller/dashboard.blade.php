@@ -7,30 +7,6 @@
             <p class="text-sm text-(--text-color) mt-1">Here's what's happening with your store today.</p>
         </div>
 
-        <!-- Today's Deals Campaign Status Card -->
-        <div class="bg-gradient-to-r from-[#d93537] to-[#ff6b5b] rounded-2xl p-6 text-white flex flex-col md:flex-row justify-between items-center gap-6 shadow-md border border-red-200">
-            <div>
-                <h2 class="text-xl font-bold font-['Plus_Jakarta_Sans'] flex items-center gap-2">
-                    <span class="animate-pulse">🔥</span> Today's Deals Campaign Status
-                </h2>
-                <p class="text-sm text-white/90 mt-1">Add discount prices to your products under Product Management so they are automatically listed on the Today's Deals page.</p>
-            </div>
-            <div id="seller-deal-countdown" data-ends-at="{{ $dealEndsAt }}" class="flex gap-4 font-mono text-center">
-                <div class="bg-white/10 px-4 py-2 rounded-xl border border-white/20 min-w-20">
-                    <span id="seller-hours" class="text-3xl font-extrabold block">00</span>
-                    <span class="text-[10px] uppercase font-bold tracking-wider opacity-85">Hours</span>
-                </div>
-                <div class="bg-white/10 px-4 py-2 rounded-xl border border-white/20 min-w-20">
-                    <span id="seller-minutes" class="text-3xl font-extrabold block">00</span>
-                    <span class="text-[10px] uppercase font-bold tracking-wider opacity-85">Mins</span>
-                </div>
-                <div class="bg-white/10 px-4 py-2 rounded-xl border border-white/20 min-w-20">
-                    <span id="seller-seconds" class="text-3xl font-extrabold block">00</span>
-                    <span class="text-[10px] uppercase font-bold tracking-wider opacity-85">Secs</span>
-                </div>
-            </div>
-        </div>
-
         <!-- Stats Cards Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <!-- Total Sales Card -->
