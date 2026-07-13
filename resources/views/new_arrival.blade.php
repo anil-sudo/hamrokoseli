@@ -13,18 +13,18 @@
             </div>
 
             <!-- Products Grid -->
-            <div class="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-8">
+            <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-6">
 
                 @forelse ($products as $product)
                     <div
                         data-category="{{ $product->category?->slug ?? 'uncategorized' }}"
                         class="product-card bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group">
 
-                        <div class="relative w-full aspect-[4/5] overflow-hidden rounded-t-2xl sm:rounded-t-3xl bg-slate-100">
+                        <div class="relative w-full aspect-square overflow-hidden rounded-t-2xl sm:rounded-t-3xl">
                             <img src="{{ $product->primaryImageUrl() }}" alt="{{ $product->name }}"
                                 class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
 
-                            <span class="absolute top-2 left-2 sm:top-4 sm:left-4 bg-[#e5b842] text-black text-[6px] xs:text-[8px] sm:text-[10px] font-bold px-1.5 py-0.5 sm:px-3 sm:py-1.5 rounded-full shadow-sm z-10">
+                            <span class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-[#C65A3A] text-white text-[7px] xs:text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-full shadow-sm z-10">
                                 New !!!
                             </span>
 
@@ -41,7 +41,7 @@
                             </button>
                         </div>
 
-                        <div class="p-2.5 sm:p-5 flex-grow flex flex-col justify-between">
+                        <div class="p-3 sm:p-5 flex-grow flex flex-col justify-between">
                             <div>
                                 <span class="text-[8px] sm:text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-0.5 sm:mb-1">
                                     {{ $product->category?->cat_name ?? 'General' }}

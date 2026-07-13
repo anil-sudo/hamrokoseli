@@ -29,6 +29,7 @@ class SettingForm
                     ->placeholder('Select target date/time')
                     ->displayFormat('Y-m-d H:i:s')
                     ->native(false)
+                    ->minDate(now())
                     ->visible(fn (Get $get) => Str::contains($get('key') ?? '', ['date', 'time', '_at'])),
 
                 FileUpload::make('value')
