@@ -284,185 +284,60 @@
                 <!-- Carousel Container -->
                 <div class="relative overflow-hidden">
                     <div id="featured-carousel" class="flex gap-6 transition-transform duration-500 ease-out">
-                        <!-- Featured Product 1 -->
-                        <div class="featured-card flex-shrink-0 w-full animate-fade-in">
-                            <div
-                                class="grid md:grid-cols-2 gap-8 items-center bg-[#1a1a1a] rounded-2xl p-8 min-h-[380px] w-full">
-                                <div class="flex justify-center items-center w-full h-[250px] md:h-[300px]">
-                                    <img src="{{ asset('images/Pottery.png') }}" alt="Hand-Knotted Wool Mandala Rug"
-                                        class="w-full h-full object-cover rounded-xl shadow-md max-w-sm">
-                                </div>
-                                <div class="flex flex-col justify-between h-full min-h-[250px] md:min-h-[300px]">
-                                    <div>
-                                        <span
-                                            class="inline-block bg-white bg-opacity-20 text-white text-xs font-bold px-3 py-1 rounded-full mb-3">FEATURED</span>
-                                        <h3 class="text-2xl font-bold mb-3 font-['Plus_Jakarta_Sans']">Hand-Knotted
-                                            Wool
-                                            Mandala Rug</h3>
-                                        <p class="text-white text-opacity-80 text-sm leading-6 mb-4">Exquisite
-                                            hand-knotted
-                                            wool rug featuring traditional mandala patterns. A masterpiece of Nepalese
-                                            weaving heritage.</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-sm text-white text-opacity-70 mb-1">Regularly Rs. 65,000</p>
-                                        <p class="text-4xl font-bold mb-4 font-['Plus_Jakarta_Sans']">Rs. 45,000</p>
-                                        <div class="flex gap-3">
-                                            <button
-                                                class="bg-[#d4a017] hover:bg-[#b38a0a] text-black font-bold px-6 py-2 rounded-full transition flex items-center gap-2 font-['Plus_Jakarta_Sans'] text-sm">
-                                                Buy Now <span>→</span>
-                                            </button>
-                                            <button
-                                                class="border border-white text-white font-bold px-6 py-2 rounded-full hover:bg-white hover:text-[#2d3133] transition text-sm">Details</button>
+                        @if (isset($featuredDeals) && $featuredDeals->count() > 0)
+                            @foreach ($featuredDeals as $fProduct)
+                                @php
+                                    $fImageUrl      = $fProduct->primaryImageUrl();
+                                    $fPrice         = (float) $fProduct->price;
+                                    $fDiscountPrice = $fProduct->resolvedDiscountPrice();
+                                    $fHasDiscount   = !is_null($fDiscountPrice) && $fDiscountPrice > 0 && $fDiscountPrice < $fPrice;
+                                    $fDisplayPrice  = $fHasDiscount ? $fDiscountPrice : $fPrice;
+                                    $fDiscountPct   = $fHasDiscount ? round((($fPrice - $fDiscountPrice) / $fPrice) * 100) : 0;
+                                    $fCatName       = $fProduct->category?->cat_name ?? 'Crafts';
+                                    $fVendorName    = $fProduct->vendor?->vendor_name ?? 'Local Artisan';
+                                    $fDesc          = Str::limit($fProduct->description, 160);
+                                    $fStock         = $fProduct->stock ?? 0;
+                                @endphp
+                                <div class="featured-card flex-shrink-0 w-full animate-fade-in">
+                                    <div class="grid md:grid-cols-2 gap-8 items-center bg-[#1a1a1a] rounded-2xl p-8 min-h-[380px] w-full">
+                                        <div class="flex justify-center items-center w-full h-[250px] md:h-[300px]">
+                                            <img src="{{ $fImageUrl }}" alt="{{ $fProduct->name }}"
+                                                class="w-full h-full object-cover rounded-xl shadow-md max-w-sm">
+                                        </div>
+                                        <div class="flex flex-col justify-between h-full min-h-[250px] md:min-h-[300px]">
+                                            <div>
+                                                <div class="flex items-center gap-2 mb-3">
+                                                    @if ($fHasDiscount)
+                                                        <span class="inline-block bg-[#d4a017] text-black text-xs font-bold px-3 py-1 rounded-full">-{{ $fDiscountPct }}% OFF</span>
+                                                    @endif
+                                                </div>
+                                                <p class="text-xs font-semibold uppercase tracking-wider text-white/50 mb-1">{{ $fCatName }} &middot; {{ $fVendorName }}</p>
+                                                <h3 class="text-2xl font-bold mb-3 font-['Plus_Jakarta_Sans']">{{ $fProduct->name }}</h3>
+                                                <p class="text-white text-opacity-80 text-sm leading-6 mb-4">{{ $fDesc }}</p>
+                                            </div>
+                                            <div>
+                                                @if ($fHasDiscount)
+                                                    <p class="text-sm text-white text-opacity-70 mb-1">Regularly Rs. {{ number_format($fPrice, 0) }}</p>
+                                                @endif
+                                                <p class="text-4xl font-bold mb-4 font-['Plus_Jakarta_Sans']">Rs. {{ number_format($fDisplayPrice, 0) }}</p>
+                                                <div class="flex gap-3">
+                                                    <a href="{{ route('viewdetails', $fProduct->slug) }}"
+                                                       class="bg-[#d4a017] hover:bg-[#b38a0a] text-black font-bold px-6 py-2 rounded-full transition flex items-center gap-2 font-['Plus_Jakarta_Sans'] text-sm {{ $fStock < 1 ? 'opacity-50 pointer-events-none' : '' }}">
+                                                        {{ $fStock < 1 ? 'Sold Out' : 'Buy Now' }} <span>→</span>
+                                                    </a>
+                                                    <a href="{{ route('viewdetails', $fProduct->slug) }}"
+                                                       class="border border-white text-white font-bold px-6 py-2 rounded-full hover:bg-white hover:text-[#2d3133] transition text-sm">Details</a>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+                            @endforeach
+                        @else
+                            <div class="w-full text-center py-16 text-white/50">
+                                No featured deals available at the moment.
                             </div>
-                        </div>
-
-                        <!-- Featured Product 2 -->
-                        <div class="featured-card flex-shrink-0 w-full animate-fade-in">
-                            <div
-                                class="grid md:grid-cols-2 gap-8 items-center bg-[#1a1a1a] rounded-2xl p-8 min-h-[380px] w-full">
-                                <div class="flex justify-center items-center w-full h-[250px] md:h-[300px]">
-                                    <img src="{{ asset('images/Pottery.png') }}" alt="Traditional Dhaka Textile"
-                                        class="w-full h-full object-cover rounded-xl shadow-md max-w-sm">
-                                </div>
-                                <div class="flex flex-col justify-between h-full min-h-[250px] md:min-h-[300px]">
-                                    <div>
-                                        <span
-                                            class="inline-block bg-white bg-opacity-20 text-white text-xs font-bold px-3 py-1 rounded-full mb-3">FEATURED</span>
-                                        <h3 class="text-2xl font-bold mb-3 font-['Plus_Jakarta_Sans']">Traditional
-                                            Dhaka
-                                            Textile</h3>
-                                        <p class="text-white text-opacity-80 text-sm leading-6 mb-4">Authentic
-                                            handwoven
-                                            Dhaka fabric with intricate traditional patterns, perfect for traditional
-                                            clothing.</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-sm text-white text-opacity-70 mb-1">Regularly Rs. 20,600</p>
-                                        <p class="text-4xl font-bold mb-4 font-['Plus_Jakarta_Sans']">Rs. 12,400</p>
-                                        <div class="flex gap-3">
-                                            <button
-                                                class="bg-[#d4a017] hover:bg-[#b38a0a] text-black font-bold px-6 py-2 rounded-full transition flex items-center gap-2 font-['Plus_Jakarta_Sans'] text-sm">
-                                                Buy Now <span>→</span>
-                                            </button>
-                                            <button
-                                                class="border border-white text-white font-bold px-6 py-2 rounded-full hover:bg-white hover:text-[#2d3133] transition text-sm">Details</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Featured Product 3 -->
-                        <div class="featured-card flex-shrink-0 w-full animate-fade-in">
-                            <div
-                                class="grid md:grid-cols-2 gap-8 items-center bg-[#1a1a1a] rounded-2xl p-8 min-h-[380px] w-full">
-                                <div class="flex justify-center items-center w-full h-[250px] md:h-[300px]">
-                                    <img src="{{ asset('images/Pottery.png') }}" alt="Himalayan Salt Lamp"
-                                        class="w-full h-full object-cover rounded-xl shadow-md max-w-sm">
-                                </div>
-                                <div class="flex flex-col justify-between h-full min-h-[250px] md:min-h-[300px]">
-                                    <div>
-                                        <span
-                                            class="inline-block bg-white bg-opacity-20 text-white text-xs font-bold px-3 py-1 rounded-full mb-3">FEATURED</span>
-                                        <h3 class="text-2xl font-bold mb-3 font-['Plus_Jakarta_Sans']">Himalayan Salt
-                                            Lamp
-                                        </h3>
-                                        <p class="text-white text-opacity-80 text-sm leading-6 mb-4">Premium natural
-                                            Himalayan salt lamp that creates a warm ambiance and promotes wellness in
-                                            your
-                                            home.</p>
-                                    </div>
-                                    <div>
-                                        <p class="text-sm text-white text-opacity-70 mb-1">Regularly Rs. 2,300</p>
-                                        <p class="text-4xl font-bold mb-4 font-['Plus_Jakarta_Sans']">Rs. 1,850</p>
-                                        <div class="flex gap-3">
-                                            <button
-                                                class="bg-[#d4a017] hover:bg-[#b38a0a] text-black font-bold px-6 py-2 rounded-full transition flex items-center gap-2 font-['Plus_Jakarta_Sans'] text-sm">
-                                                Buy Now <span>→</span>
-                                            </button>
-                                            <button
-                                                class="border border-white text-white font-bold px-6 py-2 rounded-full hover:bg-white hover:text-[#2d3133] transition text-sm">Details</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Featured Product 4 -->
-                        <div class="featured-card flex-shrink-0 w-full animate-fade-in">
-                            <div
-                                class="grid md:grid-cols-2 gap-8 items-center bg-[#1a1a1a] rounded-2xl p-8 min-h-[380px] w-full">
-                                <div class="flex justify-center items-center w-full h-[250px] md:h-[300px]">
-                                    <img src="{{ asset('images/Pottery.png') }}" alt="Silver Filigree Jewelry"
-                                        class="w-full h-full object-cover rounded-xl shadow-md max-w-sm">
-                                </div>
-                                <div class="flex flex-col justify-between h-full min-h-[250px] md:min-h-[300px]">
-                                    <div>
-                                        <span
-                                            class="inline-block bg-white bg-opacity-20 text-black text-xs font-bold px-3 py-1 rounded-full mb-3">FEATURED</span>
-                                        <h3 class="text-2xl font-bold mb-3 font-['Plus_Jakarta_Sans']">Silver Filigree
-                                            Jewelry Set</h3>
-                                        <p class="text-white text-opacity-80 text-sm leading-6 mb-4">Exquisite
-                                            handcrafted
-                                            silver filigree jewelry set showcasing traditional Nepalese metalwork
-                                            artistry.
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <p class="text-sm text-white text-opacity-70 mb-1">Regularly Rs. 4,500</p>
-                                        <p class="text-4xl font-bold mb-4 font-['Plus_Jakarta_Sans']">Rs. 3,200</p>
-                                        <div class="flex gap-3">
-                                            <button
-                                                class="bg-[#d4a017] hover:bg-[#b38a0a] text-black font-bold px-6 py-2 rounded-full transition flex items-center gap-2 font-['Plus_Jakarta_Sans'] text-sm">
-                                                Buy Now <span>→</span>
-                                            </button>
-                                            <button
-                                                class="border border-white text-white font-bold px-6 py-2 rounded-full hover:bg-white hover:text-[#2d3133] transition text-sm">Details</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Featured Product 5 -->
-                        <div class="featured-card flex-shrink-0 w-full animate-fade-in">
-                            <div
-                                class="grid md:grid-cols-2 gap-8 items-center bg-[#1a1a1a] rounded-2xl p-8 min-h-[380px] w-full">
-                                <div class="flex justify-center items-center w-full h-[250px] md:h-[300px]">
-                                    <img src="{{ asset('images/Pottery.png') }}" alt="Botanical Brass Candle"
-                                        class="w-full h-full object-cover rounded-xl shadow-md max-w-sm">
-                                </div>
-                                <div class="flex flex-col justify-between h-full min-h-[250px] md:min-h-[300px]">
-                                    <div>
-                                        <span
-                                            class="inline-block bg-white bg-opacity-20 text-white text-xs font-bold px-3 py-1 rounded-full mb-3">FEATURED</span>
-                                        <h3 class="text-2xl font-bold mb-3 font-['Plus_Jakarta_Sans']">Botanical Brass
-                                            Candle</h3>
-                                        <p class="text-white text-opacity-80 text-sm leading-6 mb-4">Hand-poured
-                                            botanical
-                                            candle in an elegant brass holder, perfect for creating a luxurious
-                                            atmosphere.
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <p class="text-sm text-white text-opacity-70 mb-1">Regularly Rs. 1,500</p>
-                                        <p class="text-4xl font-bold mb-4 font-['Plus_Jakarta_Sans']">Rs. 950</p>
-                                        <div class="flex gap-3">
-                                            <button
-                                                class="bg-[#d4a017] hover:bg-[#b38a0a] text-black font-bold px-6 py-2 rounded-full transition flex items-center gap-2 font-['Plus_Jakarta_Sans'] text-sm">
-                                                Buy Now <span>→</span>
-                                            </button>
-                                            <button
-                                                class="border border-white text-white font-bold px-6 py-2 rounded-full hover:bg-white hover:text-[#2d3133] transition text-sm">Details</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        @endif
                     </div>
                 </div>
             </div>

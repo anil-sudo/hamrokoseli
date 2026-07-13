@@ -40,6 +40,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // Modal functionality
     document.querySelectorAll('.view-details-btn').forEach(btn => {
         btn.addEventListener('click', function (e) {
+            // If the click came from inside a wishlist button, ignore it
+            if (e.target.closest('.wishlist-btn')) return;
             e.preventDefault();
 
             document.getElementById('modal-product-name').textContent = btn.getAttribute('data-name');

@@ -192,14 +192,19 @@ class PageController extends Controller
             ->unique('id')
             ->values();
 
+        // Pull the top 20 products by discount percentage, then randomly pick 5
+        // so Featured Star Deals rotates on every page load while always showing
+        // the best-discounted items in the catalogue.
         $featuredDeals = Product::with(['category', 'vendor', 'images'])
             ->where('status', 'active')
             ->whereNotNull('discount_price')
             ->where('discount_price', '>', 0)
             ->whereColumn('discount_price', '<', 'price')
             ->orderByRaw('((price - discount_price) / price) DESC')
-            ->take(5)
-            ->get();
+            ->take(20)
+            ->get()
+            ->shuffle()
+            ->take(5);
 
         $trendingProducts = Product::with(['category', 'vendor', 'images'])
             ->withCount('orderItems')
