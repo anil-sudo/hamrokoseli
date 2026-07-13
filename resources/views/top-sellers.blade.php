@@ -47,7 +47,7 @@
         </div>
 
         <!-- Product Grid -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 sm:gap-8" id="product-grid">
+        <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-6" id="product-grid">
             @foreach($products as $index => $product)
                 @php
                     $rank = $index + 1;
@@ -76,7 +76,7 @@
                     $stock      = $product->stock ?? 10;
                 @endphp
 
-                <div class="product-card bg-white rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group"
+                <div class="product-card bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group"
                      data-id="{{ $product->id }}"
                                data-slug="{{ $product->slug }}"
                      data-name="{{ $product->name }}"
@@ -84,23 +84,17 @@
                      data-category="{{ strtolower($catName) }}"
                      data-rank="{{ $rank }}">
 
-                    <div class="relative w-full aspect-[4/5] overflow-hidden rounded-t-3xl bg-slate-100">
+                    <div class="relative w-full aspect-square overflow-hidden rounded-t-2xl sm:rounded-t-3xl">
                         <img src="{{ $imageUrl }}"
                              alt="{{ $product->name }}"
                              class="w-full h-full object-cover group-hover:scale-105 transition duration-500"
                              onerror="this.onerror=null; this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9zdmc+'">
 
-                        <span class="absolute top-4 left-4 {{ $rankBg }} text-[10px] font-extrabold uppercase tracking-wider px-3 py-1.5 rounded-full z-10 shadow">
+                        <span class="absolute top-2 left-2 sm:top-3 sm:left-3 {{ $rankBg }} text-[7px] xs:text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-full z-10 shadow">
                             #{{ $rank }} {{ $rank <= 3 ? 'Best Seller' : 'Seller' }}
                         </span>
 
-                        @if($product->vendor)
-                            <div class="absolute top-4 right-4 bg-white/95 text-[#1F3D2E] text-[10px] font-bold tracking-wider uppercase px-3 py-1.5 rounded-full shadow-sm z-10">
-                                {{ $vendorName }}
-                            </div>
-                        @endif
-
-                        <button class="wishlist-btn absolute bottom-4 right-4 bg-white/90 hover:bg-white text-[#C65A3A] hover:text-[#b04a2c] w-10 h-10 rounded-full shadow-md transition-all flex items-center justify-center z-10 focus:outline-none"
+                        <button class="wishlist-btn absolute bottom-2 right-2 sm:bottom-4 sm:right-4 bg-white/90 hover:bg-white text-[#C65A3A] hover:text-[#b04a2c] w-7 h-7 sm:w-10 sm:h-10 rounded-full shadow-md transition-all flex items-center justify-center z-10 focus:outline-none"
                                 data-product-id="{{ $product->id }}"
                                 data-product-name="{{ $product->name }}"
                                 data-product-price="{{ $displayPrice }}"
@@ -108,26 +102,26 @@
                                 data-product-desc="{{ $product->description }}"
                                 data-product-category="{{ $catName }}"
                                 data-product-tag="{{ $product->tag ?? '' }}">
-                            <i class="far fa-heart text-lg"></i>
+                            <i class="far fa-heart text-[10px] sm:text-lg"></i>
                         </button>
                     </div>
 
-                    <div class="p-5 flex-grow flex flex-col justify-between">
+                    <div class="p-3 sm:p-5 flex-grow flex flex-col justify-between">
                         <div>
-                            <span class="text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-1">
+                            <span class="text-[8px] sm:text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-0.5 sm:mb-1">
                                 {{ $catName }}
                             </span>
 
-                            <h3 class="text-lg font-bold text-[#1F3D2E] mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1">
+                            <h3 class="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-[#1F3D2E] mb-1 sm:mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1">
                                 {{ $product->name }}
                             </h3>
 
-                            <div class="flex items-baseline gap-2 mb-4">
-                                <span class="text-[#C65A3A] font-bold text-base">
+                            <div class="flex items-baseline gap-1 sm:gap-2 mb-2 sm:mb-4">
+                                <span class="text-[#C65A3A] font-bold text-xs sm:text-sm md:text-base">
                                     Rs {{ number_format($displayPrice, 2) }}
                                 </span>
                                 @if($hasDiscount)
-                                    <span class="text-slate-400 text-xs line-through font-semibold">
+                                    <span class="text-slate-400 text-[8px] sm:text-xs line-through font-semibold">
                                         Rs {{ number_format($price, 2) }}
                                     </span>
                                 @endif
@@ -135,9 +129,9 @@
                         </div>
 
                         <!-- View Details triggers modal -->
-                        <div class="flex gap-2 mt-auto">
+                        <div class="flex gap-1 sm:gap-2 mt-auto">
                             <a href="{{ route('viewdetails', $product->slug) }}"
-                               class="view-details-btn flex-1 flex items-center justify-center gap-2 bg-[#1F3D2E] hover:bg-[#16301f] text-white text-sm font-semibold py-3 px-3 rounded-xl shadow-sm hover:shadow transition duration-300"
+                               class="view-details-btn flex-grow flex items-center justify-center gap-1 sm:gap-2 bg-[#1F3D2E] hover:bg-[#16301f] text-white text-[8px] sm:text-xs md:text-sm font-semibold py-1.5 px-1 sm:py-3 sm:px-3 rounded-lg sm:rounded-xl shadow-sm hover:shadow transition duration-300"
                                data-id="{{ $product->id }}"
                                data-slug="{{ $product->slug }}"
                                data-name="{{ $product->name }}"
@@ -152,17 +146,17 @@
                                data-rating="{{ $rating }}"
                                data-reviews="{{ $reviews }}"
                                data-stock="{{ $stock }}">
-                                <i class="fa-solid fa-circle-info text-xs"></i>
+                                <i class="fa-solid fa-circle-info text-[8px] sm:text-xs"></i>
                                 Details
                             </a>
 
                             <button
                                 type="button"
-                                class="add-to-cart-btn flex-1 flex items-center justify-center gap-2 bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-sm font-semibold py-3 px-3 rounded-xl shadow-sm hover:shadow transition duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
+                                class="add-to-cart-btn flex-grow flex items-center justify-center gap-1 sm:gap-2 bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-[8px] sm:text-xs md:text-sm font-semibold py-1.5 px-1 sm:py-3 sm:px-3 rounded-lg sm:rounded-xl shadow-sm hover:shadow transition duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
                                 data-product-id="{{ $product->id }}"
                                 data-product-name="{{ $product->name }}"
                                 {{ ($product->stock ?? 0) < 1 ? 'disabled' : '' }}>
-                                <i class="fa-solid fa-cart-plus text-xs"></i>
+                                <i class="fa-solid fa-cart-plus text-[8px] sm:text-xs"></i>
                                 {{ ($product->stock ?? 0) < 1 ? 'Sold Out' : 'Add' }}
                             </button>
                         </div>

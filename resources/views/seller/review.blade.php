@@ -231,12 +231,18 @@
                         </div>
                     @endif
 
-                    <div class="flex items-center gap-4 mt-4 pt-3 border-t border-[#efe3d5] overflow-x-auto">
+                    <div class="flex justify-between gap-4 mt-4 pt-3 border-t border-[#efe3d5] overflow-x-auto">
                         <button onclick="toggleReplyBox(this)"
                             data-reply-text="{{ $review->reply ? 'Edit Response' : 'Reply Now' }}"
                             class="reply-btn shrink-0 px-4 py-2 bg-[#C65A3A] text-white rounded-lg text-sm hover:bg-[#B94E31] flex items-center gap-1">
                             <i data-lucide="reply" class="inline w-4 h-4"></i>
                             <span class="inline-flex">{{ $review->reply ? 'Edit Response' : 'Reply Now' }}</span>
+                        </button>
+
+                        <button type="button"
+                            onclick="confirmDelete('{{ $review->id }}', '{{ addslashes($customer->name ?? 'Anonymous') }}')"
+                            class="text-(--text-color)/60 hover:text-[#C65A3A] transition">
+                            <i data-lucide="trash-2" class="w-5 h-5"></i>
                         </button>
                     </div>
 
@@ -370,6 +376,49 @@
         }
     </style>
 
+    <!-- Custom Delete Confirmation Modal -->
+    <div id="deleteModal" class="hidden fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title"
+        role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Background overlay -->
+            <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm transition-opacity" aria-hidden="true"
+                onclick="hideDeleteModal()"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <!-- Modal panel -->
+            <div
+                class="inline-block align-bottom bg-white dark:bg-(--card-bg) rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl transform transition-all sm:my-8 sm:align-middle relative z-10">
+                <div class="flex justify-center mb-6">
+                    <div class="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-2xl flex items-center justify-center">
+                        <i data-lucide="alert-triangle" class="w-8 h-8 text-red-500"></i>
+                    </div>
+                </div>
+
+                <h3 class="text-2xl font-semibold text-center mb-2" id="modal-title">Delete Review?</h3>
+                <p class="text-center text-gray-600 dark:text-gray-400 mb-8">
+                    Are you sure you want to delete the review by <strong id="deleteReviewCustomer"></strong>?
+                </p>
+
+                <div class="flex gap-3">
+                    <button type="button" onclick="hideDeleteModal()"
+                        class="flex-1 py-4 text-base font-medium border border-gray-300 dark:border-gray-600 rounded-2xl hover:bg-gray-50 dark:hover:bg-gray-800 transition">
+                        No, Keep Review
+                    </button>
+
+                    <form id="deleteForm" method="POST" class="flex-1">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                            class="w-full py-4 text-base font-medium bg-(--secondary-color) hover:bg-[#B94E31] text-white rounded-2xl transition flex items-center justify-center gap-2">
+                            <i data-lucide="trash-2" class="w-5 h-5"></i>
+                            Yes, Delete It
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Toggle Reply Box
         function toggleReplyBox(btn) {
@@ -387,6 +436,17 @@
                 replyBtn.innerHTML = `<i data-lucide="reply" class="inline w-4 h-4"></i> <span>${text}</span>`;
                 lucide.createIcons();
             }
+        }
+
+        function confirmDelete(id, customerName) {
+            document.getElementById('deleteReviewCustomer').innerText = customerName;
+            document.getElementById('deleteForm').action = `/seller-review/${id}`;
+            document.getElementById('deleteModal').classList.remove('hidden');
+            lucide.createIcons();
+        }
+
+        function hideDeleteModal() {
+            document.getElementById('deleteModal').classList.add('hidden');
         }
     </script>
 </x-seller_layout>
