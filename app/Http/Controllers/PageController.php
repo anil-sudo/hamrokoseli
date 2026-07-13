@@ -56,12 +56,23 @@ class PageController extends Controller
             ->limit(4)
             ->get();
 
+        // Fetch trending products — top 3 by number of order items (most sold)
+        $trendingProducts = Product::where('status', 'active')
+            ->with(['category', 'vendor', 'images', 'variants'])
+            ->withCount('orderItems')
+            ->withAvg('reviews', 'rating')
+            ->withCount('reviews')
+            ->orderByDesc('order_items_count')
+            ->take(3)
+            ->get();
+
         return view('welcome', [
             'vendors' => $vendors,
             'featuredProducts' => $featuredProducts,
             'categories' => $categories,
             'topSellers' => $topSellers,
             'todaysDeals' => $todaysDeals,
+            'trendingProducts' => $trendingProducts,
         ]);
     }
 

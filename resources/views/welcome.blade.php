@@ -585,147 +585,69 @@
 
                 <!-- Grid: 3 columns on desktop, 1 on mobile -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
-                    <!-- Trending Item 1 -->
-                    <div class="flex items-center gap-3 sm:gap-4 bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl shadow-sm border border-[#ebd7be]/40 group transition">
-                        <div class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-lg sm:rounded-xl overflow-hidden shrink-0 bg-slate-100 cursor-pointer view-details-btn"
-                             data-id="109"
-                             data-name="Macrame Plant Hanger"
-                             data-price="549"
-                             data-original-price="549"
-                             data-image="{{ asset('images/Sweaters.png') }}"
-                             data-category="Home Decor"
-                             data-vendor="Knot & Craft"
-                             data-desc="Beautifully hand-knotted macrame plant hanger for indoor plants."
-                             data-rating="4.8"
-                             data-reviews="2300"
-                             data-stock="50">
-                            <img src="{{ asset('images/Sweaters.png') }}" alt="Trending product" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                        </div>
-                        <div class="flex-grow">
-                            <h4 class="text-xs sm:text-sm md:text-base font-bold text-brand-dark group-hover:text-brand-primary transition-colors line-clamp-1 cursor-pointer view-details-btn"
-                                data-id="109"
-                                data-name="Macrame Plant Hanger"
-                                data-price="549"
-                                data-original-price="549"
-                                data-image="{{ asset('images/Sweaters.png') }}"
-                                data-category="Home Decor"
-                                data-vendor="Knot & Craft"
-                                data-desc="Beautifully hand-knotted macrame plant hanger for indoor plants."
-                                data-rating="4.8"
-                                data-reviews="2300"
-                                data-stock="50">Macrame Plant Hanger</h4>
-                            <span class="text-brand-primary font-bold text-xs sm:text-sm">Rs. 549</span>
-                            <div class="flex items-center gap-1 text-[9px] sm:text-xs text-amber-500 font-semibold mt-0.5">
-                                <i class="fa-solid fa-star"></i>
-                                <span>4.8</span>
-                                <span class="text-slate-400 ml-0.5 sm:ml-1 hidden xs:inline">(2.3k sold)</span>
+                    @forelse($trendingProducts as $product)
+                        @php
+                            $imageUrl      = $product->primaryImageUrl();
+                            $effectivePrice = $product->effectivePrice();
+                            $originalPrice  = $product->originalPrice();
+                            $categoryName   = $product->category?->cat_name ?? $product->category?->name ?? 'Crafts';
+                            $vendorName     = $product->vendor?->vendor_name ?? $product->vendor?->name ?? 'Local Artisan';
+                            $avgRating      = $product->reviews_avg_rating ? round($product->reviews_avg_rating, 1) : null;
+                            $soldCount      = $product->order_items_count ?? 0;
+                            $soldLabel      = $soldCount >= 1000
+                                ? number_format($soldCount / 1000, 1) . 'k'
+                                : $soldCount;
+                        @endphp
+                        <div class="flex items-center gap-3 sm:gap-4 bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl shadow-sm border border-[#ebd7be]/40 group transition">
+                            <div class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-lg sm:rounded-xl overflow-hidden shrink-0 bg-slate-100 cursor-pointer view-details-btn"
+                                 data-id="{{ $product->id }}"
+                                 data-name="{{ $product->name }}"
+                                 data-price="{{ $effectivePrice }}"
+                                 data-original-price="{{ $originalPrice }}"
+                                 data-image="{{ $imageUrl }}"
+                                 data-category="{{ $categoryName }}"
+                                 data-vendor="{{ $vendorName }}"
+                                 data-desc="{{ $product->description }}"
+                                 data-rating="{{ $avgRating ?? 0 }}"
+                                 data-reviews="{{ $product->reviews_count ?? 0 }}"
+                                 data-stock="{{ $product->stock }}">
+                                <img src="{{ $imageUrl }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                             </div>
-                        </div>
-                        <button class="add-to-cart-btn shrink-0 bg-[#b55b3d] hover:bg-[#a04f33] text-white text-[9px] sm:text-xs font-semibold px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg transition"
-                                data-product-id="109"
-                                data-product-name="Macrame Plant Hanger"
-                                data-product-price="549"
-                                data-product-image="{{ asset('images/Sweaters.png') }}"
-                                data-product-desc="Beautifully hand-knotted macrame plant hanger for indoor plants."
-                                data-product-category="Home Decor">
-                            Add
-                        </button>
-                    </div>
-
-                    <!-- Trending Item 2 -->
-                    <div class="flex items-center gap-3 sm:gap-4 bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl shadow-sm border border-[#ebd7be]/40 group transition">
-                        <div class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-lg sm:rounded-xl overflow-hidden shrink-0 bg-slate-100 cursor-pointer view-details-btn"
-                             data-id="110"
-                             data-name="Handloom Cotton Scarf"
-                             data-price="799"
-                             data-original-price="799"
-                             data-image="{{ asset('images/SunGlass.png') }}"
-                             data-category="Textile"
-                             data-vendor="Handloom House"
-                             data-desc="Soft and lightweight handloom cotton scarf with vibrant traditional patterns."
-                             data-rating="4.7"
-                             data-reviews="1800"
-                             data-stock="40">
-                            <img src="{{ asset('images/SunGlass.png') }}" alt="Trending product" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                        </div>
-                        <div class="flex-grow">
-                            <h4 class="text-xs sm:text-sm md:text-base font-bold text-brand-dark group-hover:text-brand-primary transition-colors line-clamp-1 cursor-pointer view-details-btn"
-                                data-id="110"
-                                data-name="Handloom Cotton Scarf"
-                                data-price="799"
-                                data-original-price="799"
-                                data-image="{{ asset('images/SunGlass.png') }}"
-                                data-category="Textile"
-                                data-vendor="Handloom House"
-                                data-desc="Soft and lightweight handloom cotton scarf with vibrant traditional patterns."
-                                data-rating="4.7"
-                                data-reviews="1800"
-                                data-stock="40">Handloom Cotton Scarf</h4>
-                            <span class="text-brand-primary font-bold text-xs sm:text-sm">Rs. 799</span>
-                            <div class="flex items-center gap-1 text-[9px] sm:text-xs text-amber-500 font-semibold mt-0.5">
-                                <i class="fa-solid fa-star"></i>
-                                <span>4.7</span>
-                                <span class="text-slate-400 ml-0.5 sm:ml-1 hidden xs:inline">(1.8k sold)</span>
+                            <div class="flex-grow">
+                                <h4 class="text-xs sm:text-sm md:text-base font-bold text-brand-dark group-hover:text-brand-primary transition-colors line-clamp-1 cursor-pointer view-details-btn"
+                                    data-id="{{ $product->id }}"
+                                    data-name="{{ $product->name }}"
+                                    data-price="{{ $effectivePrice }}"
+                                    data-original-price="{{ $originalPrice }}"
+                                    data-image="{{ $imageUrl }}"
+                                    data-category="{{ $categoryName }}"
+                                    data-vendor="{{ $vendorName }}"
+                                    data-desc="{{ $product->description }}"
+                                    data-rating="{{ $avgRating ?? 0 }}"
+                                    data-reviews="{{ $product->reviews_count ?? 0 }}"
+                                    data-stock="{{ $product->stock }}">{{ $product->name }}</h4>
+                                <span class="text-brand-primary font-bold text-xs sm:text-sm">Rs. {{ number_format($effectivePrice) }}</span>
+                                <div class="flex items-center gap-1 text-[9px] sm:text-xs text-amber-500 font-semibold mt-0.5">
+                                    <i class="fa-solid fa-star"></i>
+                                    <span>{{ $avgRating ?? '—' }}</span>
+                                    <span class="text-slate-400 ml-0.5 sm:ml-1 hidden xs:inline">({{ $soldLabel }} sold)</span>
+                                </div>
                             </div>
+                            <button class="add-to-cart-btn shrink-0 bg-[#b55b3d] hover:bg-[#a04f33] text-white text-[9px] sm:text-xs font-semibold px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg transition"
+                                    data-product-id="{{ $product->id }}"
+                                    data-product-name="{{ $product->name }}"
+                                    data-product-price="{{ $effectivePrice }}"
+                                    data-product-image="{{ $imageUrl }}"
+                                    data-product-desc="{{ $product->description }}"
+                                    data-product-category="{{ $categoryName }}">
+                                Add
+                            </button>
                         </div>
-                        <button class="add-to-cart-btn shrink-0 bg-[#b55b3d] hover:bg-[#a04f33] text-white text-[9px] sm:text-xs font-semibold px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg transition"
-                                data-product-id="110"
-                                data-product-name="Handloom Cotton Scarf"
-                                data-product-price="799"
-                                data-product-image="{{ asset('images/SunGlass.png') }}"
-                                data-product-desc="Soft and lightweight handloom cotton scarf with vibrant traditional patterns."
-                                data-product-category="Textile">
-                            Add
-                        </button>
-                    </div>
-
-                    <!-- Trending Item 3 -->
-                    <div class="flex items-center gap-3 sm:gap-4 bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl shadow-sm border border-[#ebd7be]/40 group transition">
-                        <div class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-lg sm:rounded-xl overflow-hidden shrink-0 bg-slate-100 cursor-pointer view-details-btn"
-                             data-id="111"
-                             data-name="Hand-Painted Coaster Set"
-                             data-price="349"
-                             data-original-price="349"
-                             data-image="{{ asset('images/Table.png') }}"
-                             data-category="Home Decor"
-                             data-vendor="Patan Artisans"
-                             data-desc="Set of 4 beautifully hand-painted wooden coasters with traditional Nepali art."
-                             data-rating="4.9"
-                             data-reviews="3100"
-                             data-stock="60">
-                            <img src="{{ asset('images/Table.png') }}" alt="Trending product" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                    @empty
+                        <div class="col-span-3 text-center py-8 text-slate-400">
+                            No trending products available yet.
                         </div>
-                        <div class="flex-grow">
-                            <h4 class="text-xs sm:text-sm md:text-base font-bold text-brand-dark group-hover:text-brand-primary transition-colors line-clamp-1 cursor-pointer view-details-btn"
-                                data-id="111"
-                                data-name="Hand-Painted Coaster Set"
-                                data-price="349"
-                                data-original-price="349"
-                                data-image="{{ asset('images/Table.png') }}"
-                                data-category="Home Decor"
-                                data-vendor="Patan Artisans"
-                                data-desc="Set of 4 beautifully hand-painted wooden coasters with traditional Nepali art."
-                                data-rating="4.9"
-                                data-reviews="3100"
-                                data-stock="60">Hand-Painted Coaster Set</h4>
-                            <span class="text-brand-primary font-bold text-xs sm:text-sm">Rs. 349</span>
-                            <div class="flex items-center gap-1 text-[9px] sm:text-xs text-amber-500 font-semibold mt-0.5">
-                                <i class="fa-solid fa-star"></i>
-                                <span>4.9</span>
-                                <span class="text-slate-400 ml-0.5 sm:ml-1 hidden xs:inline">(3.1k sold)</span>
-                            </div>
-                        </div>
-                        <button class="add-to-cart-btn shrink-0 bg-[#b55b3d] hover:bg-[#a04f33] text-white text-[9px] sm:text-xs font-semibold px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg transition"
-                                data-product-id="111"
-                                data-product-name="Hand-Painted Coaster Set"
-                                data-product-price="349"
-                                data-product-image="{{ asset('images/Table.png') }}"
-                                data-product-desc="Set of 4 beautifully hand-painted wooden coasters with traditional Nepali art."
-                                data-product-category="Home Decor">
-                            Add
-                        </button>
-                    </div>
-
+                    @endforelse
                 </div>
             </div>
         </section>
