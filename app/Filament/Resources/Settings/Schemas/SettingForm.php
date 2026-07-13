@@ -29,6 +29,7 @@ class SettingForm
                     ->displayFormat('Y-m-d H:i:s')
                     ->timezone(config('app.timezone'))
                     ->native(false)
+                    ->minDate(now())
                     ->visible(fn (Get $get) => Str::contains($get('key') ?? '', ['date', 'time', '_at']))
                     ->dehydrated(fn (Get $get) => Str::contains($get('key') ?? '', ['date', 'time', '_at'])),
 
