@@ -603,6 +603,12 @@ body > .swal2-container.swal2-top-right {
     right: 16px !important;
 }
 
+/* Vendor/seller dashboard — header is ~56px tall, so toast sits right below it */
+body.vendor-layout > .swal2-container.swal2-top-end,
+body.vendor-layout > .swal2-container.swal2-top-right {
+    top: 56px !important;
+}
+
 /* Reusable Product Card and Filter Styles */
 .product-card {
     transition: transform 0.4s cubic-bezier(0.165, 0.84, 0.44, 1), box-shadow 0.4s ease;

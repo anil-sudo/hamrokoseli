@@ -109,13 +109,13 @@
                     </div>
                 </div>
 
-                {{-- Tooltip --}}
-                <div id="sales-tooltip"
-                    class="hidden absolute z-10 bg-(--card-dark) border border-(--primary-color)/20 text-(--text-dark) text-xs font-medium px-3 py-1.5 rounded-lg shadow-lg pointer-events-none">
-                </div>
-
                 {{-- Chart bars --}}
                 <div id="sales-trend-chart" class="flex items-end justify-between gap-1 h-52 relative">
+
+                    {{-- Tooltip (inside relative container so absolute coords align) --}}
+                    <div id="sales-tooltip"
+                        class="hidden absolute z-10 bg-(--card-dark) border border-(--primary-color)/20 text-(--text-dark) text-xs font-medium px-3 py-1.5 rounded-lg shadow-lg pointer-events-none whitespace-nowrap">
+                    </div>
                     {{-- Skeleton bars shown while first load --}}
                     @foreach ($salesTrend as $day)
                         <div class="flex-1 flex flex-col items-center gap-2 group cursor-pointer sales-bar-wrap">
@@ -349,15 +349,13 @@
             // ── Show/hide tooltip on bar hover ───────────────────────────────────
             function attachTooltips() {
                 chart.querySelectorAll('.chart-bar').forEach(bar => {
-                    bar.addEventListener('mouseenter', function (e) {
+                    bar.addEventListener('mouseenter', function () {
                         const label     = this.dataset.label;
                         const formatted = this.dataset.formatted;
                         tooltip.textContent = `${label}: ${formatted}`;
                         tooltip.classList.remove('hidden');
-                        positionTooltip(e);
+                        positionTooltip(this);
                     });
-
-                    bar.addEventListener('mousemove', positionTooltip);
 
                     bar.addEventListener('mouseleave', function () {
                         tooltip.classList.add('hidden');
@@ -365,12 +363,34 @@
                 });
             }
 
-            function positionTooltip(e) {
-                const rect = chart.getBoundingClientRect();
-                const x    = e.clientX - rect.left;
-                const y    = e.clientY - rect.top;
-                tooltip.style.left = `${Math.min(x + 12, rect.width - 160)}px`;
-                tooltip.style.top  = `${y - 36}px`;
+            function positionTooltip(bar) {
+                const chartRect   = chart.getBoundingClientRect();
+                const barRect     = bar.getBoundingClientRect();
+                const tooltipGap  = 8; // px gap between tooltip bottom and bar top
+
+                // Centre tooltip over the bar horizontally
+                const barCentreX  = barRect.left - chartRect.left + barRect.width / 2;
+                // Place tooltip just above the bar's top edge
+                const barTopY     = barRect.top - chartRect.top;
+
+                tooltip.style.left      = '0px';
+                tooltip.style.top       = '0px';
+                tooltip.style.visibility = 'hidden';
+                tooltip.classList.remove('hidden');
+
+                // Read rendered tooltip width after making it visible
+                const tooltipWidth  = tooltip.offsetWidth;
+                const tooltipHeight = tooltip.offsetHeight;
+
+                const left = Math.max(0, Math.min(
+                    barCentreX - tooltipWidth / 2,
+                    chartRect.width - tooltipWidth
+                ));
+                const top  = barTopY - tooltipHeight - tooltipGap;
+
+                tooltip.style.left       = `${left}px`;
+                tooltip.style.top        = `${top}px`;
+                tooltip.style.visibility = 'visible';
             }
 
             // ── Fetch data from API and refresh chart ─────────────────────────────
