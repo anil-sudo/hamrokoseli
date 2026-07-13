@@ -44,6 +44,7 @@ Route::middleware(['auth', 'role:vendor'])->group(function () {
     Route::post('/order-details/{order}/order-status', [SellerController::class, 'updateOrderStatus'])->name('order-details.order-status');
     Route::get('/seller-review', [SellerController::class, 'sellerReview'])->name('seller.review');
     Route::post('/seller-review/{id}/reply', [SellerController::class, 'replyToReview'])->name('seller.review.reply');
+    Route::delete('/seller-review/{id}', [SellerController::class, 'destroyReview'])->name('seller.review.destroy');
     Route::get('/seller-payments', [SellerController::class, 'sellerPayment'])->name('seller.payment');
     Route::get('/seller-payments/pay-commission', [SellerController::class, 'payCommission'])->name('seller.pay-commission.get');
     Route::post('/seller-payments/pay-commission', [SellerController::class, 'payCommission'])->name('seller.pay-commission');

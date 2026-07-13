@@ -763,6 +763,25 @@ class SellerController extends Controller
         return redirect()->back()->with('success', 'Reply submitted successfully.');
     }
 
+    public function destroyReview($id)
+    {
+        $vendor = auth()->user()->vendor;
+        if (! $vendor) {
+            return redirect()->back()->with('error', 'Vendor profile not found.');
+        }
+
+        $review = Review::findOrFail($id);
+
+        // Ensure the review belongs to this vendor's products
+        if ($review->product->vendor_id !== $vendor->id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $review->delete();
+
+        return redirect()->back()->with('success', 'Review deleted successfully.');
+    }
+
     public function sellerPayment(Request $request)
     {
         $vendor = auth()->user()->vendor;
