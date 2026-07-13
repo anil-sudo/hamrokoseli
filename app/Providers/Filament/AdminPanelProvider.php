@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Auth\Register;
 use App\Filament\Widgets\OrdersChartWidget;
 use App\Filament\Widgets\OrderStatusChartWidget;
 use App\Filament\Widgets\RevenueChartWidget;
@@ -31,7 +32,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->profile()
             ->login()
-            // ->registration(\App\Filament\Auth\Register::class)
+            ->registration(Register::class)
             ->colors([
                 'primary' => Color::Amber,
             ])

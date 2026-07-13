@@ -140,8 +140,6 @@
                     <li>Cash on Delivery (COD)</li>
                     <li>eSewa</li>
                     <li>Khalti</li>
-                    <li>Fonepay</li>
-                    <li>Bank Transfer</li>
                 </ul>
 
                 <p class="mt-4 text-[#8E8376] leading-8">
@@ -227,11 +225,11 @@
                     </p>
 
                     <p class="mt-2 text-[#8E8376]">
-                        Email: support@hamrokoseli.com
+                        Email: hamrokoseli06@gmail.com
                     </p>
 
                     <p class="text-[#8E8376]">
-                        Phone: +977-XXXXXXXXXX
+                        Phone: +977-9872273268
                     </p>
 
                     <p class="text-[#8E8376]">

@@ -16,6 +16,10 @@ class Register extends BaseRegister
             'is_active' => true,
         ])->save();
 
+        if (method_exists($user, 'assignRole')) {
+            $user->assignRole('admin');
+        }
+
         return $user;
     }
 }

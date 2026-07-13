@@ -18,7 +18,7 @@
                 <p class="text-emerald-100/90 text-sm sm:text-base md:text-lg mb-6 sm:mb-8 max-w-xl mx-auto px-2">
                     Support local artisans and find unique, handmade treasures
                 </p>
-                
+
                 <a href="{{ route('shop') }}" class="bg-[#b55b3d] hover:bg-[#a04f33] text-white font-bold px-6 sm:px-8 py-2.5 sm:py-3 rounded-full shadow-md transition duration-300 inline-block tracking-wide text-sm sm:text-base">
                     Shop Now
                 </a>
@@ -32,9 +32,9 @@
                     <span>Flash Sale &mdash; Limited Time</span>
                 </div>
             </div>
-            
-            <!-- Grid: 2 columns on mobile, 4 on desktop -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
+
+            <!-- Grid: 3 columns on mobile, 4 on desktop -->
+            <div class="grid grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
                 @forelse($featuredProducts as $product)
                     @php
                         $imageUrl = $product->primaryImageUrl();
@@ -142,8 +142,8 @@
                     <a href="{{ route('shop', ['category' => $category->slug]) }}" class="bg-[#FDFBF7] rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-amber-900/5 hover:shadow-md transition group block {{ $loop->index >= 3 ? 'hidden lg:block' : '' }}">
                         <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-56 overflow-hidden bg-slate-100 relative flex items-center justify-center">
                             @if($category->image)
-                                <img src="{{ Storage::disk('public')->url($category->image) }}" 
-                                     alt="{{ $category->cat_name }}" 
+                                <img src="{{ Storage::disk('public')->url($category->image) }}"
+                                     alt="{{ $category->cat_name }}"
                                      class="w-full h-full object-cover group-hover:scale-105 transition duration-500 relative z-10"
                                      onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
                                 <div class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 bg-slate-100 p-2 text-center z-0 hidden">
@@ -172,7 +172,7 @@
         <!-- 4. Today's Deals Section - 3 COLUMNS ON MOBILE -->
         <section id="todays-deals" class="max-w-7xl mx-auto px-4 sm:px-6 mb-12 sm:mb-16">
             <div class="bg-[#E5DCD0]/60 border border-[#ebd7be]/40 rounded-2xl sm:rounded-3xl p-3 sm:p-4 md:p-6 lg:p-8 shadow-sm">
-                
+
                 <div class="flex items-center justify-between mb-4 sm:mb-5 md:mb-6 lg:mb-8">
                     <h3 class="text-xl sm:text-2xl md:text-3xl font-bold text-brand-dark flex items-center gap-2">
                         <span>Today's Deals</span>
@@ -183,10 +183,87 @@
                     </a>
                 </div>
 
-                <!-- Grid: 2 columns on mobile, 4 on desktop -->
-                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
-                    <!-- Deal Card 1 -->
-                    <div class="product-card bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group">
+                <!-- Grid: 3 columns on mobile, 2 on tablet, 4 on desktop -->
+                <div class="grid grid-cols-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
+@forelse($todaysDeals as $product)
+    @php
+        $price = $product->price;
+        $discountPrice = $product->discount_price ?? null;
+        $hasDiscount = !is_null($discountPrice) && $discountPrice < $price;
+        $displayPrice = $hasDiscount ? $discountPrice : $price;
+        $discountPercentage = $hasDiscount ? round((($price - $discountPrice) / $price) * 100) : 0;
+    @endphp
+    <div class="bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-[#ebd7be]/40 relative hover:shadow-md transition group">
+        @if ($hasDiscount)
+            <span class="absolute top-1 left-1 sm:top-2 sm:left-2 bg-[#e5b842] text-brand-dark text-[8px] sm:text-[9px] md:text-[10px] font-extrabold uppercase px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full z-10 shadow-sm">
+                -{{ $discountPercentage }}%
+            </span>
+        @endif
+        <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-48 overflow-hidden bg-slate-100 relative cursor-pointer view-details-btn"
+             data-id="{{ $product->id }}"
+             data-name="{{ $product->name }}"
+             data-price="{{ $displayPrice }}"
+             data-original-price="{{ $price }}"
+             data-discount="{{ $hasDiscount ? 'true' : 'false' }}"
+             data-image="{{ $product->primaryImageUrl() }}"
+             data-category="{{ $product->category->cat_name ?? '' }}"
+             data-vendor="{{ $product->vendor->vendor_name ?? 'Local Artisan' }}"
+             data-desc="{{ $product->description }}"
+             data-rating="{{ $product->rating ?? 5 }}"
+             data-reviews="{{ $product->reviews_count ?? 0 }}"
+             data-stock="{{ $product->stock ?? 10 }}">
+            <img src="{{ $product->primaryImageUrl() }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            <button class="wishlist-btn absolute top-2 right-2 text-[#C65A3A] hover:text-[#b04a2c] transition-colors text-base drop-shadow focus:outline-none"
+                    data-product-id="{{ $product->id }}"
+                    data-product-name="{{ $product->name }}"
+                    data-product-price="{{ $displayPrice }}"
+                    data-product-image="{{ $product->primaryImageUrl() }}"
+                    data-product-desc="{{ $product->description }}"
+                    data-product-category="{{ $product->category->cat_name ?? '' }}">
+                <i class="far fa-heart"></i>
+            </button>
+        </div>
+        <div class="p-1.5 sm:p-2 md:p-3 lg:p-4">
+            <span class="text-slate-400 font-semibold text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] uppercase tracking-wider truncate block">{{ $product->category->cat_name ?? '' }}</span>
+            <h4 class="text-[9px] sm:text-[10px] md:text-xs lg:text-sm font-bold text-brand-dark my-0.5 sm:my-1 line-clamp-2 cursor-pointer hover:text-brand-primary transition-colors view-details-btn"
+                data-id="{{ $product->id }}"
+                data-name="{{ $product->name }}"
+                data-price="{{ $displayPrice }}"
+                data-original-price="{{ $price }}"
+                data-discount="{{ $hasDiscount ? 'true' : 'false' }}"
+                data-image="{{ $product->primaryImageUrl() }}"
+                data-category="{{ $product->category->cat_name ?? '' }}"
+                data-vendor="{{ $product->vendor->vendor_name ?? 'Local Artisan' }}"
+                data-desc="{{ $product->description }}"
+                data-rating="{{ $product->rating ?? 5 }}"
+                data-reviews="{{ $product->reviews_count ?? 0 }}"
+                data-stock="{{ $product->stock ?? 10 }}">
+                {{ $product->name }}
+            </h4>
+            <div class="flex items-center justify-between mt-1 sm:mt-1.5 md:mt-2 pt-1 sm:pt-1.5 border-t border-slate-100">
+                <span class="text-brand-primary font-bold text-[9px] sm:text-[10px] md:text-xs lg:text-sm">Rs. {{ number_format($displayPrice) }}</span>
+                @if ($hasDiscount)
+                    <p class="text-xs text-[#5b403e] line-through">Rs. {{ number_format($price) }}</p>
+                @endif
+                <button class="add-to-cart-btn bg-[#b55b3d] hover:bg-[#a04f33] text-white text-[8px] sm:text-[9px] md:text-[10px] lg:text-xs font-semibold px-1.5 sm:px-2 py-0.5 sm:py-1 md:px-2.5 md:py-1 rounded-lg transition"
+                        data-product-id="{{ $product->id }}"
+                        data-product-name="{{ $product->name }}"
+                        data-product-price="{{ $displayPrice }}"
+                        data-product-image="{{ $product->primaryImageUrl() }}"
+                        data-product-desc="{{ $product->description }}"
+                        data-product-category="{{ $product->category->cat_name ?? '' }}">
+                    Add
+                </button>
+            </div>
+        </div>
+    </div>
+@empty
+    <div class="col-span-full text-center py-8">
+        <p class="text-[#5b403e]">No deals available at the moment.</p>
+    </div>
+@endforelse
+                    {{--
+                    <div class="bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-[#ebd7be]/40 relative hover:shadow-md transition group">
                         <span class="absolute top-1 left-1 sm:top-2 sm:left-2 bg-[#e5b842] text-brand-dark text-[8px] sm:text-[9px] md:text-[10px] font-extrabold uppercase px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full z-10 shadow-sm">
                             -20%
                         </span>
@@ -469,6 +546,7 @@
                             </div>
                         </div>
                     </div>
+--}}
                 </div>
             </div>
         </section>
@@ -476,7 +554,7 @@
         <!-- 5. Trending Now Section -->
         <section id="trending-now" class="max-w-7xl mx-auto px-4 sm:px-6 mb-12 sm:mb-16">
             <div class="bg-[#E5DCD0]/60 border border-[#ebd7be]/40 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm">
-                
+
                 <h3 class="text-xl sm:text-2xl md:text-3xl font-bold text-brand-dark flex items-center gap-2 mb-6">
                     <span>Trending Now</span>
                 </h3>
@@ -623,6 +701,7 @@
                             Add
                         </button>
                     </div>
+
                 </div>
             </div>
         </section>
@@ -630,7 +709,7 @@
         <!-- 6. Top Sellers Section - 3 COLUMNS ON MOBILE -->
         <section id="top-sellers" class="max-w-7xl mx-auto px-4 sm:px-6 mb-12 sm:mb-20">
             <div class="bg-[#E5DCD0]/60 border border-[#ebd7be]/40 rounded-2xl sm:rounded-3xl p-3 sm:p-4 md:p-6 lg:p-10 shadow-sm">
-                
+
                 <div class="flex items-center justify-between mb-4 sm:mb-5 md:mb-6 lg:mb-8">
                     <h3 class="text-xl sm:text-2xl md:text-3xl font-bold text-brand-dark flex items-center gap-2">
                         <span>Top Sellers</span>
@@ -660,7 +739,7 @@
                         <div class="product-card bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group {{ $index >= 2 ? 'hidden sm:block' : '' }}">
                             <div class="relative w-full aspect-[4/5] overflow-hidden rounded-t-2xl sm:rounded-t-3xl bg-slate-100">
                                 <img src="{{ $imageUrl }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
-                                
+
                                 <span class="absolute top-2 left-2 sm:top-4 sm:left-4 {{ $rankBg }} text-[6px] xs:text-[8px] sm:text-[9px] md:text-[10px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 sm:px-3 sm:py-1.5 rounded-full z-10 shadow">
                                     #{{ $rank }} {{ $rank <= 3 ? 'Best Seller' : 'Seller' }}
                                 </span>

@@ -312,7 +312,7 @@
                 <div class="divide-y divide-(--text-color)/10">
                     @forelse ($items as $item)
                         <div class="p-6 lg:p-8 flex flex-col sm:flex-row sm:items-center gap-5">
-                            <img src="{{ $item->product?->primaryImageUrl() ?? asset('images/placeholder.png') }}"
+                            <img src="{{ $item->product?->primaryImageUrl() ?? 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9zdmc+'"
                                 class="w-20 h-20 object-cover rounded-2xl bg-(--card-dark)" alt="{{ $item->product?->name ?? 'product' }}">
                             <div class="flex-1 min-w-0">
                                 <p class="font-semibold text-base text-(--text-dark)">{{ $item->product?->name ?? 'Product removed' }}</p>

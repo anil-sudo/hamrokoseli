@@ -13,6 +13,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserRegisterController;
 use App\Http\Controllers\VendorPasswordResetController;
 use App\Http\Controllers\VendorRegisterController;
+use App\Http\Middleware\EnsureVendor;
 use Illuminate\Support\Facades\Route;
 
 // ─── Seller Auth (guest only, rate limited) ───────────────────────────────────
@@ -30,7 +31,7 @@ Route::middleware(['guest:vendor', 'throttle:auth'])->group(function () {
 Route::post('/seller-logout', [SellerController::class, 'logout'])->name('seller.logout');
 
 // ─── Seller profile & password (auth protected — fix #3) ─────────────────────
-Route::middleware(['auth', 'role:vendor'])->group(function () {
+Route::middleware(['auth', EnsureVendor::class])->group(function () {
     Route::get('/seller-dashboard', [SellerController::class, 'dashboard'])->name('dashboard');
     Route::get('/product-management', [SellerController::class, 'product_management'])->name('product-management');
     Route::get('/create-product', [SellerController::class, 'productCreate'])->name('product-create');
@@ -162,3 +163,10 @@ Route::get('/sitemap.xml', [PageController::class, 'sitemap'])->name('sitemap');
 Route::post('/chatbot/send', [ChatBotController::class, 'send'])->name('chatbot.send');
 
 Route::post('/contact-us', [PageController::class, 'contactusSubmit'])->name('contact-us.submit');
+Route::get('/meet-the-team', [PageController::class, 'meet_the_team'])->name('meet-the-team');
+Route::get('/suraj-tamang', [PageController::class, 'suraj_tamang'])->name('suraj-tamang');
+Route::get('/aashutosh-baral', [PageController::class, 'aashutosh_baral'])->name('aashutosh-baral');
+Route::get('/rajmangal-rajak', [PageController::class, 'rajmangal_rajak'])->name('rajmangal-rajak');
+Route::get('/anil-shrestha', [PageController::class, 'anil_shrestha'])->name('anil-shrestha');
+Route::get('/babisha-katwal', [PageController::class, 'babisha_katwal'])->name('babisha-katwal');
+Route::get('/nishan-rai', [PageController::class, 'nishan_rai'])->name('nishan-rai');

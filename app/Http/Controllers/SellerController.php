@@ -9,8 +9,10 @@ use App\Models\Payment;
 use App\Models\Payout;
 use App\Models\Product;
 use App\Models\Review;
+use App\Models\Setting;
 use App\Models\SupportTicket;
 use App\Services\NotificationService;
+use Carbon\Carbon;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -106,6 +108,20 @@ class SellerController extends Controller
 
     public function seller()
     {
+        // If the user is already logged in, redirect them appropriately.
+        if (auth()->check()) {
+            $user = auth()->user();
+
+            if ($user->role === 'vendor') {
+                return redirect()->route('dashboard')
+                    ->with('info', 'You already have a seller account.');
+            }
+
+            // Regular user – they must log out before registering as a seller.
+            return redirect()->route('home')
+                ->with('info', 'Please log out of your current account before registering as a seller.');
+        }
+
         return view('seller.register');
     }
 
@@ -168,7 +184,15 @@ class SellerController extends Controller
             ->take(5)
             ->get();
 
-        return view('seller.dashboard', compact('vendor', 'stats', 'salesTrend', 'recentItems'));
+        $dealEndsAt = Setting::getValue('todays_deal_ends_at');
+        if ($dealEndsAt) {
+            $dealEndsAt = Carbon::parse($dealEndsAt)->toIso8601String();
+        } else {
+            $dealEndsAt = now()->endOfDay()->toIso8601String();
+        }
+        $dealBgImage = Setting::getValue('deal_countdown_bg_image');
+
+        return view('seller.dashboard', compact('vendor', 'stats', 'salesTrend', 'recentItems', 'dealEndsAt', 'dealBgImage'));
     }
 
     public function product_management(Request $request)

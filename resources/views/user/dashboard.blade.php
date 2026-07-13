@@ -85,7 +85,7 @@
                         <div class="group flex items-center gap-4 p-4 hover:bg-(--card-dark)/10 rounded-2xl transition">
                             @php
                                 $firstItem = $order->orderItems->first();
-                                $productImage = $firstItem && $firstItem->product ? $firstItem->product->primaryImageUrl() : asset('images/placeholder.png');
+                                $productImage = $firstItem && $firstItem->product ? $firstItem->product->primaryImageUrl() : 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9zdmc+';
                                 $productName = $firstItem && $firstItem->product ? $firstItem->product->name : 'Unknown Product';
                                 if($order->orderItems->count() > 1) {
                                     $productName .= ' + ' . ($order->orderItems->count() - 1) . ' more items';
