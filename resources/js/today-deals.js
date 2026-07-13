@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', function () {
     const categoryPills = document.querySelectorAll('.filter-pill');
     const productCards = document.querySelectorAll('.product-card');
@@ -41,6 +40,8 @@ document.addEventListener('DOMContentLoaded', function () {
     // Modal functionality
     document.querySelectorAll('.view-details-btn').forEach(btn => {
         btn.addEventListener('click', function (e) {
+            // If the click came from inside a wishlist button, ignore it
+            if (e.target.closest('.wishlist-btn')) return;
             e.preventDefault();
 
             document.getElementById('modal-product-name').textContent = btn.getAttribute('data-name');
@@ -160,7 +161,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const countdownEl = document.getElementById('deal-countdown');
     const dealEndsAt = countdownEl ? countdownEl.getAttribute('data-ends-at') : null;
-    const endTime = dealEndsAt ? new Date(dealEndsAt.replace(' ', 'T')).getTime() : (new Date().getTime() + (8 * 60 * 60 * 1000));
+    const endTime = dealEndsAt ? new Date(dealEndsAt).getTime() : (new Date().getTime() + (8 * 60 * 60 * 1000));
 
     function updateCountdown() {
 

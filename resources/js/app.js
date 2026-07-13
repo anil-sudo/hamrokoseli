@@ -372,60 +372,42 @@ if (window.isLoggedIn) {
         localStorage.setItem('wishlist_visited', 'true');
     }
 
-    // Helper: Create/Retrieve Toast Container
-    function getToastContainer() {
-        let container = document.getElementById('toast-container');
-        if (!container) {
-            container = document.createElement('div');
-            container.id = 'toast-container';
-            container.className = 'toast-container';
-            document.body.appendChild(container);
-        }
-        return container;
-    }
+    // SweetAlert2 Toast — top-right, below the navbar so it never covers product buttons
+    const SwalToast = window.Swal ? Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        customClass: {
+            popup: 'swal-hamrokoseli-toast',
+        },
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer);
+            toast.addEventListener('mouseleave', Swal.resumeTimer);
+        },
+    }) : null;
 
-    // Show Sleek Toast Notification
+    const toastStyles = {
+        success: { background: '#3498db', color: '#ffffff' },
+        error:   { background: '#e74c3c', color: '#ffffff' },
+        warning: { background: '#e74c3c', color: '#ffffff' },
+        info:    { background: '#e74c3c', color: '#ffffff' },
+    };
+
     function showToast(message, type = 'success') {
-        const container = getToastContainer();
-        const toast = document.createElement('div');
-        
-        const colours = {
-            success : 'bg-white text-[#1F3D2E] border-l-4 border-[#1F3D2E]',
-            error   : 'bg-white text-red-600 border-l-4 border-red-600',
-            warning : 'bg-white text-amber-600 border-l-4 border-amber-500',
-            info    : 'bg-white text-[#C65A3A] border-l-4 border-[#C65A3A]',
-        };
-
-        const icons = {
-            success : 'fa-circle-check',
-            error   : 'fa-circle-xmark',
-            warning : 'fa-triangle-exclamation',
-            info    : 'fa-circle-info',
-        };
-
-        toast.className = [
-            'toast-item flex items-center gap-3',
-            'px-5 py-3.5 rounded-2xl shadow-xl text-sm font-semibold',
-            'transition-all duration-300 backdrop-blur-md',
-            colours[type] ?? colours.success,
-        ].join(' ');
-
-        toast.innerHTML = `
-            <i class="fas ${icons[type] ?? icons.success} text-base"></i>
-            <span>${message}</span>
-        `;
-
-        container.appendChild(toast);
-
-        // Trigger transition
-        setTimeout(() => toast.classList.add('show'), 50);
-
-        // Remove toast after 3 seconds
-        setTimeout(() => {
-            toast.classList.remove('show');
-            toast.classList.add('hide');
-            setTimeout(() => toast.remove(), 400);
-        }, 3000);
+        if (SwalToast) {
+            const style = toastStyles[type] ?? toastStyles.success;
+            SwalToast.fire({
+                icon: type,
+                title: message,
+                background: style.background,
+                color: style.color,
+                iconColor: style.color,
+            });
+        } else {
+            console.info(`[Toast] ${type}: ${message}`);
+        }
     }
 
     window.showToast = showToast;
@@ -850,13 +832,6 @@ function toggleWishlistProduct(productData) {
     window.removeFromCart = removeFromCart;
     window.updateCartQuantity = updateCartQuantity;
     window.moveCartItemToWishlist = moveCartItemToWishlist;
-
-    window.showToast = showToast;
-    if (window.flashMessages) {
-        window.flashMessages.forEach(msg => showToast(msg.message, msg.type));
-        window.flashMessages = [];
-    }
-
 
     // Attach global click listener for any elements with .add-to-cart-btn
     document.addEventListener('click', function (e) {

@@ -192,14 +192,19 @@ class PageController extends Controller
             ->unique('id')
             ->values();
 
+        // Pull the top 20 products by discount percentage, then randomly pick 5
+        // so Featured Star Deals rotates on every page load while always showing
+        // the best-discounted items in the catalogue.
         $featuredDeals = Product::with(['category', 'vendor', 'images'])
             ->where('status', 'active')
             ->whereNotNull('discount_price')
             ->where('discount_price', '>', 0)
             ->whereColumn('discount_price', '<', 'price')
             ->orderByRaw('((price - discount_price) / price) DESC')
-            ->take(5)
-            ->get();
+            ->take(20)
+            ->get()
+            ->shuffle()
+            ->take(5);
 
         $trendingProducts = Product::with(['category', 'vendor', 'images'])
             ->withCount('orderItems')
@@ -208,13 +213,17 @@ class PageController extends Controller
             ->take(6)
             ->get();
 
-        $dealEndsAt = Setting::getValue('todays_deal_ends_at');
+        $dealEndsAt = Setting::getValue('date');
         if ($dealEndsAt) {
-            $dealEndsAt = Carbon::parse($dealEndsAt)->toIso8601String();
+            $dealEndsAt = Carbon::parse($dealEndsAt, config('app.timezone'))->toIso8601String();
         } else {
             $dealEndsAt = now()->endOfDay()->toIso8601String();
         }
-        $dealBgImage = Setting::getValue('deal_countdown_bg_image');
+        $dealBgImage = Setting::getValue('banner_image');
+        if ($dealBgImage) {
+            // Strip any accidental leading "storage/" prefix Filament may save
+            $dealBgImage = preg_replace('#^storage/#', '', $dealBgImage);
+        }
 
         return view('todays-deals', compact('products', 'categories', 'featuredDeals', 'trendingProducts', 'dealEndsAt', 'dealBgImage'));
     }

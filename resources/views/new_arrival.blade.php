@@ -20,7 +20,7 @@
                         data-category="{{ $product->category?->slug ?? 'uncategorized' }}"
                         class="product-card bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group">
 
-                        <div class="relative w-full aspect-square overflow-hidden rounded-t-2xl sm:rounded-t-3xl">
+                        <div class="relative w-full aspect-square overflow-hidden rounded-t-2xl sm:rounded-t-3xl bg-slate-100">
                             <img src="{{ $product->primaryImageUrl() }}" alt="{{ $product->name }}"
                                 class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
 
