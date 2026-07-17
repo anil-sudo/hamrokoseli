@@ -28,9 +28,9 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
-            ->path('admin')
             ->profile()
             ->login()
+            ->domain('console.hamrokoseli.stha-anil.com.np')
             ->colors([
                 'primary' => Color::Amber,
             ])
