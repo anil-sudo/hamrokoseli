@@ -30,7 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->profile()
             ->login()
-            ->domain('console.hamrokoseli.stha-anil.com.np')
+            ->domain('hamrokoseli-admin.stha-anil.com.np')
             ->colors([
                 'primary' => Color::Amber,
             ])
