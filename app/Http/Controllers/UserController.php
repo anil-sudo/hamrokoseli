@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\Wishlist;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
@@ -267,8 +268,8 @@ class UserController extends Controller
 
         $request->validate([
             'name' => 'required|string|max:100',
-            'email' => 'required|email|max:150|unique:users,email,'.$user->id,
-            'phone' => ['nullable', 'digits:10', 'unique:users,phone,'.$user->id],
+            'email' => ['required', 'email', 'max:150', Rule::unique('users', 'email')->ignore($user->id)],
+            'phone' => ['nullable', 'digits:10', Rule::unique('users', 'phone')->ignore($user->id)],
             'address' => 'nullable|string|max:255',
             'profile_pic' => 'nullable|image|max:2048',
         ], [

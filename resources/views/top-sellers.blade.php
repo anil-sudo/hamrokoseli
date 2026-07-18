@@ -24,7 +24,7 @@
                         @endphp
                         @foreach($categories as $cat)
                             <button data-category="{{ strtolower($cat) }}" class="filter-pill px-4 py-2 border border-[#C65A3A]/30 text-[#1F3D2E] text-xs font-bold rounded-full hover:bg-[#C65A3A]/10 transition cursor-pointer">
-                                {{ $cat }}
+                                {{ ucwords($cat) }}
                             </button>
                         @endforeach
                     </div>

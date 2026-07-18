@@ -7,4 +7,4 @@ Disallow: /checkout
 Disallow: /user/
 Disallow: /seller/
 
-Sitemap: https://www.workplace.webtoolnest.dev/sitemap.xml
+Sitemap: https://hamrokoseli.stha-anil.com.np/sitemap.xml
