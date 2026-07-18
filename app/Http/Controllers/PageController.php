@@ -440,7 +440,7 @@ class PageController extends Controller
         $product->vendor_name = $product->vendor?->vendor_name ?? $product->vendor?->name ?? 'Local Artisan';
 
         $recentlyViewed = session()->get('recently_viewed', []);
-        $recentlyViewed = array_filter($recentlyViewed, fn ($pid) => $pid != $product->id);
+        $recentlyViewed = array_filter($recentlyViewed, fn($pid) => $pid != $product->id);
         array_unshift($recentlyViewed, $product->id);
         $recentlyViewed = array_slice($recentlyViewed, 0, 20);
         session()->put('recently_viewed', $recentlyViewed);
@@ -485,7 +485,7 @@ class PageController extends Controller
         // Purchase verify check
         $verified = OrderItem::where('product_id', $productId)
             ->whereNotIn('status', ['cancelled', 'returned'])
-            ->whereHas('order', fn ($q) => $q->where('user_id', $userId))
+            ->whereHas('order', fn($q) => $q->where('user_id', $userId))
             ->exists();
 
         if (! $verified) {

@@ -601,6 +601,7 @@ body > .swal2-container.swal2-top-end,
 body > .swal2-container.swal2-top-right {
     top: 120px !important;
     right: 16px !important;
+    z-index: 100000 !important;
 }
 
 /* Vendor/seller dashboard — header is ~56px tall, so toast sits right below it */
