@@ -195,6 +195,62 @@ class SellerController extends Controller
         return view('seller.dashboard', compact('vendor', 'stats', 'salesTrend', 'recentItems', 'dealEndsAt', 'dealBgImage'));
     }
 
+    /**
+     * API endpoint: returns sales trend data for a given period.
+     * GET /seller-dashboard/sales-trend?period=7|30|90
+     */
+    public function salesTrendData(Request $request)
+    {
+        $vendor = auth()->user()->vendor;
+
+        if (! $vendor) {
+            return response()->json(['error' => 'Vendor not found.'], 403);
+        }
+
+        $period = (int) $request->query('period', 7);
+
+        // Clamp to allowed values
+        if (! in_array($period, [7, 30, 90])) {
+            $period = 7;
+        }
+
+        $vendorId = $vendor->id;
+
+        $soldItems = OrderItem::where('vendor_id', $vendorId)
+            ->whereNotIn('status', ['cancelled', 'returned']);
+
+        $days = collect(range($period - 1, 0))->map(
+            fn ($daysAgo) => now()->subDays($daysAgo)->startOfDay()
+        );
+
+        $dailyTotals = (clone $soldItems)
+            ->where('created_at', '>=', now()->subDays($period - 1)->startOfDay())
+            ->selectRaw('DATE(created_at) as day, SUM(subtotal) as total')
+            ->groupBy('day')
+            ->pluck('total', 'day');
+
+        $maxDailyTotal = max(1, $dailyTotals->max() ?? 0);
+
+        // For 7 days: show short day name (Mon). For 30/90: show M/d (Jun 5).
+        $labelFormat = $period === 7 ? 'D' : 'M j';
+
+        $trend = $days->map(function ($date) use ($dailyTotals, $maxDailyTotal, $labelFormat) {
+            $total = (float) ($dailyTotals[$date->toDateString()] ?? 0);
+
+            return [
+                'label' => $date->format($labelFormat),
+                'date' => $date->toDateString(),
+                'total' => $total,
+                'height' => $total > 0 ? max(8, (int) round(($total / $maxDailyTotal) * 140)) : 4,
+            ];
+        });
+
+        return response()->json([
+            'period' => $period,
+            'trend' => $trend->values(),
+        ]);
+    }
+
     public function product_management(Request $request)
     {
         $vendor = auth()->user()->vendor;

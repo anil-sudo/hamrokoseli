@@ -169,6 +169,8 @@ document.addEventListener('DOMContentLoaded', function () {
         const distance = endTime - now;
 
         if (distance <= 0) {
+            const daysElExp = document.getElementById("countdown-days");
+            if (daysElExp) daysElExp.textContent = "00";
             document.getElementById("countdown-hours").textContent = "00";
             document.getElementById("countdown-minutes").textContent = "00";
             document.getElementById("countdown-seconds").textContent = "00";
@@ -177,13 +179,13 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        const hours = Math.floor(distance / (1000 * 60 * 60));
-        const minutes = Math.floor(
-            (distance % (1000 * 60 * 60)) / (1000 * 60)
-        );
-        const seconds = Math.floor(
-            (distance % (1000 * 60)) / 1000
-        );
+        const days    = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours   = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        const daysEl = document.getElementById("countdown-days");
+        if (daysEl) daysEl.textContent = String(days).padStart(2, "0");
 
         document.getElementById("countdown-hours").textContent =
             String(hours).padStart(2, "0");

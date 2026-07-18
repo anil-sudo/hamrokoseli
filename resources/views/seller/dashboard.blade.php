@@ -7,30 +7,6 @@
             <p class="text-sm text-(--text-color) mt-1">Here's what's happening with your store today.</p>
         </div>
 
-        <!-- Today's Deals Campaign Status Card -->
-        <div class="bg-gradient-to-r from-[#d93537] to-[#ff6b5b] rounded-2xl p-6 text-white flex flex-col md:flex-row justify-between items-center gap-6 shadow-md border border-red-200">
-            <div>
-                <h2 class="text-xl font-bold font-['Plus_Jakarta_Sans'] flex items-center gap-2">
-                    <span class="animate-pulse">🔥</span> Today's Deals Campaign Status
-                </h2>
-                <p class="text-sm text-white/90 mt-1">Add discount prices to your products under Product Management so they are automatically listed on the Today's Deals page.</p>
-            </div>
-            <div id="seller-deal-countdown" data-ends-at="{{ $dealEndsAt }}" class="flex gap-4 font-mono text-center">
-                <div class="bg-white/10 px-4 py-2 rounded-xl border border-white/20 min-w-20">
-                    <span id="seller-hours" class="text-3xl font-extrabold block">00</span>
-                    <span class="text-[10px] uppercase font-bold tracking-wider opacity-85">Hours</span>
-                </div>
-                <div class="bg-white/10 px-4 py-2 rounded-xl border border-white/20 min-w-20">
-                    <span id="seller-minutes" class="text-3xl font-extrabold block">00</span>
-                    <span class="text-[10px] uppercase font-bold tracking-wider opacity-85">Mins</span>
-                </div>
-                <div class="bg-white/10 px-4 py-2 rounded-xl border border-white/20 min-w-20">
-                    <span id="seller-seconds" class="text-3xl font-extrabold block">00</span>
-                    <span class="text-[10px] uppercase font-bold tracking-wider opacity-85">Secs</span>
-                </div>
-            </div>
-        </div>
-
         <!-- Stats Cards Grid -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             <!-- Total Sales Card -->
@@ -115,26 +91,47 @@
         <!-- Sales Trend & Quick Actions -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-            <!-- Sales Trend Chart -->
+            <!-- Sales Trend Chart (Dynamic) -->
             <div class="card-dark lg:col-span-2 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all duration-300">
-                <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
                     <h3 class="text-xl font-semibold text-(--text-color)">Sales Trend</h3>
-                    <span class="text-xs font-medium text-(--text-color)/50 uppercase tracking-wide">Last 7 days</span>
+
+                    {{-- Period selector --}}
+                    <div class="flex items-center gap-1 bg-(--card-dark) rounded-xl p-1">
+                        @foreach ([7 => '7D'] as $days => $label)
+                            <button
+                                data-period="{{ $days }}"
+                                class="sales-trend-btn px-3 py-1 text-xs font-semibold rounded-lg transition-all duration-200
+                                    {{ $days === 7 ? 'bg-(--primary-color) text-white shadow' : 'text-(--text-color)/60 hover:text-(--text-dark)' }}">
+                                {{ $label }}
+                            </button>
+                        @endforeach
+                    </div>
                 </div>
 
-                <div class="flex items-end justify-between gap-4 h-52">
+                {{-- Chart bars --}}
+                <div id="sales-trend-chart" class="flex items-end justify-between gap-1 h-52 relative">
+
+                    {{-- Tooltip (inside relative container so absolute coords align) --}}
+                    <div id="sales-tooltip"
+                        class="hidden absolute z-10 bg-(--card-dark) border border-(--primary-color)/20 text-(--text-dark) text-xs font-medium px-3 py-1.5 rounded-lg shadow-lg pointer-events-none whitespace-nowrap">
+                    </div>
+                    {{-- Skeleton bars shown while first load --}}
                     @foreach ($salesTrend as $day)
-                        <div class="flex-1 flex flex-col items-center gap-2 group cursor-pointer">
-                            <div class="chart-bar w-full bg-(--card-dark) rounded-t-xl hover:bg-(--primary-color) transition-all duration-300 group-hover:scale-y-110 origin-bottom"
-                                style="height: {{ $day['height'] }}px;" title="Rs. {{ number_format($day['total'], 2) }}"></div>
-                            <span
-                                class="text-sm font-medium text-(--text-color)/70 group-hover:text-(--text-dark)">{{ $day['label'] }}</span>
+                        <div class="flex-1 flex flex-col items-center gap-2 group cursor-pointer sales-bar-wrap">
+                            <div class="chart-bar w-full bg-(--card-dark) rounded-t-xl hover:bg-(--primary-color) transition-all duration-300 group-hover:scale-y-105 origin-bottom"
+                                style="height: {{ $day['height'] }}px;"
+                                data-total="{{ $day['total'] }}"
+                                data-label="{{ $day['label'] }}">
+                            </div>
+                            <span class="text-xs font-medium text-(--text-color)/70 group-hover:text-(--text-dark) truncate max-w-full">{{ $day['label'] }}</span>
                         </div>
                     @endforeach
                 </div>
 
-                <div class="mt-5 text-center text-xs text-(--text-color)/50 flex items-center justify-center gap-2">
-                    <i data-lucide="chart-no-axes-column-increasing" class="w-4 h-4"></i> Last 7 days performance
+                <div id="sales-trend-footer" class="mt-5 text-center text-xs text-(--text-color)/50 flex items-center justify-center gap-2">
+                    <i data-lucide="chart-no-axes-column-increasing" class="w-4 h-4"></i>
+                    <span id="sales-trend-label">Last 7 days performance</span>
                 </div>
             </div>
 
@@ -292,6 +289,167 @@
     </div>
 
     <script>
+        // ── Sales Trend Dynamic Chart ──────────────────────────────────────────
+        (function () {
+            const chart      = document.getElementById('sales-trend-chart');
+            const tooltip    = document.getElementById('sales-tooltip');
+            const trendLabel = document.getElementById('sales-trend-label');
+            const buttons    = document.querySelectorAll('.sales-trend-btn');
+
+            if (!chart) return;
+
+            const apiUrl     = '{{ route("dashboard.sales-trend") }}';
+            let currentPeriod = 7;
+
+            const periodLabels = {
+                7:  'Last 7 days performance',
+                30: 'Last 30 days performance',
+                90: 'Last 90 days performance',
+            };
+
+            // ── Render bars from API response data ──────────────────────────────
+            function renderChart(trend) {
+                if (!trend || trend.length === 0) {
+                    chart.innerHTML = '<p class="text-center w-full text-(--text-color)/50 text-sm self-center">No sales data for this period.</p>';
+                    return;
+                }
+
+                const maxTotal  = Math.max(1, ...trend.map(d => d.total));
+                const maxHeight = 140;
+
+                chart.innerHTML = trend.map(day => {
+                    const height = day.total > 0
+                        ? Math.max(8, Math.round((day.total / maxTotal) * maxHeight))
+                        : 4;
+
+                    const formattedTotal = new Intl.NumberFormat('en-IN', {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    }).format(day.total);
+
+                    return `
+                        <div class="flex-1 flex flex-col items-center gap-2 group cursor-pointer sales-bar-wrap"
+                             data-total="${day.total}" data-label="${day.label}" data-date="${day.date}">
+                            <div class="chart-bar w-full bg-(--card-dark) rounded-t-xl hover:bg-(--primary-color)
+                                        transition-all duration-300 group-hover:scale-y-105 origin-bottom"
+                                 style="height: ${height}px;"
+                                 data-total="${day.total}"
+                                 data-formatted="Rs. ${formattedTotal}"
+                                 data-label="${day.label}">
+                            </div>
+                            <span class="text-xs font-medium text-(--text-color)/70 group-hover:text-(--text-dark) truncate max-w-full">
+                                ${day.label}
+                            </span>
+                        </div>`;
+                }).join('');
+
+                attachTooltips();
+            }
+
+            // ── Show/hide tooltip on bar hover ───────────────────────────────────
+            function attachTooltips() {
+                chart.querySelectorAll('.chart-bar').forEach(bar => {
+                    bar.addEventListener('mouseenter', function () {
+                        const label     = this.dataset.label;
+                        const formatted = this.dataset.formatted;
+                        tooltip.textContent = `${label}: ${formatted}`;
+                        tooltip.classList.remove('hidden');
+                        positionTooltip(this);
+                    });
+
+                    bar.addEventListener('mouseleave', function () {
+                        tooltip.classList.add('hidden');
+                    });
+                });
+            }
+
+            function positionTooltip(bar) {
+                const chartRect   = chart.getBoundingClientRect();
+                const barRect     = bar.getBoundingClientRect();
+                const tooltipGap  = 8; // px gap between tooltip bottom and bar top
+
+                // Centre tooltip over the bar horizontally
+                const barCentreX  = barRect.left - chartRect.left + barRect.width / 2;
+                // Place tooltip just above the bar's top edge
+                const barTopY     = barRect.top - chartRect.top;
+
+                tooltip.style.left      = '0px';
+                tooltip.style.top       = '0px';
+                tooltip.style.visibility = 'hidden';
+                tooltip.classList.remove('hidden');
+
+                // Read rendered tooltip width after making it visible
+                const tooltipWidth  = tooltip.offsetWidth;
+                const tooltipHeight = tooltip.offsetHeight;
+
+                const left = Math.max(0, Math.min(
+                    barCentreX - tooltipWidth / 2,
+                    chartRect.width - tooltipWidth
+                ));
+                const top  = barTopY - tooltipHeight - tooltipGap;
+
+                tooltip.style.left       = `${left}px`;
+                tooltip.style.top        = `${top}px`;
+                tooltip.style.visibility = 'visible';
+            }
+
+            // ── Fetch data from API and refresh chart ─────────────────────────────
+            function loadTrend(period) {
+                currentPeriod = period;
+
+                // Visual loading state
+                chart.querySelectorAll('.chart-bar').forEach(b => {
+                    b.style.opacity = '0.4';
+                });
+
+                fetch(`${apiUrl}?period=${period}`, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                })
+                .then(res => {
+                    if (!res.ok) throw new Error('Network error');
+                    return res.json();
+                })
+                .then(data => {
+                    renderChart(data.trend);
+                    if (trendLabel) trendLabel.textContent = periodLabels[period] ?? `Last ${period} days performance`;
+                })
+                .catch(() => {
+                    chart.innerHTML = '<p class="text-center w-full text-(--text-color)/50 text-sm self-center">Failed to load data. Please refresh.</p>';
+                });
+            }
+
+            // ── Period button click handlers ──────────────────────────────────────
+            buttons.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const period = parseInt(this.dataset.period, 10);
+                    if (period === currentPeriod) return;
+
+                    // Update active button styles
+                    buttons.forEach(b => {
+                        b.classList.remove('bg-(--primary-color)', 'text-white', 'shadow');
+                        b.classList.add('text-(--text-color)/60');
+                    });
+                    this.classList.add('bg-(--primary-color)', 'text-white', 'shadow');
+                    this.classList.remove('text-(--text-color)/60');
+
+                    loadTrend(period);
+                });
+            });
+
+            // Attach tooltips to the initially server-rendered bars
+            attachTooltips();
+
+            // Pre-populate data-formatted on server-rendered bars
+            chart.querySelectorAll('.chart-bar').forEach(bar => {
+                const total = parseFloat(bar.dataset.total ?? 0);
+                bar.dataset.formatted = 'Rs. ' + new Intl.NumberFormat('en-IN', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                }).format(total);
+            });
+        })();
+        // ── End Sales Trend ────────────────────────────────────────────────────
+
         document.addEventListener('DOMContentLoaded', function () {
             const countdownEl = document.getElementById('seller-deal-countdown');
             if (countdownEl) {

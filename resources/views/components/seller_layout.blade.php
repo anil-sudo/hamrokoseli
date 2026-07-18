@@ -38,7 +38,7 @@
     </script>
 </head>
 
-<body class="bg-brand-cream overflow-hidden h-screen">
+<body class="bg-brand-cream overflow-hidden h-screen vendor-layout">
     <!-- SIDEBAR -->
     <x-seller_sidebar />
 

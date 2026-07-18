@@ -29,6 +29,15 @@
                     <div id="deal-countdown" data-ends-at="{{ $dealEndsAt }}"
                         class="flex gap-6 mb-8 font-['Plus_Jakarta_Sans']">
                         <div class="text-center">
+                            <div id="countdown-days" class="text-3xl font-bold">00</div>
+                            <div class="text-xs font-semibold text-white text-opacity-80 uppercase">
+                                Days
+                            </div>
+                        </div>
+
+                        <span class="text-2xl font-bold">:</span>
+
+                        <div class="text-center">
                             <div id="countdown-hours" class="text-3xl font-bold">00</div>
                             <div class="text-xs font-semibold text-white text-opacity-80 uppercase">
                                 Hours
@@ -509,74 +518,6 @@
         </section>
 
     </main>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-
-            // ==================== CAROUSEL LOGIC ====================
-            // 1. Featured Star Deals Carousel (1 slide at a time)
-            const featuredCarousel = document.getElementById('featured-carousel');
-            const featuredPrev = document.getElementById('featured-prev');
-            const featuredNext = document.getElementById('featured-next');
-            if (featuredCarousel && featuredPrev && featuredNext) {
-                const cards = featuredCarousel.querySelectorAll('.featured-card');
-                let currentIndex = 0;
-
-                function updateFeaturedCarousel() {
-                    if (cards.length === 0) return;
-                    const cardWidth = cards[0].getBoundingClientRect().width;
-                    featuredCarousel.style.transform = `translateX(-${currentIndex * (cardWidth + 24)}px)`;
-                }
-
-                featuredNext.addEventListener('click', () => {
-                    currentIndex = currentIndex < cards.length - 1 ? currentIndex + 1 : 0;
-                    updateFeaturedCarousel();
-                });
-
-                featuredPrev.addEventListener('click', () => {
-                    currentIndex = currentIndex > 0 ? currentIndex - 1 : cards.length - 1;
-                    updateFeaturedCarousel();
-                });
-
-                window.addEventListener('resize', updateFeaturedCarousel);
-            }
-
-            // 2. Trending Now Carousel
-            const trendingCarousel = document.getElementById('trending-carousel');
-            const trendingPrev = document.getElementById('trending-prev');
-            const trendingNext = document.getElementById('trending-next');
-            if (trendingCarousel && trendingPrev && trendingNext) {
-                const cards = trendingCarousel.querySelectorAll('.trending-card');
-                let currentIndex = 0;
-
-                function visibleCount() {
-                    if (window.innerWidth >= 1024) return 4;
-                    if (window.innerWidth >= 768) return 2;
-                    return 1;
-                }
-
-                function updateTrendingCarousel() {
-                    if (cards.length === 0) return;
-                    const cardWidth = cards[0].getBoundingClientRect().width;
-                    trendingCarousel.style.transform = `translateX(-${currentIndex * (cardWidth + 24)}px)`;
-                }
-
-                trendingPrev.addEventListener('click', () => {
-                    const maxIndex = Math.max(0, cards.length - visibleCount());
-                    currentIndex = currentIndex > 0 ? currentIndex - 1 : maxIndex;
-                    updateTrendingCarousel();
-                });
-
-                trendingNext.addEventListener('click', () => {
-                    const maxIndex = Math.max(0, cards.length - visibleCount());
-                    currentIndex = currentIndex < maxIndex ? currentIndex + 1 : 0;
-                    updateTrendingCarousel();
-                });
-
-                window.addEventListener('resize', updateTrendingCarousel);
-            }
-        });
-    </script>
 
     @vite('resources/js/today-deals.js')
 
