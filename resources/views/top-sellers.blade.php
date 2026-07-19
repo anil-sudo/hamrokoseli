@@ -231,68 +231,7 @@
     </div>
 </div>
 
-<!-- ==================== PRODUCT DETAIL MODAL ==================== -->
-<div id="product-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
-    <!-- Backdrop -->
-    <div id="modal-backdrop" class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
 
-    <!-- Modal Box -->
-    <div class="relative bg-white rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-y-auto z-10">
-
-        <!-- Close Button -->
-        <button id="modal-close" class="absolute top-4 right-4 z-20 bg-[#F4EAE1] hover:bg-[#ebd7be] text-[#3A2A1F] w-9 h-9 rounded-full flex items-center justify-center transition cursor-pointer">
-            <i class="fas fa-times"></i>
-        </button>
-
-        <div class="flex flex-col md:flex-row">
-            <!-- Image -->
-            <div class="md:w-2/5 bg-slate-100 rounded-t-3xl md:rounded-l-3xl md:rounded-tr-none overflow-hidden flex-shrink-0">
-                <img id="modal-image" src="" alt="" class="w-full h-64 md:h-full object-cover">
-            </div>
-
-            <!-- Info -->
-            <div class="md:w-3/5 p-6 sm:p-8 flex flex-col justify-between">
-                <div>
-                    <span id="modal-category" class="text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-1"></span>
-                    <h2 id="modal-name" class="text-xl sm:text-2xl font-bold text-[#1F3D2E] mb-1 leading-tight"></h2>
-                    <p id="modal-vendor" class="text-xs text-[#3A2A1F]/60 font-semibold mb-4"></p>
-
-                    <!-- Stars -->
-                    <div class="flex items-center gap-2 mb-4">
-                        <div id="modal-stars" class="flex text-amber-500 gap-0.5 text-sm"></div>
-                        <span id="modal-reviews" class="text-xs text-[#3A2A1F]/60 font-bold"></span>
-                    </div>
-
-                    <p id="modal-desc" class="text-sm text-[#3A2A1F]/70 leading-relaxed mb-6"></p>
-
-                    <!-- Stock -->
-                    <p id="modal-stock" class="text-xs font-bold mb-4"></p>
-                </div>
-
-                <!-- Price + Actions -->
-                <div class="border-t border-slate-100 pt-5">
-                    <div class="flex items-end gap-3 mb-5">
-                        <span id="modal-price" class="text-2xl font-extrabold text-[#C65A3A]"></span>
-                        <span id="modal-original-price" class="text-sm text-slate-400 line-through hidden"></span>
-                        <span id="modal-discount-badge" class="hidden bg-red-100 text-red-600 text-xs font-bold px-2 py-0.5 rounded-full"></span>
-                    </div>
-                    <div class="flex gap-3">
-                        <button id="modal-wishlist-btn"
-                                class="wishlist-btn flex-1 border-2 border-[#C65A3A] text-[#C65A3A] hover:bg-[#C65A3A] hover:text-white font-bold py-3 rounded-xl transition text-sm cursor-pointer"
-                                data-product-id="" data-product-name="" data-product-price=""
-                                data-product-image="" data-product-desc="" data-product-category="">
-                            <i class="far fa-heart mr-1"></i> Wishlist
-                        </button>
-                        <a id="modal-full-link" href="#"
-                           class="flex-1 bg-[#1F3D2E] hover:bg-[#163020] text-white font-bold py-3 rounded-xl transition text-sm text-center cursor-pointer">
-                            View Full Page
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 <style>
     .filter-pill.active { background-color: rgba(198,90,58,0.12); border-color: #C65A3A; }
@@ -329,91 +268,8 @@ document.addEventListener('DOMContentLoaded', function () {
             })
             .forEach(card => grid.appendChild(card));
     });
-
-    // ── Modal ───────────────────────────────────────────────
-    const modal        = document.getElementById('product-modal');
-    const backdrop     = document.getElementById('modal-backdrop');
-    const closeBtn     = document.getElementById('modal-close');
-
-    function openModal(btn) {
-        const d = btn.dataset;
-
-        document.getElementById('modal-image').src          = d.image;
-        document.getElementById('modal-image').alt          = d.name;
-        document.getElementById('modal-name').textContent   = d.name;
-        document.getElementById('modal-category').textContent = d.category;
-        document.getElementById('modal-vendor').textContent = 'by ' + d.vendor;
-        document.getElementById('modal-desc').textContent   = d.desc;
-
-        // Stars
-        const rating = parseFloat(d.rating) || 5;
-        let stars = '';
-        for (let i = 1; i <= 5; i++) {
-            if (i <= Math.floor(rating))            stars += '<i class="fas fa-star"></i>';
-            else if (rating % 1 >= 0.5 && i === Math.ceil(rating)) stars += '<i class="fas fa-star-half-alt"></i>';
-            else                                    stars += '<i class="far fa-star"></i>';
-        }
-        document.getElementById('modal-stars').innerHTML   = stars;
-        document.getElementById('modal-reviews').textContent = '(' + (d.reviews || 0) + ' reviews)';
-
-        // Price
-        document.getElementById('modal-price').textContent = 'Rs. ' + Number(d.price).toLocaleString();
-        const origEl   = document.getElementById('modal-original-price');
-        const badgeEl  = document.getElementById('modal-discount-badge');
-        if (d.discount === 'true') {
-            const orig    = parseFloat(d.originalPrice);
-            const pct     = Math.round(((orig - parseFloat(d.price)) / orig) * 100);
-            origEl.textContent  = 'Rs. ' + orig.toLocaleString();
-            badgeEl.textContent = '-' + pct + '%';
-            origEl.classList.remove('hidden');
-            badgeEl.classList.remove('hidden');
-        } else {
-            origEl.classList.add('hidden');
-            badgeEl.classList.add('hidden');
-        }
-
-        // Stock
-        const stockEl = document.getElementById('modal-stock');
-        const stock   = parseInt(d.stock) || 0;
-        if (stock === 0)      { stockEl.textContent = 'Out of Stock';       stockEl.className = 'text-xs font-bold mb-4 text-red-500'; }
-        else if (stock <= 5)  { stockEl.textContent = 'Only ' + stock + ' left!'; stockEl.className = 'text-xs font-bold mb-4 text-orange-500'; }
-        else                  { stockEl.textContent = 'In Stock';           stockEl.className = 'text-xs font-bold mb-4 text-green-600'; }
-
-        // Wishlist btn inside modal
-        const wb = document.getElementById('modal-wishlist-btn');
-        wb.dataset.productId       = d.id;
-        wb.dataset.productName     = d.name;
-        wb.dataset.productPrice    = d.price;
-        wb.dataset.productImage    = d.image;
-        wb.dataset.productDesc     = d.desc;
-        wb.dataset.productCategory = d.category;
-
-        // Full page link
-        document.getElementById('modal-full-link').href = '/viewdetails/' + d.slug;
-
-        // Show modal
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeModal() {
-        modal.classList.add('hidden');
-        modal.classList.remove('flex');
-        document.body.style.overflow = '';
-    }
-
-    document.querySelectorAll('.view-details-btn').forEach(btn => {
-        btn.addEventListener('click', function (e) {
-            e.preventDefault();
-            openModal(this);
-        });
-    });
-
-    closeBtn.addEventListener('click', closeModal);
-    backdrop.addEventListener('click', closeModal);
-    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 });
+
 
 {{-- ==================== ADD TO CART (AJAX) ==================== --}}
 (function () {

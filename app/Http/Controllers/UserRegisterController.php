@@ -7,6 +7,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Spatie\Permission\Models\Role;
 
 class UserRegisterController extends Controller
 {
@@ -46,6 +47,9 @@ class UserRegisterController extends Controller
                 'is_active' => true,
             ]);
 
+            // Ensure the 'user' role exists even if seeders haven't been run.
+            // This prevents a RoleDoesNotExist exception (500 error) on fresh installs.
+            Role::firstOrCreate(['name' => 'user', 'guard_name' => 'web']);
             $user->assignRole('user');
 
             return redirect()->route('userlogin')

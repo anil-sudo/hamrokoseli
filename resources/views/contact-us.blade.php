@@ -117,8 +117,7 @@
                                 First Name <span class="text-red-500">*</span>
                             </label>
 
-                            <input type="text" name="first_name"
-                                value="{{ old('first_name') }}"
+                            <input type="text" name="first_name" value="{{ old('first_name') }}"
                                 class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C65A3A] @error('first_name') border-red-400 @enderror"
                                 placeholder="Hari">
                         </div>
@@ -128,8 +127,7 @@
                                 Last Name <span class="text-red-500">*</span>
                             </label>
 
-                            <input type="text" name="last_name"
-                                value="{{ old('last_name') }}"
+                            <input type="text" name="last_name" value="{{ old('last_name') }}"
                                 class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C65A3A] @error('last_name') border-red-400 @enderror"
                                 placeholder="Prasad">
                         </div>
@@ -141,8 +139,7 @@
                             Email <span class="text-red-500">*</span>
                         </label>
 
-                        <input type="email" name="email"
-                            value="{{ old('email') }}"
+                        <input type="email" name="email" value="{{ old('email') }}"
                             class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C65A3A] @error('email') border-red-400 @enderror"
                             placeholder="hari@example.com">
                     </div>
@@ -152,8 +149,7 @@
                             Subject <span class="text-red-500">*</span>
                         </label>
 
-                        <input type="text" name="subject"
-                            value="{{ old('subject') }}"
+                        <input type="text" name="subject" value="{{ old('subject') }}"
                             class="w-full border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C65A3A] @error('subject') border-red-400 @enderror"
                             placeholder="Question about my order...">
                     </div>
@@ -197,9 +193,12 @@
                     through Hamro Koseli and reach customers across Nepal.
                 </p>
 
-                <button class="mt-8 bg-[#C65A3A] px-8 py-4 rounded-xl">
-                    Become a Seller
-                </button>
+                <div class="mt-8">
+                    <a href="{{ route('seller.login') }}"
+                        class="inline-block bg-[#C65A3A] hover:bg-[#B14F32] text-white px-8 py-4 rounded-2xl text-lg font-semibold">
+                        Become a Seller
+                    </a>
+                </div>
 
             </div>
 

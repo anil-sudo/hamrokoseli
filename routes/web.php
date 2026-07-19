@@ -142,7 +142,7 @@ Route::middleware(['guest', 'throttle:auth'])->group(function () {
     Route::post('/userlogin', [AuthController::class, 'login']);
 
     Route::get('/userregister', [PageController::class, 'home'])->name('userregister');
-    Route::post('/userregister', [UserRegisterController::class, 'register']);
+    Route::post('/userregister', [UserRegisterController::class, 'register'])->name('userregister.post');
 
     Route::get('/login', fn () => redirect()->route('userlogin'))->name('login');
     Route::post('/login', [AuthController::class, 'login']);

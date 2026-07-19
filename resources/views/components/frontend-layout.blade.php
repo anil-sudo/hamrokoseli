@@ -1,7 +1,7 @@
 @props([
     'title'       => 'Hamro Koseli – Gifts & Surprises Delivered in Nepal',
     'description' => 'Hamro Koseli is Nepal\'s trusted gifting platform. Send gifts, sweets, and surprises to your loved ones across Nepal.',
-    'ogImage'     => '/images/og-image.jpg',
+    'ogImage' => '/images/og-images.jpg',
 ])
 <!DOCTYPE html>
 <html lang="en">
@@ -36,11 +36,11 @@
         window.initialCartCount = @json(auth()->check() ? (int) \App\Models\Cart::where('user_id', auth()->id())->sum('quantity') : 0);
         window.cartAddUrl = @json(route('cart.add'));
     </script>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
     <!-- SweetAlert2 -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
-
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <script>
         window.flashMessages = [];

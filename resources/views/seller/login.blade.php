@@ -143,13 +143,6 @@
                     </button>
                 </form>
 
-                <!-- OR Separator -->
-                <div class="flex items-center my-6">
-                    <div class="flex-grow border-t border-[#ebd7be]/40"></div>
-                    <span class="px-4 text-[10px] font-bold text-slate-400 tracking-widest uppercase">Or continue with</span>
-                    <div class="flex-grow border-t border-[#ebd7be]/40"></div>
-                </div>
-
                 <!-- Footer -->
                 <div class="text-center mt-8 text-xs font-semibold text-slate-500">
                     Don't have a seller account?
