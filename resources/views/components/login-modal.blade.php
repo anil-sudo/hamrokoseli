@@ -1,13 +1,13 @@
 <!-- Login Modal Overlay -->
-<div id="login-modal" class="fixed inset-0 z-[100000] hidden items-center justify-center bg-black/65 backdrop-blur-sm p-3 sm:p-5 lg:p-8 transition-opacity duration-300 opacity-0">
+<div id="login-modal" class="fixed inset-0 z-[100000] hidden items-center justify-center bg-black/65 backdrop-blur-sm p-2 sm:p-4 lg:p-8 transition-opacity duration-300 opacity-0">
 
     <!-- Modal Container -->
     <div class="relative bg-[#FFF7EF] w-full
-                max-w-sm sm:max-w-md lg:max-w-5xl
-                max-h-[95vh] lg:max-h-[88vh]
-                rounded-2xl lg:rounded-3xl overflow-hidden shadow-2xl border border-[#ebd7be]/40
+                max-w-[95vw] sm:max-w-md md:max-w-lg lg:max-w-5xl
+                max-h-[95dvh] lg:max-h-[88vh]
+                rounded-2xl lg:rounded-3xl shadow-2xl border border-[#ebd7be]/40
                 transform scale-95 opacity-0 transition-all duration-300 ease-out
-                flex flex-col lg:flex-row"
+                flex flex-col lg:flex-row overflow-hidden"
          id="login-modal-container">
 
         <!-- Close Button -->
@@ -18,7 +18,7 @@
         </button>
 
         <!-- ============================ LOGIN VIEW ============================ -->
-        <div id="login-view" class="w-full h-full flex flex-col lg:flex-row">
+        <div id="login-view" class="w-full flex flex-col lg:flex-row flex-1 overflow-hidden">
 
             <!-- LEFT IMAGE PANEL -desktop only -->
             <div class="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 xl:p-14 bg-cover bg-center overflow-hidden"
@@ -62,17 +62,18 @@
             </div>
 
             <!-- RIGHT: Form -full width on mobile, half on desktop -->
-            <div class="w-full lg:w-1/2 flex flex-col justify-center overflow-y-auto bg-[#FFF7EF] p-6 sm:p-8 lg:p-10 xl:p-12">
+            <div class="w-full lg:w-1/2 flex flex-col bg-[#FFF7EF] p-4 sm:p-6 lg:p-10 xl:p-12 overflow-y-auto"
+                 style="scrollbar-width: thin; scrollbar-color: #c8b49a transparent;">
 
                 <!-- Desktop heading only -->
-                <div class="hidden lg:block text-center mb-7">
+                <div class="hidden lg:block text-center mb-6">
                     <h2 class="text-3xl xl:text-4xl font-bold font-serif text-[#1F2A24] tracking-wide mb-1">WELCOME BACK</h2>
                     <p class="text-slate-500 text-sm font-semibold tracking-wide">Sign in to continue supporting local business.</p>
                 </div>
 
                 <!-- Mobile heading only -plain, no dark bg -->
-                <div class="lg:hidden text-center mb-5 pt-2">
-                    <h2 class="text-xl font-bold font-serif text-[#1F2A24] tracking-wide">WELCOME BACK</h2>
+                <div class="lg:hidden text-center mb-4 pt-1">
+                    <h2 class="text-lg sm:text-xl font-bold font-serif text-[#1F2A24] tracking-wide">WELCOME BACK</h2>
                     <p class="text-slate-400 text-xs font-medium mt-1">Sign in to continue supporting local business.</p>
                 </div>
 
@@ -96,7 +97,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('userlogin') }}" method="POST" class="space-y-4">
+                <form action="{{ route('userlogin') }}" method="POST" class="space-y-3 sm:space-y-4">
                     @csrf
                     <div>
                         <label for="modal-email" class="block text-[10px] font-bold uppercase text-[#3A2A1F]/80 mb-1.5 tracking-wider">Email</label>
@@ -143,7 +144,7 @@
                     </button>
                 </form>
 
-                <div class="flex items-center my-4 lg:my-5">
+                <div class="flex items-center my-3 sm:my-4 lg:my-5">
                     <div class="flex-grow border-t border-[#ebd7be]/50"></div>
                     <span class="px-3 text-[9px] font-bold text-slate-400 tracking-widest uppercase">Or continue with</span>
                     <div class="flex-grow border-t border-[#ebd7be]/50"></div>
@@ -160,7 +161,7 @@
                         <span class="text-xs">Continue with Google</span>
                     </a>
 
-                <div class="text-center mt-5 text-[11px] font-semibold text-slate-500">
+                <div class="text-center mt-3 sm:mt-5 text-[11px] font-semibold text-slate-500">
                     New to the neighborhood?
                     <a href="#" id="modal-show-register" class="text-[#1F3D2E] font-bold hover:underline ml-1">Create an account</a>
                 </div>
@@ -168,7 +169,7 @@
         </div>
 
         <!-- ============================ FORGOT PASSWORD VIEW ============================ -->
-        <div id="forgot-view" class="w-full h-full flex flex-col lg:flex-row hidden">
+        <div id="forgot-view" class="w-full flex flex-col lg:flex-row flex-1 overflow-hidden hidden">
 
             <!-- LEFT IMAGE PANEL -desktop only -->
             <div class="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 xl:p-14 bg-cover bg-center overflow-hidden"
@@ -198,7 +199,8 @@
             </div>
 
             <!-- RIGHT: Forgot Password Form -->
-            <div class="w-full lg:w-1/2 flex flex-col justify-center overflow-y-auto bg-[#FFF7EF] p-6 sm:p-8 lg:p-10 xl:p-12">
+            <div class="w-full lg:w-1/2 flex flex-col bg-[#FFF7EF] p-4 sm:p-6 lg:p-10 xl:p-12 overflow-y-auto"
+                 style="scrollbar-width: thin; scrollbar-color: #c8b49a transparent;">
 
                 <!-- Desktop heading -->
                 <div class="hidden lg:block text-center mb-7">
@@ -210,11 +212,11 @@
                 </div>
 
                 <!-- Mobile heading -->
-                <div class="lg:hidden text-center mb-5 pt-2">
-                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#1F3D2E]/10 mb-3">
-                        <i class="fas fa-key text-[#1F3D2E] text-lg"></i>
+                <div class="lg:hidden text-center mb-4 pt-1">
+                    <div class="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#1F3D2E]/10 mb-2 sm:mb-3">
+                        <i class="fas fa-key text-[#1F3D2E] text-base sm:text-lg"></i>
                     </div>
-                    <h2 class="text-xl font-bold font-serif text-[#1F2A24] tracking-wide">FORGOT PASSWORD?</h2>
+                    <h2 class="text-lg sm:text-xl font-bold font-serif text-[#1F2A24] tracking-wide">FORGOT PASSWORD?</h2>
                     <p class="text-slate-400 text-xs font-medium mt-1">We'll send you a reset link.</p>
                 </div>
 
@@ -275,7 +277,7 @@
         </div>
 
         <!-- ============================ REGISTER VIEW ============================ -->
-        <div id="register-view" class="w-full h-full flex flex-col lg:flex-row hidden">
+        <div id="register-view" class="w-full flex flex-col lg:flex-row flex-1 overflow-hidden hidden">
 
             <!-- LEFT IMAGE PANEL -desktop only -->
             <div class="hidden lg:flex lg:w-1/2 relative flex-col justify-between p-12 xl:p-14 bg-cover bg-center overflow-hidden"
@@ -319,17 +321,18 @@
             </div>
 
             <!-- RIGHT: Register Form -full width on mobile, half on desktop -->
-            <div class="w-full lg:w-1/2 flex flex-col justify-center overflow-y-auto bg-[#FFF7EF] p-6 sm:p-8 lg:p-10 xl:p-12">
+            <div class="w-full lg:w-1/2 flex flex-col bg-[#FFF7EF] p-4 sm:p-6 lg:p-10 xl:p-12 overflow-y-auto"
+                 style="scrollbar-width: thin; scrollbar-color: #c8b49a transparent;">
 
                 <!-- Desktop heading only -->
-                <div class="hidden lg:block text-center mb-7">
+                <div class="hidden lg:block text-center mb-5">
                     <h2 class="text-3xl xl:text-4xl font-bold font-serif text-[#1F2A24] tracking-wide mb-1">CREATE AN ACCOUNT</h2>
                     <p class="text-slate-500 text-sm font-semibold tracking-wide">Register as a buyer to shop local crafts.</p>
                 </div>
 
                 <!-- Mobile heading only -plain, no dark bg -->
-                <div class="lg:hidden text-center mb-5 pt-2">
-                    <h2 class="text-xl font-bold font-serif text-[#1F2A24] tracking-wide">CREATE AN ACCOUNT</h2>
+                <div class="lg:hidden text-center mb-3 pt-1">
+                    <h2 class="text-lg sm:text-xl font-bold font-serif text-[#1F2A24] tracking-wide">CREATE AN ACCOUNT</h2>
                     <p class="text-slate-400 text-xs font-medium mt-1">Register to shop local crafts.</p>
                 </div>
 
@@ -345,11 +348,11 @@
                     </div>
                 @endif
 
-                <form action="{{ route('userregister') }}" method="POST" class="space-y-3.5 lg:space-y-4">
+                <form action="{{ route('userregister') }}" method="POST" class="space-y-2.5 sm:space-y-3.5 lg:space-y-4">
                     @csrf
                     <div>
                         <label for="modal-register-name" class="block text-[10px] font-bold uppercase text-[#3A2A1F]/80 mb-1.5 tracking-wider">Full Name</label>
-                        <div class="flex items-center bg-[#F5E8D6]/50 border border-[#ebd7be]/80 rounded-xl px-4 py-2.5 lg:py-3 focus-within:ring-2 focus-within:ring-[#1F3D2E]/40 focus-within:border-transparent transition-all">
+                        <div class="flex items-center bg-[#F5E8D6]/50 border border-[#ebd7be]/80 rounded-xl px-3 sm:px-4 py-2 sm:py-2.5 lg:py-3 focus-within:ring-2 focus-within:ring-[#1F3D2E]/40 focus-within:border-transparent transition-all">
                             <i class="far fa-user text-slate-400 text-sm shrink-0 mr-3"></i>
                             <input type="text" id="modal-register-name" name="name" required placeholder="Your full name" value="{{ old('name') }}"
                                    class="bg-transparent border-0 outline-none w-full text-slate-800 text-sm placeholder-slate-400 font-medium p-0 focus:ring-0">
@@ -363,7 +366,7 @@
                     </div>
                     <div>
                         <label for="modal-register-email" class="block text-[10px] font-bold uppercase text-[#3A2A1F]/80 mb-1.5 tracking-wider">Email Address</label>
-                        <div class="flex items-center bg-[#F5E8D6]/50 border border-[#ebd7be]/80 rounded-xl px-4 py-2.5 lg:py-3 focus-within:ring-2 focus-within:ring-[#1F3D2E]/40 focus-within:border-transparent transition-all">
+                        <div class="flex items-center bg-[#F5E8D6]/50 border border-[#ebd7be]/80 rounded-xl px-3 sm:px-4 py-2 sm:py-2.5 lg:py-3 focus-within:ring-2 focus-within:ring-[#1F3D2E]/40 focus-within:border-transparent transition-all">
                             <i class="far fa-envelope text-slate-400 text-sm shrink-0 mr-3"></i>
                             <input type="email" id="modal-register-email" name="email" required placeholder="you@example.com" value="{{ old('email') }}"
                                    class="bg-transparent border-0 outline-none w-full text-slate-800 text-sm placeholder-slate-400 font-medium p-0 focus:ring-0">
@@ -377,7 +380,7 @@
                     </div>
                     <div>
                         <label for="modal-register-phone" class="block text-[10px] font-bold uppercase text-[#3A2A1F]/80 mb-1.5 tracking-wider">Phone Number</label>
-                        <div class="flex items-center bg-[#F5E8D6]/50 border border-[#ebd7be]/80 rounded-xl px-4 py-2.5 lg:py-3 focus-within:ring-2 focus-within:ring-[#1F3D2E]/40 focus-within:border-transparent transition-all">
+                        <div class="flex items-center bg-[#F5E8D6]/50 border border-[#ebd7be]/80 rounded-xl px-3 sm:px-4 py-2 sm:py-2.5 lg:py-3 focus-within:ring-2 focus-within:ring-[#1F3D2E]/40 focus-within:border-transparent transition-all">
                             <i class="fas fa-phone text-slate-400 text-sm shrink-0 mr-3"></i>
                             <input type="tel" id="modal-register-phone" name="phone" placeholder="98XXXXXXXX" value="{{ old('phone') }}"
                                    class="bg-transparent border-0 outline-none w-full text-slate-800 text-sm placeholder-slate-400 font-medium p-0 focus:ring-0">
@@ -391,7 +394,7 @@
                     </div>
                     <div>
                         <label for="modal-register-password" class="block text-[10px] font-bold uppercase text-[#3A2A1F]/80 mb-1.5 tracking-wider">Password</label>
-                        <div class="flex items-center bg-[#F5E8D6]/50 border border-[#ebd7be]/80 rounded-xl px-4 py-2.5 lg:py-3 focus-within:ring-2 focus-within:ring-[#1F3D2E]/40 focus-within:border-transparent transition-all">
+                        <div class="flex items-center bg-[#F5E8D6]/50 border border-[#ebd7be]/80 rounded-xl px-3 sm:px-4 py-2 sm:py-2.5 lg:py-3 focus-within:ring-2 focus-within:ring-[#1F3D2E]/40 focus-within:border-transparent transition-all">
                             <i class="fas fa-lock text-slate-400 text-sm shrink-0 mr-3"></i>
                             <input type="password" id="modal-register-password" name="password" required placeholder="Min. 8 characters"
                                    class="bg-transparent border-0 outline-none w-full text-slate-800 text-sm placeholder-slate-400 font-medium p-0 focus:ring-0">
@@ -408,7 +411,7 @@
                     </div>
                     <div>
                         <label for="modal-register-password_confirmation" class="block text-[10px] font-bold uppercase text-[#3A2A1F]/80 mb-1.5 tracking-wider">Confirm Password</label>
-                        <div class="flex items-center bg-[#F5E8D6]/50 border border-[#ebd7be]/80 rounded-xl px-4 py-2.5 lg:py-3 focus-within:ring-2 focus-within:ring-[#1F3D2E]/40 focus-within:border-transparent transition-all">
+                        <div class="flex items-center bg-[#F5E8D6]/50 border border-[#ebd7be]/80 rounded-xl px-3 sm:px-4 py-2 sm:py-2.5 lg:py-3 focus-within:ring-2 focus-within:ring-[#1F3D2E]/40 focus-within:border-transparent transition-all">
                             <i class="fas fa-lock text-slate-400 text-sm shrink-0 mr-3"></i>
                             <input type="password" id="modal-register-password_confirmation" name="password_confirmation" required placeholder="Confirm your password"
                                    class="bg-transparent border-0 outline-none w-full text-slate-800 text-sm placeholder-slate-400 font-medium p-0 focus:ring-0">
@@ -418,13 +421,13 @@
                         </div>
                     </div>
                     <button type="submit"
-                            class="bg-[#1F3D2E] hover:bg-[#13261d] text-white font-bold py-3 lg:py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 transition duration-300 w-full shadow-md shadow-emerald-950/20 active:scale-[0.98]">
+                            class="bg-[#1F3D2E] hover:bg-[#13261d] text-white font-bold py-2.5 sm:py-3 lg:py-3.5 px-6 rounded-xl flex items-center justify-center gap-2 transition duration-300 w-full shadow-md shadow-emerald-950/20 active:scale-[0.98]">
                         <span>CREATE ACCOUNT</span>
                         <i class="fas fa-arrow-right text-xs"></i>
                     </button>
                 </form>
 
-                <div class="text-center mt-5 text-[11px] font-semibold text-slate-500">
+                <div class="text-center mt-3 sm:mt-5 text-[11px] font-semibold text-slate-500">
                     Already have an account?
                     <a href="#" id="modal-show-login" class="text-[#1F3D2E] font-bold hover:underline ml-1">Sign in</a>
                 </div>
