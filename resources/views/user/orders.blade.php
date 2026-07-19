@@ -26,7 +26,7 @@
         <div class="relative flex flex-nowrap bg-(--card-bg) rounded-3xl p-1 shadow-sm overflow-x-auto scrollbar-hide mb-8 animate-slideUp">
             @foreach ($tabs as $key => $label)
                 @if ($counts[$key] > 0 || $key === 'all')
-                    <a href="{{ route('User-orders', ['status' => $key === 'all' ? null : $key]) }}"
+                    <a href="{{ route('User-orders', ['status' => $key === 'all' ? null : $key]) }}" wire:navigate
                         class="relative z-10 px-5 py-3 sm:px-6 sm:py-3.5 rounded-3xl font-medium text-sm transition-all duration-200 whitespace-nowrap
                             {{ $active === $key ? 'bg-(--secondary-color) text-(--text-light)' : 'text-(--text-dark) hover:bg-(--card-dark)' }}">
                         {{ $label }}
@@ -110,7 +110,7 @@
                                     </span>
                                 </td>
                                 <td class="px-4 md:px-6 lg:px-8 py-5 text-right">
-                                    <a href="{{ route('order-detail', ['order' => $order->id]) }}"
+                                    <a href="{{ route('order-detail', ['order' => $order->id]) }}" wire:navigate
                                         class="text-(--secondary-color) hover:text-(--hover-color) font-medium flex items-center justify-end gap-1 text-sm transition-all duration-200 group">
                                         <span class="hover:underline">View Details</span>
                                         <i data-lucide="arrow-right" class="w-6 h-4"></i>
@@ -123,7 +123,7 @@
                                     <div class="flex flex-col items-center gap-3">
                                         <i data-lucide="inbox" class="w-10 h-10 opacity-40"></i>
                                         <p class="text-sm font-medium">No orders found{{ $active !== 'all' ? ' with status "' . $active . '"' : '' }}.</p>
-                                        <a href="{{ route('home') }}" class="text-(--secondary-color) hover:underline text-sm">Start shopping</a>
+                                        <a href="{{ route('home') }}" wire:navigate class="text-(--secondary-color) hover:underline text-sm">Start shopping</a>
                                     </div>
                                 </td>
                             </tr>
@@ -146,7 +146,7 @@
                             <i data-lucide="chevron-left" class="w-3 h-3"></i>
                         </button>
                     @else
-                        <a href="{{ $orders->previousPageUrl() }}" class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center border border-gray-300 rounded-2xl hover:bg-[#1F3D2E] hover:text-white hover:border-[#1F3D2E] transition-all duration-200">
+                        <a href="{{ $orders->previousPageUrl() }}" wire:navigate class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center border border-gray-300 rounded-2xl hover:bg-[#1F3D2E] hover:text-white hover:border-[#1F3D2E] transition-all duration-200">
                             <i data-lucide="chevron-left" class="w-3 h-3"></i>
                         </a>
                     @endif
@@ -155,12 +155,12 @@
                         @if ($page == $orders->currentPage())
                             <button class="w-9 h-9 sm:w-10 sm:h-10 bg-[#1F3D2E] text-white rounded-2xl font-medium text-sm">{{ $page }}</button>
                         @else
-                            <a href="{{ $url }}" class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center border border-gray-300 rounded-2xl hover:bg-[#1F3D2E] hover:text-white hover:border-[#1F3D2E] transition-all duration-200">{{ $page }}</a>
+                            <a href="{{ $url }}" wire:navigate class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center border border-gray-300 rounded-2xl hover:bg-[#1F3D2E] hover:text-white hover:border-[#1F3D2E] transition-all duration-200">{{ $page }}</a>
                         @endif
                     @endforeach
 
                     @if ($orders->hasMorePages())
-                        <a href="{{ $orders->nextPageUrl() }}" class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center border border-gray-300 rounded-2xl hover:bg-[#1F3D2E] hover:text-white hover:border-[#1F3D2E] transition-all duration-200">
+                        <a href="{{ $orders->nextPageUrl() }}" wire:navigate class="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center border border-gray-300 rounded-2xl hover:bg-[#1F3D2E] hover:text-white hover:border-[#1F3D2E] transition-all duration-200">
                             <i data-lucide="chevron-right" class="w-3 h-3"></i>
                         </a>
                     @else

@@ -10,7 +10,7 @@
                     connoisseurs of authenticity.
                 </p>
                 <div class="pt-1">
-                    <a href="{{ route('meet-the-team') }}"
+                    <a href="{{ route('meet-the-team') }}" wire:navigate.hover
                         class="text-[#b55b3d] px-3 py-0.5 rounded-xl hover:rounded-xl hover:bg-[#a04e33] hover:text-[#fff7ef] text-sm font-semibold underline underline-offset-4 transition-colors">Meet
                         the Team <i class="fa-solid fa-arrow-right pl-2"></i></a>
                 </div>
@@ -24,15 +24,14 @@
                 <div class="space-y-4">
                     <h4 class="text-s font-bold uppercase tracking-widest text-[#b55b3d]">QUICK LINK</h4>
                     <ul class="flex flex-col space-y-2.5 text-sm">
-                        <li><a href="{{ url('/') }}"
+                        <li><a href="{{ url('/') }}" wire:navigate.hover
                                 class="text-slate-300 hover:text-white transition-colors">Home</a></li>
-                        <li><a href="{{ url('shop') }}"
+                        <li><a href="{{ url('shop') }}" wire:navigate.hover
                                 class="text-slate-300 hover:text-white transition-colors">Shop</a></li>
-                        <li><a href="{{ url('categories') }}"
+                        <li><a href="{{ url('categories') }}" wire:navigate.hover
                                 class="text-slate-300 hover:text-white transition-colors">Categories</a></li>
-                        <li><a href="{{ url('about-us') }}"
+                        <li><a href="{{ url('about-us') }}" wire:navigate.hover
                                 class="text-slate-300 hover:text-white transition-colors">About Us</a></li>
-
                     </ul>
                 </div>
 
@@ -40,11 +39,11 @@
                 <div class="space-y-4">
                     <h4 class="text-s font-bold uppercase tracking-widest text-[#b55b3d]">SUPPORT</h4>
                     <ul class="flex flex-col space-y-2.5 text-sm">
-                        <li><a href="{{ url('FAQ') }}"
+                        <li><a href="{{ url('FAQ') }}" wire:navigate.hover
                                 class="text-slate-300 hover:text-white transition-colors">FAQs</a></li>
-                        <li><a href="{{ url('shipping-info') }}"
+                        <li><a href="{{ url('shipping-info') }}" wire:navigate.hover
                                 class="text-slate-300 hover:text-white transition-colors">Shipping Info</a></li>
-                        <li><a href="{{ url('contact-us') }}"
+                        <li><a href="{{ url('contact-us') }}" wire:navigate.hover
                                 class="text-slate-300 hover:text-white transition-colors">Contact Us</a></li>
                     </ul>
                 </div>
@@ -53,14 +52,14 @@
                 <div class="space-y-4">
                     <h4 class="text-s font-bold uppercase tracking-widest text-[#b55b3d]">LEGAL</h4>
                     <ul class="flex flex-col space-y-2.5 text-sm">
-                        <li><a href="{{ url('privacypolicy') }}"
+                        <li><a href="{{ url('privacypolicy') }}" wire:navigate.hover
                                 class="text-slate-300 hover:text-white transition-colors">Privacy Policy</a></li>
-                        <li><a href="{{ url('terms_&_conditions') }}"
+                        <li><a href="{{ url('terms_&_conditions') }}" wire:navigate.hover
                                 class="text-slate-300 hover:text-white transition-colors">Terms & Conditions</a></li>
-                        <li><a href="{{ url('return_&_refund') }}"
+                        <li><a href="{{ url('return_&_refund') }}" wire:navigate.hover
                                 class="text-slate-300 hover:text-white transition-colors">Return & Refund Policy</a>
                         </li>
-                        <li><a href="{{ url('seller_policy') }}"
+                        <li><a href="{{ url('seller_policy') }}" wire:navigate.hover
                                 class="text-slate-300 hover:text-white transition-colors">Seller Policy</a></li>
                     </ul>
                 </div>

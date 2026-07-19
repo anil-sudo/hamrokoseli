@@ -25,9 +25,9 @@
 
         @if (session('success'))
             <script>
-                document.addEventListener('DOMContentLoaded', () => {
+                (function() {
                     if (window.showToast) window.showToast("{{ session('success') }}", 'success');
-                });
+                })();
             </script>
         @endif
 
@@ -39,7 +39,7 @@
 
         <div class="flex flex-wrap border-b border-(--secondary-color)/20">
             @foreach ($tabs as $key => $label)
-                <a href="{{ route('user-notification', $key ? ['type' => $key] : []) }}"
+                <a href="{{ route('user-notification', $key ? ['type' => $key] : []) }}" wire:navigate
                     class="flex-1 sm:flex-none px-4 sm:px-8 py-3 sm:py-4 text-sm font-semibold border-b-2 transition
                         {{ $active === $key ? 'text-(--secondary-color) border-(--secondary-color)' : 'text-(--text-color) border-transparent hover:text-(--secondary-color)' }}">
                     {{ $label }}
@@ -86,12 +86,12 @@
 
                         <!-- Actions -->
                         <div class="flex items-center gap-3 mt-4">
-                            @if (in_array($notification->type, ['order_placed','order_confirmed','order_shipped','order_delivered','order_cancelled']))
-                                <a href="{{ route('User-orders') }}" class="px-4 py-2 bg-(--secondary-color) hover:bg-[#B94E31] text-white rounded-xl text-xs font-medium transition">
+                             @if (in_array($notification->type, ['order_placed','order_confirmed','order_shipped','order_delivered','order_cancelled']))
+                                <a href="{{ route('User-orders') }}" wire:navigate class="px-4 py-2 bg-(--secondary-color) hover:bg-[#B94E31] text-white rounded-xl text-xs font-medium transition">
                                     View Orders
                                 </a>
                             @elseif (in_array($notification->type, ['return_requested','return_approved']))
-                                <a href="{{ route('User-orders') }}" class="px-4 py-2 bg-(--secondary-color) hover:bg-[#B94E31] text-white rounded-xl text-xs font-medium transition">
+                                <a href="{{ route('User-orders') }}" wire:navigate class="px-4 py-2 bg-(--secondary-color) hover:bg-[#B94E31] text-white rounded-xl text-xs font-medium transition">
                                     View Returns
                                 </a>
                             @endif
@@ -162,14 +162,15 @@
         }
 
         // Optional: Handle Mark All as Read with better UX
-        document.addEventListener('submit', function(e) {
-            if (e.target.id === 'mark-all-form') {
+        const markAllForm = document.getElementById('mark-all-form');
+        if (markAllForm) {
+            markAllForm.addEventListener('submit', function(e) {
                 // You can add loading state here if you want
-            }
-        });
+            });
+        }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        (function() {
             if (typeof lucide !== 'undefined') lucide.createIcons();
-        });
+        })();
     </script>
 </x-user-layout>

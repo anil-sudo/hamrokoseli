@@ -438,7 +438,7 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    (function() {
         // Auto-show correct panel based on server-side session state
         @if (session('status'))
             if (window.openLoginModal) window.openLoginModal(null, 'forgot');
@@ -518,5 +518,5 @@
                 }
             });
         }
-    });
+    })();
 </script>

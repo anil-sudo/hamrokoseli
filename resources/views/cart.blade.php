@@ -11,9 +11,9 @@
         <!-- Flash -->
         @if (session('success'))
             <script>
-                document.addEventListener('DOMContentLoaded', () => {
+                (function() {
                     if (window.showToast) window.showToast("{{ session('success') }}", 'success');
-                });
+                })();
             </script>
         @endif
 
@@ -33,7 +33,7 @@
                 <div class="text-6xl mb-4">🛒</div>
                 <h2 class="text-2xl font-bold text-[#1F3D2E] mb-2">Your cart is empty</h2>
                 <p class="text-[#3A2A1F]/60 mb-6">Looks like you haven't added anything yet.</p>
-                <a href="{{ route('shop') }}"
+                <a href="{{ route('shop') }}" wire:navigate
                    class="inline-block bg-[#C65A3A] hover:bg-[#b04a2c] text-white font-bold px-8 py-3 rounded-2xl transition shadow-md">
                     Start Exploring
                 </a>

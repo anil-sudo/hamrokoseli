@@ -93,9 +93,9 @@
                     {{-- Success Message --}}
                     @if (session('success'))
                         <script>
-                            document.addEventListener('DOMContentLoaded', () => {
+                            (function() {
                                 if (window.showToast) window.showToast("{{ session('success') }}", 'success');
-                            });
+                            })();
                         </script>
                     @endif
 

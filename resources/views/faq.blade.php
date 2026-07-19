@@ -217,7 +217,7 @@
                     our support team is ready to assist you.
                 </p>
 
-                <a href="{{ url('contact-us') }}"
+                <a href="{{ url('contact-us') }}" wire:navigate
                     class="inline-block mt-8 bg-[#C65A3A] hover:bg-[#b34f31] transition px-8 py-4 rounded-xl text-white font-medium">
                     Contact Support
                 </a>

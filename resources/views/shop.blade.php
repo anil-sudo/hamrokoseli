@@ -303,7 +303,7 @@
                                 <i class="fas fa-chevron-left text-xs"></i>
                             </span>
                         @else
-                            <a href="{{ $products->previousPageUrl() }}"
+                            <a href="{{ $products->previousPageUrl() }}" wire:navigate
                                 class="w-10 h-10 rounded-full border border-[#1F3D2E]/20 flex items-center justify-center text-[#1F3D2E] hover:border-[#1F3D2E] hover:bg-[#1F3D2E]/5 transition duration-300 shadow-sm">
                                 <i class="fas fa-chevron-left text-xs"></i>
                             </a>
@@ -317,7 +317,7 @@
                             @endphp
 
                             @if($start > 1)
-                                <a href="{{ $products->url(1) }}"
+                                <a href="{{ $products->url(1) }}" wire:navigate
                                     class="w-10 h-10 flex items-center justify-center text-sm font-semibold text-[#3A2A1F]/60 hover:text-[#1F3D2E] transition-colors">1</a>
                                 @if($start > 2)
                                     <span class="text-sm font-semibold text-[#3A2A1F]/40 px-2 select-none">...</span>
@@ -326,29 +326,29 @@
 
                             @for($page = $start; $page <= $end; $page++)
                                 @if($page == $products->currentPage())
-                                    <a href="{{ $products->url($page) }}"
+                                    <a href="{{ $products->url($page) }}" wire:navigate
                                         class="w-10 h-10 flex flex-col items-center justify-center text-sm font-bold text-[#1F3D2E] relative">
                                         <span>{{ $page }}</span>
                                         <span class="absolute bottom-1 w-5 h-0.5 bg-[#1F3D2E] rounded-full"></span>
                                     </a>
                                 @else
-                                    <a href="{{ $products->url($page) }}"
+                                    <a href="{{ $products->url($page) }}" wire:navigate
                                         class="w-10 h-10 flex items-center justify-center text-sm font-semibold text-[#3A2A1F]/60 hover:text-[#1F3D2E] transition-colors">{{ $page }}</a>
-                                @endif
-                            @endfor
+                                  @endif
+                              @endfor
 
                             @if($end < $products->lastPage())
                                 @if($end < $products->lastPage() - 1)
                                     <span class="text-sm font-semibold text-[#3A2A1F]/40 px-2 select-none">...</span>
                                 @endif
-                                <a href="{{ $products->url($products->lastPage()) }}"
+                                <a href="{{ $products->url($products->lastPage()) }}" wire:navigate
                                     class="w-10 h-10 flex items-center justify-center text-sm font-semibold text-[#3A2A1F]/60 hover:text-[#1F3D2E] transition-colors">{{ $products->lastPage() }}</a>
                             @endif
                         </div>
 
                         {{-- Next --}}
                         @if($products->hasMorePages())
-                            <a href="{{ $products->nextPageUrl() }}"
+                            <a href="{{ $products->nextPageUrl() }}" wire:navigate
                                 class="w-10 h-10 rounded-full border border-[#1F3D2E]/20 flex items-center justify-center text-[#1F3D2E] hover:border-[#1F3D2E] hover:bg-[#1F3D2E]/5 transition duration-300 shadow-sm">
                                 <i class="fas fa-chevron-right text-xs"></i>
                             </a>
@@ -372,7 +372,7 @@
 
     {{-- ==================== FILTER UI BEHAVIOUR JS ==================== --}}
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        (function () {
             const filterForm = document.getElementById('filter-form');
 
             // Mobile filters toggle
@@ -528,7 +528,7 @@
             document.getElementById('reset-filters').addEventListener('click', function () {
                 window.location.href = "{{ route('shop') }}";
             });
-        });
+        })();
     </script>
 
     @if(isset($activeProduct))

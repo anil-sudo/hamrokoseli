@@ -74,7 +74,7 @@
             <div class="lg:col-span-2">
                 <div class="flex justify-between items-center mb-5">
                     <h3 class="text-xl font-semibold text-(--text-color)">Recent Orders</h3>
-                    <a href="{{ route('User-orders') }}" class="text-sm text-center text-(--secondary-color) flex items-center gap-1.5 transition">
+                    <a href="{{ route('User-orders') }}" wire:navigate class="text-sm text-center text-(--secondary-color) flex items-center gap-1.5 transition">
                         <span class="hover:underline">View All Orders</span>
                         <i data-lucide="arrow-right" class="w-4 h-4"></i>
                     </a>
@@ -143,7 +143,7 @@
                                         @endif
                                     </div>
                                     <div class="flex-1">
-                                        <a href="{{ route('viewdetails', $product->slug) }}" class="font-medium text-(--text-dark) group-hover:text-(--primary-color) transition line-clamp-1">
+                                        <a href="{{ route('viewdetails', $product->slug) }}" wire:navigate class="font-medium text-(--text-dark) group-hover:text-(--primary-color) transition line-clamp-1">
                                             {{ $product->name }}
                                         </a>
                                         <p class="text-sm text-(--text-color)/80 line-clamp-1">{{ $product->category ? $product->category->name : 'Special Offer' }}</p>
@@ -156,7 +156,7 @@
                                     </div>
                                 </div>
                                 <div class="w-full">
-                                    <a href="{{ route('viewdetails', $product->slug) }}" class="block text-center bg-(--primary-color)/90 text-white w-full px-6 py-3 rounded-2xl text-sm font-medium hover:bg-(--primary-color) transition">
+                                    <a href="{{ route('viewdetails', $product->slug) }}" wire:navigate class="block text-center bg-(--primary-color)/90 text-white w-full px-6 py-3 rounded-2xl text-sm font-medium hover:bg-(--primary-color) transition">
                                         Grab Deal
                                     </a>
                                 </div>
@@ -179,7 +179,7 @@
                         {{ $recommendationSource }}
                     </p>
                 </div>
-                <a href="{{ route('shop') }}" class="text-sm text-(--secondary-color) hover:underline flex items-center gap-1">
+                <a href="{{ route('shop') }}" wire:navigate class="text-sm text-center text-(--secondary-color) hover:underline flex items-center gap-1">
                     Browse All <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </a>
             </div>
@@ -188,7 +188,7 @@
                 @forelse($recommendedProducts as $product)
                     <div class="bg-(--card-bg) rounded-3xl overflow-hidden group shadow-sm hover:shadow-lg transition-all duration-300">
                         <div class="relative overflow-hidden">
-                            <a href="{{ route('viewdetails', $product->slug) }}">
+                            <a href="{{ route('viewdetails', $product->slug) }}" wire:navigate>
                                 <img src="{{ $product->primaryImageUrl() }}"
                                     class="w-full h-48 object-cover group-hover:scale-105 transition duration-500"
                                     alt="{{ $product->name }}">
@@ -208,7 +208,7 @@
                             </button>
                         </div>
                         <div class="p-4">
-                            <a href="{{ route('viewdetails', $product->slug) }}" class="font-medium text-sm line-clamp-2 hover:text-(--primary-color) transition">
+                            <a href="{{ route('viewdetails', $product->slug) }}" wire:navigate class="font-medium text-sm line-clamp-2 hover:text-(--primary-color) transition">
                                 {{ $product->name }}
                             </a>
                             <div class="flex items-center gap-2 mt-2">
