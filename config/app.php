@@ -54,6 +54,11 @@ return [
 
     'url' => env('APP_URL', 'http://127.0.0.1:8000'),
 
+    // URL of the admin panel when it is hosted on a separate domain.
+    // Set ADMIN_URL in your .env to the admin domain (e.g. https://admin.yourdomain.com).
+    // Falls back to APP_URL if not set.
+    'admin_url' => env('ADMIN_URL', env('APP_URL', 'http://127.0.0.1:8000')),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone
