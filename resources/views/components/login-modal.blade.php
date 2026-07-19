@@ -439,22 +439,33 @@
 
 <script>
     (function() {
-        // Auto-show correct panel based on server-side session state
-        @if (session('status'))
-            if (window.openLoginModal) window.openLoginModal(null, 'forgot');
-        @endif
+        function checkAndOpenModal() {
+            if (window.openLoginModal) {
+                @if (session('status'))
+                    window.openLoginModal(null, 'forgot');
+                @endif
 
-        @if (session('show_register') || ($errors->any() && old('name')))
-            if (window.openLoginModal) window.openLoginModal(null, 'register');
-        @endif
+                @if (session('show_register') || ($errors->any() && old('name')))
+                    window.openLoginModal(null, 'register');
+                @endif
 
-        @if ($errors->any() && !session('show_register') && !old('name'))
-            if (window.openLoginModal) window.openLoginModal(null, 'login');
-        @endif
+                @if ($errors->any() && !session('show_register') && !old('name'))
+                    window.openLoginModal(null, 'login');
+                @endif
 
-        @if (session('success'))
-            if (window.openLoginModal) window.openLoginModal(null, 'login');
-        @endif
+                @if (session('success'))
+                    window.openLoginModal(null, 'login');
+                @endif
+            }
+        }
+
+        // Run when DOM is ready and window is loaded
+        document.addEventListener('DOMContentLoaded', checkAndOpenModal);
+        window.addEventListener('load', checkAndOpenModal);
+        document.addEventListener('livewire:navigated', checkAndOpenModal);
+
+        // Also run immediately
+        checkAndOpenModal();
 
         // ── Phone: restrict to digits only, max 10 ──────────────────────────
         const modalPhone = document.getElementById('modal-register-phone');
