@@ -7,7 +7,9 @@ use App\Models\Category;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Review;
+use App\Models\Setting;
 use App\Models\Vendor;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -44,11 +46,33 @@ class PageController extends Controller
             ->take(4)
             ->get();
 
+        // Fetch today's deals products (limited to 4 for home page)
+        $todaysDeals = Product::with(['category', 'vendor', 'images'])
+            ->where('status', 'active')
+            ->whereNotNull('discount_price')
+            ->where('discount_price', '>', 0)
+            ->whereColumn('discount_price', '<', 'price')
+            ->orderByRaw('((price - discount_price) / price) DESC')
+            ->limit(4)
+            ->get();
+
+        // Fetch trending products — top 3 by number of order items (most sold)
+        $trendingProducts = Product::where('status', 'active')
+            ->with(['category', 'vendor', 'images', 'variants'])
+            ->withCount('orderItems')
+            ->withAvg('reviews', 'rating')
+            ->withCount('reviews')
+            ->orderByDesc('order_items_count')
+            ->take(3)
+            ->get();
+
         return view('welcome', [
             'vendors' => $vendors,
             'featuredProducts' => $featuredProducts,
             'categories' => $categories,
             'topSellers' => $topSellers,
+            'todaysDeals' => $todaysDeals,
+            'trendingProducts' => $trendingProducts,
         ]);
     }
 
@@ -179,14 +203,19 @@ class PageController extends Controller
             ->unique('id')
             ->values();
 
+        // Pull the top 20 products by discount percentage, then randomly pick 5
+        // so Featured Star Deals rotates on every page load while always showing
+        // the best-discounted items in the catalogue.
         $featuredDeals = Product::with(['category', 'vendor', 'images'])
             ->where('status', 'active')
             ->whereNotNull('discount_price')
             ->where('discount_price', '>', 0)
             ->whereColumn('discount_price', '<', 'price')
             ->orderByRaw('((price - discount_price) / price) DESC')
-            ->take(5)
-            ->get();
+            ->take(20)
+            ->get()
+            ->shuffle()
+            ->take(5);
 
         $trendingProducts = Product::with(['category', 'vendor', 'images'])
             ->withCount('orderItems')
@@ -195,7 +224,19 @@ class PageController extends Controller
             ->take(6)
             ->get();
 
-        return view('todays-deals', compact('products', 'categories', 'featuredDeals', 'trendingProducts'));
+        $dealEndsAt = Setting::getValue('date');
+        if ($dealEndsAt) {
+            $dealEndsAt = Carbon::parse($dealEndsAt, config('app.timezone'))->toIso8601String();
+        } else {
+            $dealEndsAt = now()->endOfDay()->toIso8601String();
+        }
+        $dealBgImage = Setting::getValue('banner_image');
+        if ($dealBgImage) {
+            // Strip any accidental leading "storage/" prefix Filament may save
+            $dealBgImage = preg_replace('#^storage/#', '', $dealBgImage);
+        }
+
+        return view('todays-deals', compact('products', 'categories', 'featuredDeals', 'trendingProducts', 'dealEndsAt', 'dealBgImage'));
     }
 
     public function top_sellers()
@@ -584,5 +625,40 @@ class PageController extends Controller
             ));
 
         return back()->with('success', 'Thank you! Your message has been sent. We\'ll get back to you soon.');
+    }
+
+    public function meet_the_team()
+    {
+        return view('meet-the-team');
+    }
+
+    public function suraj_tamang()
+    {
+        return view('Team.suraj-tamang');
+    }
+
+    public function aashutosh_baral()
+    {
+        return view('Team.aashutosh-baral');
+    }
+
+    public function rajmangal_rajak()
+    {
+        return view('Team.rajmangal-rajak');
+    }
+
+    public function anil_shrestha()
+    {
+        return view('Team.anil-shrestha');
+    }
+
+    public function babisha_katwal()
+    {
+        return view('Team.babisha-katwal');
+    }
+
+    public function nishan_rai()
+    {
+        return view('Team.nishan-rai');
     }
 }

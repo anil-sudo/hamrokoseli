@@ -13,6 +13,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserRegisterController;
 use App\Http\Controllers\VendorPasswordResetController;
 use App\Http\Controllers\VendorRegisterController;
+use App\Http\Middleware\EnsureVendor;
 use Illuminate\Support\Facades\Route;
 
 // ─── Seller Auth (guest only, rate limited) ───────────────────────────────────
@@ -30,8 +31,9 @@ Route::middleware(['guest:vendor', 'throttle:auth'])->group(function () {
 Route::post('/seller-logout', [SellerController::class, 'logout'])->name('seller.logout');
 
 // ─── Seller profile & password (auth protected — fix #3) ─────────────────────
-Route::middleware(['auth', 'role:vendor'])->group(function () {
+Route::middleware(['auth', EnsureVendor::class])->group(function () {
     Route::get('/seller-dashboard', [SellerController::class, 'dashboard'])->name('dashboard');
+    Route::get('/seller-dashboard/sales-trend', [SellerController::class, 'salesTrendData'])->name('dashboard.sales-trend');
     Route::get('/product-management', [SellerController::class, 'product_management'])->name('product-management');
     Route::get('/create-product', [SellerController::class, 'productCreate'])->name('product-create');
     Route::post('/create-product', [SellerController::class, 'store'])->name('product.store');
@@ -44,6 +46,7 @@ Route::middleware(['auth', 'role:vendor'])->group(function () {
     Route::post('/order-details/{order}/order-status', [SellerController::class, 'updateOrderStatus'])->name('order-details.order-status');
     Route::get('/seller-review', [SellerController::class, 'sellerReview'])->name('seller.review');
     Route::post('/seller-review/{id}/reply', [SellerController::class, 'replyToReview'])->name('seller.review.reply');
+    Route::delete('/seller-review/{id}', [SellerController::class, 'destroyReview'])->name('seller.review.destroy');
     Route::get('/seller-payments', [SellerController::class, 'sellerPayment'])->name('seller.payment');
     Route::get('/seller-payments/pay-commission', [SellerController::class, 'payCommission'])->name('seller.pay-commission.get');
     Route::post('/seller-payments/pay-commission', [SellerController::class, 'payCommission'])->name('seller.pay-commission');
@@ -161,3 +164,10 @@ Route::get('/sitemap.xml', [PageController::class, 'sitemap'])->name('sitemap');
 Route::post('/chatbot/send', [ChatBotController::class, 'send'])->name('chatbot.send');
 
 Route::post('/contact-us', [PageController::class, 'contactusSubmit'])->name('contact-us.submit');
+Route::get('/meet-the-team', [PageController::class, 'meet_the_team'])->name('meet-the-team');
+Route::get('/suraj-tamang', [PageController::class, 'suraj_tamang'])->name('suraj-tamang');
+Route::get('/aashutosh-baral', [PageController::class, 'aashutosh_baral'])->name('aashutosh-baral');
+Route::get('/rajmangal-rajak', [PageController::class, 'rajmangal_rajak'])->name('rajmangal-rajak');
+Route::get('/anil-shrestha', [PageController::class, 'anil_shrestha'])->name('anil-shrestha');
+Route::get('/babisha-katwal', [PageController::class, 'babisha_katwal'])->name('babisha-katwal');
+Route::get('/nishan-rai', [PageController::class, 'nishan_rai'])->name('nishan-rai');

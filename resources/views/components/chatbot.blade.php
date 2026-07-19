@@ -28,7 +28,7 @@
                 <div class="hkc-time-label">Today</div>
                 <div class="hkc-row hkc-row-bot">
                     <div class="hkc-bubble hkc-bubble-bot">
-                        Namaste 🙏 Welcome to <strong>Hamro Koseli!</strong><br>I can help you with orders, payments, shipping, and more.
+Namaste 🙏 Welcome to <strong>Hamro Koseli!</strong><br>I can help you with orders, payments, shipping, and more.
                     </div>
                 </div>
                 <div id="hkc-chips">

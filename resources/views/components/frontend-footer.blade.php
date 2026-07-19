@@ -9,6 +9,11 @@
                     Preserving Nepal's rich artistic heritage by connecting local master craftspeople with global
                     connoisseurs of authenticity.
                 </p>
+                <div class="pt-1">
+                    <a href="{{ route('meet-the-team') }}"
+                        class="text-[#b55b3d] px-3 py-0.5 rounded-xl hover:rounded-xl hover:bg-[#a04e33] hover:text-[#fff7ef] text-sm font-semibold underline underline-offset-4 transition-colors">Meet
+                        the Team <i class="fa-solid fa-arrow-right pl-2"></i></a>
+                </div>
             </div>
 
             <!-- Columns 2, 3, 4: Quick Link + Support + Legal (side-by-side grid) -->
@@ -19,7 +24,7 @@
                 <div class="space-y-4">
                     <h4 class="text-s font-bold uppercase tracking-widest text-[#b55b3d]">QUICK LINK</h4>
                     <ul class="flex flex-col space-y-2.5 text-sm">
-                        <li><a href="{{ url('home') }}"
+                        <li><a href="{{ url('/') }}"
                                 class="text-slate-300 hover:text-white transition-colors">Home</a></li>
                         <li><a href="{{ url('shop') }}"
                                 class="text-slate-300 hover:text-white transition-colors">Shop</a></li>
@@ -82,9 +87,9 @@
         <div
             class="flex flex-col md:flex-row items-center justify-between gap-3 md:gap-6 mt-8 md:mt-16 pt-6 md:pt-8 border-t border-slate-700/30">
             <p class="text-xs text-slate-400 text-center md:text-left">
-                &copy; 2024 HamroKoseli. Preserving Nepalese heritage through authentic craftsmanship.
+                &copy; 2026 HamroKoseli. Preserving Nepalese heritage through authentic craftsmanship.
             </p>
-            <div class="flex items-center space-x-6">
+            {{-- <div class="flex items-center space-x-6">
                 <a href="#" class="text-[#b55b3d] hover:text-[#a04e33] transition-colors text-lg">
                     <i class="fa-solid fa-globe"></i>
                 </a>
@@ -94,7 +99,7 @@
                 <a href="#" class="text-[#b55b3d] hover:text-[#a04e33] transition-colors text-lg">
                     <i class="fa-brands fa-instagram"></i>
                 </a>
-            </div>
+            </div> --}}
         </div>
     </div>
 </footer>
