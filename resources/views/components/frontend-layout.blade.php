@@ -1,7 +1,7 @@
 @props([
     'title'       => 'Hamro Koseli – Gifts & Surprises Delivered in Nepal',
     'description' => 'Hamro Koseli is Nepal\'s trusted gifting platform. Send gifts, sweets, and surprises to your loved ones across Nepal.',
-    'ogImage'     => '/images/og-image.jpg',
+    'ogImage' => '/images/og-images.jpg',
 ])
 <!DOCTYPE html>
 <html lang="en">
