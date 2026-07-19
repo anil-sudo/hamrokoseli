@@ -8,34 +8,34 @@
         .qty-val-input::-webkit-outer-spin-button,
         .qty-val-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         .qty-val-input { -moz-appearance: textfield; }
-        
+
         /* Floating sidebar styles */
         .sidebar-sticky {
             position: sticky;
             top: 20px;
             align-self: flex-start;
         }
-        
+
         /* Ensure the sidebar content doesn't overflow viewport */
         .sidebar-sticky > div {
             max-height: calc(100vh - 40px);
             overflow-y: auto;
         }
-        
+
         /* Custom scrollbar for floating sidebar */
         .sidebar-sticky > div::-webkit-scrollbar {
             width: 4px;
         }
-        
+
         .sidebar-sticky > div::-webkit-scrollbar-track {
             background: transparent;
         }
-        
+
         .sidebar-sticky > div::-webkit-scrollbar-thumb {
             background: #C65A3A;
             border-radius: 10px;
         }
-        
+
         /* For mobile, remove sticky behavior */
         @media (max-width: 768px) {
             .sidebar-sticky {
@@ -523,7 +523,6 @@
             });
 
             document.getElementById('sort-select').addEventListener('change', () => filterForm.submit());
-            document.getElementById('in-stock-toggle').addEventListener('change', () => filterForm.submit());
 
             // Reset Button — just navigate back to the bare shop URL
             document.getElementById('reset-filters').addEventListener('click', function () {

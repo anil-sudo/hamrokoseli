@@ -54,7 +54,7 @@
 
                         <p class="mt-4 text-[#8E8376] leading-7">
                             We currently support Cash on Delivery (COD),
-                            eSewa, Khalti, Fonepay, and Bank Transfer.
+                            eSewa, Khalti.
                         </p>
                     </details>
 
