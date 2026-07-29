@@ -11,23 +11,43 @@ class RedirectIfAuthenticated
 {
     public function handle(Request $request, Closure $next, string ...$guards): Response
     {
-        // All logins (vendor or buyer) use the default 'web' guard via Auth::attempt().
-        // A named guard like 'vendor' shares the same session provider, so checking
-        // Auth::guard('vendor') would work only if the user explicitly logged in with
-        // that guard. Since we always use the web guard, we fall back to it here.
-        if (Auth::check()) {
-            $user = Auth::user();
+        $isSellerRoute = $request->is('seller-login')
+            || $request->is('seller/forgot-password')
+            || $request->is('seller/reset-password*')
+            || $request->is('vendor/register');
 
-            if ($user->role === 'vendor') {
+        $isUserRoute = $request->is('userlogin')
+            || $request->is('login')
+            || $request->is('register');
+
+        // ── Vendor guard check (seller routes only) ───────────────────────────
+        if (Auth::guard('vendor')->check()) {
+            // Already logged in as vendor and hitting a seller guest route → dashboard
+            if ($isSellerRoute) {
                 return redirect()->route('dashboard');
             }
+            // Vendor hitting user login/register → allow through so they can also
+            // log in on the user side (vendor cookie is separate, no conflict)
+        }
+
+        // ── Web guard check (user routes) ─────────────────────────────────────
+        if (Auth::guard('web')->check()) {
+            $user = Auth::guard('web')->user();
 
             if ($user->role === 'admin') {
                 return redirect('/admin');
             }
 
-            // Regular authenticated user – send home
-            return redirect()->route('home');
+            // Logged-in web user hitting a seller guest route → let them through
+            // (they may want to log in as vendor separately)
+            if ($isSellerRoute) {
+                return $next($request);
+            }
+
+            // Logged-in web user hitting a user guest route → send home
+            if ($isUserRoute) {
+                return redirect()->route('home');
+            }
         }
 
         return $next($request);

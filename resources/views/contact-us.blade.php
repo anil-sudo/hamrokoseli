@@ -194,7 +194,7 @@
                 </p>
 
                 <div class="mt-8">
-                    <a href="{{ route('seller.login') }}"
+                    <a href="{{ route('seller') }}"
                         class="inline-block bg-[#C65A3A] hover:bg-[#B14F32] text-white px-8 py-4 rounded-2xl text-lg font-semibold">
                         Become a Seller
                     </a>

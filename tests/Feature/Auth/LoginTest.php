@@ -17,6 +17,7 @@ function ensureRolesExist(): void
 {
     foreach (['user', 'vendor', 'admin'] as $name) {
         Role::firstOrCreate(['name' => $name, 'guard_name' => 'web']);
+        Role::firstOrCreate(['name' => $name, 'guard_name' => 'vendor']);
     }
 }
 
@@ -137,14 +138,14 @@ describe('Buyer login', function () {
         $this->assertGuest();
     });
 
-    it('redirects a vendor user to the seller dashboard', function () {
+    it('redirects a vendor user to home (vendors can shop as buyers)', function () {
         $user = makeVendor();
 
         $this->post('/userlogin', [
             'email' => $user->email,
             'password' => 'password',
         ])
-            ->assertRedirect(route('dashboard'));
+            ->assertRedirect(route('home'));
 
         $this->assertAuthenticatedAs($user);
     });
@@ -166,7 +167,8 @@ describe('Seller login', function () {
         ])
             ->assertRedirect(route('dashboard'));
 
-        $this->assertAuthenticatedAs($user);
+        // Vendor login uses the 'vendor' guard, not the default 'web' guard.
+        $this->assertAuthenticatedAs($user, 'vendor');
     });
 
     it('rejects a non-vendor user attempting seller login', function () {
@@ -179,7 +181,7 @@ describe('Seller login', function () {
             ->assertRedirect()
             ->assertSessionHasErrors('email');
 
-        $this->assertGuest();
+        $this->assertGuest('vendor');
     });
 
     it('rejects a vendor whose account is pending approval', function () {
@@ -192,7 +194,7 @@ describe('Seller login', function () {
             ->assertRedirect(route('seller.login'))
             ->assertSessionHas('error');
 
-        $this->assertGuest();
+        $this->assertGuest('vendor');
     });
 
     it('rejects a suspended vendor', function () {
@@ -205,7 +207,7 @@ describe('Seller login', function () {
             ->assertRedirect(route('seller.login'))
             ->assertSessionHas('error');
 
-        $this->assertGuest();
+        $this->assertGuest('vendor');
     });
 
     it('rejects an inactive user account even with correct password', function () {
@@ -218,7 +220,7 @@ describe('Seller login', function () {
             ->assertRedirect()
             ->assertSessionHasErrors('email');
 
-        $this->assertGuest();
+        $this->assertGuest('vendor');
     });
 
     it('stays on seller login for wrong password', function () {
@@ -231,7 +233,7 @@ describe('Seller login', function () {
             ->assertRedirect()
             ->assertSessionHasErrors('email');
 
-        $this->assertGuest();
+        $this->assertGuest('vendor');
     });
 
 });
@@ -255,11 +257,13 @@ describe('Logout', function () {
     it('logs the seller out and redirects to seller login', function () {
         $user = makeVendor();
 
-        $this->actingAs($user)
+        // Authenticate via the vendor guard (matches how seller login works).
+        $this->actingAs($user, 'vendor')
             ->post('/seller-logout')
             ->assertRedirect(route('seller.login'));
 
-        $this->assertGuest();
+        // Only the vendor guard session should be cleared.
+        $this->assertGuest('vendor');
     });
 
     it('a guest hitting logout is redirected without error', function () {
