@@ -385,6 +385,12 @@ if (window.isLoggedIn) {
         didOpen: (toast) => {
             toast.addEventListener('mouseenter', Swal.stopTimer);
             toast.addEventListener('mouseleave', Swal.resumeTimer);
+            // Ensure the SweetAlert2 container always renders above every modal
+            // (product details modal uses z-[99999] = 99999; we need to be above it)
+            const container = toast.closest('.swal2-container');
+            if (container) {
+                container.style.setProperty('z-index', '999999', 'important');
+            }
         },
     }) : null;
 
