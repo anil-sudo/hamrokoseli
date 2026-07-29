@@ -11,33 +11,41 @@ class RedirectIfAuthenticated
 {
     public function handle(Request $request, Closure $next, string ...$guards): Response
     {
-        // If no specific guard is passed, check both known guards.
-        $guards = empty($guards) ? ['web', 'vendor'] : $guards;
+        $isSellerRoute = $request->is('seller-login')
+            || $request->is('seller/forgot-password')
+            || $request->is('seller/reset-password*')
+            || $request->is('vendor/register');
 
-        foreach ($guards as $guard) {
-            if (Auth::guard($guard)->check()) {
-                $user = Auth::guard($guard)->user();
+        $isUserRoute = $request->is('userlogin')
+            || $request->is('login')
+            || $request->is('register');
 
-                // Vendor guard — send to seller dashboard
-                if ($guard === 'vendor' || $user->role === 'vendor') {
-                    return redirect()->route('dashboard');
-                }
+        // ── Vendor guard check (seller routes only) ───────────────────────────
+        if (Auth::guard('vendor')->check()) {
+            // Already logged in as vendor and hitting a seller guest route → dashboard
+            if ($isSellerRoute) {
+                return redirect()->route('dashboard');
+            }
+            // Vendor hitting user login/register → allow through so they can also
+            // log in on the user side (vendor cookie is separate, no conflict)
+        }
 
-                // Admin
-                if ($user->role === 'admin') {
-                    return redirect('/admin');
-                }
+        // ── Web guard check (user routes) ─────────────────────────────────────
+        if (Auth::guard('web')->check()) {
+            $user = Auth::guard('web')->user();
 
-                // Regular user hitting a seller guest route — log out of web guard only
-                if ($request->is('seller-login') || $request->is('seller/forgot-password') || $request->is('seller/reset-password*') || $request->is('vendor/register')) {
-                    Auth::guard('web')->logout();
-                    $request->session()->invalidate();
-                    $request->session()->regenerateToken();
+            if ($user->role === 'admin') {
+                return redirect('/admin');
+            }
 
-                    return redirect($request->getRequestUri());
-                }
+            // Logged-in web user hitting a seller guest route → let them through
+            // (they may want to log in as vendor separately)
+            if ($isSellerRoute) {
+                return $next($request);
+            }
 
-                // Regular authenticated user — send home
+            // Logged-in web user hitting a user guest route → send home
+            if ($isUserRoute) {
                 return redirect()->route('home');
             }
         }

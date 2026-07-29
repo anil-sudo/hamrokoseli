@@ -99,8 +99,8 @@ class SellerController extends Controller
 
     public function logout(Request $request)
     {
-        // Only log out of the vendor guard — do NOT invalidate the full session
-        // as that would also destroy the user (web guard) login.
+        // Only clear the vendor guard — do NOT invalidate the whole session
+        // or the user (web guard) login will be wiped too.
         Auth::guard('vendor')->logout();
 
         return redirect()->route('seller.login');
@@ -119,7 +119,7 @@ class SellerController extends Controller
 
             // Regular user – automatically log them out of the buyer account
             // and let them see the seller registration page.
-            auth()->logout();
+            Auth::guard('vendor')->logout();
             request()->session()->invalidate();
             request()->session()->regenerateToken();
         }
