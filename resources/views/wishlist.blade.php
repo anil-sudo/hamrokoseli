@@ -136,7 +136,7 @@
             <p class="text-sm text-[#3A2A1F]/70 max-w-sm mx-auto mb-8 font-medium">
                 Explore our collection and add your favorite Nepalese handicrafts to your wishlist.
             </p>
-            <a href="{{ route('shop') }}" class="inline-flex items-center gap-2 bg-[#C65A3A] hover:bg-[#b04a2c] text-white font-bold px-8 py-3 rounded-full shadow-md hover:shadow transition duration-300 text-sm">
+            <a href="{{ route('shop') }}" wire:navigate class="inline-flex items-center gap-2 bg-[#C65A3A] hover:bg-[#b04a2c] text-white font-bold px-8 py-3 rounded-full shadow-md hover:shadow transition duration-300 text-sm">
                 Shop Now
             </a>
         </div>

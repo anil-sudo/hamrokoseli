@@ -253,7 +253,7 @@
 @endif
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    (function() {
         const toggleBtn = document.getElementById('toggle-add-review-btn');
         const reviewSection = document.getElementById('modal-add-review-section');
 
@@ -374,5 +374,5 @@
                 });
             });
         });
-    });
+    })();
 </script>

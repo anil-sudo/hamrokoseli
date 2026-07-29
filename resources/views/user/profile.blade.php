@@ -9,16 +9,16 @@
         <!-- Flash Messages -->
         @if (session('success'))
             <script>
-                document.addEventListener('DOMContentLoaded', () => {
+                (function() {
                     if (window.showToast) window.showToast("{{ session('success') }}", 'success');
-                });
+                })();
             </script>
         @endif
         @if (session('password_success'))
             <script>
-                document.addEventListener('DOMContentLoaded', () => {
+                (function() {
                     if (window.showToast) window.showToast("{{ session('password_success') }}", 'success');
-                });
+                })();
             </script>
         @endif
         @if ($errors->any())

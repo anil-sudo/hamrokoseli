@@ -19,7 +19,7 @@
                     Support local artisans and find unique, handmade treasures
                 </p>
 
-                <a href="{{ route('shop') }}" class="bg-[#b55b3d] hover:bg-[#a04f33] text-white font-bold px-6 sm:px-8 py-2.5 sm:py-3 rounded-full shadow-md transition duration-300 inline-block tracking-wide text-sm sm:text-base">
+                <a href="{{ route('shop') }}" wire:navigate class="bg-[#b55b3d] hover:bg-[#a04f33] text-white font-bold px-6 sm:px-8 py-2.5 sm:py-3 rounded-full shadow-md transition duration-300 inline-block tracking-wide text-sm sm:text-base">
                     Shop Now
                 </a>
             </div>
@@ -130,7 +130,7 @@
         <section class="max-w-7xl mx-auto px-4 sm:px-6 mb-12 sm:mb-16">
             <div class="flex items-center justify-between mb-4 sm:mb-6 md:mb-8">
                 <h3 class="text-xl sm:text-2xl md:text-3xl font-bold text-brand-dark">Shop by Category</h3>
-                <a href="{{ route('categories') }}" class="text-brand-primary hover:text-[#a04f33] font-bold text-xs sm:text-sm flex items-center gap-1 transition-colors hover:underline">
+                <a href="{{ route('categories') }}" wire:navigate class="text-brand-primary hover:text-[#a04f33] font-bold text-xs sm:text-sm flex items-center gap-1 transition-colors hover:underline">
                     <span>See All</span>
                     <i class="fa-solid fa-chevron-right text-[10px] sm:text-xs"></i>
                 </a>
@@ -139,7 +139,7 @@
             <!-- Grid: 3 columns on mobile, 4 on desktop -->
             <div class="grid grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-4 lg:gap-6">
                 @forelse($categories as $category)
-                    <a href="{{ route('shop', ['category' => $category->slug]) }}" class="bg-[#FDFBF7] rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-amber-900/5 hover:shadow-md transition group block {{ $loop->index >= 3 ? 'hidden lg:block' : '' }}">
+                    <a href="{{ route('shop', ['category' => $category->slug]) }}" wire:navigate class="bg-[#FDFBF7] rounded-xl sm:rounded-2xl overflow-hidden shadow-sm border border-amber-900/5 hover:shadow-md transition group block {{ $loop->index >= 3 ? 'hidden lg:block' : '' }}">
                         <div class="h-24 xs:h-28 sm:h-36 md:h-44 lg:h-56 overflow-hidden bg-slate-100 relative flex items-center justify-center">
                             @if($category->image)
                                 <img src="{{ Storage::disk('public')->url($category->image) }}"
@@ -177,7 +177,7 @@
                     <h3 class="text-xl sm:text-2xl md:text-3xl font-bold text-brand-dark flex items-center gap-2">
                         <span>Today's Deals</span>
                     </h3>
-                    <a href="{{ route('todays-deals') }}" class="text-brand-primary hover:text-[#a04f33] font-bold text-xs sm:text-sm flex items-center gap-1 transition-colors hover:underline">
+                    <a href="{{ route('todays-deals') }}" wire:navigate class="text-brand-primary hover:text-[#a04f33] font-bold text-xs sm:text-sm flex items-center gap-1 transition-colors hover:underline">
                         <span>See All</span>
                         <i class="fa-solid fa-chevron-right text-[10px] sm:text-xs"></i>
                     </a>
@@ -660,7 +660,7 @@
                     <h3 class="text-xl sm:text-2xl md:text-3xl font-bold text-brand-dark flex items-center gap-2">
                         <span>Top Sellers</span>
                     </h3>
-                    <a href="{{ route('top-sellers') }}" class="text-brand-primary hover:text-[#a04f33] font-bold text-xs sm:text-sm flex items-center gap-1 transition-colors hover:underline">
+                    <a href="{{ route('top-sellers') }}" wire:navigate class="text-brand-primary hover:text-[#a04f33] font-bold text-xs sm:text-sm flex items-center gap-1 transition-colors hover:underline">
                         <span>See All</span>
                         <i class="fa-solid fa-chevron-right text-[10px] sm:text-xs"></i>
                     </a>

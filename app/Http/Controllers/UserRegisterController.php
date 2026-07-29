@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Rules\FullName;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -18,7 +19,7 @@ class UserRegisterController extends Controller
     {
         try {
             $data = $request->validate([
-                'name' => ['required', 'string', 'max:255'],
+                'name' => ['required', 'string', new FullName],
                 'email' => ['required', 'email', 'max:150', 'unique:users,email'],
                 'phone' => ['nullable', 'digits:10', 'unique:users,phone'],
                 'password' => [

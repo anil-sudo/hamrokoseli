@@ -438,23 +438,34 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Auto-show correct panel based on server-side session state
-        @if (session('status'))
-            if (window.openLoginModal) window.openLoginModal(null, 'forgot');
-        @endif
+    (function() {
+        function checkAndOpenModal() {
+            if (window.openLoginModal) {
+                @if (session('status'))
+                    window.openLoginModal(null, 'forgot');
+                @endif
 
-        @if (session('show_register') || ($errors->any() && old('name')))
-            if (window.openLoginModal) window.openLoginModal(null, 'register');
-        @endif
+                @if (session('show_register') || ($errors->any() && old('name')))
+                    window.openLoginModal(null, 'register');
+                @endif
 
-        @if ($errors->any() && !session('show_register') && !old('name'))
-            if (window.openLoginModal) window.openLoginModal(null, 'login');
-        @endif
+                @if ($errors->any() && !session('show_register') && !old('name'))
+                    window.openLoginModal(null, 'login');
+                @endif
 
-        @if (session('success'))
-            if (window.openLoginModal) window.openLoginModal(null, 'login');
-        @endif
+                @if (session('success'))
+                    window.openLoginModal(null, 'login');
+                @endif
+            }
+        }
+
+        // Run when DOM is ready and window is loaded
+        document.addEventListener('DOMContentLoaded', checkAndOpenModal);
+        window.addEventListener('load', checkAndOpenModal);
+        document.addEventListener('livewire:navigated', checkAndOpenModal);
+
+        // Also run immediately
+        checkAndOpenModal();
 
         // ── Phone: restrict to digits only, max 10 ──────────────────────────
         const modalPhone = document.getElementById('modal-register-phone');
@@ -474,8 +485,53 @@
             const pwDigitRegex   = /[0-9]/;
             const pwSpecialRegex = /[\^$*.\[\]{}()?\-"!@#%&\/\\,><':;|_~`+=]/;
 
+            // ── Full Name validation helper ──────────────────────────────────
+            function validateFullName(raw) {
+                const errs = [];
+                // Cannot be only spaces / empty
+                if (!raw || raw.trim() === '') {
+                    errs.push('Full Name is required.');
+                    return errs;
+                }
+                const name = raw; // raw value (not trimmed) to catch leading/trailing spaces
+                // No leading/trailing spaces
+                if (name !== name.trim()) {
+                    errs.push('Full Name must not have leading or trailing spaces.');
+                }
+                const trimmed = name.trim();
+                // Min length
+                if (trimmed.length < 3) {
+                    errs.push('Full Name must be at least 3 characters.');
+                }
+                // Max length
+                if (trimmed.length > 100) {
+                    errs.push('Full Name must not exceed 100 characters.');
+                }
+                // Must start with a letter (Unicode)
+                if (trimmed && !/^\p{L}/u.test(trimmed)) {
+                    errs.push('Full Name must start with a letter.');
+                }
+                // No multiple consecutive spaces
+                if (/\s{2,}/.test(name)) {
+                    errs.push('Full Name must not contain multiple consecutive spaces.');
+                }
+                // Letters and single spaces only — no numbers, symbols, emojis
+                if (!/^[\p{L} ]+$/u.test(trimmed)) {
+                    errs.push('Full Name may only contain letters and spaces (no numbers, symbols, or emojis).');
+                }
+                // No HTML
+                if (/<[^>]+>/.test(name)) {
+                    errs.push('Full Name must not contain HTML tags.');
+                }
+                // No SQL-like characters
+                if (/['";=<>()\\\|]|--|\/\*|\*\//.test(name)) {
+                    errs.push('Full Name must not contain special characters like quotes, semicolons, or brackets.');
+                }
+                return errs;
+            }
+
             regForm.addEventListener('submit', function(e) {
-                const name     = document.getElementById('modal-register-name')?.value.trim() ?? '';
+                const nameRaw  = document.getElementById('modal-register-name')?.value ?? '';
                 const email    = document.getElementById('modal-register-email')?.value.trim() ?? '';
                 const phone    = document.getElementById('modal-register-phone')?.value.trim() ?? '';
                 const password = document.getElementById('modal-register-password')?.value ?? '';
@@ -483,7 +539,9 @@
 
                 let errors = [];
 
-                if (!name)  errors.push('Full Name is required.');
+                // Full Name validation
+                errors.push(...validateFullName(nameRaw));
+
                 if (!email || !email.includes('@')) errors.push('A valid Email Address is required.');
 
                 // Phone — digits only, exactly 10 (optional field but validated if provided)
@@ -518,5 +576,5 @@
                 }
             });
         }
-    });
+    })();
 </script>

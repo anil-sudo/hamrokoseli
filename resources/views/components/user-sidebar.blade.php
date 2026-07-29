@@ -40,7 +40,7 @@
     <nav
         class="navbar flex-1 px-4 py-4 space-y-1.5 overflow-y-auto scroll-smooth">
         <!-- Dashboard -->
-        <a href="{{ route('Userdashboard') }}"
+        <a href="{{ route('Userdashboard') }}" wire:navigate
             class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl  hover:bg-[#D4A017]  group transition-all duration-300 ease-out active:scale-[0.98]
             {{ Request::routeIs('Userdashboard') ? 'bg-(--hover-color)' : '' }}">
             <i data-lucide="layout-dashboard"
@@ -49,7 +49,7 @@
         </a>
 
         <!-- Orders -->
-        <a href="{{ route('User-orders') }}"
+        <a href="{{ route('User-orders') }}" wire:navigate
             class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017]  group transition-all duration-300 ease-out active:scale-[0.98]
             {{ Request::routeIs('User-orders') ? 'bg-(--hover-color)' : '' }}">
             <i data-lucide="shopping-cart" class="w-5 text-lg transition-transform duration-300 group-hover:scale-110"></i>
@@ -57,7 +57,7 @@
         </a>
 
         <!-- profile -->
-        <a href="{{ route('user-profile') }}"
+        <a href="{{ route('user-profile') }}" wire:navigate
             class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017]  group transition-all duration-300 ease-out active:scale-[0.98]
             {{ Request::routeIs('user-profile') ? 'bg-(--hover-color)' : '' }}">
             <i data-lucide="user-round" class="w-5 transition-transform duration-300 group-hover:scale-110"></i>
@@ -65,7 +65,7 @@
         </a>
 
         <!-- notification -->
-        <a href="{{ route('user-notification') }}"
+        <a href="{{ route('user-notification') }}" wire:navigate
             class="nav-link flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-[#D4A017]  group transition-all duration-300 ease-out active:scale-[0.98]
             {{ Request::routeIs('user-notification') ? 'bg-(--hover-color)' : '' }}">
             <i data-lucide="bell" class="w-5 transition-transform duration-300 group-hover:scale-110"></i>
@@ -75,7 +75,7 @@
 
     <div class=" px-4 pb-8 mt-auto border-t border-white/10 pt-4 space-y-4">
         <!-- buy now -->
-        <a href="{{ route('shop') }}"
+        <a href="{{ route('shop') }}" wire:navigate
             class="flex items-center gap-4 px-4 py-3 rounded-xl bg-brand-primary  hover:bg-[#B14E32] text-brand-cream  transition-all duration-300 active:scale-[0.98] group">
             <i data-lucide="shopping-bag"
                 class="w-5 text-brand-cream text-lg transition-transform duration-300 group-hover:rotate-9"></i>

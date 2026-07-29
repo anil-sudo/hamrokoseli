@@ -40,7 +40,7 @@
                         From vibrant paintings to intricate wood carvings, traditional textiles to authentic spices —
                         explore the rich diversity of Nepali craftsmanship and culture.
                     </p>
-                    <a href="{{ route('shop', ['category' => 'pottery']) }}"
+                    <a href="{{ route('shop', ['category' => 'pottery']) }}" wire:navigate
                         class="flex items-center gap-2 bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-sm font-semibold py-3.5 px-6 rounded-xl shadow-sm hover:shadow transition duration-300">
                         Explore Collection <i class="fa-solid fa-arrow-right text-xs"></i>
                     </a>
@@ -86,7 +86,7 @@
 
                         <div
                             class="{{ $colSpanClass }} {{ $heightClass }} relative rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm group cursor-pointer category-card">
-                            <a href="{{ route('shop', ['category' => $category->slug]) }}" class="block w-full h-full">
+                            <a href="{{ route('shop', ['category' => $category->slug]) }}" wire:navigate class="block w-full h-full">
                                 <img src="{{ $category->image ? asset('storage/' . $category->image) : asset('images/pot.png') }}"
                                     alt="{{ $category->cat_name }}"
                                     class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
@@ -132,7 +132,7 @@
 
     {{-- ==================== SEARCH SCRIPT ==================== --}}
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        (function() {
             const searchInput = document.getElementById('category-search');
             const categoryCards = document.querySelectorAll('.category-card');
             const counter = document.getElementById('category-counter');
@@ -157,6 +157,6 @@
                     }
                 });
             }
-        });
+        })();
     </script>
 </x-frontend-layout>

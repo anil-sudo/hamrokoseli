@@ -1,7 +1,7 @@
 <x-user-layout title="Order Details">
     <div class="space-y-10">
 
-        <a href="{{ route('User-orders') }}"
+        <a href="{{ route('User-orders') }}" wire:navigate
             class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-(--text-dark) bg-(--text-light) border border-(--text-color)/20 rounded-2xl">
             <i data-lucide="arrow-left" class="w-5 h-5"></i>
             Back to Orders
@@ -9,16 +9,16 @@
 
         @if (session('success'))
             <script>
-                document.addEventListener('DOMContentLoaded', () => {
+                (function() {
                     if (window.showToast) window.showToast("{{ session('success') }}", 'success');
-                });
+                })();
             </script>
         @endif
         @if (session('error'))
             <script>
-                document.addEventListener('DOMContentLoaded', () => {
+                (function() {
                     if (window.showToast) window.showToast("{{ session('error') }}", 'error');
-                });
+                })();
             </script>
         @endif
 
@@ -358,7 +358,10 @@
         // Optional: Close with Escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') {
-                hideCancelModal();
+                const modal = document.getElementById('cancelModal');
+                if (modal && !modal.classList.contains('hidden')) {
+                    hideCancelModal();
+                }
             }
         });
     </script>
