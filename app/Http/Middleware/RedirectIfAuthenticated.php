@@ -32,6 +32,7 @@ class RedirectIfAuthenticated
                 Auth::logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
+
                 return redirect($request->getRequestUri());
             }
 
