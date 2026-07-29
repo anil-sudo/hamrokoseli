@@ -80,7 +80,7 @@ class SellerController extends Controller
             }
 
             if ($vendor->status !== 'active') {
-                Auth::logout();
+                Auth::guard('vendor')->logout();
 
                 return redirect()
                     ->route('seller.login')
@@ -99,9 +99,9 @@ class SellerController extends Controller
 
     public function logout(Request $request)
     {
+        // Only log out of the vendor guard — do NOT invalidate the full session
+        // as that would also destroy the user (web guard) login.
         Auth::guard('vendor')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
 
         return redirect()->route('seller.login');
     }
@@ -117,8 +117,9 @@ class SellerController extends Controller
                     ->with('info', 'You already have a seller account.');
             }
 
-            // Not a vendor — log out of vendor guard only
-            Auth::guard('vendor')->logout();
+            // Regular user – automatically log them out of the buyer account
+            // and let them see the seller registration page.
+            auth()->logout();
             request()->session()->invalidate();
             request()->session()->regenerateToken();
         }
