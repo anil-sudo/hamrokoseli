@@ -11,30 +11,35 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap"
         rel="stylesheet">
+
+    <!-- NProgress -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
+
+    <!-- SweetAlert2 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+
+    @livewireStyles
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-
     <script>
-        window.flashMessages = [];
-        @if(session('success'))
-            window.flashMessages.push({ message: {!! json_encode(session('success')) !!}, type: 'success' });
-        @endif
-        @if(session('error'))
-            window.flashMessages.push({ message: {!! json_encode(session('error')) !!}, type: 'error' });
-        @endif
-        @if(session('status'))
-            window.flashMessages.push({ message: {!! json_encode(session('status')) !!}, type: 'success' });
-        @endif
-        @if(session('info'))
-            window.flashMessages.push({ message: {!! json_encode(session('info')) !!}, type: 'info' });
-        @endif
-        @if(session('warning'))
-            window.flashMessages.push({ message: {!! json_encode(session('warning')) !!}, type: 'warning' });
-        @endif
-        @if(session('password_success'))
-            window.flashMessages.push({ message: {!! json_encode(session('password_success')) !!}, type: 'success' });
-        @endif
+        function initFlashMessages() {
+            window.flashMessages = [];
+            @if(session('success')) window.flashMessages.push({ message: {!! json_encode(session('success')) !!}, type: 'success' }); @endif
+            @if(session('error')) window.flashMessages.push({ message: {!! json_encode(session('error')) !!}, type: 'error' }); @endif
+            @if(session('status')) window.flashMessages.push({ message: {!! json_encode(session('status')) !!}, type: 'success' }); @endif
+            @if(session('info')) window.flashMessages.push({ message: {!! json_encode(session('info')) !!}, type: 'info' }); @endif
+            @if(session('warning')) window.flashMessages.push({ message: {!! json_encode(session('warning')) !!}, type: 'warning' }); @endif
+            @if(session('password_success')) window.flashMessages.push({ message: {!! json_encode(session('password_success')) !!}, type: 'success' }); @endif
+
+            window.flashMessages.forEach(flash => {
+                Swal.fire({ icon: flash.type, title: flash.message, toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
+            });
+        }
+        document.addEventListener('livewire:navigated', initFlashMessages);
+        window.addEventListener('load', initFlashMessages);
     </script>
 </head>
 
@@ -65,8 +70,18 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <script>
-        lucide.createIcons();
+        (function() {
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        })();
+        document.addEventListener('livewire:navigated', function() {
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        });
     </script>
+    @livewireScripts
 </body>
 
 </html>

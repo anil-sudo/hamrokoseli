@@ -31,7 +31,7 @@ Route::middleware(['guest:vendor', 'throttle:auth'])->group(function () {
 Route::post('/seller-logout', [SellerController::class, 'logout'])->name('seller.logout');
 
 // ─── Seller profile & password (auth protected — fix #3) ─────────────────────
-Route::middleware(['auth', EnsureVendor::class])->group(function () {
+Route::middleware(['auth:vendor', EnsureVendor::class])->group(function () {
     Route::get('/seller-dashboard', [SellerController::class, 'dashboard'])->name('dashboard');
     Route::get('/seller-dashboard/sales-trend', [SellerController::class, 'salesTrendData'])->name('dashboard.sales-trend');
     Route::get('/product-management', [SellerController::class, 'product_management'])->name('product-management');
@@ -134,27 +134,40 @@ Route::middleware('auth')->group(function () {
     Route::patch('/user-notification/{slug}/read', [UserController::class, 'markNotificationRead'])->name('user.notifications.read');
 });
 
-// ─── User Auth (guest only, rate limited) ─────────────────────────────────────
+// ─── Google OAuth (outside guest middleware — callback runs after Google sets auth) ──
+Route::get('/google/redirect', [AuthController::class, 'redirect'])->name('google.redirect');
+Route::get('/google/callback', [AuthController::class, 'callback'])->name('google.callback');
+
+// ─── User Auth — GET pages are guest-only, POST login is open so that a vendor
+//     already logged in on the vendor guard can ALSO log in as a user (web guard).
+//     Both guards share the same PHP session but use independent session keys,
+//     so there is no conflict. AuthController::login() itself checks whether the
+//     web guard is already authenticated and redirects home if so.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// GET-only guest routes (show login/register pages — redirect away if already on web guard)
 Route::middleware(['guest', 'throttle:auth'])->group(function () {
-    Route::get('/google/redirect', [AuthController::class, 'redirect'])->name('google.redirect');
-    Route::get('/google/callback', [AuthController::class, 'callback'])->name('google.callback');
     Route::get('/userlogin', [AuthController::class, 'showLogin'])->name('userlogin');
-    Route::post('/userlogin', [AuthController::class, 'login']);
-
     Route::get('/userregister', [PageController::class, 'home'])->name('userregister');
-    Route::post('/userregister', [UserRegisterController::class, 'register'])->name('userregister.post');
-
     Route::get('/login', fn () => redirect()->route('userlogin'))->name('login');
-    Route::post('/login', [AuthController::class, 'login']);
-    Route::post('/register', [UserRegisterController::class, 'register'])->name('register');
 
     Route::get('/vendor/register', [VendorRegisterController::class, 'show'])->name('vendor.register');
-    Route::post('/vendor/register', [VendorRegisterController::class, 'register'])->name('vendor.register.post');
 
     Route::get('/forgot-password', [PasswordResetController::class, 'showForgotForm'])->name('password.request');
     Route::post('/forgot-password', [PasswordResetController::class, 'sendResetLink'])->name('password.email');
     Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
     Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('password.update');
+});
+
+// POST login routes — outside guest middleware so a vendor (authenticated on vendor
+// guard only, NOT on web guard) can submit credentials and log in as a user too.
+// Rate-limited the same as the guest block above.
+Route::middleware('throttle:auth')->group(function () {
+    Route::post('/userlogin', [AuthController::class, 'login']);
+    Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/userregister', [UserRegisterController::class, 'register'])->name('userregister.post');
+    Route::post('/register', [UserRegisterController::class, 'register'])->name('register');
+    Route::post('/vendor/register', [VendorRegisterController::class, 'register'])->name('vendor.register.post');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

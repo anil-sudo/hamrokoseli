@@ -34,9 +34,10 @@
                 </button>
 
                 <!-- Logo -->
-                <a href="{{ url('/') }}" class="flex items-center gap-2.5 group shrink-0">
+                <a href="{{ url('/') }}" wire:navigate class="flex items-center gap-2.5 group shrink-0">
                     <img src="{{ asset('images/logo.png') }}" alt="Hamro Koseli Logo"
-                        class="w-10 h-10 bg-white object-contain rounded-full shadow-md transform group-hover:scale-105 transition duration-300">
+                        class="w-10 h-10 bg-white object-contain rounded-full shadow-md transform group-hover:scale-105 transition duration-300"
+                        loading="lazy">
                     <div>
                         <div class="text-lg md:text-xl font-extrabold tracking-wide leading-none text-white">HAMRO KOSELI</div>
                         <span class="text-[9px] text-emerald-200/90 tracking-wide font-medium hidden sm:block">Special Koseli for Special People</span>
@@ -62,10 +63,10 @@
                     </a>
                 @else
                     <div class="hidden md:flex items-center gap-2 relative" id="account-menu-wrap">
-                        <a href="{{ route('Userdashboard') }}" id="account-menu-btn"
+                        <a href="{{ route('Userdashboard') }}" wire:navigate id="account-menu-btn"
                             class="inline-flex items-center gap-2 rounded-full border border-white/90 text-white font-semibold px-4 py-1.5 text-sm hover:bg-white hover:text-[#1f3d2e] transition-all duration-300 active:scale-95 shadow-sm">
                             @if(auth()->user()->profile_pic)
-                                <img src="{{ asset('storage/' . auth()->user()->profile_pic) }}" alt="Profile" class="w-6 h-6 rounded-full object-cover">
+                                <img src="{{ asset('storage/' . auth()->user()->profile_pic) }}" alt="Profile" class="w-6 h-6 rounded-full object-cover" loading="lazy">
                             @else
                                 <i class="far fa-user-circle"></i>
                             @endif
@@ -82,12 +83,12 @@
                     </button>
                     @auth
                         <!-- Wishlist -->
-                        <a href="{{ route('wishlist') }}" class="hover:text-emerald-200 transition-colors p-1 relative flex items-center justify-center" title="Wishlist" id="wishlist-header-btn">
+                        <a href="{{ route('wishlist') }}" wire:navigate class="hover:text-emerald-200 transition-colors p-1 relative flex items-center justify-center" title="Wishlist" id="wishlist-header-btn">
                             <i class="far fa-heart" id="wishlist-header-icon"></i>
                             <span id="wishlist-badge" class="absolute -top-1.5 -right-1.5 bg-[#b55b3d] text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold border border-[#1f3d2e] hidden">0</span>
                         </a>
                         <!-- Cart -->
-                        <a href="{{ route('cart') }}" class="hover:text-emerald-200 transition-colors p-1 relative flex items-center justify-center" title="Cart" id="cart-header-btn">
+                        <a href="{{ route('cart') }}" wire:navigate class="hover:text-emerald-200 transition-colors p-1 relative flex items-center justify-center" title="Cart" id="cart-header-btn">
                             <i class="fas fa-shopping-cart" id="cart-header-icon"></i>
                             <span id="cart-badge" class="absolute -top-1.5 -right-1.5 bg-[#b55b3d] text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold border border-[#1f3d2e] hidden">0</span>
                         </a>
@@ -122,12 +123,12 @@
         <div class="max-w-7xl mx-auto">
             <div class="desktop-nav-container">
                 <ul class="desktop-nav-links">
-                    <li><a href="{{ url('/') }}" class="subnav-link {{ Request::is('/') ? 'active' : '' }}"><i class="fas fa-home"></i> Home</a></li>
-                    <li><a href="{{ url('categories') }}" class="subnav-link {{ Request::is('categories*') ? 'active' : '' }}"><i class="fas fa-th-large"></i> Category</a></li>
-                    <li><a href="{{ url('shop') }}" class="subnav-link {{ Request::is('shop*') ? 'active' : '' }}"><i class="fas fa-store"></i> Shop</a></li>
-                    <li><a href="{{ url('todays-deals') }}" class="subnav-link {{ Request::is('todays-deals*') ? 'active' : '' }}"><i class="fas fa-tag"></i> Today's Deals</a></li>
-                    <li><a href="{{ url('top-sellers') }}" class="subnav-link {{ Request::is('top-sellers*') ? 'active' : '' }}"><i class="fas fa-trophy"></i> Top Sellers</a></li>
-                    <li><a href="{{ url('new-arrivals') }}" class="subnav-link {{ Request::is('new-arrivals*') ? 'active' : '' }}"><i class="fa-solid fa-mobile-screen-button"></i> New Arrivals</a></li>
+                    <li><a href="{{ url('/') }}" wire:navigate.hover class="subnav-link {{ Request::is('/') ? 'active' : '' }}"><i class="fas fa-home"></i> Home</a></li>
+                    <li><a href="{{ url('categories') }}" wire:navigate.hover class="subnav-link {{ Request::is('categories*') ? 'active' : '' }}"><i class="fas fa-th-large"></i> Category</a></li>
+                    <li><a href="{{ url('shop') }}" wire:navigate.hover class="subnav-link {{ Request::is('shop*') ? 'active' : '' }}"><i class="fas fa-store"></i> Shop</a></li>
+                    <li><a href="{{ url('todays-deals') }}" wire:navigate.hover class="subnav-link {{ Request::is('todays-deals*') ? 'active' : '' }}"><i class="fas fa-tag"></i> Today's Deals</a></li>
+                    <li><a href="{{ url('top-sellers') }}" wire:navigate.hover class="subnav-link {{ Request::is('top-sellers*') ? 'active' : '' }}"><i class="fas fa-trophy"></i> Top Sellers</a></li>
+                    <li><a href="{{ url('new-arrivals') }}" wire:navigate.hover class="subnav-link {{ Request::is('new-arrivals*') ? 'active' : '' }}"><i class="fa-solid fa-mobile-screen-button"></i> New Arrivals</a></li>
                 </ul>
             </div>
         </div>
@@ -167,9 +168,9 @@
                 Sign Up
             </a>
         @else
-            <a href="{{ route('Userdashboard') }}" class="flex-1 text-center flex items-center justify-center gap-1.5 text-white font-semibold py-2 text-sm hover:text-emerald-200 transition-colors">
+            <a href="{{ route('Userdashboard') }}" wire:navigate class="flex-1 text-center flex items-center justify-center gap-1.5 text-white font-semibold py-2 text-sm hover:text-emerald-200 transition-colors">
                 @if(auth()->user()->profile_pic)
-                    <img src="{{ asset('storage/' . auth()->user()->profile_pic) }}" alt="Profile" class="w-5 h-5 rounded-full object-cover">
+                    <img src="{{ asset('storage/' . auth()->user()->profile_pic) }}" alt="Profile" class="w-5 h-5 rounded-full object-cover" loading="lazy">
                 @else
                     <i class="far fa-user-circle"></i>
                 @endif
@@ -188,12 +189,12 @@
 
     <!-- Navigation links with icons for ALL items (including New Arrivals) -->
     <nav>
-        <a href="{{ url('/') }}"          class="mob-nav-link {{ Request::is('/') ? 'active' : '' }}"><i class="fas fa-home"></i>Home</a>
-        <a href="{{ url('categories') }}"     class="mob-nav-link {{ Request::is('categories*') ? 'active' : '' }}"><i class="fas fa-th-large"></i>Category</a>
-        <a href="{{ url('shop') }}"           class="mob-nav-link {{ Request::is('shop*') ? 'active' : '' }}"><i class="fas fa-store"></i>Shop</a>
-        <a href="{{ url('todays-deals') }}"      class="mob-nav-link {{ Request::is('todays-deals*') ? 'active' : '' }}"><i class="fas fa-tag"></i>Today's Deals</a>
-        <a href="{{ url('top-sellers') }}"       class="mob-nav-link {{ Request::is('top-sellers*') ? 'active' : '' }}"><i class="fas fa-trophy"></i>Top Sellers</a>
-        <a href="{{ url('new-arrivals') }}"   class="mob-nav-link {{ Request::is('new-arrivals*') ? 'active' : '' }}"><i class="fa-solid fa-mobile-screen-button"></i>New Arrivals</a>
+        <a href="{{ url('/') }}"          wire:navigate class="mob-nav-link {{ Request::is('/') ? 'active' : '' }}"><i class="fas fa-home"></i>Home</a>
+        <a href="{{ url('categories') }}"  wire:navigate class="mob-nav-link {{ Request::is('categories*') ? 'active' : '' }}"><i class="fas fa-th-large"></i>Category</a>
+        <a href="{{ url('shop') }}"        wire:navigate class="mob-nav-link {{ Request::is('shop*') ? 'active' : '' }}"><i class="fas fa-store"></i>Shop</a>
+        <a href="{{ url('todays-deals') }}" wire:navigate class="mob-nav-link {{ Request::is('todays-deals*') ? 'active' : '' }}"><i class="fas fa-tag"></i>Today's Deals</a>
+        <a href="{{ url('top-sellers') }}"  wire:navigate class="mob-nav-link {{ Request::is('top-sellers*') ? 'active' : '' }}"><i class="fas fa-trophy"></i>Top Sellers</a>
+        <a href="{{ url('new-arrivals') }}" wire:navigate class="mob-nav-link {{ Request::is('new-arrivals*') ? 'active' : '' }}"><i class="fa-solid fa-mobile-screen-button"></i>New Arrivals</a>
         @auth
             @if(auth()->user()->hasRole('vendor'))
                 <a href="{{ route('dashboard') }}" class="mob-nav-link"><i class="fas fa-store"></i>Seller Dashboard</a>

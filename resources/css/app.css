@@ -5,6 +5,35 @@
 @source '../views/**/*.blade.php';
 @source '../js/**/*.js';
 
+/* ─── NProgress — custom brand color ──────────────────────────────────────── */
+#nprogress .bar {
+    background: #C65A3A !important;
+    height: 3px !important;
+}
+#nprogress .peg {
+    box-shadow: 0 0 10px #C65A3A, 0 0 5px #C65A3A !important;
+}
+
+/* ─── Page fade-in after Livewire Navigate ────────────────────────────────── */
+@keyframes page-fade-in {
+    from { opacity: 0; transform: translateY(5px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+body {
+    animation: page-fade-in 0.2s ease forwards;
+}
+
+/* ─── Lazy-loaded images: fade in when loaded ─────────────────────────────── */
+img[loading="lazy"] {
+    opacity: 0;
+    transition: opacity 0.35s ease;
+}
+img[loading="lazy"].loaded,
+img[loading="lazy"]:not([src=""]) {
+    opacity: 1;
+}
+
 :root {
     /* Brand Colors */
     --primary-color: #1F3D2E;
