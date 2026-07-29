@@ -46,58 +46,7 @@
             sortSelect.addEventListener('change', () => sortProducts(sortSelect.value));
         }
 
-        // Modal functionality (Fallback if global listeners are not covering it)
-        document.querySelectorAll('.view-details-btn').forEach(btn => {
-            btn.addEventListener('click', function (e) {
-                if (e.target.closest('.wishlist-btn')) return;
-                e.preventDefault();
 
-                const nameEl = document.getElementById('modal-product-name');
-                const imageEl = document.getElementById('modal-main-image');
-                const priceEl = document.getElementById('modal-product-price');
-                const descEl = document.getElementById('modal-product-desc');
-                const reviewsEl = document.getElementById('modal-reviews-count');
-
-                if (nameEl) nameEl.textContent = btn.getAttribute('data-name');
-                if (imageEl) imageEl.src = btn.getAttribute('data-image');
-                if (priceEl) priceEl.textContent = 'Rs. ' + parseFloat(btn.getAttribute('data-price')).toLocaleString();
-                if (descEl) descEl.textContent = btn.getAttribute('data-desc');
-                if (reviewsEl) reviewsEl.textContent = btn.getAttribute('data-reviews');
-
-                const rating = parseFloat(btn.getAttribute('data-rating') || 5);
-                const starsContainer = document.getElementById('modal-stars-container');
-                if (starsContainer) {
-                    starsContainer.innerHTML = '';
-                    for (let i = 1; i <= 5; i++) {
-                        const star = document.createElement('i');
-                        star.className = i <= rating ? 'fas fa-star text-yellow-500' : (i - rating < 1 ? 'fas fa-star-half-alt text-yellow-500' : 'far fa-star text-yellow-500');
-                        starsContainer.appendChild(star);
-                    }
-                }
-
-                if (modal && container) {
-                    modal.classList.remove('hidden');
-                    setTimeout(() => {
-                        modal.classList.remove('opacity-0');
-                        container.classList.remove('scale-95', 'opacity-0');
-                        container.classList.add('scale-100', 'opacity-100');
-                    }, 10);
-                    document.body.style.overflow = 'hidden';
-                }
-            });
-        });
-
-        function closeModal() {
-            if (modal && container) {
-                modal.classList.add('opacity-0');
-                container.classList.add('scale-95', 'opacity-0');
-                setTimeout(() => modal.classList.add('hidden'), 300);
-                document.body.style.overflow = '';
-            }
-        }
-
-        if (closeBtn) closeBtn.addEventListener('click', closeModal);
-        if (modal) modal.addEventListener('click', (e) => e.target === modal && closeModal());
 
         // ==================== FEATURED CAROUSEL LOGIC ====================
         const carousel = document.getElementById('featured-carousel');

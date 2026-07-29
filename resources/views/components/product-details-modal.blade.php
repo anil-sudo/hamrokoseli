@@ -1,9 +1,10 @@
 <!-- Product Details Modal Overlay -->
 <div id="product-details-modal"
-    class="fixed inset-0 z-[99999] hidden bg-black/60 backdrop-blur-sm overflow-y-auto p-4 sm:p-6 md:p-10 transition-opacity duration-300 opacity-0">
+    style="overflow-anchor: none;"
+    class="fixed inset-0 z-[99999] hidden bg-black/60 backdrop-blur-sm overflow-y-auto p-4 sm:p-6 md:p-10 transition-opacity duration-300 opacity-0 flex justify-center items-start">
 
     <!-- Modal Content Container -->
-    <div class="relative bg-[#F4EAE1] max-w-5xl mx-auto rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-[#ebd7be]/50 transform scale-95 opacity-0 transition-all duration-300 ease-out"
+    <div class="relative bg-[#F4EAE1] max-w-5xl mx-auto my-auto rounded-2xl sm:rounded-3xl overflow-hidden shadow-2xl border border-[#ebd7be]/50 transform scale-95 opacity-0 transition-all duration-300 ease-out"
         id="product-details-container">
 
         <!-- Close Button -->
@@ -249,6 +250,10 @@
 @if (isset($activeProduct))
     <script>
         window.activeProductOnLoad = @json($activeProduct);
+    </script>
+@else
+    <script>
+        window.activeProductOnLoad = null;
     </script>
 @endif
 
