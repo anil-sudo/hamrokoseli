@@ -26,6 +26,16 @@ class RedirectIfAuthenticated
                 return redirect('/admin');
             }
 
+            // If a logged-in regular user is attempting to access a seller login/reset/register route,
+            // log them out of the regular user session so they can access the seller guest page.
+            if ($request->is('seller-login') || $request->is('seller/forgot-password') || $request->is('seller/reset-password*') || $request->is('vendor/register')) {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+
+                return redirect($request->getRequestUri());
+            }
+
             // Regular authenticated user – send home
             return redirect()->route('home');
         }

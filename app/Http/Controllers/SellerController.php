@@ -117,9 +117,11 @@ class SellerController extends Controller
                     ->with('info', 'You already have a seller account.');
             }
 
-            // Regular user – they must log out before registering as a seller.
-            return redirect()->route('home')
-                ->with('info', 'Please log out of your current account before registering as a seller.');
+            // Regular user – automatically log them out of the buyer account
+            // and let them see the seller registration page.
+            auth()->logout();
+            request()->session()->invalidate();
+            request()->session()->regenerateToken();
         }
 
         return view('seller.register');
