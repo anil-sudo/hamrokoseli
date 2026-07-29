@@ -24,11 +24,13 @@ class NewVendorRegistered extends Mailable
 
     public function content(): Content
     {
+        $adminBase = rtrim(config('app.admin_url', config('app.url')), '/');
+
         return new Content(
-            view: 'emails.vendor-registered',   // or 'mail.new-vendor-registered'
+            view: 'emails.vendor-registered',
             with: [
                 'vendor' => $this->vendor,
-                'approveUrl' => url('/admin/vendors/'.$this->vendor->id.'/edit'),
+                'approveUrl' => $adminBase.'/vendors/'.$this->vendor->id.'/edit',
             ]
         );
     }

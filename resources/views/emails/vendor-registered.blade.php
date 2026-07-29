@@ -186,7 +186,7 @@
             </ul>
 
             <div style="text-align: center; margin: 35px 0;">
-                <a href="{{ config('app.url').'/admin/vendors/'.$vendor->id.'/edit' }}" class="btn" target="_blank">
+                <a href="{{ $approveUrl }}" class="btn" target="_blank">
                         Review Vendor Application
                     </a>
             </div>

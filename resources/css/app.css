@@ -597,11 +597,14 @@ a {
 }
 
 /* Push the SweetAlert2 top-end container below the site navbar (~120px) */
+/* z-index must exceed product-details-modal (z-[99999] = 99999) and all other overlays */
 body > .swal2-container.swal2-top-end,
-body > .swal2-container.swal2-top-right {
+body > .swal2-container.swal2-top-right,
+.swal2-container.swal2-top-end,
+.swal2-container.swal2-top-right {
     top: 120px !important;
     right: 16px !important;
-    z-index: 100000 !important;
+    z-index: 999999 !important;
 }
 
 /* Vendor/seller dashboard — header is ~56px tall, so toast sits right below it */
