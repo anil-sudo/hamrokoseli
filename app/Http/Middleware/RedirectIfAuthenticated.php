@@ -11,33 +11,35 @@ class RedirectIfAuthenticated
 {
     public function handle(Request $request, Closure $next, string ...$guards): Response
     {
-        // All logins (vendor or buyer) use the default 'web' guard via Auth::attempt().
-        // A named guard like 'vendor' shares the same session provider, so checking
-        // Auth::guard('vendor') would work only if the user explicitly logged in with
-        // that guard. Since we always use the web guard, we fall back to it here.
-        if (Auth::check()) {
-            $user = Auth::user();
+        // If no specific guard is passed, check both known guards.
+        $guards = empty($guards) ? ['web', 'vendor'] : $guards;
 
-            if ($user->role === 'vendor') {
-                return redirect()->route('dashboard');
+        foreach ($guards as $guard) {
+            if (Auth::guard($guard)->check()) {
+                $user = Auth::guard($guard)->user();
+
+                // Vendor guard — send to seller dashboard
+                if ($guard === 'vendor' || $user->role === 'vendor') {
+                    return redirect()->route('dashboard');
+                }
+
+                // Admin
+                if ($user->role === 'admin') {
+                    return redirect('/admin');
+                }
+
+                // Regular user hitting a seller guest route — log out of web guard only
+                if ($request->is('seller-login') || $request->is('seller/forgot-password') || $request->is('seller/reset-password*') || $request->is('vendor/register')) {
+                    Auth::guard('web')->logout();
+                    $request->session()->invalidate();
+                    $request->session()->regenerateToken();
+
+                    return redirect($request->getRequestUri());
+                }
+
+                // Regular authenticated user — send home
+                return redirect()->route('home');
             }
-
-            if ($user->role === 'admin') {
-                return redirect('/admin');
-            }
-
-            // If a logged-in regular user is attempting to access a seller login/reset/register route,
-            // log them out of the regular user session so they can access the seller guest page.
-            if ($request->is('seller-login') || $request->is('seller/forgot-password') || $request->is('seller/reset-password*') || $request->is('vendor/register')) {
-                Auth::logout();
-                $request->session()->invalidate();
-                $request->session()->regenerateToken();
-
-                return redirect($request->getRequestUri());
-            }
-
-            // Regular authenticated user – send home
-            return redirect()->route('home');
         }
 
         return $next($request);

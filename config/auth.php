@@ -46,6 +46,7 @@ return [
         'vendor' => [
             'driver' => 'session',
             'provider' => 'users',
+            'cookie' => 'vendor_session',   // separate session cookie from the web guard
         ],
     ],
 

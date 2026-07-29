@@ -36,13 +36,13 @@ class SellerController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials, $request->boolean('remember'))) {
+        if (Auth::guard('vendor')->attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-            $user = Auth::user();
+            $user = Auth::guard('vendor')->user();
 
             // Block if not vendor or not active
             if ($user->role !== 'vendor' || ! $user->is_active) {
-                Auth::logout();
+                Auth::guard('vendor')->logout();
 
                 return back()
                     ->withInput($request->only('email'))
@@ -72,7 +72,7 @@ class SellerController extends Controller
             $vendor = $user->vendor;
 
             if (! $vendor) {
-                Auth::logout();
+                Auth::guard('vendor')->logout();
 
                 return redirect()
                     ->route('seller.login')
@@ -99,7 +99,7 @@ class SellerController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::logout();
+        Auth::guard('vendor')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
@@ -109,17 +109,16 @@ class SellerController extends Controller
     public function seller()
     {
         // If the user is already logged in, redirect them appropriately.
-        if (auth()->check()) {
-            $user = auth()->user();
+        if (Auth::guard('vendor')->check()) {
+            $user = Auth::guard('vendor')->user();
 
             if ($user->role === 'vendor') {
                 return redirect()->route('dashboard')
                     ->with('info', 'You already have a seller account.');
             }
 
-            // Regular user – automatically log them out of the buyer account
-            // and let them see the seller registration page.
-            auth()->logout();
+            // Not a vendor — log out of vendor guard only
+            Auth::guard('vendor')->logout();
             request()->session()->invalidate();
             request()->session()->regenerateToken();
         }
@@ -129,7 +128,7 @@ class SellerController extends Controller
 
     public function dashboard()
     {
-        $vendor = auth()->user()->vendor;
+        $vendor = Auth::guard('vendor')->user()->vendor;
 
         if (! $vendor) {
             return redirect()->route('seller.login')
@@ -203,7 +202,7 @@ class SellerController extends Controller
      */
     public function salesTrendData(Request $request)
     {
-        $vendor = auth()->user()->vendor;
+        $vendor = Auth::guard('vendor')->user()->vendor;
 
         if (! $vendor) {
             return response()->json(['error' => 'Vendor not found.'], 403);
@@ -255,7 +254,7 @@ class SellerController extends Controller
 
     public function product_management(Request $request)
     {
-        $vendor = auth()->user()->vendor;
+        $vendor = Auth::guard('vendor')->user()->vendor;
 
         if (! $vendor) {
             return redirect()->route('dashboard')
@@ -312,7 +311,7 @@ class SellerController extends Controller
     public function productEdit($id)
     {
         $product = Product::with(['category', 'images', 'variants'])
-            ->where('vendor_id', auth()->user()->vendor->id)
+            ->where('vendor_id', Auth::guard('vendor')->user()->vendor->id)
             ->findOrFail($id);
 
         $categories = Category::where('status', 'active')->get();
@@ -322,7 +321,7 @@ class SellerController extends Controller
 
     public function update(Request $request, $id)
     {
-        $product = Product::where('vendor_id', auth()->user()->vendor->id)->findOrFail($id);
+        $product = Product::where('vendor_id', Auth::guard('vendor')->user()->vendor->id)->findOrFail($id);
 
         $validated = $request->validate([
             'product_name' => 'required|string|max:200',
@@ -403,7 +402,7 @@ class SellerController extends Controller
 
         // 1. Create the product
         $product = Product::create([
-            'vendor_id' => auth()->user()->vendor->id,
+            'vendor_id' => Auth::guard('vendor')->user()->vendor->id,
             'category_id' => $validated['category'],
             'name' => $validated['product_name'],
             'slug' => Str::slug($validated['product_name']).'-'.Str::lower(Str::random(5)),
@@ -440,7 +439,7 @@ class SellerController extends Controller
 
     public function destroy($id)
     {
-        $product = Product::where('vendor_id', auth()->user()->vendor->id)
+        $product = Product::where('vendor_id', Auth::guard('vendor')->user()->vendor->id)
             ->findOrFail($id);
 
         try {
@@ -480,7 +479,7 @@ class SellerController extends Controller
 
     public function order(Request $request)
     {
-        $vendor = auth()->user()->vendor;
+        $vendor = Auth::guard('vendor')->user()->vendor;
 
         if (! $vendor) {
             return redirect()->route('dashboard')
@@ -558,7 +557,7 @@ class SellerController extends Controller
 
     public function orderDetails(Request $request)
     {
-        $vendor = auth()->user()->vendor;
+        $vendor = Auth::guard('vendor')->user()->vendor;
 
         if (! $vendor) {
             return redirect()->route('dashboard')
@@ -588,7 +587,7 @@ class SellerController extends Controller
 
     public function updatePaymentStatus(Request $request, Order $order)
     {
-        $vendor = auth()->user()->vendor;
+        $vendor = Auth::guard('vendor')->user()->vendor;
 
         if (! $vendor) {
             return redirect()->route('dashboard')
@@ -642,7 +641,7 @@ class SellerController extends Controller
 
     public function updateOrderStatus(Request $request, Order $order)
     {
-        $vendor = auth()->user()->vendor;
+        $vendor = Auth::guard('vendor')->user()->vendor;
 
         if (! $vendor) {
             return redirect()->route('dashboard')
@@ -679,7 +678,7 @@ class SellerController extends Controller
 
     public function sellerProfile()
     {
-        $user = auth()->user();
+        $user = Auth::guard('vendor')->user();
         $vendor = $user?->vendor;
 
         return view('seller.profile', compact('user', 'vendor'));
@@ -687,7 +686,7 @@ class SellerController extends Controller
 
     public function updateProfile(Request $request)
     {
-        $user = auth()->user();
+        $user = Auth::guard('vendor')->user();
 
         $request->validate([
             'name' => 'required|string|max:100',
@@ -738,7 +737,7 @@ class SellerController extends Controller
             'new_password' => 'required|min:8|confirmed',
         ]);
 
-        $user = auth()->user();
+        $user = Auth::guard('vendor')->user();
 
         if (! \Hash::check($request->current_password, $user->password)) {
             return redirect()->back()
@@ -764,7 +763,7 @@ class SellerController extends Controller
 
     public function sellerReview(Request $request)
     {
-        $vendor = auth()->user()->vendor;
+        $vendor = Auth::guard('vendor')->user()->vendor;
 
         if (! $vendor) {
             return redirect()->route('dashboard')
@@ -826,7 +825,7 @@ class SellerController extends Controller
             'reply' => 'required|string|max:1000',
         ]);
 
-        $vendor = auth()->user()->vendor;
+        $vendor = Auth::guard('vendor')->user()->vendor;
         if (! $vendor) {
             return redirect()->back()->with('error', 'Vendor profile not found.');
         }
@@ -847,7 +846,7 @@ class SellerController extends Controller
 
     public function destroyReview($id)
     {
-        $vendor = auth()->user()->vendor;
+        $vendor = Auth::guard('vendor')->user()->vendor;
         if (! $vendor) {
             return redirect()->back()->with('error', 'Vendor profile not found.');
         }
@@ -866,7 +865,7 @@ class SellerController extends Controller
 
     public function sellerPayment(Request $request)
     {
-        $vendor = auth()->user()->vendor;
+        $vendor = Auth::guard('vendor')->user()->vendor;
 
         if (! $vendor) {
             return redirect()->route('dashboard')
@@ -960,7 +959,7 @@ class SellerController extends Controller
 
     public function paymentDetails($id)
     {
-        $vendor = auth()->user()->vendor;
+        $vendor = Auth::guard('vendor')->user()->vendor;
 
         if (! $vendor) {
             return redirect()->route('dashboard')
@@ -1008,7 +1007,7 @@ class SellerController extends Controller
 
     public function payCommission(Request $request)
     {
-        $vendor = auth()->user()->vendor;
+        $vendor = Auth::guard('vendor')->user()->vendor;
         if (! $vendor) {
             return redirect()->route('dashboard')->with('error', 'Vendor profile not found.');
         }
@@ -1061,9 +1060,9 @@ class SellerController extends Controller
             'purchase_order_id' => $internalTxnId,
             'purchase_order_name' => "Commission #{$payout->id}",
             'customer_info' => [
-                'name' => auth()->user()->name ?? 'Vendor',
-                'email' => auth()->user()->email,
-                'phone' => auth()->user()->phone ?? '9800000000',
+                'name' => Auth::guard('vendor')->user()->name ?? 'Vendor',
+                'email' => Auth::guard('vendor')->user()->email,
+                'phone' => Auth::guard('vendor')->user()->phone ?? '9800000000',
             ],
         ];
 
@@ -1215,7 +1214,7 @@ class SellerController extends Controller
 
     public function sellerNotification()
     {
-        $user = auth()->user();
+        $user = Auth::guard('vendor')->user();
         $sellerTypes = [
             'order_placed',
             'vendor_order_placed',
@@ -1249,7 +1248,7 @@ class SellerController extends Controller
 
     public function markNotificationRead($id)
     {
-        $notification = auth()->user()->appNotifications()->findOrFail($id);
+        $notification = Auth::guard('vendor')->user()->appNotifications()->findOrFail($id);
         $notification->markAsRead();
 
         return response()->json(['success' => true]);
@@ -1266,7 +1265,7 @@ class SellerController extends Controller
             'support_ticket_status',
         ];
 
-        auth()->user()->appNotifications()
+        Auth::guard('vendor')->user()->appNotifications()
             ->whereIn('type', $sellerTypes)
             ->where('is_read', false)
             ->update([
@@ -1295,7 +1294,7 @@ class SellerController extends Controller
             'description' => 'required|string',
         ]);
 
-        $vendor = auth()->user()->vendor;
+        $vendor = Auth::guard('vendor')->user()->vendor;
         if (! $vendor) {
             return redirect()->back()->with('error', 'Vendor profile not found.');
         }
@@ -1314,7 +1313,7 @@ class SellerController extends Controller
 
     public function sellerTicket()
     {
-        $vendor = auth()->user()->vendor;
+        $vendor = Auth::guard('vendor')->user()->vendor;
         if (! $vendor) {
             return redirect()->route('dashboard')->with('error', 'Vendor profile not found.');
         }

@@ -31,7 +31,7 @@ Route::middleware(['guest:vendor', 'throttle:auth'])->group(function () {
 Route::post('/seller-logout', [SellerController::class, 'logout'])->name('seller.logout');
 
 // ─── Seller profile & password (auth protected — fix #3) ─────────────────────
-Route::middleware(['auth', EnsureVendor::class])->group(function () {
+Route::middleware(['auth:vendor', EnsureVendor::class])->group(function () {
     Route::get('/seller-dashboard', [SellerController::class, 'dashboard'])->name('dashboard');
     Route::get('/seller-dashboard/sales-trend', [SellerController::class, 'salesTrendData'])->name('dashboard.sales-trend');
     Route::get('/product-management', [SellerController::class, 'product_management'])->name('product-management');
