@@ -134,10 +134,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/user-notification/{slug}/read', [UserController::class, 'markNotificationRead'])->name('user.notifications.read');
 });
 
+// ─── Google OAuth (outside guest middleware — callback runs after Google sets auth) ──
+Route::get('/google/redirect', [AuthController::class, 'redirect'])->name('google.redirect');
+Route::get('/google/callback', [AuthController::class, 'callback'])->name('google.callback');
+
 // ─── User Auth (guest only, rate limited) ─────────────────────────────────────
 Route::middleware(['guest', 'throttle:auth'])->group(function () {
-    Route::get('/google/redirect', [AuthController::class, 'redirect'])->name('google.redirect');
-    Route::get('/google/callback', [AuthController::class, 'callback'])->name('google.callback');
     Route::get('/userlogin', [AuthController::class, 'showLogin'])->name('userlogin');
     Route::post('/userlogin', [AuthController::class, 'login']);
 
