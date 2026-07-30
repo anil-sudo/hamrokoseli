@@ -61,16 +61,37 @@
                     <div class="space-y-4">
                         <div>
                             <label for="phone" class="block text-xs font-bold text-[#1F3D2E] mb-1.5">Phone Number</label>
-                            <input type="tel" id="phone" name="phone" required maxlength="10"
+                            <input type="tel" id="phone" name="phone" required maxlength="15"
                                    value="{{ old('phone', $user->phone) }}"
-                                   placeholder="98XXXXXXXX"
+                                   placeholder="+977-9800000000"
                                    class="w-full px-4 py-3 rounded-xl border border-[#ebd7be] bg-[#FFF7EF] text-sm font-semibold text-[#3A2A1F] focus:outline-none focus:ring-2 focus:ring-[#1F3D2E]/25">
                         </div>
                         <div>
                             <label for="address" class="block text-xs font-bold text-[#1F3D2E] mb-1.5">Delivery Address</label>
-                            <textarea id="address" name="address" required maxlength="255" rows="3"
-                                      placeholder="Street, city, landmark..."
-                                      class="w-full px-4 py-3 rounded-xl border border-[#ebd7be] bg-[#FFF7EF] text-sm font-semibold text-[#3A2A1F] focus:outline-none focus:ring-2 focus:ring-[#1F3D2E]/25">{{ old('address', $user->address) }}</textarea>
+                            @if(($addresses && $addresses->count() > 0) || !empty($user->address))
+                            <select id="address_select" onchange="triggerSelectChange(this)" class="w-full px-4 py-3 rounded-xl border border-[#ebd7be] bg-[#FFF7EF] text-sm font-semibold text-[#3A2A1F] focus:outline-none focus:ring-2 focus:ring-[#1F3D2E]/25 mb-3 cursor-pointer">
+                                @if($addresses && $addresses->count() > 0)
+                                    @foreach($addresses as $addr)
+                                        <option value="{{ $addr->address }}" data-phone="{{ $addr->phone }}" {{ $loop->first ? 'selected' : '' }}>
+                                            {{ $addr->address }}
+                                        </option>
+                                    @endforeach
+                                    @if(!empty($user->address) && !$addresses->contains('address', $user->address))
+                                        <option value="{{ $user->address }}" data-phone="{{ $user->phone }}">
+                                            {{ $user->address }}
+                                        </option>
+                                    @endif
+                                @elseif(!empty($user->address))
+                                    <option value="{{ $user->address }}" data-phone="{{ $user->phone }}" selected>
+                                        {{ $user->address }}
+                                    </option>
+                                @endif
+                                <option value="new" {{ ($addresses->isEmpty() && empty($user->address)) ? 'selected' : '' }}>-- Enter a New Address --</option>
+                            </select>
+                            @endif
+                            <input type="hidden" id="address" name="address" value="{{ old('address', $user->address) }}">
+
+                            <x-cascading-address-dropdowns targetInputId="address" selectIdPrefix="checkout_vendor" :hidden="(($addresses && $addresses->count() > 0) || !empty($user->address))" />
                         </div>
                     </div>
                 </div>
@@ -110,24 +131,117 @@
     </div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    function formatPhoneWithPrefix(phone) {
+        if (!phone) return '+977-';
+        let digits = phone.toString().replace(/\D/g, '');
+        if (digits.startsWith('977')) {
+            digits = digits.substring(3);
+        }
+        if (digits.length > 10) {
+            digits = digits.substring(0, 10);
+        }
+        return digits ? '+977-' + digits : '+977-';
+    }
+
+    function triggerSelectChange(sel) {
         const phoneInput = document.getElementById('phone');
-        if (phoneInput) {
-            phoneInput.addEventListener('input', function () {
-                this.value = this.value.replace(/\D/g, '').substring(0, 10);
-            });
-        }
-        const form = document.querySelector('form');
-        if (form && phoneInput) {
-            form.addEventListener('submit', function (e) {
-                const phone = phoneInput.value.trim();
-                if (!/^\d{10}$/.test(phone)) {
-                    e.preventDefault();
-                    phoneInput.focus();
-                    alert('Phone number must be exactly 10 digits.');
+        const addressInput = document.getElementById('address');
+        const userPhone = '{{ $user->phone ?? "" }}';
+        if (!sel || sel.selectedIndex === -1 || !phoneInput || !addressInput) return;
+        const selected = sel.options[sel.selectedIndex];
+        if (!selected) return;
+
+        const cascadingWrapper = document.getElementById('checkout_vendor_cascading_address_wrapper');
+        if (selected.value === 'new') {
+            addressInput.value = '';
+            const currentPhone = phoneInput.value.trim();
+            if (!currentPhone || currentPhone === '+977-') {
+                if (userPhone) {
+                    phoneInput.value = formatPhoneWithPrefix(userPhone);
+                } else {
+                    phoneInput.value = '+977-';
                 }
-            });
+            }
+            phoneInput.readOnly = false;
+            if (cascadingWrapper) {
+                cascadingWrapper.classList.remove('hidden');
+                const provinceSel = document.getElementById('checkout_vendor_provinceSelect');
+                if (provinceSel) {
+                    provinceSel.value = '';
+                    if (typeof onNepalProvinceChange === 'function') {
+                        onNepalProvinceChange('checkout_vendor', '', 'address');
+                    }
+                }
+            }
+        } else {
+            addressInput.value = selected.value;
+            if (selected.dataset && selected.dataset.phone) {
+                phoneInput.value = formatPhoneWithPrefix(selected.dataset.phone);
+            } else if (userPhone && (!phoneInput.value || phoneInput.value === '+977-')) {
+                phoneInput.value = formatPhoneWithPrefix(userPhone);
+            }
+            phoneInput.readOnly = false;
+            if (cascadingWrapper) cascadingWrapper.classList.add('hidden');
         }
-    });
+    }
+
+    function initCheckoutVendorScripts() {
+        const select = document.getElementById('address_select');
+        const phoneInput = document.getElementById('phone');
+        const addressInput = document.getElementById('address');
+        const userPhone = '{{ $user->phone ?? "" }}';
+
+        if (phoneInput) {
+            if (!phoneInput.value || phoneInput.value === '+977' || phoneInput.value === '+977-') {
+                phoneInput.value = userPhone ? formatPhoneWithPrefix(userPhone) : '+977-';
+            }
+        }
+
+        if (select) {
+            triggerSelectChange(select);
+        }
+
+        const form = document.querySelector('form');
+        if (form) {
+            form.removeEventListener('submit', handleVendorFormSubmit);
+            form.addEventListener('submit', handleVendorFormSubmit);
+        }
+    }
+
+    function handleVendorFormSubmit(e) {
+        const phoneInput = document.getElementById('phone');
+        const addressInput = document.getElementById('address');
+        const select = document.getElementById('address_select');
+
+        const phone = phoneInput ? phoneInput.value.trim() : '';
+        if (!/^\+977-\d{10}$/.test(phone)) {
+            e.preventDefault();
+            if (phoneInput) phoneInput.focus();
+            if (typeof window.showToastPopup === 'function') {
+                window.showToastPopup('Phone number must start with +977- followed by 10 digits.', 'error');
+            } else {
+                alert('Phone number must start with +977- followed by 10 digits.');
+            }
+            return;
+        }
+
+        if (select && select.value !== 'new') {
+            if (addressInput) addressInput.value = select.value;
+        }
+
+        if (!addressInput || !addressInput.value.trim()) {
+            e.preventDefault();
+            if (typeof window.showToastPopup === 'function') {
+                window.showToastPopup('Please select Province, District, and City for your delivery address.', 'error');
+            } else {
+                alert('Please select Province, District, and City for your delivery address.');
+            }
+            return;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', initCheckoutVendorScripts);
+    document.addEventListener('livewire:navigated', initCheckoutVendorScripts);
     </script>
+    <x-validation-toast />
 </x-frontend-layout>

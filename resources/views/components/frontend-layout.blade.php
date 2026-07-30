@@ -60,6 +60,8 @@
 
     <script>
         function initFlashMessages() {
+            if (window._flashMessagesShown) return;
+            window._flashMessagesShown = true;
             window.flashMessages = [];
             @if(session('success')) window.flashMessages.push({ message: {!! json_encode(session('success')) !!}, type: 'success' }); @endif
             @if(session('error')) window.flashMessages.push({ message: {!! json_encode(session('error')) !!}, type: 'error' }); @endif
@@ -71,6 +73,7 @@
             window.flashMessages.forEach(flash => {
                 Swal.fire({ icon: flash.type, title: flash.message, toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
             });
+            window.flashMessages = [];
         }
         document.addEventListener('livewire:navigated', initFlashMessages);
         window.addEventListener('load', initFlashMessages);

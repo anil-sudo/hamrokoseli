@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\Product;
 use App\Models\ProductVariant;
+use App\Models\ShippingAddress;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -26,9 +27,21 @@ class CartController extends Controller
             fn (Cart $item) => $item->product->vendor->id ?? 0
         );
 
+        $user = auth()->user();
+        if ($user && ! empty($user->address)) {
+            $formattedPhone = $user->phone ? (str_starts_with($user->phone, '+977-') ? $user->phone : '+977-'.$user->phone) : null;
+            ShippingAddress::saveAsDefault($user->id, $user->address, $formattedPhone);
+        }
+
+        $addresses = ShippingAddress::where('user_id', auth()->id())
+            ->orderBy('is_default', 'desc')
+            ->orderBy('updated_at', 'desc')
+            ->get();
+
         return view('cart', [
             'items' => $items,
             'groupedByVendor' => $groupedByVendor,
+            'addresses' => $addresses,
         ]);
     }
 
@@ -113,7 +126,7 @@ class CartController extends Controller
      */
     public function update(Request $request, Cart $cart): RedirectResponse|JsonResponse
     {
-        abort_if($cart->user_id !== auth()->id(), 403);
+        abort_if($cart->user_id != auth()->id(), 403);
 
         $data = $request->validate([
             'quantity' => ['required', 'integer', 'min:1'],
@@ -141,7 +154,7 @@ class CartController extends Controller
      */
     public function destroy(Cart $cart): RedirectResponse
     {
-        abort_if($cart->user_id !== auth()->id(), 403);
+        abort_if($cart->user_id != auth()->id(), 403);
 
         $cart->delete();
 
