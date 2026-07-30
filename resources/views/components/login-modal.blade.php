@@ -449,11 +449,7 @@
                     window.openLoginModal(null, 'register');
                 @endif
 
-                @if ($errors->any() && !session('show_register') && !old('name'))
-                    window.openLoginModal(null, 'login');
-                @endif
-
-                @if (session('success'))
+                @if (session('login_failed') || session('show_login'))
                     window.openLoginModal(null, 'login');
                 @endif
             }

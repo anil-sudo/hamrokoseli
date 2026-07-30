@@ -17,31 +17,57 @@ class CheckoutController extends Controller
 {
     public function show(Cart $cart)
     {
+
         $this->authorizeCartItem($cart);
 
         $cart->load(['product.vendor', 'variant']);
+
+        $user = auth()->user();
+        if ($user && ! empty($user->address)) {
+            $formattedPhone = $user->phone ? (str_starts_with($user->phone, '+977-') ? $user->phone : '+977-'.$user->phone) : null;
+            ShippingAddress::saveAsDefault($user->id, $user->address, $formattedPhone);
+        }
+
+        $addresses = ShippingAddress::where('user_id', auth()->id())
+            ->orderBy('is_default', 'desc')
+            ->orderBy('updated_at', 'desc')
+            ->get();
 
         return view('checkout', [
             'cartItem' => $cart,
             'unitPrice' => $cart->unitPrice(),
             'subtotal' => $cart->subtotal(),
-            // The checkout form is pre-filled straight from the user's
-            // profile — no separate saved-address book to manage.
             'user' => auth()->user(),
+            'addresses' => $addresses,
         ]);
     }
 
     public function saveUserInfo(Request $request, Cart $cart)
     {
+
         $this->authorizeCartItem($cart);
 
+        if ($request->has('phone')) {
+            $phone = preg_replace('/[^\d]/', '', $request->input('phone'));
+            if (str_starts_with($phone, '977') && strlen($phone) === 13) {
+                $phone = substr($phone, 3);
+            }
+            $request->merge(['phone' => $phone]);
+        }
+
         $validated = $request->validate([
-            'phone' => ['required', 'string', 'max:20', 'digits:10'],
+            'phone' => ['required', 'string', 'digits:10'],
             'address' => ['required', 'string', 'max:255'],
         ]);
 
         try {
-            auth()->user()->update($validated);
+            $formattedPhone = '+977-'.$validated['phone'];
+            auth()->user()->update([
+                'phone' => $validated['phone'],
+                'address' => $validated['address'],
+            ]);
+
+            ShippingAddress::saveAsDefault(auth()->id(), $validated['address'], $formattedPhone);
 
             return redirect()
                 ->route('checkout.show', $cart)
@@ -58,11 +84,18 @@ class CheckoutController extends Controller
     {
         $this->authorizeCartItem($cart);
 
+        if ($request->has('phone')) {
+            $phone = preg_replace('/[^\d]/', '', $request->input('phone'));
+            if (str_starts_with($phone, '977') && strlen($phone) === 13) {
+                $phone = substr($phone, 3);
+            }
+            $request->merge(['phone' => $phone]);
+        }
+
         // VALIDATION — phone & address are taken directly from the checkout form.
-        // Format/length is enforced client-side; server only checks non-empty.
         $data = $request->validate([
             'payment_method' => ['required', 'in:cod,esewa,khalti'],
-            'phone' => ['required', 'string', 'max:20', 'digits:10'],
+            'phone' => ['required', 'string', 'digits:10'],
             'address' => ['required', 'string', 'max:255'],
         ]);
 
@@ -86,24 +119,14 @@ class CheckoutController extends Controller
         // ✅ TRANSACTION
         $order = DB::transaction(function () use ($cart, $product, $variant, $data, $unitPrice, $subtotal, $user) {
 
-            // Sync address to user profile. We do NOT update users.phone here
-            // because the users_phone_unique constraint would reject a phone that
-            // already belongs to another account; the phone is stored on the
-            // shipping_addresses row instead.
-            $user->update(['address' => $data['address']]);
+            $formattedPhone = '+977-'.$data['phone'];
 
-            // Orders still need a row in `shipping_addresses`.
-            $shippingAddress = ShippingAddress::updateOrCreate(
-                ['user_id' => $user->id, 'is_default' => 1],
-                [
-                    'address' => $data['address'],
-                    'phone' => $data['phone'],
-                    'city' => 'N/A',
-                    'province' => 'N/A',
-                    'country' => 'Nepal',
-                    'is_default' => 1,
-                ]
-            );
+            $user->update([
+                'phone' => $data['phone'],
+                'address' => $data['address'],
+            ]);
+
+            $shippingAddress = ShippingAddress::saveAsDefault($user->id, $data['address'], $formattedPhone);
 
             // 1. CREATE ORDER
             $order = Order::create([
@@ -176,7 +199,7 @@ class CheckoutController extends Controller
 
     public function confirmation(Order $order)
     {
-        abort_if($order->user_id !== auth()->id(), 403);
+        abort_if($order->user_id != auth()->id(), 403);
 
         $order->load(['orderItems.product', 'orderItems.vendor']);
 
@@ -192,29 +215,55 @@ class CheckoutController extends Controller
 
     public function showVendor(Vendor $vendor)
     {
+        $user = auth()->user();
+        if ($user && ! empty($user->address)) {
+            $formattedPhone = $user->phone ? (str_starts_with($user->phone, '+977-') ? $user->phone : '+977-'.$user->phone) : null;
+            ShippingAddress::saveAsDefault($user->id, $user->address, $formattedPhone);
+        }
+
         $cartItems = $this->vendorCartItems($vendor);
+        $addresses = ShippingAddress::where('user_id', auth()->id())
+            ->orderBy('is_default', 'desc')
+            ->orderBy('updated_at', 'desc')
+            ->get();
 
         return view('checkout-vendor', [
             'vendor' => $vendor,
             'cartItems' => $cartItems,
             'total' => $cartItems->sum(fn (Cart $item) => $item->subtotal()),
             'user' => auth()->user(),
+            'addresses' => $addresses,
         ]);
     }
 
     public function saveVendorUserInfo(Request $request, Vendor $vendor)
     {
+
         // Make sure this vendor actually has cart items for this user before
         // bothering to save anything.
         $this->vendorCartItems($vendor);
 
+        if ($request->has('phone')) {
+            $phone = preg_replace('/[^\d]/', '', $request->input('phone'));
+            if (str_starts_with($phone, '977') && strlen($phone) === 13) {
+                $phone = substr($phone, 3);
+            }
+            $request->merge(['phone' => $phone]);
+        }
+
         $validated = $request->validate([
-            'phone' => ['required', 'string', 'max:20', 'digits:10'],
+            'phone' => ['required', 'string', 'digits:10'],
             'address' => ['required', 'string', 'max:255'],
         ]);
 
         try {
-            auth()->user()->update($validated);
+            $formattedPhone = '+977-'.$validated['phone'];
+            auth()->user()->update([
+                'phone' => $validated['phone'],
+                'address' => $validated['address'],
+            ]);
+
+            ShippingAddress::saveAsDefault(auth()->id(), $validated['address'], $formattedPhone);
 
             return redirect()
                 ->route('checkout.show.vendor', $vendor)
@@ -231,9 +280,17 @@ class CheckoutController extends Controller
     {
         $cartItems = $this->vendorCartItems($vendor);
 
+        if ($request->has('phone')) {
+            $phone = preg_replace('/[^\d]/', '', $request->input('phone'));
+            if (str_starts_with($phone, '977') && strlen($phone) === 13) {
+                $phone = substr($phone, 3);
+            }
+            $request->merge(['phone' => $phone]);
+        }
+
         $data = $request->validate([
             'payment_method' => ['required', 'in:cod,esewa,khalti'],
-            'phone' => ['required', 'string', 'max:20', 'digits:10'],
+            'phone' => ['required', 'string', 'digits:10'],
             'address' => ['required', 'string', 'max:255'],
         ]);
 
@@ -255,22 +312,20 @@ class CheckoutController extends Controller
         try {
             $order = DB::transaction(function () use ($cartItems, $data, $total, $user) {
 
-                $user->update([
-                    'phone' => $data['phone'],
-                    'address' => $data['address'],
-                ]);
+                $formattedPhone = '+977-'.$data['phone'];
 
-                $shippingAddress = ShippingAddress::updateOrCreate(
-                    ['user_id' => $user->id, 'is_default' => 1],
-                    [
-                        'address' => $data['address'],
+                try {
+                    $user->update([
                         'phone' => $data['phone'],
-                        'city' => 'N/A',
-                        'province' => 'N/A',
-                        'country' => 'Nepal',
-                        'is_default' => 1,
-                    ]
-                );
+                        'address' => $data['address'],
+                    ]);
+                } catch (\Exception $e) {
+                    $user->update([
+                        'address' => $data['address'],
+                    ]);
+                }
+
+                $shippingAddress = ShippingAddress::saveAsDefault($user->id, $data['address'], $formattedPhone);
 
                 $order = Order::create([
                     'user_id' => $user->id,
@@ -363,6 +418,30 @@ class CheckoutController extends Controller
 
     private function authorizeCartItem(Cart $cart): void
     {
-        abort_if($cart->user_id !== auth()->id(), 403);
+        abort_if($cart->user_id != auth()->id(), 403);
+    }
+
+    private function parseAddressComponents(string $fullAddress): array
+    {
+        $parts = array_map('trim', explode(',', $fullAddress));
+
+        $province = 'N/A';
+        $city = 'N/A';
+
+        if (count($parts) >= 3) {
+            $province = $parts[0];
+            $city = $parts[1];
+        } elseif (count($parts) === 2) {
+            $province = $parts[0];
+            $city = $parts[1];
+        } elseif (count($parts) === 1 && ! empty($parts[0])) {
+            $city = $parts[0];
+        }
+
+        return [
+            'province' => mb_substr($province, 0, 80),
+            'city' => mb_substr($city, 0, 80),
+            'address' => $fullAddress,
+        ];
     }
 }
