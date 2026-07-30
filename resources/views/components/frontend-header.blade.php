@@ -81,18 +81,16 @@
                     <button id="mobile-search-btn" class="md:hidden hover:text-emerald-200 transition-colors p-1" aria-label="Search">
                         <i class="fas fa-search"></i>
                     </button>
-                    @auth
-                        <!-- Wishlist -->
-                        <a href="{{ route('wishlist') }}" wire:navigate class="hover:text-emerald-200 transition-colors p-1 relative flex items-center justify-center" title="Wishlist" id="wishlist-header-btn">
-                            <i class="far fa-heart" id="wishlist-header-icon"></i>
-                            <span id="wishlist-badge" class="absolute -top-1.5 -right-1.5 bg-[#b55b3d] text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold border border-[#1f3d2e] hidden">0</span>
-                        </a>
-                        <!-- Cart -->
-                        <a href="{{ route('cart') }}" wire:navigate class="hover:text-emerald-200 transition-colors p-1 relative flex items-center justify-center" title="Cart" id="cart-header-btn">
-                            <i class="fas fa-shopping-cart" id="cart-header-icon"></i>
-                            <span id="cart-badge" class="absolute -top-1.5 -right-1.5 bg-[#b55b3d] text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold border border-[#1f3d2e] hidden">0</span>
-                        </a>
-                    @endauth
+                    <!-- Wishlist -->
+                    <a href="{{ route('wishlist') }}" wire:navigate class="hover:text-emerald-200 transition-colors p-1 relative flex items-center justify-center" title="Wishlist" id="wishlist-header-btn">
+                        <i class="far fa-heart" id="wishlist-header-icon"></i>
+                        <span id="wishlist-badge" class="absolute -top-1.5 -right-1.5 bg-[#b55b3d] text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold border border-[#1f3d2e] hidden">0</span>
+                    </a>
+                    <!-- Cart -->
+                    <a href="{{ route('cart') }}" wire:navigate class="hover:text-emerald-200 transition-colors p-1 relative flex items-center justify-center" title="Cart" id="cart-header-btn">
+                        <i class="fas fa-shopping-cart" id="cart-header-icon"></i>
+                        <span id="cart-badge" class="absolute -top-1.5 -right-1.5 bg-[#b55b3d] text-white text-[9px] w-4.5 h-4.5 rounded-full flex items-center justify-center font-bold border border-[#1f3d2e] hidden">0</span>
+                    </a>
                     <!-- Logout icon (always visible, logged-in users only) -->
                     @auth
                         <form action="{{ route('logout') }}" method="POST" class="m-0 p-0">

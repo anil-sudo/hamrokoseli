@@ -441,6 +441,16 @@
     (function() {
         function checkAndOpenModal() {
             if (window.openLoginModal) {
+                const path = window.location.pathname;
+                if (path === '/userlogin' || path === '/login') {
+                    window.openLoginModal(null, 'login');
+                    return;
+                }
+                if (path === '/userregister') {
+                    window.openLoginModal(null, 'register');
+                    return;
+                }
+
                 @if (session('status'))
                     window.openLoginModal(null, 'forgot');
                 @endif
