@@ -56,19 +56,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Login / Register Modal Logic
-    const loginModal = document.getElementById('login-modal');
-    const loginModalContainer = document.getElementById('login-modal-container');
-    const desktopSigninBtn = document.getElementById('desktop-signin');
-    const mobileSigninBtn = document.getElementById('mobile-signin');
-    const mobileSignupBtn = document.getElementById('mobile-signup');
-    const closeLoginModalBtn = document.getElementById('close-login-modal');
-
-    const loginView = document.getElementById('login-view');
-    const registerView = document.getElementById('register-view');
-    const forgotView = document.getElementById('forgot-view');
-    const modalShowRegisterBtn = document.getElementById('modal-show-register');
-    const modalShowLoginBtn = document.getElementById('modal-show-login');
-
     // Keep track of the original page URL before showing the modal
     let originalUrl = window.location.pathname + window.location.search;
     if (originalUrl === '/userlogin' || originalUrl === '/userregister') {
@@ -92,6 +79,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Helper: hide all views, show only the requested one
     function switchModalView(view) {
+        const loginView = document.getElementById('login-view');
+        const registerView = document.getElementById('register-view');
+        const forgotView = document.getElementById('forgot-view');
         [loginView, registerView, forgotView].forEach(v => v && v.classList.add('hidden'));
         if (view === 'register' && registerView) registerView.classList.remove('hidden');
         else if (view === 'forgot' && forgotView) forgotView.classList.remove('hidden');
@@ -101,6 +91,9 @@ document.addEventListener('DOMContentLoaded', () => {
     function openLoginModal(e, view = 'login') {
         if (e) e.preventDefault();
         closeDrawer(); // Close mobile drawer if open
+
+        const loginModal = document.getElementById('login-modal');
+        const loginModalContainer = document.getElementById('login-modal-container');
 
         // Store original URL if opening the modal for the first time
         if (loginModal && loginModal.classList.contains('hidden')) {
@@ -133,6 +126,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function closeLoginModal() {
+        const loginModal = document.getElementById('login-modal');
+        const loginModalContainer = document.getElementById('login-modal-container');
         if (loginModal && loginModalContainer) {
             restoreUrlState();
 
@@ -157,85 +152,81 @@ document.addEventListener('DOMContentLoaded', () => {
     window.openLoginModal = openLoginModal;
     window.closeLoginModal = closeLoginModal;
 
-    if (desktopSigninBtn) desktopSigninBtn.addEventListener('click', (e) => openLoginModal(e, 'login'));
-    if (mobileSigninBtn) mobileSigninBtn.addEventListener('click', (e) => openLoginModal(e, 'login'));
-    if (mobileSignupBtn) mobileSignupBtn.addEventListener('click', (e) => openLoginModal(e, 'register'));
-    if (closeLoginModalBtn) closeLoginModalBtn.addEventListener('click', closeLoginModal);
-
-    // Switch to Register View
-    if (modalShowRegisterBtn) {
-        modalShowRegisterBtn.addEventListener('click', function (e) {
+    // Delegated click handler for modal triggers and views
+    document.addEventListener('click', function (e) {
+        if (e.target.closest('#desktop-signin, #mobile-signin')) {
+            openLoginModal(e, 'login');
+            return;
+        }
+        if (e.target.closest('#mobile-signup')) {
+            openLoginModal(e, 'register');
+            return;
+        }
+        if (e.target.closest('#close-login-modal')) {
+            closeLoginModal();
+            return;
+        }
+        const regBtn = e.target.closest('#modal-show-register');
+        if (regBtn) {
             e.preventDefault();
             switchModalView('register');
             updateUrlState('register');
-        });
-    }
-
-    // Switch to Login View
-    if (modalShowLoginBtn) {
-        modalShowLoginBtn.addEventListener('click', function (e) {
+            return;
+        }
+        const logBtn = e.target.closest('#modal-show-login');
+        if (logBtn) {
             e.preventDefault();
             switchModalView('login');
             updateUrlState('login');
-        });
-    }
-
-    // Switch to Forgot Password View
-    const modalShowForgotBtn = document.getElementById('modal-show-forgot');
-    const forgotBackToLoginBtn = document.getElementById('forgot-back-to-login');
-
-    if (modalShowForgotBtn) {
-        modalShowForgotBtn.addEventListener('click', function (e) {
+            return;
+        }
+        const forgotBtn = e.target.closest('#modal-show-forgot');
+        if (forgotBtn) {
             e.preventDefault();
             switchModalView('forgot');
-        });
-    }
-
-    if (forgotBackToLoginBtn) {
-        forgotBackToLoginBtn.addEventListener('click', function (e) {
+            return;
+        }
+        const backBtn = e.target.closest('#forgot-back-to-login');
+        if (backBtn) {
             e.preventDefault();
             switchModalView('login');
             updateUrlState('login');
-        });
-    }
-
-    // Close on clicking outside the modal container
-    if (loginModal) {
-        loginModal.addEventListener('click', function (e) {
-            if (e.target === loginModal) {
-                closeLoginModal();
-            }
-        });
-    }
-
-    // Escape key closes modal too
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') {
+            return;
+        }
+        const loginModal = document.getElementById('login-modal');
+        if (loginModal && e.target === loginModal) {
             closeLoginModal();
+            return;
         }
     });
 
     // Browser back/forward (history state) support
     window.addEventListener('popstate', function (e) {
         const path = window.location.pathname;
-        if (path === '/userlogin') {
+        if (path === '/userlogin' || path === '/login') {
             openLoginModal(null, 'login');
         } else if (path === '/userregister') {
             openLoginModal(null, 'register');
         } else {
+            const loginModal = document.getElementById('login-modal');
             if (loginModal && !loginModal.classList.contains('hidden')) {
                 closeLoginModal();
             }
         }
     });
 
-    // Auto-open modal on page load if direct URL
-    const pathOnLoad = window.location.pathname;
-    if (pathOnLoad === '/userlogin') {
-        openLoginModal(null, 'login');
-    } else if (pathOnLoad === '/userregister') {
-        openLoginModal(null, 'register');
+    // Auto-open modal on page load or livewire navigation if direct URL / login route
+    function checkPathAndOpenModal() {
+        const path = window.location.pathname;
+        if (path === '/userlogin' || path === '/login') {
+            openLoginModal(null, 'login');
+        } else if (path === '/userregister') {
+            openLoginModal(null, 'register');
+        }
     }
+
+    checkPathAndOpenModal();
+    document.addEventListener('livewire:navigated', checkPathAndOpenModal);
 
     // Helper for press-and-hold password toggling
     function setupPasswordToggle(toggleBtn, passwordInput) {
@@ -839,8 +830,34 @@ function toggleWishlistProduct(productData) {
     window.updateCartQuantity = updateCartQuantity;
     window.moveCartItemToWishlist = moveCartItemToWishlist;
 
-    // Attach global click listener for any elements with .add-to-cart-btn
+    // Attach global click listener for cart/wishlist header icons, links, and .add-to-cart-btn
     document.addEventListener('click', function (e) {
+        // Cart header icon/btn or any link leading to /cart
+        const cartTarget = e.target.closest('#cart-header-btn, a[href*="/cart"]');
+        if (cartTarget && !window.isLoggedIn) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (typeof window.openLoginModal === 'function') {
+                window.openLoginModal(null, 'login');
+            } else {
+                window.location.href = window.loginUrl || '/userlogin';
+            }
+            return;
+        }
+
+        // Wishlist header icon/btn or any link leading to /wishlist
+        const wishlistTarget = e.target.closest('#wishlist-header-btn, a[href*="/wishlist"]');
+        if (wishlistTarget && !window.isLoggedIn) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (typeof window.openLoginModal === 'function') {
+                window.openLoginModal(null, 'login');
+            } else {
+                window.location.href = window.loginUrl || '/userlogin';
+            }
+            return;
+        }
+
         const btn = e.target.closest('.add-to-cart-btn');
         if (btn) {
             e.preventDefault();
@@ -866,7 +883,7 @@ function toggleWishlistProduct(productData) {
             const qty = parseInt(btn.getAttribute('data-product-qty') || '1');
             addToCart(productData, qty);
         }
-    });
+    }, true);
 
     // Render Cart Page
     function renderCartPage() {
