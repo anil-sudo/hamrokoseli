@@ -118,29 +118,40 @@
     </script>
 </head>
 <body>
-{{--
-    FIX 2 (body part): This hidden template is re-rendered on every wire:navigate
-    because it lives in <body>. The JS above reads it after each navigation to
-    update window globals with fresh server-side auth/cart data.
---}}
-<template id="__page_globals" data-globals='@json([
-    "isLoggedIn"       => auth()->check(),
-    "initialCartCount" => auth()->check() ? (int) \App\Models\Cart::where("user_id", auth()->id())->sum("quantity") : 0,
-    "cartAddUrl"       => route("cart.add"),
-    "loginUrl"         => route("userlogin"),
-])'></template>
 
-{{--
-    FIX 4 (body part): Fresh CSRF token on every page swap so AJAX calls never 419.
---}}
-<template id="__csrf_token" data-token="{{ csrf_token() }}"></template>
+@php
+    $pageGlobals = [
+        'isLoggedIn' => auth()->check(),
+        'initialCartCount' => auth()->check()
+            ? (int) \App\Models\Cart::where('user_id', auth()->id())->sum('quantity')
+            : 0,
+        'cartAddUrl' => route('cart.add'),
+        'loginUrl' => route('userlogin'),
+    ];
+@endphp
+
+{{-- Page globals refreshed on every Livewire navigation --}}
+<template
+    id="__page_globals"
+    data-globals='@json($pageGlobals)'>
+</template>
+
+{{-- Fresh CSRF token for AJAX requests after Livewire navigation --}}
+<template
+    id="__csrf_token"
+    data-token="{{ csrf_token() }}">
+</template>
 
 <x-frontend-header />
-   {{ $slot }}
+
+{{ $slot }}
+
 <x-frontend-footer />
 <x-login-modal />
 <x-product-details-modal />
 <x-chatbot />
+
 @livewireScripts
+
 </body>
 </html>
