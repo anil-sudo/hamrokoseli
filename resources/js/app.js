@@ -685,25 +685,26 @@ function setupPasswordToggle(toggleBtn, passwordInput) {
 
 // ─── Page-level initialisation (runs on first load AND after every wire:navigate) ──
 function initPage() {
-    // Drawer
-    const hamburger     = document.getElementById('hamburger-btn');
-    const closeBtn      = document.getElementById('close-drawer-btn');
-    const overlay       = document.getElementById('drawer-overlay');
-    const drawer        = document.getElementById('mobile-drawer');
-    const mobileSearchBtn = document.getElementById('mobile-search-btn');
-    const mobileSearchBar = document.getElementById('mobile-search-bar');
+    // NOTE: Hamburger, close-drawer, overlay, and drawer-link clicks are handled
+    // by the global delegated listener on `document` (see below). Do NOT add
+    // direct addEventListener calls here — initPage() runs on every
+    // livewire:navigated event, so doing so stacks duplicate listeners that
+    // cause the drawer to open-and-immediately-close on mobile.
+
+    const mobileSearchBtn   = document.getElementById('mobile-search-btn');
+    const mobileSearchBar   = document.getElementById('mobile-search-bar');
     const mobileSearchInput = document.getElementById('mobile-search');
 
-    if (hamburger) hamburger.addEventListener('click', openDrawer);
-    if (closeBtn)  closeBtn.addEventListener('click',  closeDrawer);
-    if (overlay)   overlay.addEventListener('click',   closeDrawer);
-    if (drawer)    drawer.querySelectorAll('a').forEach(link => link.addEventListener('click', closeDrawer));
     if (mobileSearchBtn && mobileSearchBar) {
-        mobileSearchBtn.addEventListener('click', () => {
-            const hidden = mobileSearchBar.classList.contains('hidden');
-            mobileSearchBar.classList.toggle('hidden', !hidden);
-            if (hidden && mobileSearchInput) mobileSearchInput.focus();
-        });
+        // Use a named handler so we can avoid stacking duplicates
+        if (!mobileSearchBtn._searchHandlerBound) {
+            mobileSearchBtn._searchHandlerBound = true;
+            mobileSearchBtn.addEventListener('click', () => {
+                const hidden = mobileSearchBar.classList.contains('hidden');
+                mobileSearchBar.classList.toggle('hidden', !hidden);
+                if (hidden && mobileSearchInput) mobileSearchInput.focus();
+            });
+        }
     }
 
     // Password toggles
@@ -779,9 +780,12 @@ function initForgotPasswordForm() {
 // ─── Global delegated event listeners (registered once, survive navigation) ───
 document.addEventListener('click', function (e) {
     // Drawer triggers
-    if (e.target.closest('#hamburger-btn'))  { openDrawer();  return; }
+    if (e.target.closest('#hamburger-btn'))    { openDrawer();  return; }
     if (e.target.closest('#close-drawer-btn')) { closeDrawer(); return; }
-    if (e.target.closest('#drawer-overlay')) { closeDrawer(); return; }
+    if (e.target.closest('#drawer-overlay'))   { closeDrawer(); return; }
+    // Close drawer when any nav link inside it is tapped
+    const drawerLink = e.target.closest('#mobile-drawer a');
+    if (drawerLink) { closeDrawer(); return; }
 
     // Login modal triggers
     if (e.target.closest('#desktop-signin, #mobile-signin')) { openLoginModal(e, 'login');    return; }
