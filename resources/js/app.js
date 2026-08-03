@@ -726,8 +726,9 @@ function initPage() {
     renderWishlistPage();
     renderCartPage();
 
-    // Flash messages
-    if (window.flashMessages) { window.flashMessages.forEach(msg => showToast(msg.message, msg.type)); window.flashMessages = []; }
+    // Flash messages are handled exclusively by initFlashMessages() in the layout,
+    // which reads from the <template id="__flash_messages"> body tag (refreshed on
+    // every Livewire navigation). Removed duplicate handling here to prevent double toasts.
 
     // Auto-open login modal if on login/register route
     checkPathAndOpenModal();
