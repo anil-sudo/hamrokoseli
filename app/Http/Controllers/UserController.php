@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\OrderItem;
 use App\Models\Product;
+use App\Models\ShippingAddress;
 use App\Models\Wishlist;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
@@ -296,6 +297,11 @@ class UserController extends Controller
         }
 
         $user->save();
+
+        if (! empty($user->address)) {
+            $formattedPhone = $user->phone ? (str_starts_with($user->phone, '+977-') ? $user->phone : '+977-'.$user->phone) : null;
+            ShippingAddress::saveAsDefault($user->id, $user->address, $formattedPhone);
+        }
 
         NotificationService::profileUpdated($user, 'profile');
 

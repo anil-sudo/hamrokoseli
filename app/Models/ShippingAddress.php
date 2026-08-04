@@ -88,6 +88,58 @@ class ShippingAddress extends Model
         $this->update(['is_default' => true]);
     }
 
+    /**
+     * Parse full address string into province and city components.
+     */
+    public static function parseAddressComponents(string $fullAddress): array
+    {
+        $parts = array_map('trim', explode(',', $fullAddress));
+
+        $province = 'N/A';
+        $city = 'N/A';
+
+        if (count($parts) >= 3) {
+            $province = $parts[0];
+            $city = $parts[1];
+        } elseif (count($parts) === 2) {
+            $province = $parts[0];
+            $city = $parts[1];
+        } elseif (count($parts) === 1 && ! empty($parts[0])) {
+            $city = $parts[0];
+        }
+
+        return [
+            'province' => mb_substr($province, 0, 80),
+            'city' => mb_substr($city, 0, 80),
+            'address' => $fullAddress,
+        ];
+    }
+
+    /**
+     * Save an address as the user's default shipping address and touch timestamps.
+     */
+    public static function saveAsDefault(int $userId, string $address, ?string $phone = null): self
+    {
+        $parsed = self::parseAddressComponents($address);
+
+        self::where('user_id', $userId)->update(['is_default' => 0]);
+
+        $shippingAddress = self::updateOrCreate(
+            ['user_id' => $userId, 'address' => $address],
+            [
+                'phone' => $phone,
+                'city' => $parsed['city'],
+                'province' => $parsed['province'],
+                'country' => 'Nepal',
+                'is_default' => 1,
+            ]
+        );
+
+        $shippingAddress->touch();
+
+        return $shippingAddress;
+    }
+
     // -------------------------------------------------------------------------
     // Scopes
     // -------------------------------------------------------------------------

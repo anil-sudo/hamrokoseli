@@ -11,7 +11,7 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap"
         rel="stylesheet">
-    
+
     <!-- NProgress -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/nprogress/0.2.0/nprogress.min.js"></script>
@@ -25,18 +25,45 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <script>
-        function initFlashMessages() {
-            window.flashMessages = [];
-            @if(session('success')) window.flashMessages.push({ message: {!! json_encode(session('success')) !!}, type: 'success' }); @endif
-            @if(session('error')) window.flashMessages.push({ message: {!! json_encode(session('error')) !!}, type: 'error' }); @endif
-            @if(session('status')) window.flashMessages.push({ message: {!! json_encode(session('status')) !!}, type: 'success' }); @endif
-            @if(session('info')) window.flashMessages.push({ message: {!! json_encode(session('info')) !!}, type: 'info' }); @endif
-            @if(session('warning')) window.flashMessages.push({ message: {!! json_encode(session('warning')) !!}, type: 'warning' }); @endif
-            @if(session('password_success')) window.flashMessages.push({ message: {!! json_encode(session('password_success')) !!}, type: 'success' }); @endif
+        // Reset the guard on every navigation so the NEW page's flash messages are shown.
+        document.addEventListener('livewire:navigating', function () {
+            window._flashMessagesShown = false;
+        });
 
-            window.flashMessages.forEach(flash => {
-                Swal.fire({ icon: flash.type, title: flash.message, toast: true, position: 'top-end', showConfirmButton: false, timer: 3000 });
-            });
+        // FIX: Read flash data from the <template id="__flash_messages"> in <body>.
+        // Livewire only re-renders the body on wire:navigate, not the <head>, so
+        // Blade session values placed here in <head> go permanently stale after
+        // the first full page load. The body template is always fresh.
+        function initFlashMessages() {
+            if (window._flashMessagesShown) return;
+            window._flashMessagesShown = true;
+
+            const tpl = document.getElementById('__flash_messages');
+            if (!tpl) return;
+            try {
+                const msgs = JSON.parse(tpl.dataset.messages);
+                const typeMap = {
+                    success:          'success',
+                    error:            'error',
+                    status:           'success',
+                    info:             'info',
+                    warning:          'warning',
+                    password_success: 'success',
+                };
+                Object.entries(msgs).forEach(([key, val]) => {
+                    if (val) {
+                        Swal.fire({
+                            icon: typeMap[key] || 'info',
+                            title: val,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true,
+                        });
+                    }
+                });
+            } catch(e) {}
         }
         document.addEventListener('livewire:navigated', initFlashMessages);
         window.addEventListener('load', initFlashMessages);
@@ -44,6 +71,23 @@
 </head>
 
 <body class="bg-brand-cream overflow-hidden h-screen">
+
+{{-- Flash messages in the body so Livewire re-renders them on every navigation. --}}
+@php
+    $flashMessages = json_encode([
+        'success'          => session('success'),
+        'error'            => session('error'),
+        'status'           => session('status'),
+        'info'             => session('info'),
+        'warning'          => session('warning'),
+        'password_success' => session('password_success'),
+    ]);
+@endphp
+<template
+    id="__flash_messages"
+    data-messages='{{ $flashMessages }}'>
+</template>
+
     <!-- SIDEBAR -->
     <x-user-sidebar />
 

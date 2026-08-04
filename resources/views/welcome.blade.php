@@ -46,6 +46,7 @@
                     <div class="product-card bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group {{ $loop->index >= 2 ? 'hidden sm:block' : '' }}">
                         <div class="relative w-full aspect-square overflow-hidden rounded-t-2xl sm:rounded-t-3xl bg-slate-100 cursor-pointer view-details-btn"
                              data-id="{{ $product->id }}"
+                             data-slug="{{ $product->slug }}"
                              data-name="{{ $product->name }}"
                              data-price="{{ intval($discountPrice) }}"
                              data-original-price="{{ intval($product->price) }}"
@@ -71,6 +72,7 @@
                                 <span class="text-[8px] sm:text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-0.5 sm:mb-1 truncate">{{ $product->category?->cat_name ?? 'Uncategorized' }}</span>
                                 <h3 class="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-[#1F3D2E] mb-1 sm:mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1 cursor-pointer view-details-btn"
                                     data-id="{{ $product->id }}"
+                                    data-slug="{{ $product->slug }}"
                                     data-name="{{ $product->name }}"
                                     data-price="{{ intval($discountPrice) }}"
                                     data-original-price="{{ intval($product->price) }}"
@@ -93,6 +95,7 @@
                                 <a href="{{ route('viewdetails', $product->slug) }}"
                                    class="view-details-btn flex-grow flex items-center justify-center gap-1 sm:gap-2 bg-[#1F3D2E] hover:bg-[#16301f] text-white text-[8px] sm:text-xs md:text-sm font-semibold py-1.5 px-1 sm:py-3 sm:px-3 rounded-lg sm:rounded-xl shadow-sm hover:shadow transition duration-300"
                                    data-id="{{ $product->id }}"
+                                   data-slug="{{ $product->slug }}"
                                    data-name="{{ $product->name }}"
                                    data-price="{{ intval($discountPrice) }}"
                                    data-original-price="{{ intval($product->price) }}"
@@ -196,6 +199,7 @@
     <div class="product-card bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group">
         <div class="relative w-full aspect-square overflow-hidden rounded-t-2xl sm:rounded-t-3xl bg-slate-100 cursor-pointer view-details-btn"
              data-id="{{ $product->id }}"
+             data-slug="{{ $product->slug }}"
              data-name="{{ $product->name }}"
              data-price="{{ $displayPrice }}"
              data-original-price="{{ $price }}"
@@ -230,6 +234,7 @@
                 <span class="text-[8px] sm:text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-0.5 sm:mb-1 truncate">{{ $product->category->cat_name ?? '' }}</span>
                 <h4 class="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-[#1F3D2E] mb-1 sm:mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1 cursor-pointer view-details-btn"
                     data-id="{{ $product->id }}"
+                    data-slug="{{ $product->slug }}"
                     data-name="{{ $product->name }}"
                     data-price="{{ $displayPrice }}"
                     data-original-price="{{ $price }}"
@@ -254,6 +259,7 @@
                 <a href="{{ route('viewdetails', $product->slug) }}"
                    class="view-details-btn flex-grow flex items-center justify-center gap-1 sm:gap-2 bg-[#1F3D2E] hover:bg-[#16301f] text-white text-[8px] sm:text-xs md:text-sm font-semibold py-1.5 px-1 sm:py-3 sm:px-3 rounded-lg sm:rounded-xl shadow-sm hover:shadow transition duration-300"
                    data-id="{{ $product->id }}"
+                   data-slug="{{ $product->slug }}"
                    data-name="{{ $product->name }}"
                    data-price="{{ $displayPrice }}"
                    data-original-price="{{ $price }}"
@@ -601,6 +607,7 @@
                         <div class="flex items-center gap-3 sm:gap-4 bg-white p-3 sm:p-4 rounded-xl sm:rounded-2xl shadow-sm border border-[#ebd7be]/40 group transition">
                             <div class="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-lg sm:rounded-xl overflow-hidden shrink-0 bg-slate-100 cursor-pointer view-details-btn"
                                  data-id="{{ $product->id }}"
+                                 data-slug="{{ $product->slug }}"
                                  data-name="{{ $product->name }}"
                                  data-price="{{ $effectivePrice }}"
                                  data-original-price="{{ $originalPrice }}"
@@ -616,6 +623,7 @@
                             <div class="flex-grow">
                                 <h4 class="text-xs sm:text-sm md:text-base font-bold text-brand-dark group-hover:text-brand-primary transition-colors line-clamp-1 cursor-pointer view-details-btn"
                                     data-id="{{ $product->id }}"
+                                    data-slug="{{ $product->slug }}"
                                     data-name="{{ $product->name }}"
                                     data-price="{{ $effectivePrice }}"
                                     data-original-price="{{ $originalPrice }}"
@@ -683,7 +691,21 @@
                             $discountPrice = $hasDiscount ? $dDiscount : $product->price;
                         @endphp
                         <div class="product-card bg-white rounded-2xl sm:rounded-3xl overflow-hidden border border-[#ebd7be]/40 shadow-sm hover:shadow-md transition duration-300 flex flex-col group {{ $index >= 2 ? 'hidden sm:block' : '' }}">
-                            <div class="relative w-full aspect-square overflow-hidden rounded-t-2xl sm:rounded-t-3xl">
+                            <div class="relative w-full aspect-square overflow-hidden rounded-t-2xl sm:rounded-t-3xl cursor-pointer view-details-btn"
+                                 data-id="{{ $product->id }}"
+                                 data-slug="{{ $product->slug }}"
+                                 data-name="{{ $product->name }}"
+                                 data-price="{{ $discountPrice }}"
+                                 data-original-price="{{ $product->price }}"
+                                 data-discount="{{ $hasDiscount ? 'true' : 'false' }}"
+                                 data-discount-price="{{ $dDiscount ?? '' }}"
+                                 data-image="{{ $imageUrl }}"
+                                 data-category="{{ $product->category?->cat_name ?? 'Crafts' }}"
+                                 data-vendor="{{ $product->vendor->business_name ?? $product->vendor->name ?? '' }}"
+                                 data-desc="{{ $product->description }}"
+                                 data-rating="{{ $product->rating ?? 5 }}"
+                                 data-reviews="{{ $product->reviews_count ?? 24 }}"
+                                 data-stock="{{ $product->stock ?? 10 }}">
                                 <img src="{{ $imageUrl }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
 
                                 <span class="absolute top-2 left-2 sm:top-3 sm:left-3 {{ $rankBg }} text-[7px] xs:text-[9px] sm:text-[10px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 sm:px-2.5 sm:py-1 rounded-full z-10 shadow">
@@ -706,7 +728,21 @@
                                     <span class="text-[8px] sm:text-[10px] font-bold uppercase tracking-wider text-[#3A2A1F]/50 block mb-0.5 sm:mb-1">
                                         {{ $product->category?->cat_name ?? 'General' }}
                                     </span>
-                                    <h3 class="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-[#1F3D2E] mb-1 sm:mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1">
+                                    <h3 class="text-xs sm:text-sm md:text-base lg:text-lg font-bold text-[#1F3D2E] mb-1 sm:mb-2 leading-tight group-hover:text-[#C65A3A] transition-colors line-clamp-1 cursor-pointer view-details-btn"
+                                        data-id="{{ $product->id }}"
+                                        data-slug="{{ $product->slug }}"
+                                        data-name="{{ $product->name }}"
+                                        data-price="{{ $discountPrice }}"
+                                        data-original-price="{{ $product->price }}"
+                                        data-discount="{{ $hasDiscount ? 'true' : 'false' }}"
+                                        data-discount-price="{{ $dDiscount ?? '' }}"
+                                        data-image="{{ $imageUrl }}"
+                                        data-category="{{ $product->category?->cat_name ?? 'Crafts' }}"
+                                        data-vendor="{{ $product->vendor->business_name ?? $product->vendor->name ?? '' }}"
+                                        data-desc="{{ $product->description }}"
+                                        data-rating="{{ $product->rating ?? 5 }}"
+                                        data-reviews="{{ $product->reviews_count ?? 24 }}"
+                                        data-stock="{{ $product->stock ?? 10 }}">
                                         {{ $product->name }}
                                     </h3>
                                     <div class="flex flex-wrap items-baseline gap-1 sm:gap-2 mb-2 sm:mb-4">
@@ -724,6 +760,7 @@
                                     <a href="{{ route('viewdetails', $product->slug) }}"
                                        class="view-details-btn flex-grow flex items-center justify-center gap-1 sm:gap-2 bg-[#1F3D2E] hover:bg-[#16301f] text-white text-[8px] sm:text-xs md:text-sm font-semibold py-1.5 px-1 sm:py-3 sm:px-3 rounded-lg sm:rounded-xl shadow-sm hover:shadow transition duration-300"
                                        data-id="{{ $product->id }}"
+                                       data-slug="{{ $product->slug }}"
                                        data-name="{{ $product->name }}"
                                        data-price="{{ $discountPrice }}"
                                        data-original-price="{{ $product->price }}"
