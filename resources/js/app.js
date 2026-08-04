@@ -19,50 +19,13 @@ function openDrawer() {
 }
 
 function closeDrawer() {
-    const drawer  = document.getElementById('mobile-drawer');
-    const overlay = document.getElementById('drawer-overlay');
+    const drawer    = document.getElementById('mobile-drawer');
+    const overlay   = document.getElementById('drawer-overlay');
     const hamburger = document.getElementById('hamburger-btn');
-    if (drawer)  drawer.classList.remove('open');
-    if (overlay) overlay.classList.remove('open');
+    if (drawer)    drawer.classList.remove('open');
+    if (overlay)   overlay.classList.remove('open');
     if (hamburger) hamburger.setAttribute('aria-expanded', 'false');
     document.body.style.overflow = '';
-}
-window.closeDrawer = closeDrawer;
-
-// ─── Toast ────────────────────────────────────────────────────────────────────
-const toastStyles = {
-    success: { background: '#3498db', color: '#ffffff' },
-    error:   { background: '#e74c3c', color: '#ffffff' },
-    warning: { background: '#e74c3c', color: '#ffffff' },
-    info:    { background: '#e74c3c', color: '#ffffff' },
-};
-
-function getSwalToast() {
-    if (!window.Swal) return null;
-    return Swal.mixin({
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-        customClass: { popup: 'swal-hamrokoseli-toast' },
-        didOpen: (toast) => {
-            toast.addEventListener('mouseenter', Swal.stopTimer);
-            toast.addEventListener('mouseleave', Swal.resumeTimer);
-            const container = toast.closest('.swal2-container');
-            if (container) container.style.setProperty('z-index', '999999', 'important');
-        },
-    });
-}
-
-function showToast(message, type = 'success') {
-    const SwalToast = getSwalToast();
-    if (SwalToast) {
-        const style = toastStyles[type] ?? toastStyles.success;
-        SwalToast.fire({ icon: type, title: message, background: style.background, color: style.color, iconColor: style.color });
-    } else {
-        console.info(`[Toast] ${type}: ${message}`);
-    }
 }
 window.showToast = showToast;
 
@@ -257,11 +220,29 @@ function populateAndShowProductModal(productData) {
         if (modalSavingsTag) modalSavingsTag.classList.add('hidden');
     }
 
-    // Stock
-    const stock = parseInt(productData.stock || 10);
-    if (modalStockStatus) {
-        modalStockStatus.textContent = stock > 0 ? 'In Stock' : 'Out of Stock';
-        modalStockStatus.className   = stock > 0 ? 'text-xs text-emerald-700 font-bold' : 'text-xs text-red-500 font-bold';
+    // Export functions to window object
+    window.openLoginModal = openLoginModal;
+    window.closeLoginModal = closeLoginModal;
+
+    // Use delegated listeners so they survive Livewire wire:navigate DOM swaps
+    document.addEventListener('click', function (e) {
+        const signinBtn = e.target.closest('#desktop-signin, #mobile-signin');
+        if (signinBtn) { openLoginModal(e, 'login'); return; }
+
+        const signupBtn = e.target.closest('#mobile-signup');
+        if (signupBtn) { openLoginModal(e, 'register'); return; }
+
+        const closeModalBtn = e.target.closest('#close-login-modal');
+        if (closeModalBtn) { closeLoginModal(); return; }
+    });
+
+    // Switch to Register View
+    if (modalShowRegisterBtn) {
+        modalShowRegisterBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            switchModalView('register');
+            updateUrlState('register');
+        });
     }
 
     // Stars

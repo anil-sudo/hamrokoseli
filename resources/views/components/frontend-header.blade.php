@@ -38,10 +38,17 @@
                     <img src="{{ asset('images/logo.png') }}" alt="Hamro Koseli Logo"
                         class="w-10 h-10 bg-white object-contain rounded-full shadow-md transform group-hover:scale-105 transition duration-300"
                         loading="lazy">
-                    <div>
+                    @auth
+                    <div class="hidden sm:block">
                         <div class="text-lg md:text-xl font-extrabold tracking-wide leading-none text-white">HAMRO KOSELI</div>
                         <span class="text-[9px] text-emerald-200/90 tracking-wide font-medium hidden sm:block">Special Koseli for Special People</span>
                     </div>
+                    @else
+                    <div class="hidden sm:block">
+                        <div class="text-lg md:text-xl font-extrabold tracking-wide leading-none text-white">HAMRO KOSELI</div>
+                        <span class="text-[9px] text-emerald-200/90 tracking-wide font-medium hidden sm:block">Special Koseli for Special People</span>
+                    </div>
+                    @endauth
                 </a>
             </div>
 
