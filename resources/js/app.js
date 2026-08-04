@@ -59,6 +59,12 @@ function openLoginModal(e, view = 'login') {
     closeDrawer();
     const loginModal          = document.getElementById('login-modal');
     const loginModalContainer = document.getElementById('login-modal-container');
+    if (loginModal && loginModalContainer && !loginModal.classList.contains('hidden')) {
+        switchModalView(view);
+        if (view === 'register') updateUrlState('register');
+        else if (view === 'login') updateUrlState('login');
+        return;
+    }
     if (loginModal && loginModal.classList.contains('hidden')) {
         const currentPath = window.location.pathname + window.location.search;
         if (currentPath !== '/userlogin' && currentPath !== '/userregister') originalUrl = currentPath;
@@ -269,7 +275,7 @@ function populateAndShowProductModal(productData) {
             fetch('/product/' + productData.id + '/can-review')
                 .then(res => res.json())
                 .then(data => {
-                    if (data.eligible && data.existing) toggleReviewBtn.innerHTML = '<i class="fas fa-edit"></i> Edit a Review';
+                    if (data.eligible && data.existing) toggleReviewBtn.innerHTML = '<i class="fas fa-edit"></i> Edit Review';
                 })
                 .catch(() => {});
         }
@@ -718,10 +724,40 @@ function initPage() {
     initForgotPasswordForm();
 }
 
+let _loginModalAutoOpened = false;
+
+function resetLoginModalAutoOpen() {
+    _loginModalAutoOpened = false;
+}
+
+function showValidationErrorToasts() {
+    const tpl = document.getElementById('__validation_errors');
+    if (!tpl || typeof window.showToast !== 'function') return;
+    try {
+        const errors = JSON.parse(tpl.dataset.errors);
+        if (errors.length > 0) window.showToast(errors[0], 'error');
+    } catch (e) {}
+}
+
 function checkPathAndOpenModal() {
+    if (_loginModalAutoOpened) return;
+
     const path = window.location.pathname;
-    if (path === '/userlogin' || path === '/login') openLoginModal(null, 'login');
-    else if (path === '/userregister') openLoginModal(null, 'register');
+    let view = null;
+
+    if (path === '/userlogin' || path === '/login') view = 'login';
+    else if (path === '/userregister') view = 'register';
+
+    if (!view) {
+        const stateTpl = document.getElementById('__login_modal_state');
+        if (stateTpl?.dataset.openView) view = stateTpl.dataset.openView;
+    }
+
+    if (view) {
+        _loginModalAutoOpened = true;
+        openLoginModal(null, view);
+        showValidationErrorToasts();
+    }
 }
 
 function initForgotPasswordForm() {
@@ -902,7 +938,7 @@ document.addEventListener('submit', function (e) {
                 document.querySelectorAll('.star-select-btn').forEach(s => { const icon = s.querySelector('i'); if (icon) icon.className = 'far fa-star text-[#3A2A1F]/40'; });
                 if (ratingVal) ratingVal.value = '';
                 fetchReviewsForProduct(productId);
-                const trb = document.getElementById('toggle-add-review-btn'); if (trb) trb.innerHTML = '<i class="fas fa-edit"></i> Edit a Review';
+                const trb = document.getElementById('toggle-add-review-btn'); if (trb) trb.innerHTML = '<i class="fas fa-edit"></i> Edit Review';
                 const rs  = document.getElementById('modal-add-review-section'); if (rs) rs.classList.add('hidden');
             } else {
                 if (window.showToast) window.showToast(data.message || 'Something went wrong.', 'error'); else if (errorMsg) { errorMsg.textContent = data.message || 'Something went wrong.'; errorMsg.classList.remove('hidden'); }
@@ -926,6 +962,8 @@ window.addEventListener('popstate', function (e) {
 
 // ─── Livewire Navigate hooks ───────────────────────────────────────────────────
 document.addEventListener('livewire:navigating', function () {
+    resetLoginModalAutoOpen();
+    window._flashMessagesShown = false;
     // Close any open modal before leaving the page
     window.activeProductOnLoad = null;
     window.activeProduct       = null;
