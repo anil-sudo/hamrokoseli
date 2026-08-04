@@ -214,9 +214,9 @@ function populateAndShowProductModal(productData) {
     if (modalBreadcrumbCat) modalBreadcrumbCat.textContent = categoryName;
 
     const descText = productData.desc || productData.description || '';
-    if (modalProductDesc) modalProductDesc.textContent = descText;
+    if (modalProductDesc) modalProductDesc.innerHTML = descText;
     const modalProductStory = document.getElementById('modal-product-story');
-    if (modalProductStory) modalProductStory.textContent = descText;
+    if (modalProductStory) modalProductStory.innerHTML = descText;
 
     if (modalVendorName) {
         const vendorCard = document.getElementById('modal-vendor-card');
@@ -733,11 +733,6 @@ function initPage() {
     // Auto-open login modal if on login/register route
     checkPathAndOpenModal();
 
-    // Auto-open product modal if landing on /viewdetails/...
-    if (window.location.pathname.startsWith('/viewdetails/') && window.activeProductOnLoad) {
-        populateAndShowProductModal(window.activeProductOnLoad);
-    }
-
     // Forgot password form
     initForgotPasswordForm();
 }
@@ -828,11 +823,15 @@ document.addEventListener('click', function (e) {
     const vBtn = e.target.closest('.view-details-btn');
     if (vBtn) {
         if (e.target.closest('.wishlist-btn') || e._handledByWishlist) return;
-        e.preventDefault();
-        const productData = { id: vBtn.getAttribute('data-id'), slug: vBtn.getAttribute('data-slug'), name: vBtn.getAttribute('data-name'), price: vBtn.getAttribute('data-price'), originalPrice: vBtn.getAttribute('data-original-price'), discount: vBtn.getAttribute('data-discount'), discount_price: vBtn.getAttribute('data-discount-price'), image: vBtn.getAttribute('data-image'), category: vBtn.getAttribute('data-category'), vendor: vBtn.getAttribute('data-vendor'), desc: vBtn.getAttribute('data-desc'), rating: vBtn.getAttribute('data-rating'), reviews: vBtn.getAttribute('data-reviews'), stock: vBtn.getAttribute('data-stock') };
-        populateAndShowProductModal(productData);
-        updateProductUrlState(productData.id, productData.slug);
-        return;
+        const href = vBtn.getAttribute('href');
+        const slug = vBtn.getAttribute('data-slug') || vBtn.getAttribute('data-id');
+        if (href && href !== '#' && !href.startsWith('javascript:')) {
+            return; // Normal anchor link navigation to /viewdetails/...
+        } else if (slug) {
+            e.preventDefault();
+            window.location.href = `/viewdetails/${slug}`;
+            return;
+        }
     }
 
     // Product modal close
@@ -940,14 +939,8 @@ window.addEventListener('popstate', function (e) {
         const loginModal = document.getElementById('login-modal');
         if (loginModal && !loginModal.classList.contains('hidden')) closeLoginModal();
     }
-    const match = path.match(/^\/viewdetails\/([^/]+)$/);
-    if (match) {
-        if (window.activeProductOnLoad && (String(window.activeProductOnLoad.slug) === match[1] || String(window.activeProductOnLoad.id) === match[1])) { populateAndShowProductModal(window.activeProductOnLoad); }
-        else { const btn = document.querySelector(`.view-details-btn[data-slug="${match[1]}"], .view-details-btn[data-id="${match[1]}"]`); if (btn) btn.click(); }
-    } else {
-        const currentModal = getProductModal();
-        if (currentModal && !currentModal.classList.contains('hidden')) closeProductDetailsModal();
-    }
+    const currentModal = getProductModal();
+    if (currentModal && !currentModal.classList.contains('hidden')) closeProductDetailsModal();
 });
 
 // ─── Livewire Navigate hooks ───────────────────────────────────────────────────
