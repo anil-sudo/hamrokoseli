@@ -254,17 +254,27 @@
                     <p class="text-xs text-[#3A2A1F]/60 mt-1 font-medium">Ratings and reviews from customers who purchased this item</p>
                 </div>
 
-                <button type="button" onclick="toggleReviewForm()" class="bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-xs font-bold px-5 py-3 rounded-2xl transition shadow-sm flex items-center justify-center gap-2 cursor-pointer">
-                    <i class="fas fa-pen"></i>
-                    Write a Review
+                <button type="button" id="page-toggle-review-btn" onclick="toggleReviewForm()" class="bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-xs font-bold px-5 py-3 rounded-2xl transition shadow-sm flex items-center justify-center gap-2 cursor-pointer">
+                    @auth
+                        @if($userReview)
+                            <i class="fas fa-edit"></i>
+                            Edit Review
+                        @else
+                            <i class="fas fa-pen"></i>
+                            Write a Review
+                        @endif
+                    @else
+                        <i class="fas fa-pen"></i>
+                        Write a Review
+                    @endauth
                 </button>
             </div>
 
             <!-- Review Form -->
             <div id="page-add-review-section" class="hidden bg-[#FFF7EF] border border-[#C65A3A]/30 rounded-3xl p-6 sm:p-8 space-y-5">
-                <h4 class="text-lg font-bold text-[#1F3D2E] flex items-center gap-2">
+                <h4 id="page-review-form-title" class="text-lg font-bold text-[#1F3D2E] flex items-center gap-2">
                     <i class="fas fa-edit text-[#C65A3A]"></i>
-                    Share Your Feedback
+                    {{ $userReview ? 'Edit Your Review' : 'Share Your Feedback' }}
                 </h4>
 
                 @auth
@@ -279,19 +289,16 @@
                                     </button>
                                 @endfor
                             </div>
-                            <input type="hidden" id="page-rating-value" value="">
+                            <input type="hidden" id="page-rating-value" value="{{ $userReview['rating'] ?? '' }}">
                         </div>
 
                         <div>
                             <label for="page-review-comment" class="block text-xs font-bold text-[#1F3D2E] uppercase mb-2">Review Comment</label>
-                            <textarea id="page-review-comment" rows="4" class="w-full rounded-2xl border border-[#ebd7be] p-4 text-sm focus:border-[#C65A3A] outline-none" placeholder="How was the quality of this product?"></textarea>
+                            <textarea id="page-review-comment" rows="4" class="w-full rounded-2xl border border-[#ebd7be] p-4 text-sm focus:border-[#C65A3A] outline-none" placeholder="How was the quality of this product?">{{ $userReview['comment'] ?? '' }}</textarea>
                         </div>
 
-                        <div id="page-review-error" class="hidden text-red-600 text-xs bg-red-50 p-3.5 rounded-xl border border-red-200"></div>
-                        <div id="page-review-success" class="hidden text-emerald-700 text-xs bg-emerald-50 p-3.5 rounded-xl border border-emerald-200"></div>
-
                         <button type="submit" id="page-submit-review-btn" class="bg-[#1F3D2E] hover:bg-[#16301f] text-white text-xs font-bold px-6 py-3 rounded-xl transition cursor-pointer">
-                            Submit Review
+                            {{ $userReview ? 'Update Review' : 'Submit Review' }}
                         </button>
                     </form>
                 @else
@@ -328,6 +335,19 @@
                             <p class="text-xs text-[#3A2A1F]/80 leading-relaxed">
                                 {{ $rev->comment }}
                             </p>
+                            @if($rev->reply)
+                                <div class="mt-3 ml-2 sm:ml-4 bg-[#E5DCD0]/30 border border-[#ebd7be]/30 rounded-xl p-3 space-y-1">
+                                    <div class="flex items-center justify-between gap-2">
+                                        <span class="text-[10px] font-bold text-[#C65A3A] flex items-center gap-1">
+                                            <i class="fas fa-reply fa-flip-horizontal"></i> Vendor Response
+                                        </span>
+                                        @if($rev->replied_at)
+                                            <span class="text-[8px] text-[#3A2A1F]/50 font-semibold">{{ $rev->replied_at->format('M d, Y') }}</span>
+                                        @endif
+                                    </div>
+                                    <p class="text-xs text-[#3A2A1F]/80 leading-relaxed font-medium">{{ $rev->reply }}</p>
+                                </div>
+                            @endif
                         </div>
                     @endforeach
                 </div>
@@ -457,8 +477,92 @@
 
     function toggleReviewForm() {
         const formSec = document.getElementById('page-add-review-section');
-        if (formSec) formSec.classList.toggle('hidden');
+        const toggleBtn = document.getElementById('page-toggle-review-btn');
+        if (!formSec) return;
+
+        if (!formSec.classList.contains('hidden')) {
+            formSec.classList.add('hidden');
+            return;
+        }
+
+        if (!window.isLoggedIn) {
+            formSec.classList.remove('hidden');
+            return;
+        }
+
+        const originalHtml = toggleBtn ? toggleBtn.innerHTML : '';
+        if (toggleBtn) {
+            toggleBtn.disabled = true;
+            toggleBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+        }
+
+        fetch('/product/{{ $product->id }}/can-review')
+            .then(res => res.json())
+            .then(data => {
+                if (toggleBtn) {
+                    toggleBtn.disabled = false;
+                    toggleBtn.innerHTML = originalHtml;
+                }
+
+                if (!data.eligible) {
+                    if (window.showToast) window.showToast(data.message || 'You cannot review this product.', 'error');
+                    return;
+                }
+
+                applyPageReviewFormState(data.existing, data.review);
+                formSec.classList.remove('hidden');
+                formSec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            })
+            .catch(() => {
+                if (toggleBtn) {
+                    toggleBtn.disabled = false;
+                    toggleBtn.innerHTML = originalHtml;
+                }
+                if (window.showToast) window.showToast('Something went wrong. Please try again.', 'error');
+            });
     }
+
+    function applyPageReviewFormState(isExisting, review) {
+        const formTitle = document.getElementById('page-review-form-title');
+        const submitBtn = document.getElementById('page-submit-review-btn');
+        const toggleBtn = document.getElementById('page-toggle-review-btn');
+        const rating = isExisting && review ? review.rating : '';
+        const comment = isExisting && review ? (review.comment || '') : '';
+
+        if (formTitle) {
+            formTitle.innerHTML = isExisting
+                ? '<i class="fas fa-edit text-[#C65A3A]"></i> Edit Your Review'
+                : '<i class="fas fa-edit text-[#C65A3A]"></i> Share Your Feedback';
+        }
+        if (submitBtn) submitBtn.textContent = isExisting ? 'Update Review' : 'Submit Review';
+        if (toggleBtn) {
+            toggleBtn.innerHTML = isExisting
+                ? '<i class="fas fa-edit"></i> Edit Review'
+                : '<i class="fas fa-pen"></i> Write a Review';
+        }
+
+        const hiddenVal = document.getElementById('page-rating-value');
+        const commentEl = document.getElementById('page-review-comment');
+        if (hiddenVal) hiddenVal.value = rating;
+        if (commentEl) commentEl.value = comment;
+        if (rating) setStarRating(parseInt(rating, 10));
+        else {
+            document.querySelectorAll('.page-star-btn').forEach(btn => {
+                const icon = btn.querySelector('i');
+                if (icon) icon.className = 'far fa-star text-slate-300';
+            });
+        }
+    }
+
+    function initPageReviewForm() {
+        @auth
+            @if($userReview)
+                applyPageReviewFormState(true, @json($userReview));
+            @endif
+        @endauth
+    }
+
+    initPageReviewForm();
 
     function setStarRating(rating) {
         const hiddenVal = document.getElementById('page-rating-value');
@@ -481,20 +585,13 @@
         e.preventDefault();
         const rating = document.getElementById('page-rating-value')?.value;
         const comment = document.getElementById('page-review-comment')?.value;
-        const errBox = document.getElementById('page-review-error');
-        const succBox = document.getElementById('page-review-success');
         const btn = document.getElementById('page-submit-review-btn');
 
         if (!rating) {
-            if (errBox) {
-                errBox.textContent = 'Please select a star rating.';
-                errBox.classList.remove('hidden');
-            }
+            if (window.showToast) window.showToast('Please select a star rating.', 'error');
             return;
         }
 
-        if (errBox) errBox.classList.add('hidden');
-        if (succBox) succBox.classList.add('hidden');
         if (btn) { btn.disabled = true; btn.textContent = 'Submitting...'; }
 
         fetch('/product/{{ $product->id }}/reviews', {
@@ -508,26 +605,24 @@
         })
         .then(res => res.json())
         .then(data => {
-            if (btn) { btn.disabled = false; btn.textContent = 'Submit Review'; }
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = data.success ? 'Update Review' : @json($userReview ? 'Update Review' : 'Submit Review');
+            }
             if (data.success) {
-                if (succBox) {
-                    succBox.textContent = data.message || 'Review submitted successfully!';
-                    succBox.classList.remove('hidden');
-                }
+                if (window.showToast) window.showToast(data.message || 'Review submitted successfully!', 'success');
+                applyPageReviewFormState(true, { rating: parseInt(rating, 10), comment });
                 setTimeout(() => window.location.reload(), 1500);
             } else {
-                if (errBox) {
-                    errBox.textContent = data.message || 'Error submitting review.';
-                    errBox.classList.remove('hidden');
-                }
+                if (window.showToast) window.showToast(data.message || 'Error submitting review.', 'error');
             }
         })
         .catch(() => {
-            if (btn) { btn.disabled = false; btn.textContent = 'Submit Review'; }
-            if (errBox) {
-                errBox.textContent = 'Server error. Please try again.';
-                errBox.classList.remove('hidden');
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = @json($userReview ? 'Update Review' : 'Submit Review');
             }
+            if (window.showToast) window.showToast('Server error. Please try again.', 'error');
         });
     });
 </script>

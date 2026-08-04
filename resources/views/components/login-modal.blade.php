@@ -77,26 +77,6 @@
                     <p class="text-slate-400 text-xs font-medium mt-1">Sign in to continue supporting local business.</p>
                 </div>
 
-                <!-- SUCCESS MESSAGE - Shows after successful registration -->
-                @if (session('success'))
-                    <div class="mb-4 rounded-xl bg-[#E8F3EC] border border-[#9FC3AF]/50 text-[#1F3D2E] text-xs font-semibold px-4 py-3 flex items-center gap-2">
-                        <i class="fas fa-check-circle text-[#1F3D2E]"></i>
-                        {{ session('success') }}
-                    </div>
-                @endif
-
-                <!-- LOGIN ERRORS - Only show login-specific errors (not registration errors) -->
-                @if ($errors->any() && !session('show_register') && !old('name'))
-                    <div class="mb-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold px-4 py-3 space-y-1">
-                        @foreach ($errors->all() as $error)
-                            <p class="flex items-center gap-1.5">
-                                <i class="fas fa-exclamation-circle"></i>
-                                {{ $error }}
-                            </p>
-                        @endforeach
-                    </div>
-                @endif
-
                 <form action="{{ route('userlogin') }}" method="POST" class="space-y-3 sm:space-y-4">
                     @csrf
                     <div>
@@ -234,14 +214,6 @@
 
                 <!-- Form state -->
                 <div id="forgot-form-wrap">
-                    <!-- Flash messages from server -->
-                    @if (session('status'))
-                        <div class="mb-4 rounded-xl bg-[#E8F3EC] border border-[#9FC3AF]/50 text-[#1F3D2E] text-xs font-semibold px-4 py-3 flex items-center gap-2">
-                            <i class="fas fa-check-circle text-[#1F3D2E]"></i>
-                            {{ session('status') }}
-                        </div>
-                    @endif
-
                     <form id="forgot-password-form" action="{{ route('password.email') }}" method="POST" class="space-y-4">
                         @csrf
                         <div>
@@ -336,18 +308,6 @@
                     <p class="text-slate-400 text-xs font-medium mt-1">Register to shop local crafts.</p>
                 </div>
 
-                <!-- REGISTRATION ERRORS - Only show registration-specific errors -->
-                @if ($errors->any() && (session('show_register') || old('name')))
-                    <div class="mb-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold px-4 py-3 space-y-1">
-                        @foreach ($errors->all() as $error)
-                            <p class="flex items-center gap-1.5">
-                                <i class="fas fa-exclamation-circle"></i>
-                                {{ $error }}
-                            </p>
-                        @endforeach
-                    </div>
-                @endif
-
                 <form action="{{ route('userregister') }}" method="POST" class="space-y-2.5 sm:space-y-3.5 lg:space-y-4">
                     @csrf
                     <div>
@@ -437,42 +397,25 @@
     </div>
 </div>
 
+@php
+    $loginModalView = null;
+    if (session('status')) {
+        $loginModalView = 'forgot';
+    } elseif (session('show_register') || ($errors->any() && old('name'))) {
+        $loginModalView = 'register';
+    } elseif (session('login_failed') || session('show_login') || ($errors->any() && !old('name'))) {
+        $loginModalView = 'login';
+    }
+@endphp
+@if ($loginModalView)
+<template id="__login_modal_state" data-open-view="{{ $loginModalView }}"></template>
+@endif
+@if ($errors->any())
+<template id="__validation_errors" data-errors='@json($errors->all())'></template>
+@endif
+
 <script>
     (function() {
-        function checkAndOpenModal() {
-            if (window.openLoginModal) {
-                const path = window.location.pathname;
-                if (path === '/userlogin' || path === '/login') {
-                    window.openLoginModal(null, 'login');
-                    return;
-                }
-                if (path === '/userregister') {
-                    window.openLoginModal(null, 'register');
-                    return;
-                }
-
-                @if (session('status'))
-                    window.openLoginModal(null, 'forgot');
-                @endif
-
-                @if (session('show_register') || ($errors->any() && old('name')))
-                    window.openLoginModal(null, 'register');
-                @endif
-
-                @if (session('login_failed') || session('show_login'))
-                    window.openLoginModal(null, 'login');
-                @endif
-            }
-        }
-
-        // Run when DOM is ready and window is loaded
-        document.addEventListener('DOMContentLoaded', checkAndOpenModal);
-        window.addEventListener('load', checkAndOpenModal);
-        document.addEventListener('livewire:navigated', checkAndOpenModal);
-
-        // Also run immediately
-        checkAndOpenModal();
-
         // ── Phone: restrict to digits only, max 10 ──────────────────────────
         const modalPhone = document.getElementById('modal-register-phone');
         if (modalPhone) {
@@ -578,7 +521,11 @@
 
                 if (errors.length > 0) {
                     e.preventDefault();
-                    alert(errors.join('\n'));
+                    if (window.showToast) {
+                        window.showToast(errors[0], 'error');
+                    } else {
+                        alert(errors.join('\n'));
+                    }
                 }
             });
         }

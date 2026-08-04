@@ -209,13 +209,6 @@
                                         placeholder="How was the quality? Would you recommend it to others?"></textarea>
                                 </div>
 
-                                <div id="review-error-message"
-                                    class="hidden text-red-600 text-sm bg-red-50 border border-red-200 p-4 rounded-2xl">
-                                </div>
-                                <div id="review-success-message"
-                                    class="hidden text-emerald-700 text-sm bg-emerald-50 border border-emerald-200 p-4 rounded-2xl">
-                                </div>
-
                                 <button type="submit" id="submit-review-btn"
                                     class="inline-flex items-center gap-2 px-8 py-3.5 bg-(--secondary-color) hover:bg-[#B94E31] text-(--text-light) rounded-2xl font-semibold transition">
                                     Submit Review
@@ -304,6 +297,7 @@
                                     if (formTitle) formTitle.innerHTML =
                                         '<i class="fas fa-edit text-[#C65A3A]"></i> Edit Your Review';
                                     if (submitBtn) submitBtn.textContent = 'Update Review';
+                                    if (toggleBtn) toggleBtn.innerHTML = '<i class="fas fa-edit"></i> Edit Review';
                                     if (ratingInput) ratingInput.value = data.review.rating;
                                     if (commentInput) commentInput.value = data.review.comment ||
                                         '';
@@ -324,6 +318,7 @@
                                     if (formTitle) formTitle.innerHTML =
                                         '<i class="fas fa-pen-fancy text-[#C65A3A]"></i> Share Your Experience';
                                     if (submitBtn) submitBtn.textContent = 'Submit Review';
+                                    if (toggleBtn) toggleBtn.innerHTML = '<i class="fas fa-pen-fancy"></i> Write a Review';
                                     if (ratingInput) ratingInput.value = '';
                                     if (commentInput) commentInput.value = '';
 

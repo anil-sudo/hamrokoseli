@@ -186,13 +186,44 @@ class SellerController extends Controller
             ->take(5)
             ->get();
 
-        $dealEndsAt = Setting::getValue('todays_deal_ends_at');
+        $dealEndsAt = Setting::getValue('todays_deal_ends_at')
+                    ?? Setting::getValue('date')
+                    ?? Setting::getValue('deal_ends_at');
+        if (! $dealEndsAt) {
+            $dateSetting = Setting::where('key', 'LIKE', '%date%')
+                ->orWhere('key', 'LIKE', '%time%')
+                ->orWhere('key', 'LIKE', '%_at%')
+                ->latest()
+                ->first();
+            if ($dateSetting) {
+                $dealEndsAt = $dateSetting->value;
+            }
+        }
         if ($dealEndsAt) {
             $dealEndsAt = Carbon::parse($dealEndsAt)->toIso8601String();
         } else {
             $dealEndsAt = now()->endOfDay()->toIso8601String();
         }
-        $dealBgImage = Setting::getValue('deal_countdown_bg_image');
+
+        $dealBgImage = Setting::getValue('deal_countdown_bg_image')
+                    ?? Setting::getValue('banner_image')
+                    ?? Setting::getValue('deal_bg_image')
+                    ?? Setting::getValue('todays_deal_bg_image')
+                    ?? Setting::getValue('image')
+                    ?? Setting::getValue('banner');
+        if (! $dealBgImage) {
+            $imageSetting = Setting::where('value', 'LIKE', 'settings/%')
+                ->orWhere('key', 'LIKE', '%image%')
+                ->orWhere('key', 'LIKE', '%bg%')
+                ->latest()
+                ->first();
+            if ($imageSetting) {
+                $dealBgImage = $imageSetting->value;
+            }
+        }
+        if ($dealBgImage) {
+            $dealBgImage = ltrim(preg_replace('#^storage/#', '', $dealBgImage), '/');
+        }
 
         return view('seller.dashboard', compact('vendor', 'stats', 'salesTrend', 'recentItems', 'dealEndsAt', 'dealBgImage'));
     }

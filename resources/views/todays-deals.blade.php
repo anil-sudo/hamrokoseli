@@ -6,14 +6,19 @@
 
         <!-- Hero Section -->
         @php
-            $heroBgStyle =
-                isset($dealBgImage) && $dealBgImage
-                    ? "background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('" .
-                        asset('storage/' . $dealBgImage) .
-                        "'); background-size: cover; background-position: center;"
-                    : "background-image: url('" .
-                        asset('images/Potteqry.png') .
-                        "'); background-size: cover; background-position: center;";
+            $bgImageUrl = null;
+            if (isset($dealBgImage) && $dealBgImage) {
+                if (str_starts_with($dealBgImage, 'http://') || str_starts_with($dealBgImage, 'https://')) {
+                    $bgImageUrl = $dealBgImage;
+                } else {
+                    $cleanPath = ltrim(preg_replace('#^storage/#', '', $dealBgImage), '/');
+                    $bgImageUrl = asset('storage/' . $cleanPath);
+                }
+            }
+
+            $heroBgStyle = $bgImageUrl
+                ? "background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('" . $bgImageUrl . "'); background-size: cover; background-position: center;"
+                : "background-image: url('" . asset('images/Potteqry.png') . "'); background-size: cover; background-position: center;";
         @endphp
         <section style="{{ $heroBgStyle }}" class="text-white py-16 px-4 md:px-8 lg:px-16">
 
