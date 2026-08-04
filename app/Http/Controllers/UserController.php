@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\Wishlist;
-use App\Rules\FullName;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -268,7 +267,7 @@ class UserController extends Controller
         $user = auth()->user();
 
         $request->validate([
-            'name' => ['required', 'string', new FullName],
+            'name' => 'required|string|max:100',
             'email' => ['required', 'email', 'max:150', Rule::unique('users', 'email')->ignore($user->id)],
             'phone' => ['nullable', 'digits:10', Rule::unique('users', 'phone')->ignore($user->id)],
             'address' => 'nullable|string|max:255',
