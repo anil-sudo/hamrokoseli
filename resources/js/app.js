@@ -18,12 +18,14 @@ function openDrawer() {
     document.body.style.overflow = 'hidden';
 }
 
-    function closeDrawer() {
-        if (drawer) drawer.classList.remove('open');
-        if (overlay) overlay.classList.remove('open');
-        if (hamburger) hamburger.setAttribute('aria-expanded', 'false');
-        document.body.style.overflow = '';
-    }
+function closeDrawer() {
+    const drawer    = document.getElementById('mobile-drawer');
+    const overlay   = document.getElementById('drawer-overlay');
+    const hamburger = document.getElementById('hamburger-btn');
+    if (drawer)    drawer.classList.remove('open');
+    if (overlay)   overlay.classList.remove('open');
+    if (hamburger) hamburger.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
 }
 window.showToast = showToast;
 
