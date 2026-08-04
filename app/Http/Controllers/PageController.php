@@ -428,8 +428,9 @@ class PageController extends Controller
 
     public function viewProduct($slug)
     {
-        $product = Product::with(['category', 'vendor', 'images', 'variants'])
+        $product = Product::with(['category', 'vendor', 'images', 'variants', 'reviews.user'])
             ->where('slug', $slug)
+            ->orWhere('id', $slug)
             ->firstOrFail();
 
         $product->effective_price = method_exists($product, 'effectivePrice') ? $product->effectivePrice() : $product->price;
@@ -437,7 +438,7 @@ class PageController extends Controller
         $product->discount_price = method_exists($product, 'resolvedDiscountPrice') ? $product->resolvedDiscountPrice() : $product->discount_price;
         $product->primary_image_url = method_exists($product, 'primaryImageUrl') ? $product->primaryImageUrl() : asset($product->image);
         $product->category_name = $product->category?->cat_name ?? $product->category?->name ?? 'Crafts';
-        $product->vendor_name = $product->vendor?->vendor_name ?? $product->vendor?->name ?? 'Local Artisan';
+        $product->vendor_name = $product->vendor?->vendor_name ?? $product->vendor?->business_name ?? $product->vendor?->name ?? 'Local Artisan';
 
         $recentlyViewed = session()->get('recently_viewed', []);
         $recentlyViewed = array_filter($recentlyViewed, fn ($pid) => $pid != $product->id);
@@ -445,9 +446,31 @@ class PageController extends Controller
         $recentlyViewed = array_slice($recentlyViewed, 0, 20);
         session()->put('recently_viewed', $recentlyViewed);
 
-        return view('shop', array_merge($this->buildShopData(), [
-            'activeProduct' => $product,
-        ]));
+        // Fetch related products from same category or vendor
+        $relatedProducts = Product::where('status', 'active')
+            ->where('id', '!=', $product->id)
+            ->where(function ($q) use ($product) {
+                if ($product->category_id) {
+                    $q->where('category_id', $product->category_id);
+                }
+                if ($product->vendor_id) {
+                    $q->orWhere('vendor_id', $product->vendor_id);
+                }
+            })
+            ->with(['category', 'vendor', 'images'])
+            ->inRandomOrder()
+            ->limit(4)
+            ->get();
+
+        $avgRating = round($product->reviews()->avg('rating') ?? 5, 1);
+        $reviewsCount = $product->reviews()->count();
+
+        $reviews = Review::with('user')
+            ->where('product_id', $product->id)
+            ->orderBy('created_at', 'desc')
+            ->paginate(6);
+
+        return view('product-details', compact('product', 'relatedProducts', 'avgRating', 'reviewsCount', 'reviews'));
     }
 
     public function getProductReviews(Request $request, $id)
