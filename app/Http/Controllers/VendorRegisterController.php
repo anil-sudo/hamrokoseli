@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Mail\NewVendorRegistered;
 use App\Models\User;
 use App\Models\Vendor;
-use App\Rules\FullName;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -21,7 +20,7 @@ class VendorRegisterController extends Controller
     public function register(Request $request)
     {
         $data = $request->validate([
-            'name' => ['required', 'string', new FullName],
+            'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => [
                 'required',
@@ -34,7 +33,7 @@ class VendorRegisterController extends Controller
             ],
             'phone' => 'required|digits:10|unique:users,phone',
             'vendor_name' => 'required|string|max:150',
-            'owner_name' => ['required', 'string', new FullName],
+            'owner_name' => 'required|string|max:100',
             'vendor_email' => 'required|email|unique:vendors,email',
             'vendor_phone' => 'required|digits:10|unique:vendors,phone',
             'address' => 'nullable|string',
