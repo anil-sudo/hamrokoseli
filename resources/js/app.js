@@ -22,8 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function closeDrawer() {
-        drawer.classList.remove('open');
-        overlay.classList.remove('open');
+        if (drawer) drawer.classList.remove('open');
+        if (overlay) overlay.classList.remove('open');
         if (hamburger) hamburger.setAttribute('aria-expanded', 'false');
         document.body.style.overflow = '';
     }
@@ -157,10 +157,17 @@ document.addEventListener('DOMContentLoaded', () => {
     window.openLoginModal = openLoginModal;
     window.closeLoginModal = closeLoginModal;
 
-    if (desktopSigninBtn) desktopSigninBtn.addEventListener('click', (e) => openLoginModal(e, 'login'));
-    if (mobileSigninBtn) mobileSigninBtn.addEventListener('click', (e) => openLoginModal(e, 'login'));
-    if (mobileSignupBtn) mobileSignupBtn.addEventListener('click', (e) => openLoginModal(e, 'register'));
-    if (closeLoginModalBtn) closeLoginModalBtn.addEventListener('click', closeLoginModal);
+    // Use delegated listeners so they survive Livewire wire:navigate DOM swaps
+    document.addEventListener('click', function (e) {
+        const signinBtn = e.target.closest('#desktop-signin, #mobile-signin');
+        if (signinBtn) { openLoginModal(e, 'login'); return; }
+
+        const signupBtn = e.target.closest('#mobile-signup');
+        if (signupBtn) { openLoginModal(e, 'register'); return; }
+
+        const closeModalBtn = e.target.closest('#close-login-modal');
+        if (closeModalBtn) { closeLoginModal(); return; }
+    });
 
     // Switch to Register View
     if (modalShowRegisterBtn) {
