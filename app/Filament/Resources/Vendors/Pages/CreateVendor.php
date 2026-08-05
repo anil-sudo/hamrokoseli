@@ -8,4 +8,12 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateVendor extends CreateRecord
 {
     protected static string $resource = VendorResource::class;
+
+    protected function afterCreate(): void
+    {
+        $vendor = $this->record;
+        if ($vendor->user && method_exists($vendor->user, 'assignRole')) {
+            $vendor->user->assignRole('vendor');
+        }
+    }
 }
