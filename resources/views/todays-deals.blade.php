@@ -153,7 +153,7 @@
                             $discountPct = $hasDiscount ? round((($price - $dDiscount) / $price) * 100) : 0;
                             $catName = $product->category?->cat_name ?? 'Uncategorized';
                             $vendorName = $product->vendor?->vendor_name ?? 'Local Artisan';
-                            $desc = Str::limit($product->description, 100);
+                            $desc = Str::limit(strip_tags($product->description ?? ''), 100);
                             $stock = $product->stock ?? 0;
                             $avgRating = round($product->reviews_avg_rating ?? 5);
                             $reviewCount = $product->reviews_count ?? 0;
@@ -303,7 +303,7 @@
                                         : 0;
                                     $fCatName = $fProduct->category?->cat_name ?? 'Crafts';
                                     $fVendorName = $fProduct->vendor?->vendor_name ?? 'Local Artisan';
-                                    $fDesc = Str::limit($fProduct->description, 160);
+                                    $fDesc = Str::limit(strip_tags($fProduct->description ?? ''), 160);
                                     $fStock = $fProduct->stock ?? 0;
                                 @endphp
                                 <div class="featured-card flex-shrink-0 w-full animate-fade-in">
@@ -418,7 +418,7 @@
                                         : 0;
                                     $tCatName = $product->category?->cat_name ?? 'Crafts';
                                     $tVendorName = $product->vendor?->vendor_name ?? 'Local Artisan';
-                                    $tDesc = Str::limit($product->description, 100);
+                                    $tDesc = Str::limit(strip_tags($product->description ?? ''), 100);
                                     $tStock = $product->stock ?? 0;
                                     $tAvgRating = round($product->reviews_avg_rating ?? 5);
                                     $tReviewCount = $product->reviews_count ?? 0;
