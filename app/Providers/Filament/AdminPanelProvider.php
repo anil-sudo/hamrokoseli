@@ -30,8 +30,7 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->profile()
             ->login()
-            // ->domain('hamrokoseli-admin.stha-anil.com.np')
-            ->path('/admin/login')
+            ->domain('hamrokoseli-admin.stha-anil.com.np')
             ->authGuard('admin')
             ->colors([
                 'primary' => Color::Amber,
