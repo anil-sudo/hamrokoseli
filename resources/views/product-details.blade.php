@@ -1,4 +1,4 @@
-<x-frontend-layout 
+<x-frontend-layout
     :title="$product->name . ' - Hamro Koseli'"
     :description="Str::limit(strip_tags($product->description ?? 'Handmade product in Nepal'), 160)"
 >
@@ -67,7 +67,7 @@
 
             <!-- Right: Info & Actions -->
             <div class="lg:col-span-6 space-y-6">
-                
+
                 <!-- Category & Stock Status -->
                 <div class="flex items-center justify-between gap-2 flex-wrap">
                     <span class="inline-flex items-center gap-1.5 bg-[#1F3D2E]/10 text-[#1F3D2E] text-xs font-bold uppercase tracking-wider px-3.5 py-1 rounded-full border border-[#1F3D2E]/20">
@@ -129,9 +129,9 @@
                 </div>
 
                 <!-- Description -->
-                <p class="text-sm text-[#3A2A1F]/80 leading-relaxed font-medium">
-                    {!! nl2br(e($product->description)) !!}
-                </p>
+                <div class="text-sm text-[#3A2A1F]/80 leading-relaxed font-medium modal-product-desc prose max-w-none">
+                    {!! Str::contains($product->description, ['<p', '<br', '<div', '<ul', '<ol', '<h', '<b', '<i', '<strong', '<em']) ? $product->description : nl2br(e($product->description)) !!}
+                </div>
 
                 <!-- Vendor Info Card -->
                 @if($product->vendor)
@@ -172,7 +172,7 @@
                                 data-product-name="{{ $product->name }}"
                                 data-product-price="{{ $product->effective_price }}"
                                 data-product-image="{{ $product->primary_image_url }}"
-                                data-product-desc="{{ Str::limit($product->description, 100) }}"
+                                data-product-desc="{{ Str::limit(strip_tags($product->description ?? ''), 100) }}"
                                 data-product-category="{{ $product->category_name }}"
                                 data-product-qty="1">
                             <i class="fas fa-shopping-bag"></i>
@@ -193,7 +193,7 @@
                                 data-slug="{{ $product->slug }}"
                                 data-product-price="{{ $product->effective_price }}"
                                 data-product-image="{{ $product->primary_image_url }}"
-                                data-product-desc="{{ Str::limit($product->description, 100) }}"
+                                data-product-desc="{{ Str::limit(strip_tags($product->description ?? ''), 100) }}
                                 data-product-category="{{ $product->category_name }}">
                             <i class="far fa-heart text-lg"></i>
                         </button>
@@ -456,7 +456,7 @@
         }
         const qtyInput = document.getElementById('detail-qty-input');
         const qty = qtyInput ? (parseInt(qtyInput.value) || 1) : 1;
-        
+
         const activeProduct = {
             id: productId,
             name: "{{ $product->name }}",

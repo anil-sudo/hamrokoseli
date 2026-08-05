@@ -44,7 +44,7 @@
                                         {{ $item->product->name }}
                                     </h3>
                                     <p class="text-xs sm:text-sm text-[#3A2A1F]/70 line-clamp-2 leading-relaxed">
-                                        {{ $item->product->description }}
+                                        {{ strip_tags($item->product->description) }}
                                     </p>
                                 </div>
                                 <div class="mt-auto space-y-4">
