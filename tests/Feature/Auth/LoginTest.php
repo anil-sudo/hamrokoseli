@@ -150,6 +150,19 @@ describe('Buyer login', function () {
         $this->assertAuthenticatedAs($user);
     });
 
+    it('rejects an admin user attempting buyer login', function () {
+        $admin = makeUser(['role' => 'admin']);
+
+        $this->post('/userlogin', [
+            'email' => $admin->email,
+            'password' => 'password',
+        ])
+            ->assertRedirect()
+            ->assertSessionHasErrors('email');
+
+        $this->assertGuest();
+    });
+
 });
 
 // ===========================================================================
