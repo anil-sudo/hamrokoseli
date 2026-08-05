@@ -48,6 +48,12 @@ return [
             'provider' => 'users',
             'cookie' => 'vendor_session',   // separate cookie from the web guard
         ],
+
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'users',
+            'cookie' => 'admin_session',
+        ],
     ],
 
     /*

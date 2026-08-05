@@ -27,7 +27,22 @@ function closeDrawer() {
     if (hamburger) hamburger.setAttribute('aria-expanded', 'false');
     document.body.style.overflow = '';
 }
-window.showToast = showToast;
+
+window.showToast = function (message, type = 'info') {
+    if (window.Swal) {
+        Swal.fire({
+            icon: ['success', 'error', 'warning', 'info'].includes(type) ? type : 'info',
+            title: message,
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+        });
+    } else {
+        console.log('[' + type + ']', message);
+    }
+};
 
 // ─── Login Modal ──────────────────────────────────────────────────────────────
 let originalUrl = window.location.pathname + window.location.search;
