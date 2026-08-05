@@ -35,7 +35,11 @@ class RedirectIfAuthenticated
             $user = Auth::guard('web')->user();
 
             if ($user->role === 'admin') {
-                return redirect('/admin');
+                Auth::guard('web')->logout();
+
+                return redirect()->route('userlogin')->withErrors([
+                    'email' => 'Admin accounts cannot log in as buyers. Please use the admin login page at /admin.',
+                ]);
             }
 
             // Logged-in web user hitting a seller guest route → let them through

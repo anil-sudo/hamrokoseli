@@ -44,6 +44,12 @@ class AuthController extends Controller
             ]);
         }
 
+        if ($user->role === 'admin') {
+            return redirect()->route('userlogin')->withErrors([
+                'email' => 'Admin accounts cannot log in as buyers. Please use the admin login page.',
+            ]);
+        }
+
         Auth::login($user);
 
         return redirect()->route('home');
@@ -89,6 +95,16 @@ class AuthController extends Controller
                 ->withInput($request->only('email'))
                 ->withErrors([
                     'email' => 'Your account is inactive. Please contact support.',
+                ]);
+        }
+
+        if ($user->role === 'admin') {
+            Auth::guard('web')->logout();
+
+            return back()
+                ->withInput($request->only('email'))
+                ->withErrors([
+                    'email' => 'Admin accounts cannot log in as buyers. Please use the admin login page at /admin.',
                 ]);
         }
 
