@@ -224,16 +224,44 @@ class PageController extends Controller
             ->take(6)
             ->get();
 
-        $dealEndsAt = Setting::getValue('date');
+        $dealEndsAt = Setting::getValue('todays_deal_ends_at')
+                    ?? Setting::getValue('date')
+                    ?? Setting::getValue('deal_ends_at');
+        if (! $dealEndsAt) {
+            $dateSetting = Setting::where('key', 'LIKE', '%date%')
+                ->orWhere('key', 'LIKE', '%time%')
+                ->orWhere('key', 'LIKE', '%_at%')
+                ->latest()
+                ->first();
+            if ($dateSetting) {
+                $dealEndsAt = $dateSetting->value;
+            }
+        }
         if ($dealEndsAt) {
             $dealEndsAt = Carbon::parse($dealEndsAt, config('app.timezone'))->toIso8601String();
         } else {
             $dealEndsAt = now()->endOfDay()->toIso8601String();
         }
-        $dealBgImage = Setting::getValue('banner_image');
+
+        $dealBgImage = Setting::getValue('deal_countdown_bg_image')
+                    ?? Setting::getValue('banner_image')
+                    ?? Setting::getValue('deal_bg_image')
+                    ?? Setting::getValue('todays_deal_bg_image')
+                    ?? Setting::getValue('image')
+                    ?? Setting::getValue('banner');
+        if (! $dealBgImage) {
+            $imageSetting = Setting::where('value', 'LIKE', 'settings/%')
+                ->orWhere('key', 'LIKE', '%image%')
+                ->orWhere('key', 'LIKE', '%bg%')
+                ->latest()
+                ->first();
+            if ($imageSetting) {
+                $dealBgImage = $imageSetting->value;
+            }
+        }
         if ($dealBgImage) {
-            // Strip any accidental leading "storage/" prefix Filament may save
-            $dealBgImage = preg_replace('#^storage/#', '', $dealBgImage);
+            // Strip any accidental leading "storage/" prefix or leading slashes
+            $dealBgImage = ltrim(preg_replace('#^storage/#', '', $dealBgImage), '/');
         }
 
         return view('todays-deals', compact('products', 'categories', 'featuredDeals', 'trendingProducts', 'dealEndsAt', 'dealBgImage'));
@@ -470,7 +498,17 @@ class PageController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(6);
 
-        return view('product-details', compact('product', 'relatedProducts', 'avgRating', 'reviewsCount', 'reviews'));
+        $userReview = null;
+        $canReview = false;
+        if (auth()->check()) {
+            $eligibility = $this->checkReviewEligibility($product->id, auth()->id());
+            $canReview = $eligibility['eligible'];
+            if ($eligibility['existing'] && $eligibility['review']) {
+                $userReview = $eligibility['review'];
+            }
+        }
+
+        return view('product-details', compact('product', 'relatedProducts', 'avgRating', 'reviewsCount', 'reviews', 'userReview', 'canReview'));
     }
 
     public function getProductReviews(Request $request, $id)

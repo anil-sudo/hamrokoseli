@@ -171,7 +171,7 @@
                     <input type="checkbox" id="terms"
                         class="mt-1 w-5 h-5 accent-(--secondary-color) cursor-pointer">
                     <label for="terms" class="text-sm leading-relaxed text-(--text-color)/90">
-                        I agree to the <a href="#" class="text-(--text-dark) hover:underline">Terms and Conditions</a>
+                        I agree to the <a href="{{ route('terms&conditions') }}" class="text-(--text-dark) hover:underline">Terms and Conditions</a>
                         and understand that HamroKoseli supports fair trade for local artisans.
                     </label>
                 </div>

@@ -54,7 +54,7 @@
                              data-image="{{ $imageUrl }}"
                              data-category="{{ $product->category?->cat_name ?? 'Uncategorized' }}"
                              data-vendor="{{ $product->vendor?->vendor_name ?? 'Unknown' }}"
-                             data-desc="{{ Str::limit($product->description, 100) }}"
+                             data-desc="{{ Str::limit(strip_tags($product->description ?? ''), 100) }}"
                              data-stock="{{ $product->stock }}">
                             <img src="{{ $imageUrl }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
                             <button class="wishlist-btn absolute bottom-2 right-2 sm:bottom-4 sm:right-4 bg-white/90 hover:bg-white text-[#C65A3A] hover:text-[#b04a2c] w-7 h-7 sm:w-10 sm:h-10 rounded-full shadow-md transition-all flex items-center justify-center z-10 focus:outline-none"
@@ -62,7 +62,7 @@
                                     data-product-name="{{ $product->name }}"
                                     data-product-price="{{ intval($discountPrice) }}"
                                     data-product-image="{{ $imageUrl }}"
-                                    data-product-desc="{{ Str::limit($product->description, 100) }}"
+                                    data-product-desc="{{ Str::limit(strip_tags($product->description ?? ''), 100) }}"
                                     data-product-category="{{ $product->category?->cat_name ?? 'Uncategorized' }}">
                                 <i class="far fa-heart text-[10px] sm:text-lg"></i>
                             </button>
@@ -80,7 +80,7 @@
                                     data-image="{{ $imageUrl }}"
                                     data-category="{{ $product->category?->cat_name ?? 'Uncategorized' }}"
                                     data-vendor="{{ $product->vendor?->vendor_name ?? 'Unknown' }}"
-                                    data-desc="{{ Str::limit($product->description, 100) }}"
+                                    data-desc="{{ Str::limit(strip_tags($product->description ?? ''), 100) }}"
                                     data-stock="{{ $product->stock }}">
                                     {{ $product->name }}
                                 </h3>
@@ -103,7 +103,7 @@
                                    data-image="{{ $imageUrl }}"
                                    data-category="{{ $product->category?->cat_name ?? 'Uncategorized' }}"
                                    data-vendor="{{ $product->vendor?->vendor_name ?? 'Unknown' }}"
-                                   data-desc="{{ Str::limit($product->description, 100) }}"
+                                   data-desc="{{ Str::limit(strip_tags($product->description ?? ''), 100) }}"
                                    data-stock="{{ $product->stock }}">
                                     <i class="fa-solid fa-circle-info text-[8px] sm:text-xs"></i> Details
                                 </a>
@@ -112,7 +112,7 @@
                                         data-product-name="{{ $product->name }}"
                                         data-product-price="{{ intval($discountPrice) }}"
                                         data-product-image="{{ $imageUrl }}"
-                                        data-product-desc="{{ Str::limit($product->description, 100) }}"
+                                        data-product-desc="{{ Str::limit(strip_tags($product->description ?? ''), 100) }}"
                                         data-product-category="{{ $product->category?->cat_name ?? 'Uncategorized' }}"
                                         {{ ($product->stock ?? 0) < 1 ? 'disabled' : '' }}>
                                     <i class="fa-solid fa-cart-plus text-[8px] sm:text-xs"></i>

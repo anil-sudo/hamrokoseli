@@ -91,15 +91,21 @@
                 };
                 Object.entries(msgs).forEach(([key, val]) => {
                     if (val) {
-                        Swal.fire({
-                            icon: typeMap[key] || 'info',
-                            title: val,
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000,
-                            timerProgressBar: true,
-                        });
+                        const toastType = typeMap[key] || 'info';
+                        if (typeof window.showToast === 'function') {
+                            window.showToast(val, toastType);
+                        } else if (window.Swal) {
+                            Swal.fire({
+                                icon: toastType,
+                                title: val,
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000,
+                                timerProgressBar: true,
+                                customClass: { popup: 'swal-hamrokoseli-toast' },
+                            });
+                        }
                     }
                 });
             } catch(e) {}
