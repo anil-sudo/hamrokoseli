@@ -6,7 +6,6 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
-use Spatie\Permission\Models\Role;
 
 class UserForm
 {
@@ -30,13 +29,8 @@ class UserForm
                     ->options(['user' => 'User', 'vendor' => 'Vendor', 'admin' => 'Admin'])
                     ->default('user')
                     ->required(),
-                Select::make('roles')           // ← Spatie roles field, now inside the array
-                    ->label('Spatie Roles')
-                    ->multiple()
-                    ->relationship('roles', 'name')
-                    ->options(Role::pluck('name', 'name'))
-                    ->preload(),
                 Toggle::make('is_active')
+                    ->columnSpanFull()
                     ->required(),
             ]);
     }
