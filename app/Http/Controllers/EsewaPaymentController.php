@@ -21,7 +21,7 @@ class EsewaPaymentController extends Controller
      */
     public function initiate(Order $order): View
     {
-        abort_if($order->user_id !== auth()->id(), 403);
+        abort_if($order->user_id !== auth('web')->id(), 403);
 
         // ── Block re-initiation if already paid ───────────────────────────────
         $existing = Payment::where('order_id', $order->id)->first();
@@ -104,7 +104,7 @@ class EsewaPaymentController extends Controller
         $payment = Payment::where('reference_id', $decoded['transaction_uuid'])->first();
 
         abort_if(! $payment, 404);
-        abort_if($payment->user_id !== auth()->id(), 403);
+        abort_if($payment->user_id !== auth('web')->id(), 403);
 
         // ── Replay attack guard ───────────────────────────────────────────────
         if ($payment->status === 'completed') {

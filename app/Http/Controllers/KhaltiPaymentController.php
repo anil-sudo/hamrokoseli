@@ -17,7 +17,7 @@ class KhaltiPaymentController extends Controller
      */
     public function initiate(Order $order): RedirectResponse
     {
-        abort_if($order->user_id !== auth()->id(), 403);
+        abort_if($order->user_id !== auth('web')->id(), 403);
 
         $secretKey = config('services.khalti.secret_key');
 
@@ -37,7 +37,7 @@ class KhaltiPaymentController extends Controller
                 ->with('info', 'This order has already been paid.');
         }
 
-        $user = auth()->user();
+        $user = auth('web')->user();
 
         $response = Http::withHeaders([
             'Authorization' => 'Key '.$secretKey,
@@ -101,7 +101,7 @@ class KhaltiPaymentController extends Controller
         $payment = Payment::where('reference_id', $pidx)->first();
 
         abort_if(! $payment, 404);
-        abort_if($payment->user_id !== auth()->id(), 403);
+        abort_if($payment->user_id !== auth('web')->id(), 403);
 
         // ── Replay attack guard ───────────────────────────────────────────────
         if ($payment->status === 'completed') {

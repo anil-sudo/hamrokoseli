@@ -2,17 +2,34 @@
 
 namespace App\Providers;
 
+use Filament\Auth\Http\Responses\Contracts\LogoutResponse;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
+use Symfony\Component\HttpFoundation\Response;
 
 class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        $this->app->bind(
+            LogoutResponse::class,
+            function () {
+                return new class implements LogoutResponse
+                {
+                    public function toResponse($request): Response
+                    {
+                        Auth::guard('admin')->logout();
+                        $request->session()->regenerateToken();
+
+                        return redirect()->to(filament()->getLoginUrl());
+                    }
+                };
+            }
+        );
     }
 
     public function boot(): void

@@ -85,10 +85,10 @@
                         </div>
                     </div>
 
-                    <p class="text-[#3A2A1F]/80 text-sm leading-relaxed font-medium modal-product-desc"
+                    <div class="text-[#3A2A1F]/80 text-sm leading-relaxed font-medium modal-product-desc"
                         id="modal-product-desc">
                         Product description goes here...
-                    </p>
+                    </div>
 
                     <!-- Vendor/Artist Card -->
                     <div id="modal-vendor-card"
@@ -184,7 +184,7 @@
                     </h4>
 
                     <div id="add-review-form-container">
-                        @auth
+                        @auth('web')
                             <form id="product-review-form" class="space-y-6">
                                 <!-- Star Rating -->
                                 <div>

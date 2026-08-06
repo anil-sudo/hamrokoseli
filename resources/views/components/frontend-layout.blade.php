@@ -42,9 +42,9 @@
                 using a hidden <template> in the <body> that carries the fresh server values.
     --}}
     <script>
-        window.isLoggedIn       = @json(auth()->check());
+        window.isLoggedIn       = @json(auth('web')->check());
         window.loginUrl         = @json(route('userlogin'));
-        window.initialCartCount = @json(auth()->check() ? (int) \App\Models\Cart::where('user_id', auth()->id())->sum('quantity') : 0);
+        window.initialCartCount = @json(auth('web')->check() ? (int) \App\Models\Cart::where('user_id', auth('web')->id())->sum('quantity') : 0);
         window.cartAddUrl       = @json(route('cart.add'));
     </script>
 
@@ -145,9 +145,9 @@
 
 @php
     $pageGlobals = [
-        'isLoggedIn' => auth()->check(),
-        'initialCartCount' => auth()->check()
-            ? (int) \App\Models\Cart::where('user_id', auth()->id())->sum('quantity')
+        'isLoggedIn' => auth('web')->check(),
+        'initialCartCount' => auth('web')->check()
+            ? (int) \App\Models\Cart::where('user_id', auth('web')->id())->sum('quantity')
             : 0,
         'cartAddUrl' => route('cart.add'),
         'loginUrl' => route('userlogin'),

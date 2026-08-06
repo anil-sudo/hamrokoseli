@@ -19,7 +19,7 @@ class CartController extends Controller
     public function index()
     {
         $items = Cart::with(['product.vendor', 'product.images', 'variant'])
-            ->forUser(auth()->id())
+            ->forUser(auth('web')->id())
             ->latest()
             ->get();
 
@@ -27,13 +27,13 @@ class CartController extends Controller
             fn (Cart $item) => $item->product->vendor->id ?? 0
         );
 
-        $user = auth()->user();
+        $user = auth('web')->user();
         if ($user && ! empty($user->address)) {
             $formattedPhone = $user->phone ? (str_starts_with($user->phone, '+977-') ? $user->phone : '+977-'.$user->phone) : null;
             ShippingAddress::saveAsDefault($user->id, $user->address, $formattedPhone);
         }
 
-        $addresses = ShippingAddress::where('user_id', auth()->id())
+        $addresses = ShippingAddress::where('user_id', auth('web')->id())
             ->orderBy('is_default', 'desc')
             ->orderBy('updated_at', 'desc')
             ->get();
@@ -81,7 +81,7 @@ class CartController extends Controller
         // Look up any existing cart row for this exact product+variant first,
         // since the DB's unique index treats multiple NULL variant_id rows
         // as distinct and won't stop us from creating duplicates otherwise.
-        $cartItem = Cart::where('user_id', auth()->id())
+        $cartItem = Cart::where('user_id', auth('web')->id())
             ->where('product_id', $product->id)
             ->where('variant_id', $variant?->id)
             ->first();
@@ -100,7 +100,7 @@ class CartController extends Controller
             $cartItem->update(['quantity' => $desiredQuantity]);
         } else {
             Cart::create([
-                'user_id' => auth()->id(),
+                'user_id' => auth('web')->id(),
                 'product_id' => $product->id,
                 'variant_id' => $variant?->id,
                 'quantity' => $quantity,
@@ -113,7 +113,7 @@ class CartController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => $message,
-                'cart_count' => (int) Cart::where('user_id', auth()->id())->sum('quantity'),
+                'cart_count' => (int) Cart::where('user_id', auth('web')->id())->sum('quantity'),
             ]);
         }
 
@@ -126,7 +126,7 @@ class CartController extends Controller
      */
     public function update(Request $request, Cart $cart): RedirectResponse|JsonResponse
     {
-        abort_if($cart->user_id != auth()->id(), 403);
+        abort_if($cart->user_id != auth('web')->id(), 403);
 
         $data = $request->validate([
             'quantity' => ['required', 'integer', 'min:1'],
@@ -154,7 +154,7 @@ class CartController extends Controller
      */
     public function destroy(Cart $cart): RedirectResponse
     {
-        abort_if($cart->user_id != auth()->id(), 403);
+        abort_if($cart->user_id != auth('web')->id(), 403);
 
         $cart->delete();
 
