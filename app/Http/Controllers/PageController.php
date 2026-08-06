@@ -552,6 +552,8 @@ class PageController extends Controller
         if (! $verified) {
             return [
                 'eligible' => false,
+                'existing' => false,
+                'review' => null,
                 'message' => 'You must purchase this product before writing a review.',
             ];
         }
