@@ -7,6 +7,29 @@ function getCsrfToken() {
     return meta ? meta.getAttribute('content') : '';
 }
 
+function showToast(message, type = 'success') {
+    if (typeof Swal !== 'undefined') {
+        const typeMap = {
+            success: 'success',
+            error:   'error',
+            status:  'success',
+            info:    'info',
+            warning: 'warning',
+        };
+        Swal.fire({
+            icon: typeMap[type] || 'info',
+            title: message,
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+        });
+    } else {
+        alert(message);
+    }
+}
+
 // ─── Drawer ───────────────────────────────────────────────────────────────────
 function openDrawer() {
     const drawer  = document.getElementById('mobile-drawer');
@@ -28,21 +51,7 @@ function closeDrawer() {
     document.body.style.overflow = '';
 }
 
-window.showToast = function (message, type = 'info') {
-    if (window.Swal) {
-        Swal.fire({
-            icon: ['success', 'error', 'warning', 'info'].includes(type) ? type : 'info',
-            title: message,
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-        });
-    } else {
-        console.log('[' + type + ']', message);
-    }
-};
+window.showToast = showToast;
 
 // ─── Login Modal ──────────────────────────────────────────────────────────────
 let originalUrl = window.location.pathname + window.location.search;
@@ -258,6 +267,7 @@ function populateAndShowProductModal(productData) {
     });
 
     // Switch to Register View
+    const modalShowRegisterBtn = document.getElementById('modal-show-register');
     if (modalShowRegisterBtn) {
         modalShowRegisterBtn.addEventListener('click', function (e) {
             e.preventDefault();
