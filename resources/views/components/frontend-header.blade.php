@@ -38,7 +38,7 @@
                     <img src="{{ asset('images/logo.png') }}" alt="Hamro Koseli Logo"
                         class="w-10 h-10 bg-white object-contain rounded-full shadow-md transform group-hover:scale-105 transition duration-300"
                         loading="lazy">
-                    @auth
+                    @auth('web')
                     <div class="hidden sm:block">
                         <div class="text-lg md:text-xl font-extrabold tracking-wide leading-none text-white">HAMRO KOSELI</div>
                         <span class="text-[9px] text-emerald-200/90 tracking-wide font-medium hidden sm:block">Special Koseli for Special People</span>
@@ -63,7 +63,7 @@
             <!-- RIGHT: Actions -->
             <div class="flex items-center gap-3 shrink-0">
                 <!-- Sign In / Account – hidden on mobile (available inside drawer) -->
-                @guest
+                @guest('web')
                     <a href="{{ route('userlogin') }}" id="desktop-signin"
                         class="hidden md:inline-flex rounded-full border border-white/90 text-white font-semibold px-5 py-1.5 text-sm hover:bg-white hover:text-[#1f3d2e] transition-all duration-300 active:scale-95 shadow-sm">
                         Sign In
@@ -72,12 +72,12 @@
                     <div class="hidden md:flex items-center gap-2 relative" id="account-menu-wrap">
                         <a href="{{ route('Userdashboard') }}" wire:navigate id="account-menu-btn"
                             class="inline-flex items-center gap-2 rounded-full border border-white/90 text-white font-semibold px-4 py-1.5 text-sm hover:bg-white hover:text-[#1f3d2e] transition-all duration-300 active:scale-95 shadow-sm">
-                            @if(auth()->user()->profile_pic)
-                                <img src="{{ asset('storage/' . auth()->user()->profile_pic) }}" alt="Profile" class="w-6 h-6 rounded-full object-cover" loading="lazy">
+                            @if(auth('web')->user()->profile_pic)
+                                <img src="{{ asset('storage/' . auth('web')->user()->profile_pic) }}" alt="Profile" class="w-6 h-6 rounded-full object-cover" loading="lazy">
                             @else
                                 <i class="far fa-user-circle"></i>
                             @endif
-                            <span>Hello, {{ explode(' ', auth()->user()->name)[0] }}</span><i class="fa-solid fa-chevron-down"></i>
+                            <span>Hello, {{ explode(' ', auth('web')->user()->name)[0] }}</span><i class="fa-solid fa-chevron-down"></i>
                         </a>
                     </div>
                 @endguest
@@ -88,7 +88,7 @@
                     <button id="mobile-search-btn" class="md:hidden hover:text-emerald-200 transition-colors p-1" aria-label="Search">
                         <i class="fas fa-search"></i>
                     </button>
-                    @auth
+                    @auth('web')
                         <!-- Wishlist (logged-in only) -->
                         <a href="{{ route('wishlist') }}" wire:navigate class="hover:text-emerald-200 transition-colors p-1 relative flex items-center justify-center" title="Wishlist" id="wishlist-header-btn">
                             <i class="far fa-heart" id="wishlist-header-icon"></i>
@@ -163,7 +163,7 @@
 
     <!-- Login / Signup buttons in drawer -->
     <div class="flex gap-3 px-5 py-4 border-b border-white/10">
-        @guest
+        @guest('web')
             <a href="{{ route('userlogin') }}" id="mobile-signin"
                 class="flex-1 text-center rounded-full border border-white text-white font-semibold py-2 text-sm hover:bg-white hover:text-[#1f3d2e] transition-all duration-300">
                 Login
@@ -174,12 +174,12 @@
             </a>
         @else
             <a href="{{ route('Userdashboard') }}" wire:navigate class="flex-1 text-center flex items-center justify-center gap-1.5 text-white font-semibold py-2 text-sm hover:text-emerald-200 transition-colors">
-                @if(auth()->user()->profile_pic)
-                    <img src="{{ asset('storage/' . auth()->user()->profile_pic) }}" alt="Profile" class="w-5 h-5 rounded-full object-cover" loading="lazy">
+                @if(auth('web')->user()->profile_pic)
+                    <img src="{{ asset('storage/' . auth('web')->user()->profile_pic) }}" alt="Profile" class="w-5 h-5 rounded-full object-cover" loading="lazy">
                 @else
                     <i class="far fa-user-circle"></i>
                 @endif
-                Hello, {{ explode(' ', auth()->user()->name)[0] }} <i class="fa-solid fa-chevron-down"></i>
+                Hello, {{ explode(' ', auth('web')->user()->name)[0] }} <i class="fa-solid fa-chevron-down"></i>
             </a>
             <form action="{{ route('logout') }}" method="POST" class="flex-1">
                 @csrf
@@ -200,8 +200,8 @@
         <a href="{{ url('todays-deals') }}" wire:navigate class="mob-nav-link {{ Request::is('todays-deals*') ? 'active' : '' }}"><i class="fas fa-tag"></i>Today's Deals</a>
         <a href="{{ url('top-sellers') }}"  wire:navigate class="mob-nav-link {{ Request::is('top-sellers*') ? 'active' : '' }}"><i class="fas fa-trophy"></i>Top Sellers</a>
         <a href="{{ url('new-arrivals') }}" wire:navigate class="mob-nav-link {{ Request::is('new-arrivals*') ? 'active' : '' }}"><i class="fa-solid fa-mobile-screen-button"></i>New Arrivals</a>
-        @auth
-            @if(auth()->user()->hasRole('vendor'))
+        @auth('web')
+            @if(auth('web')->user()->hasRole('vendor'))
                 <a href="{{ route('dashboard') }}" class="mob-nav-link"><i class="fas fa-store"></i>Seller Dashboard</a>
             @else
                 <a href="{{ route('seller') }}" class="mob-nav-link"><i class="fas fa-store"></i>Become a Seller</a>

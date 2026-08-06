@@ -14,7 +14,7 @@ class UserController extends Controller
 {
     public function dashboard()
     {
-        $user = auth()->user();
+        $user = auth('web')->user();
 
         $totalOrders = $user->orders()->count();
         $pendingOrders = $user->orders()->where('status', 'pending')->count();
@@ -147,7 +147,7 @@ class UserController extends Controller
             'product_id' => ['required', 'exists:products,id'],
         ]);
 
-        $userId = auth()->id();
+        $userId = auth('web')->id();
         $productId = $request->product_id;
 
         $existing = Wishlist::where('user_id', $userId)
@@ -176,7 +176,7 @@ class UserController extends Controller
 
     public function wishlistItems()
     {
-        $items = Wishlist::where('user_id', auth()->id())
+        $items = Wishlist::where('user_id', auth('web')->id())
             ->with('product.images')
             ->get()
             ->map(function ($w) {
@@ -198,7 +198,7 @@ class UserController extends Controller
 
     public function orders(Request $request)
     {
-        $user = auth()->user();
+        $user = auth('web')->user();
         $status = $request->query('status'); // null = all
 
         $query = $user->orders()
@@ -226,7 +226,7 @@ class UserController extends Controller
 
     public function orderDetail(Request $request)
     {
-        $user = auth()->user();
+        $user = auth('web')->user();
         $order = $user->orders()
             ->with([
                 'orderItems.product.images',
@@ -241,7 +241,7 @@ class UserController extends Controller
 
     public function cancelOrder(Request $request, $orderId)
     {
-        $order = auth()->user()->orders()->findOrFail($orderId);
+        $order = auth('web')->user()->orders()->findOrFail($orderId);
 
         if (! $order->isCancellable()) {
             return redirect()
@@ -258,14 +258,14 @@ class UserController extends Controller
 
     public function userProfile()
     {
-        $user = auth()->user();
+        $user = auth('web')->user();
 
         return view('user.profile', compact('user'));
     }
 
     public function updateProfile(Request $request)
     {
-        $user = auth()->user();
+        $user = auth('web')->user();
 
         $request->validate([
             'name' => 'required|string|max:100',
@@ -327,7 +327,7 @@ class UserController extends Controller
             'new_password.confirmed' => 'The password confirmation does not match.',
         ]);
 
-        $user = auth()->user();
+        $user = auth('web')->user();
 
         if (! \Hash::check($request->current_password, $user->password)) {
             return redirect()->back()
@@ -356,7 +356,7 @@ class UserController extends Controller
 
     public function userNotification(Request $request)
     {
-        $user = auth()->user();
+        $user = auth('web')->user();
         $type = $request->query('type'); // orders | deliveries | account | null = all
 
         $typeGroups = [
@@ -381,7 +381,7 @@ class UserController extends Controller
 
     public function markNotificationRead(Request $request, $id)
     {
-        $notification = auth()->user()->appNotifications()->findOrFail($id);
+        $notification = auth('web')->user()->appNotifications()->findOrFail($id);
         $notification->markAsRead();
 
         return response()->json(['success' => true]);
@@ -396,7 +396,7 @@ class UserController extends Controller
         ];
         $allUserTypes = array_merge(...array_values($typeGroups));
 
-        auth()->user()->appNotifications()
+        auth('web')->user()->appNotifications()
             ->whereIn('type', $allUserTypes)
             ->where('is_read', false)
             ->update(['is_read' => true, 'read_at' => now()]);

@@ -255,20 +255,20 @@
                                         {{ $addr->address }}
                                     </option>
                                 @endforeach
-                                @if (!empty(auth()->user()->address) && !$addresses->contains('address', auth()->user()->address))
-                                    <option value="{{ auth()->user()->address }}"
-                                        data-phone="{{ auth()->user()->phone }}">
-                                        {{ auth()->user()->address }}
+                                @if (!empty(auth('web')->user()->address) && !$addresses->contains('address', auth('web')->user()->address))
+                                    <option value="{{ auth('web')->user()->address }}"
+                                        data-phone="{{ auth('web')->user()->phone }}">
+                                        {{ auth('web')->user()->address }}
                                     </option>
                                 @endif
-                            @elseif(!empty(auth()->user()->address))
-                                <option value="{{ auth()->user()->address }}"
-                                    data-phone="{{ auth()->user()->phone }}" selected>
-                                    {{ auth()->user()->address }}
+                            @elseif(!empty(auth('web')->user()->address))
+                                <option value="{{ auth('web')->user()->address }}"
+                                    data-phone="{{ auth('web')->user()->phone }}" selected>
+                                    {{ auth('web')->user()->address }}
                                 </option>
                             @endif
                             <option value="new"
-                                {{ $addresses->isEmpty() && empty(auth()->user()->address) ? 'selected' : '' }}>--
+                                {{ $addresses->isEmpty() && empty(auth('web')->user()->address) ? 'selected' : '' }}>--
                                 Enter a New Address --</option>
                         </select>
                         <input type="hidden" name="address" id="addressInput">
@@ -337,7 +337,7 @@
             const selected = select.options[select.selectedIndex];
             if (!selected) return;
 
-            const userPhone = '{{ auth()->user()->phone ?? '' }}';
+            const userPhone = '{{ auth('web')->user()->phone ?? '' }}';
 
             if (selected.value === 'new') {
                 addressInput.value = '';
@@ -383,7 +383,7 @@
 
             const select = document.getElementById('modalAddressSelect');
             const phoneInput = document.getElementById('phoneInput');
-            const userPhone = '{{ auth()->user()->phone ?? '' }}';
+            const userPhone = '{{ auth('web')->user()->phone ?? '' }}';
 
             if (phoneInput && (!phoneInput.value || phoneInput.value === '+977-')) {
                 if (userPhone) {
@@ -420,7 +420,7 @@
             const phoneInput = document.getElementById('phoneInput');
             if (phoneInput) {
                 if (!phoneInput.value || phoneInput.value === '+977') {
-                    const userPhone = '{{ auth()->user()->phone ?? '' }}';
+                    const userPhone = '{{ auth('web')->user()->phone ?? '' }}';
                     phoneInput.value = userPhone ? formatPhoneWithPrefix(userPhone) : '+977-';
                 }
             }

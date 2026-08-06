@@ -92,7 +92,7 @@ Route::get('/product/{id}/can-review', [PageController::class, 'canReviewProduct
 Route::get('/shipping-info', [PageController::class, 'shipping_policy'])->name('shipping-policy');
 
 // ─── Requires login ───────────────────────────────────────────────────────────
-Route::middleware('auth')->group(function () {
+Route::middleware('auth:web')->group(function () {
     Route::get('/wishlist', [PageController::class, 'wishlist'])->name('wishlist');
     Route::post('/wishlist/toggle', [UserController::class, 'toggleWishlist'])->name('wishlist.toggle');
     Route::get('/wishlist/items', [UserController::class, 'wishlistItems'])->name('wishlist.items');

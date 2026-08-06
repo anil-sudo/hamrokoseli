@@ -255,7 +255,7 @@
                 </div>
 
                 <button type="button" id="page-toggle-review-btn" onclick="toggleReviewForm()" class="bg-[#C65A3A] hover:bg-[#b04a2c] text-white text-xs font-bold px-5 py-3 rounded-2xl transition shadow-sm flex items-center justify-center gap-2 cursor-pointer">
-                    @auth
+                    @auth('web')
                         @if($userReview)
                             <i class="fas fa-edit"></i>
                             Edit Review
@@ -277,7 +277,7 @@
                     {{ $userReview ? 'Edit Your Review' : 'Share Your Feedback' }}
                 </h4>
 
-                @auth
+                @auth('web')
                     <form id="page-product-review-form" class="space-y-5">
                         @csrf
                         <div>
@@ -555,7 +555,7 @@
     }
 
     function initPageReviewForm() {
-        @auth
+        @auth('web')
             @if($userReview)
                 applyPageReviewFormState(true, @json($userReview));
             @endif

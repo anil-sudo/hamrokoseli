@@ -500,8 +500,8 @@ class PageController extends Controller
 
         $userReview = null;
         $canReview = false;
-        if (auth()->check()) {
-            $eligibility = $this->checkReviewEligibility($product->id, auth()->id());
+        if (auth('web')->check()) {
+            $eligibility = $this->checkReviewEligibility($product->id, auth('web')->id());
             $canReview = $eligibility['eligible'];
             if ($eligibility['existing'] && $eligibility['review']) {
                 $userReview = $eligibility['review'];
@@ -574,7 +574,7 @@ class PageController extends Controller
 
     public function canReviewProduct($id)
     {
-        $userId = auth()->id();
+        $userId = auth('web')->id();
 
         if (! $userId) {
             return response()->json([
@@ -595,7 +595,7 @@ class PageController extends Controller
             'comment' => 'nullable|string|max:1000',
         ]);
 
-        $userId = auth()->id();
+        $userId = auth('web')->id();
 
         if (! $userId) {
             return response()->json([
@@ -646,7 +646,7 @@ class PageController extends Controller
             'message' => $message,
             'review' => [
                 'id' => $review->id,
-                'user_name' => auth()->user()->name,
+                'user_name' => auth('web')->user()->name,
                 'rating' => $review->rating,
                 'comment' => $review->comment,
                 'verified_purchase' => $review->verified_purchase,

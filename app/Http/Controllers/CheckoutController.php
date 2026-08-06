@@ -22,13 +22,13 @@ class CheckoutController extends Controller
 
         $cart->load(['product.vendor', 'variant']);
 
-        $user = auth()->user();
+        $user = auth('web')->user();
         if ($user && ! empty($user->address)) {
             $formattedPhone = $user->phone ? (str_starts_with($user->phone, '+977-') ? $user->phone : '+977-'.$user->phone) : null;
             ShippingAddress::saveAsDefault($user->id, $user->address, $formattedPhone);
         }
 
-        $addresses = ShippingAddress::where('user_id', auth()->id())
+        $addresses = ShippingAddress::where('user_id', auth('web')->id())
             ->orderBy('is_default', 'desc')
             ->orderBy('updated_at', 'desc')
             ->get();
@@ -37,7 +37,7 @@ class CheckoutController extends Controller
             'cartItem' => $cart,
             'unitPrice' => $cart->unitPrice(),
             'subtotal' => $cart->subtotal(),
-            'user' => auth()->user(),
+            'user' => auth('web')->user(),
             'addresses' => $addresses,
         ]);
     }
@@ -62,12 +62,12 @@ class CheckoutController extends Controller
 
         try {
             $formattedPhone = '+977-'.$validated['phone'];
-            auth()->user()->update([
+            auth('web')->user()->update([
                 'phone' => $validated['phone'],
                 'address' => $validated['address'],
             ]);
 
-            ShippingAddress::saveAsDefault(auth()->id(), $validated['address'], $formattedPhone);
+            ShippingAddress::saveAsDefault(auth('web')->id(), $validated['address'], $formattedPhone);
 
             return redirect()
                 ->route('checkout.show', $cart)
@@ -114,7 +114,7 @@ class CheckoutController extends Controller
 
         $unitPrice = $cart->unitPrice();
         $subtotal = $cart->subtotal();
-        $user = auth()->user();
+        $user = auth('web')->user();
 
         // ✅ TRANSACTION
         $order = DB::transaction(function () use ($cart, $product, $variant, $data, $unitPrice, $subtotal, $user) {
@@ -199,7 +199,7 @@ class CheckoutController extends Controller
 
     public function confirmation(Order $order)
     {
-        abort_if($order->user_id != auth()->id(), 403);
+        abort_if($order->user_id != auth('web')->id(), 403);
 
         $order->load(['orderItems.product', 'orderItems.vendor']);
 
@@ -215,14 +215,14 @@ class CheckoutController extends Controller
 
     public function showVendor(Vendor $vendor)
     {
-        $user = auth()->user();
+        $user = auth('web')->user();
         if ($user && ! empty($user->address)) {
             $formattedPhone = $user->phone ? (str_starts_with($user->phone, '+977-') ? $user->phone : '+977-'.$user->phone) : null;
             ShippingAddress::saveAsDefault($user->id, $user->address, $formattedPhone);
         }
 
         $cartItems = $this->vendorCartItems($vendor);
-        $addresses = ShippingAddress::where('user_id', auth()->id())
+        $addresses = ShippingAddress::where('user_id', auth('web')->id())
             ->orderBy('is_default', 'desc')
             ->orderBy('updated_at', 'desc')
             ->get();
@@ -231,7 +231,7 @@ class CheckoutController extends Controller
             'vendor' => $vendor,
             'cartItems' => $cartItems,
             'total' => $cartItems->sum(fn (Cart $item) => $item->subtotal()),
-            'user' => auth()->user(),
+            'user' => auth('web')->user(),
             'addresses' => $addresses,
         ]);
     }
@@ -258,12 +258,12 @@ class CheckoutController extends Controller
 
         try {
             $formattedPhone = '+977-'.$validated['phone'];
-            auth()->user()->update([
+            auth('web')->user()->update([
                 'phone' => $validated['phone'],
                 'address' => $validated['address'],
             ]);
 
-            ShippingAddress::saveAsDefault(auth()->id(), $validated['address'], $formattedPhone);
+            ShippingAddress::saveAsDefault(auth('web')->id(), $validated['address'], $formattedPhone);
 
             return redirect()
                 ->route('checkout.show.vendor', $vendor)
@@ -308,7 +308,7 @@ class CheckoutController extends Controller
         }
 
         $total = $cartItems->sum(fn (Cart $item) => $item->subtotal());
-        $user = auth()->user();
+        $user = auth('web')->user();
         try {
             $order = DB::transaction(function () use ($cartItems, $data, $total, $user) {
 
@@ -407,7 +407,7 @@ class CheckoutController extends Controller
     private function vendorCartItems(Vendor $vendor)
     {
         $cartItems = Cart::with(['product.vendor', 'variant'])
-            ->where('user_id', auth()->id())
+            ->where('user_id', auth('web')->id())
             ->whereHas('product', fn ($q) => $q->where('vendor_id', $vendor->id))
             ->get();
 
@@ -418,7 +418,7 @@ class CheckoutController extends Controller
 
     private function authorizeCartItem(Cart $cart): void
     {
-        abort_if($cart->user_id != auth()->id(), 403);
+        abort_if($cart->user_id != auth('web')->id(), 403);
     }
 
     private function parseAddressComponents(string $fullAddress): array
