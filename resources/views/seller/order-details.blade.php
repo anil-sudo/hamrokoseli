@@ -28,7 +28,6 @@
             'pending' => 'Pending',
             'completed' => 'Paid',
             'failed' => 'Failed',
-            'refunded' => 'Refunded',
         ];
 
         $paymentStatus = $payment->status ?? 'pending';
@@ -119,8 +118,9 @@
                                 @csrf
                                 <div class="relative">
                                     <select id="orderStatus" name="order_status"
+                                        @if (in_array($order->status, ['delivered', 'cancelled']) || $paymentStatus === 'failed') disabled title="{{ $paymentStatus === 'failed' ? 'Order status is read-only because payment failed.' : ucfirst($order->status).' orders cannot be modified.' }}" @endif
                                         onchange="document.getElementById('orderStatusForm').submit()"
-                                        class="w-full bg-(--bg-color) border border-(--text-color)/15 focus:outline-none focus:ring-2 focus:ring-(--primary-color)/40 focus:border-(--primary-color) rounded-2xl pl-5 pr-11 py-3.5 text-sm font-medium text-(--text-dark) appearance-none transition-all cursor-pointer">
+                                        class="w-full bg-(--bg-color) border border-(--text-color)/15 focus:outline-none focus:ring-2 focus:ring-(--primary-color)/40 focus:border-(--primary-color) rounded-2xl pl-5 pr-11 py-3.5 text-sm font-medium text-(--text-dark) appearance-none transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed">
                                         @foreach ($orderStatusOptions as $value => $label)
                                             <option value="{{ $value }}" @selected($order->status === $value)>{{ $label }}</option>
                                         @endforeach
@@ -141,9 +141,9 @@
                                 @csrf
                                 <div class="relative">
                                     <select id="paymentStatus" name="payment_status"
-                                        @if (! $payment) disabled title="No payment record found for this order." @endif
+                                        @if (! $payment || $paymentStatus === 'completed' || $paymentStatus === 'failed' || $order->status === 'cancelled') disabled title="{{ ! $payment ? 'No payment record found for this order.' : 'Payment status is read-only.' }}" @endif
                                         onchange="document.getElementById('paymentStatusForm').submit()"
-                                        class="w-full bg-(--bg-color) border border-(--text-color)/15 focus:outline-none focus:ring-2 focus:ring-(--primary-color)/40 focus:border-(--primary-color) rounded-2xl pl-5 pr-11 py-3.5 text-sm font-medium text-(--text-dark) appearance-none transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                                        class="w-full bg-(--bg-color) border border-(--text-color)/15 focus:outline-none focus:ring-2 focus:ring-(--primary-color)/40 focus:border-(--primary-color) rounded-2xl pl-5 pr-11 py-3.5 text-sm font-medium text-(--text-dark) appearance-none transition-all cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed">
                                         @foreach ($paymentStatusOptions as $value => $label)
                                             <option value="{{ $value }}" @selected($paymentStatus === $value)>{{ $label }}</option>
                                         @endforeach
@@ -159,7 +159,12 @@
                     <!-- Status Helpers -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
                         <div>
-                            @if ($order->status === 'pending')
+                            @if ($paymentStatus === 'failed')
+                                <p class="text-red-500 flex items-start gap-1.5">
+                                    <i data-lucide="lock" class="w-3.5 h-3.5 mt-0.5 shrink-0"></i>
+                                    Payment failed. Order status is read-only.
+                                </p>
+                            @elseif ($order->status === 'pending')
                                 <p class="text-(--hover-color) flex items-start gap-1.5">
                                     <i data-lucide="lightbulb" class="w-3.5 h-3.5 mt-0.5 shrink-0 text-(--hover-color)"></i>
                                     New order waiting for processing confirmation.
@@ -176,26 +181,36 @@
                                 </p>
                             @elseif ($order->status === 'delivered')
                                 <p class="text-(--primary-color) flex items-start gap-1.5">
-                                    <i data-lucide="check-circle-2" class="w-3.5 h-3.5 mt-0.5 shrink-0"></i>
-                                    Delivered. Transaction finished successfully.
+                                    <i data-lucide="lock" class="w-3.5 h-3.5 mt-0.5 shrink-0"></i>
+                                    Delivered. Order status is read-only.
                                 </p>
                             @elseif ($order->status === 'cancelled')
                                 <p class="text-red-500 flex items-start gap-1.5">
-                                    <i data-lucide="x-circle" class="w-3.5 h-3.5 mt-0.5 shrink-0"></i>
-                                    Order has been cancelled.
+                                    <i data-lucide="lock" class="w-3.5 h-3.5 mt-0.5 shrink-0"></i>
+                                    Cancelled. Order status is read-only.
                                 </p>
                             @endif
                         </div>
                         <div>
-                            @if ($paymentStatus === 'pending' && $payment)
+                            @if ($paymentStatus === 'pending' && $payment && $order->status !== 'cancelled')
                                 <p class="text-(--text-color)/60 flex items-start gap-1.5">
                                     <i data-lucide="lightbulb" class="w-3.5 h-3.5 mt-0.5 shrink-0 text-(--hover-color)"></i>
                                     Received payment? Switch to "Paid" to confirm it.
                                 </p>
                             @elseif ($paymentStatus === 'completed')
-                                <p class="text-(--primary-color) flex items-center gap-1.5">
-                                    <i data-lucide="check-circle-2" class="w-3.5 h-3.5"></i>
-                                    Payment confirmed — order is fully paid.
+                                <p class="text-(--primary-color) flex items-start gap-1.5">
+                                    <i data-lucide="lock" class="w-3.5 h-3.5 mt-0.5 shrink-0"></i>
+                                    Payment confirmed (Paid). Payment status is read-only.
+                                </p>
+                            @elseif ($paymentStatus === 'failed')
+                                <p class="text-red-500 flex items-start gap-1.5">
+                                    <i data-lucide="lock" class="w-3.5 h-3.5 mt-0.5 shrink-0"></i>
+                                    Payment failed. Payment status is read-only.
+                                </p>
+                            @elseif ($order->status === 'cancelled')
+                                <p class="text-(--text-color)/60 flex items-start gap-1.5">
+                                    <i data-lucide="lock" class="w-3.5 h-3.5 mt-0.5 shrink-0"></i>
+                                    Order is cancelled. Payment status is read-only.
                                 </p>
                             @endif
                         </div>

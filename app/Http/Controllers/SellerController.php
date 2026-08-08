@@ -633,10 +633,6 @@ class SellerController extends Controller
             abort(404);
         }
 
-        $validated = $request->validate([
-            'payment_status' => 'required|in:pending,completed,failed,refunded',
-        ]);
-
         $payment = $order->payment;
 
         if (! $payment) {
@@ -645,15 +641,33 @@ class SellerController extends Controller
                 ->with('error', 'No payment record found for this order.');
         }
 
-        // Vendors mainly need to confirm they have received the money
-        // (pending -> paid), but we also allow flagging failed/refunded.
+        if ($order->status === 'cancelled') {
+            return redirect()
+                ->route('order-details', ['order' => $order->id])
+                ->with('error', 'Payment status cannot be changed for cancelled orders.');
+        }
+
+        if ($payment->status === 'completed') {
+            return redirect()
+                ->route('order-details', ['order' => $order->id])
+                ->with('error', 'Paid payments are read-only and cannot be modified.');
+        }
+
+        if ($payment->status === 'failed') {
+            return redirect()
+                ->route('order-details', ['order' => $order->id])
+                ->with('error', 'Failed payments are read-only and cannot be modified.');
+        }
+
+        $validated = $request->validate([
+            'payment_status' => 'required|in:pending,completed,failed',
+        ]);
+
         if ($payment->status !== $validated['payment_status']) {
             if ($validated['payment_status'] === 'completed') {
                 $payment->markAsCompleted($payment->transaction_id ?? ('MANUAL-'.Str::upper(Str::random(10))));
             } elseif ($validated['payment_status'] === 'failed') {
                 $payment->markAsFailed();
-            } elseif ($validated['payment_status'] === 'refunded') {
-                $payment->markAsRefunded();
             } else {
                 $payment->update(['status' => 'pending']);
             }
@@ -663,7 +677,6 @@ class SellerController extends Controller
             'pending' => 'Pending',
             'completed' => 'Paid',
             'failed' => 'Failed',
-            'refunded' => 'Refunded',
         ];
 
         return redirect()
@@ -685,6 +698,22 @@ class SellerController extends Controller
 
         if (! $belongsToVendor) {
             abort(404);
+        }
+
+        $payment = $order->payment;
+
+        if ($payment && $payment->status === 'failed') {
+            return redirect()
+                ->route('order-details', ['order' => $order->id])
+                ->with('error', 'Order status cannot be changed when payment has failed.');
+        }
+
+        if (in_array($order->status, ['delivered', 'cancelled'])) {
+            $label = ucfirst($order->status);
+
+            return redirect()
+                ->route('order-details', ['order' => $order->id])
+                ->with('error', "{$label} orders cannot have their status changed.");
         }
 
         $validated = $request->validate([
