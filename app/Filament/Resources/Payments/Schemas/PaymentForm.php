@@ -29,8 +29,8 @@ class PaymentForm
                         'pending' => 'Pending',
                         'completed' => 'Completed',
                         'failed' => 'Failed',
-                        'refunded' => 'Refunded',
                     ])
+                    ->disabled(fn ($record) => in_array($record?->status, ['completed', 'failed']) || $record?->order?->status === 'cancelled')
                     ->default('pending')
                     ->required(),
                 TextInput::make('transaction_id')

@@ -37,6 +37,7 @@ class OrderForm
                         'delivered' => 'Delivered',
                         'cancelled' => 'Cancelled',
                     ])
+                    ->disabled(fn ($record) => in_array($record?->status, ['delivered', 'cancelled']) || $record?->payment?->status === 'failed')
                     ->default('pending')
                     ->required(),
             ]);
