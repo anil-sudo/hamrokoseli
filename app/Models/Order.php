@@ -119,6 +119,34 @@ class Order extends Model
         ]);
     }
 
+    /**
+     * Restock items when order is cancelled.
+     */
+    public function restockItems(): void
+    {
+        foreach ($this->orderItems()->with(['product', 'variant'])->get() as $item) {
+            if ($item->variant_id && $item->variant) {
+                $item->variant->increment('stock', $item->quantity);
+            } elseif ($item->product_id && $item->product) {
+                $item->product->increment('stock', $item->quantity);
+            }
+        }
+    }
+
+    /**
+     * Deduct stock if a cancelled order is restored to active status.
+     */
+    public function deductItemsStock(): void
+    {
+        foreach ($this->orderItems()->with(['product', 'variant'])->get() as $item) {
+            if ($item->variant_id && $item->variant) {
+                $item->variant->decrement('stock', $item->quantity);
+            } elseif ($item->product_id && $item->product) {
+                $item->product->decrement('stock', $item->quantity);
+            }
+        }
+    }
+
     // -------------------------------------------------------------------------
     // Scopes
     // -------------------------------------------------------------------------
@@ -163,6 +191,16 @@ class Order extends Model
         static::updated(function ($order) {
             if ($order->wasChanged('status')) {
                 $order->orderItems()->update(['status' => $order->status]);
+
+                $oldStatus = $order->getOriginal('status');
+                $newStatus = $order->status;
+
+                if ($newStatus === 'cancelled' && $oldStatus !== 'cancelled') {
+                    $order->restockItems();
+                } elseif ($oldStatus === 'cancelled' && $newStatus !== 'cancelled') {
+                    $order->deductItemsStock();
+                }
+
                 NotificationService::userOrderStatusChanged($order);
             }
         });
