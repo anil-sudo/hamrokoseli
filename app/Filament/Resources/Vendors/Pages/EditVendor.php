@@ -25,10 +25,18 @@ class EditVendor extends EditRecord
     {
         $vendor = $this->record;
 
-        if (! empty($this->data['password']) && $vendor->user) {
-            $vendor->user->update([
-                'password' => Hash::make($this->data['password']),
-            ]);
+        if ($vendor->user) {
+            $userUpdates = ['role' => 'vendor'];
+
+            if ($vendor->status === 'active') {
+                $userUpdates['is_active'] = true;
+            }
+
+            if (! empty($this->data['password'])) {
+                $userUpdates['password'] = Hash::make($this->data['password']);
+            }
+
+            $vendor->user->update($userUpdates);
         }
 
         if ($this->previousStatus !== 'active' && $vendor->status === 'active') {

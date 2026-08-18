@@ -11,6 +11,7 @@ use App\Models\Product;
 use App\Models\Review;
 use App\Models\Setting;
 use App\Models\SupportTicket;
+use App\Models\User;
 use App\Services\NotificationService;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
@@ -21,6 +22,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
 
 class SellerController extends Controller
 {
@@ -36,7 +38,17 @@ class SellerController extends Controller
             'password' => ['required'],
         ]);
 
-        if (Auth::guard('vendor')->attempt($credentials, $request->boolean('remember'))) {
+        // Support logging in via either user account email or vendor shop email
+        $foundUser = User::where('email', $credentials['email'])
+            ->orWhereHas('vendor', fn ($q) => $q->where('email', $credentials['email']))
+            ->first();
+
+        $attemptCredentials = [
+            'email' => $foundUser ? $foundUser->email : $credentials['email'],
+            'password' => $credentials['password'],
+        ];
+
+        if (Auth::guard('vendor')->attempt($attemptCredentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
             $user = Auth::guard('vendor')->user();
 
@@ -51,9 +63,11 @@ class SellerController extends Controller
                     ]);
             }
 
-            // Sync Spatie role if missing
+            // Sync Spatie role if missing (using Role instance to prevent guard mismatch)
             if (! $user->hasRole('vendor')) {
-                $user->assignRole('vendor');
+                $role = Role::where('name', 'vendor')->first()
+                    ?? Role::firstOrCreate(['name' => 'vendor', 'guard_name' => 'web']);
+                $user->assignRole($role);
             }
 
             // Auto-create vendor record if missing
