@@ -7,6 +7,7 @@ use App\Mail\VendorApproved;
 use Filament\Actions\DeleteAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 
 class EditVendor extends EditRecord
@@ -23,6 +24,12 @@ class EditVendor extends EditRecord
     protected function afterSave(): void
     {
         $vendor = $this->record;
+
+        if (! empty($this->data['password']) && $vendor->user) {
+            $vendor->user->update([
+                'password' => Hash::make($this->data['password']),
+            ]);
+        }
 
         if ($this->previousStatus !== 'active' && $vendor->status === 'active') {
             try {

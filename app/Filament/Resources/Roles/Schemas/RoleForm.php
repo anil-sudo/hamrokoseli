@@ -5,7 +5,6 @@ namespace App\Filament\Resources\Roles\Schemas;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
-use Spatie\Permission\Models\Permission;
 
 class RoleForm
 {
@@ -15,15 +14,20 @@ class RoleForm
             ->components([
                 TextInput::make('name')
                     ->required()
-                    ->unique(ignoreRecord: true),
-                TextInput::make('guard_name')
+                    ->unique('roles', 'name', ignoreRecord: true),
+                Select::make('guard_name')
+                    ->options([
+                        'web' => 'web',
+                        'admin' => 'admin',
+                        'vendor' => 'vendor',
+                    ])
                     ->default('web')
                     ->required(),
                 Select::make('permissions')
                     ->label('Permissions')
                     ->multiple()
                     ->relationship('permissions', 'name')
-                    ->options(Permission::pluck('name', 'name'))
+                    ->searchable()
                     ->preload(),
             ]);
     }
