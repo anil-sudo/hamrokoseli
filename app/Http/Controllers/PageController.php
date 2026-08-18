@@ -89,7 +89,26 @@ class PageController extends Controller
         // The actual price range across all active products — drives the
         // slider's min/max bounds so it's never a stale hardcoded number.
         $priceBounds = Product::where('status', 'active')
-            ->selectRaw('MIN(price) as min_price, MAX(price) as max_price')
+            ->selectRaw('
+            MIN(
+                CASE
+                    WHEN discount_price IS NOT NULL
+                         AND discount_price > 0
+                         AND discount_price < price
+                    THEN discount_price
+                    ELSE price
+                END
+            ) as min_price,
+            MAX(
+                CASE
+                    WHEN discount_price IS NOT NULL
+                         AND discount_price > 0
+                         AND discount_price < price
+                    THEN discount_price
+                    ELSE price
+                END
+            ) as max_price
+        ')
             ->first();
 
         $priceFloor = (int) floor($priceBounds->min_price ?? 0);
@@ -115,10 +134,29 @@ class PageController extends Controller
         }
 
         if (request()->filled('min_price')) {
-            $query->where('price', '>=', request('min_price'));
+            $min = (float) request('min_price');
+            $query->whereRaw('
+            CASE
+                WHEN discount_price IS NOT NULL
+                     AND discount_price > 0
+                     AND discount_price < price
+                THEN discount_price
+                ELSE price
+            END >= ?
+        ', [$min]);
         }
+
         if (request()->filled('max_price')) {
-            $query->where('price', '<=', request('max_price'));
+            $max = (float) request('max_price');
+            $query->whereRaw('
+            CASE
+                WHEN discount_price IS NOT NULL
+                     AND discount_price > 0
+                     AND discount_price < price
+                THEN discount_price
+                ELSE price
+            END <= ?
+        ', [$max]);
         }
 
         if (request()->boolean('in_stock')) {
@@ -127,16 +165,32 @@ class PageController extends Controller
 
         switch (request('sort')) {
             case 'price_asc':
-                $query->orderBy('price', 'asc');
+                $query->orderByRaw('
+                CASE
+                    WHEN discount_price IS NOT NULL
+                         AND discount_price > 0
+                         AND discount_price < price
+                    THEN discount_price
+                    ELSE price
+                END ASC
+            ');
                 break;
             case 'price_desc':
-                $query->orderBy('price', 'desc');
+                $query->orderByRaw('
+                CASE
+                    WHEN discount_price IS NOT NULL
+                         AND discount_price > 0
+                         AND discount_price < price
+                    THEN discount_price
+                    ELSE price
+                END DESC
+            ');
                 break;
             case 'popularity':
                 $query->withCount('orderItems')->orderBy('order_items_count', 'desc');
                 break;
             default:
-                $query->inRandomOrder();
+                $query->latest();
         }
 
         return [
@@ -225,8 +279,8 @@ class PageController extends Controller
             ->get();
 
         $dealEndsAt = Setting::getValue('todays_deal_ends_at')
-                    ?? Setting::getValue('date')
-                    ?? Setting::getValue('deal_ends_at');
+            ?? Setting::getValue('date')
+            ?? Setting::getValue('deal_ends_at');
         if (! $dealEndsAt) {
             $dateSetting = Setting::where('key', 'LIKE', '%date%')
                 ->orWhere('key', 'LIKE', '%time%')
@@ -244,11 +298,11 @@ class PageController extends Controller
         }
 
         $dealBgImage = Setting::getValue('deal_countdown_bg_image')
-                    ?? Setting::getValue('banner_image')
-                    ?? Setting::getValue('deal_bg_image')
-                    ?? Setting::getValue('todays_deal_bg_image')
-                    ?? Setting::getValue('image')
-                    ?? Setting::getValue('banner');
+            ?? Setting::getValue('banner_image')
+            ?? Setting::getValue('deal_bg_image')
+            ?? Setting::getValue('todays_deal_bg_image')
+            ?? Setting::getValue('image')
+            ?? Setting::getValue('banner');
         if (! $dealBgImage) {
             $imageSetting = Setting::where('value', 'LIKE', 'settings/%')
                 ->orWhere('key', 'LIKE', '%image%')
