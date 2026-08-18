@@ -15,7 +15,10 @@ class CreateVendor extends CreateRecord
     {
         $vendor = $this->record;
         if ($vendor->user) {
-            $userUpdates = ['role' => 'vendor'];
+            $userUpdates = [
+                'role' => 'vendor',
+                'is_active' => true,
+            ];
 
             if (! empty($this->data['password'])) {
                 $userUpdates['password'] = Hash::make($this->data['password']);
